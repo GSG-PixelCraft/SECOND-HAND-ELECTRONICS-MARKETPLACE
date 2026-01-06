@@ -1,0 +1,10 @@
+{
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint .",
+    "type-check": "tsc --noEmit",
+    "check-format": "prettier --check .",
+    "format": "prettier --write ."
+  }
+}

@@ -1,0 +1,56 @@
+name: Frontend CI
+
+on:
+  push:
+    branches: [ dev ]
+  pull_request:
+    branches: [ main, dev ]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pr-${{ github.event.pull_request.number || github.ref }}-${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  block_pr_to_main:
+    name: Block PR to main
+    if: ${{ github.event_name == 'pull_request' && github.base_ref == 'main' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Stop PR to main
+        run: |
+          echo "❌ Direct PRs to 'main' are not allowed."
+          echo "✅ Please open your PR against 'development'."
+          exit 1
+
+  frontend_checks:
+    name: Frontend Checks (Format · Lint · Types · Build)
+    if: ${{ github.event_name != 'pull_request' || github.base_ref != 'main' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Prettier check (includes Tailwind class sorting)
+        run: npm run check-format
+
+      - name: ESLint check
+        run: npm run lint
+
+      - name: TypeScript type check
+        run: npm run type-check
+
+      - name: Build project (Vite)
+        run: npm run build
