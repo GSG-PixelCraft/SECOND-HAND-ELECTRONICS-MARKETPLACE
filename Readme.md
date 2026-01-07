@@ -1,102 +1,73 @@
-# Project Name
-SECOND-HAND ELECTRONICS
-MARKETPLACE
+# React + TypeScript + Vite
 
----
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-## Tech Stack
+Currently, two official plugins are available:
 
-### Framework/Library
-[React](https://reactjs.org) + [TypeScript](https://www.typescriptlang.org) + [Vite](https://vitejs.dev/)  
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-### Data Fetching & Caching
-[TanStack Query (React Query)](https://tanstack.com/query/latest)  
+## React Compiler
 
-### Global State Management
-[Zustand](https://zustand-demo.pmnd.rs/)  
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-### Forms
-[React Hook Form](https://react-hook-form.com/) + [Zod](https://zod.dev/) 
+## Expanding the ESLint configuration
 
-### UI & Design System
-[shadcn/ui](https://ui.shadcn.com/) + [Tailwind CSS](https://tailwindcss.com/) [class-variance-authority (CVA)](https://cva.style/) + [clsx](https://github.com/lukeed/clsx)  
+If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
 
-### Routing 
-[React Router v6](https://reactrouter.com/en/main)  
+```js
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
 
-### Testing & Storybook
-[Jest](https://jestjs.io/) + [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/) + [Storybook](https://storybook.js.org/) + [Vitest](https://vitest.dev/) 
+      // Remove tseslint.configs.recommended and replace with this
+      tseslint.configs.recommendedTypeChecked,
+      // Alternatively, use this for stricter rules
+      tseslint.configs.strictTypeChecked,
+      // Optionally, add this for stylistic rules
+      tseslint.configs.stylisticTypeChecked,
 
-### Realtime Communication:
-[Socket.io Client](https://socket.io/)  
+      // Other configs...
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
+```
 
-### Map View
-[react-leaflet](https://react-leaflet.js.org/)  
+You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
 
-### Image Handling
-[React Dropzone](https://react-dropzone.js.org/) 
+```js
+// eslint.config.js
+import reactX from 'eslint-plugin-react-x'
+import reactDom from 'eslint-plugin-react-dom'
 
-### Notifications
-[React Hot Toast](https://react-hot-toast.com/) 
-
-### Charts / Analytics
-[Recharts](https://recharts.org/) 
-
-### Security
- JWT + Cookies + Protected Routes 
-
-### Multi-Language Support 
-[i18n](https://www.i18next.com/)  
-
-### Linting & Formatting
-[ESLint](https://eslint.org/) + [Prettier](https://prettier.io/)
-
-
----
-
-## Requirements
-
-Before running this project, make sure you have the following installed:
-
-- **Node.js** >= 18.x  
-- **npm** >= 9.x  
-- **Git**  
-- Modern web browser (Chrome, Firefox, Edge)  
-- Optional: IDE like **VSCode** for development  
-
----
-
-## User Stories
-
-- As a user, I can register and log in to the platform.  
-- As a user, I can view interactive maps and charts.  
-- As a user, I can upload images and manage my profile.  
-...
-
----
-
-## System & Architecture Guidelines
-
-### System Design Tokens
-- Define design tokens (colors, typography, spacing, etc.) in CSS and Tailwind config files.
-
-### Define DTOs (Data Transfer Objects)
-- Standardize the shape of data exchanged between frontend and backend.
-
-### Define API Endpoints File
-- List all API endpoints in a single file.  
-- *Note:* Currently using fake data for development.
-
-### Components Building
-- Build reusable React components based on the design system.
-
----
-
-## Git & Collaboration Rules
-
-- No direct push to `main`.  
-- No merge without a Pull Request (PR).  
-- PR requires approval from at least 2 different team members.  
-- Any new commit invalidates previous approvals.  
-- No force push allowed.  
-- No branch deletion without team agreement.
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
+      // Enable lint rules for React
+      reactX.configs['recommended-typescript'],
+      // Enable lint rules for React DOM
+      reactDom.configs.recommended,
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
+```
