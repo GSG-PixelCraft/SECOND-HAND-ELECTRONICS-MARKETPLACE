@@ -4,6 +4,13 @@ import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import "./App.css";
 
+/**
+ * Root React component that renders the application UI with Vite and React logos, a counter button, and development-only React Query devtools.
+ *
+ * The component displays two linked logos, a heading, a card containing a button that increments a local counter, and instructional text. When running in development mode, the React Query Devtools are rendered closed by default.
+ *
+ * @returns The application's root JSX element.
+ */
 function App() {
   const [count, setCount] = useState(0);
 
