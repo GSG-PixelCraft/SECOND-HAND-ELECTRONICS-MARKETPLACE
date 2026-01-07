@@ -7,6 +7,8 @@ Before you stage the changes and write a commit, please run:
 ```js
 npm run format
 npm run check-format
+npm run lint
+npm run type-check
 ```
 
 This ensures that all files are properly formatted according to the project's Prettier configuration. This helps maintain code consistency and prevents formatting-related issues in the commit history.
