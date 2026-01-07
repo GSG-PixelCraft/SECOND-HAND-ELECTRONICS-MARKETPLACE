@@ -2,9 +2,9 @@ name: Frontend CI
 
 on:
   push:
-    branches: [dev]
+    branches: [dev, main]
   pull_request:
-    branches: [main, dev]
+    branches: [dev, main]
 
 permissions:
   contents: read
@@ -14,20 +14,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  block_pr_to_main:
-    name: Block PR to main
-    if: ${{ github.event_name == 'pull_request' && github.base_ref == 'main' }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Stop PR to main
-        run: |
-          echo "❌ Direct PRs to 'main' are not allowed."
-          echo "✅ Please open your PR against 'development'."
-          exit 1
-
   frontend_checks:
     name: Frontend Checks (Format · Lint · Types · Build)
-    if: ${{ github.event_name != 'pull_request' || github.base_ref != 'main' }}
     runs-on: ubuntu-latest
 
     steps:
