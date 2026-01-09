@@ -8,7 +8,7 @@ const colors = {
     40: "hsl(var(--neutral) / 0.4)",
     20: "hsl(var(--neutral) / 0.2)",
     10: "hsl(var(--neutral) / 0.1)",
-    5:  "hsl(var(--neutral) / 0.05)",
+    5: "hsl(var(--neutral) / 0.05)",
     foreground: "hsl(var(--neutral-foreground))",
   },
 
@@ -17,7 +17,7 @@ const colors = {
     40: "hsl(var(--primary) / 0.4)",
     20: "hsl(var(--primary) / 0.2)",
     10: "hsl(var(--primary) / 0.1)",
-    5:  "hsl(var(--primary) / 0.05)",
+    5: "hsl(var(--primary) / 0.05)",
     foreground: "hsl(var(--primary-foreground))",
   },
 
@@ -26,7 +26,7 @@ const colors = {
     40: "hsl(var(--secondary) / 0.4)",
     20: "hsl(var(--secondary) / 0.2)",
     10: "hsl(var(--secondary) / 0.1)",
-    5:  "hsl(var(--secondary) / 0.05)",
+    5: "hsl(var(--secondary) / 0.05)",
     foreground: "hsl(var(--secondary-foreground))",
   },
 
@@ -35,7 +35,7 @@ const colors = {
     40: "hsl(var(--muted) / 0.4)",
     20: "hsl(var(--muted) / 0.2)",
     10: "hsl(var(--muted) / 0.1)",
-    5:  "hsl(var(--muted) / 0.05)",
+    5: "hsl(var(--muted) / 0.05)",
     foreground: "hsl(var(--muted-foreground))",
   },
 
@@ -44,7 +44,7 @@ const colors = {
     40: "hsl(var(--success) / 0.4)",
     20: "hsl(var(--success) / 0.2)",
     10: "hsl(var(--success) / 0.1)",
-    5:  "hsl(var(--success) / 0.05)",
+    5: "hsl(var(--success) / 0.05)",
     foreground: "hsl(var(--success-foreground))",
   },
 
@@ -53,7 +53,7 @@ const colors = {
     40: "hsl(var(--warning) / 0.4)",
     20: "hsl(var(--warning) / 0.2)",
     10: "hsl(var(--warning) / 0.1)",
-    5:  "hsl(var(--warning) / 0.05)",
+    5: "hsl(var(--warning) / 0.05)",
     foreground: "hsl(var(--warning-foreground))",
   },
 
@@ -62,7 +62,7 @@ const colors = {
     40: "hsl(var(--error) / 0.4)",
     20: "hsl(var(--error) / 0.2)",
     10: "hsl(var(--error) / 0.1)",
-    5:  "hsl(var(--error) / 0.05)",
+    5: "hsl(var(--error) / 0.05)",
     foreground: "hsl(var(--error-foreground))",
   },
 };
