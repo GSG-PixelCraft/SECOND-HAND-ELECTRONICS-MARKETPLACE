@@ -8,6 +8,7 @@ const colors = {
     20: "hsl(var(--neutral) / 0.2)",
     10: "hsl(var(--neutral) / 0.1)",
     5:  "hsl(var(--neutral) / 0.05)",
+    foreground: "hsl(var(--neutral-foreground))",
   },
 
   primary: {
