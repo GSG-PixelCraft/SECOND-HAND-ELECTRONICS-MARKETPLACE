@@ -1,26 +1,4 @@
-export type ColorVariants = {
-  DEFAULT: string;
-  40?: string;
-  20?: string;
-  10?: string;
-  5?: string;
-  foreground: string;
-};
-
-export type Colors = {
-  white: string;
-  black: string;
-  transparent: string;
-  neutral: ColorVariants;
-  primary: ColorVariants;
-  secondary: ColorVariants;
-  muted: ColorVariants;
-  success: ColorVariants;
-  warning: ColorVariants;
-  error: ColorVariants;
-};
-
-const colors: Colors = {
+export const colors = {
   white: "#FFFFFF",
   black: "#000000",
   transparent: "transparent",
@@ -87,6 +65,9 @@ const colors: Colors = {
     5:  "hsl(var(--error) / 0.05)",
     foreground: "hsl(var(--error-foreground))",
   },
-};
+} as const;
+
+export type ColorVariants = typeof colors.neutral;
+export type Colors = typeof colors;
 
 export default colors;
