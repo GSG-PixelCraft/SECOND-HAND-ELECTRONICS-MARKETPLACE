@@ -1,18 +1,26 @@
 :root {
+  /* Base */
   --background: 0 0% 100%;
   --foreground: 222 40% 9.8%;
 
+  /* Brand */
   --primary: 221 83% 53%;
   --primary-foreground: 0 0% 100%;
 
   --secondary: 173 80% 40%;
   --secondary-foreground: 0 0% 100%;
 
+  /* Neutral / Muted */
   --muted: 210 40% 96%;
   --muted-foreground: 230 10% 47%;
+  --neutral: 230 10% 47%;
 
+  /* Feedback */
   --success: 142 71% 45%;
   --success-foreground: 0 0% 100%;
+
+  --warning: 48 96% 53%;
+  --warning-foreground: 0 0% 100%;
 
   --error: 0 84% 60%;
   --error-foreground: 0 0% 100%;
