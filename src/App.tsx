@@ -33,7 +33,7 @@ function App() {
 
   return (
     <>
-        <div className="flex gap-4 items-center">
+      <div className="flex items-center gap-4">
         <a href="https://vite.dev" target="_blank" rel="noopener noreferrer">
           <img src={viteLogo} className="logo" alt="Vite logo" />
         </a>
@@ -42,9 +42,8 @@ function App() {
         </a>
 
         <button type="button" onClick={toggleTheme}>
-  {theme === "dark" ? "🌙 Dark" : "☀️ Light"}
-</button>
-
+          {theme === "dark" ? "🌙 Dark" : "☀️ Light"}
+        </button>
       </div>
 
       <h1>Vite + React</h1>

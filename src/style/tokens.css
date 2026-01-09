@@ -3,7 +3,7 @@
    ========================= */
 :root {
   /* Fonts */
-  --font-family-base: 'AG', sans-serif;
+  --font-family-base: "AG", sans-serif;
 
   /* Colors */
   --background: 0 0% 100%;
@@ -51,18 +51,20 @@
    Custom Font: AG
    ========================= */
 @font-face {
-  font-family: 'AG';
-  src: url('./fonts/AG-Regular.woff2') format('woff2'),
-       url('./fonts/AG-Regular.woff') format('woff');
+  font-family: "AG";
+  src:
+    url("./fonts/AG-Regular.woff2") format("woff2"),
+    url("./fonts/AG-Regular.woff") format("woff");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: 'AG';
-  src: url('./fonts/AG-Bold.woff2') format('woff2'),
-       url('./fonts/AG-Bold.woff') format('woff');
+  font-family: "AG";
+  src:
+    url("./fonts/AG-Bold.woff2") format("woff2"),
+    url("./fonts/AG-Bold.woff") format("woff");
   font-weight: 700;
   font-style: normal;
   font-display: swap;
