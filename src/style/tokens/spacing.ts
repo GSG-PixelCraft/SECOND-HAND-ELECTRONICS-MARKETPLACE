@@ -8,5 +8,8 @@ export const spacing = {
   8: "32px",
   10: "40px",
   12: "48px",
-}
+} as const;
 
+export type Spacing = typeof spacing;
+
+export default spacing;
