@@ -1,4 +1,26 @@
-const colors = {
+export type ColorVariants = {
+  DEFAULT: string;
+  40?: string;
+  20?: string;
+  10?: string;
+  5?: string;
+  foreground: string;
+};
+
+export type Colors = {
+  white: string;
+  black: string;
+  transparent: string;
+  neutral: ColorVariants;
+  primary: ColorVariants;
+  secondary: ColorVariants;
+  muted: ColorVariants;
+  success: ColorVariants;
+  warning: ColorVariants;
+  error: ColorVariants;
+};
+
+const colors: Colors = {
   white: "#FFFFFF",
   black: "#000000",
   transparent: "transparent",
@@ -8,7 +30,7 @@ const colors = {
     40: "hsl(var(--neutral) / 0.4)",
     20: "hsl(var(--neutral) / 0.2)",
     10: "hsl(var(--neutral) / 0.1)",
-    5: "hsl(var(--neutral) / 0.05)",
+    5:  "hsl(var(--neutral) / 0.05)",
     foreground: "hsl(var(--neutral-foreground))",
   },
 
@@ -17,7 +39,7 @@ const colors = {
     40: "hsl(var(--primary) / 0.4)",
     20: "hsl(var(--primary) / 0.2)",
     10: "hsl(var(--primary) / 0.1)",
-    5: "hsl(var(--primary) / 0.05)",
+    5:  "hsl(var(--primary) / 0.05)",
     foreground: "hsl(var(--primary-foreground))",
   },
 
@@ -26,7 +48,7 @@ const colors = {
     40: "hsl(var(--secondary) / 0.4)",
     20: "hsl(var(--secondary) / 0.2)",
     10: "hsl(var(--secondary) / 0.1)",
-    5: "hsl(var(--secondary) / 0.05)",
+    5:  "hsl(var(--secondary) / 0.05)",
     foreground: "hsl(var(--secondary-foreground))",
   },
 
@@ -35,7 +57,7 @@ const colors = {
     40: "hsl(var(--muted) / 0.4)",
     20: "hsl(var(--muted) / 0.2)",
     10: "hsl(var(--muted) / 0.1)",
-    5: "hsl(var(--muted) / 0.05)",
+    5:  "hsl(var(--muted) / 0.05)",
     foreground: "hsl(var(--muted-foreground))",
   },
 
@@ -44,7 +66,7 @@ const colors = {
     40: "hsl(var(--success) / 0.4)",
     20: "hsl(var(--success) / 0.2)",
     10: "hsl(var(--success) / 0.1)",
-    5: "hsl(var(--success) / 0.05)",
+    5:  "hsl(var(--success) / 0.05)",
     foreground: "hsl(var(--success-foreground))",
   },
 
@@ -53,7 +75,7 @@ const colors = {
     40: "hsl(var(--warning) / 0.4)",
     20: "hsl(var(--warning) / 0.2)",
     10: "hsl(var(--warning) / 0.1)",
-    5: "hsl(var(--warning) / 0.05)",
+    5:  "hsl(var(--warning) / 0.05)",
     foreground: "hsl(var(--warning-foreground))",
   },
 
@@ -62,7 +84,7 @@ const colors = {
     40: "hsl(var(--error) / 0.4)",
     20: "hsl(var(--error) / 0.2)",
     10: "hsl(var(--error) / 0.1)",
-    5: "hsl(var(--error) / 0.05)",
+    5:  "hsl(var(--error) / 0.05)",
     foreground: "hsl(var(--error-foreground))",
   },
 };
