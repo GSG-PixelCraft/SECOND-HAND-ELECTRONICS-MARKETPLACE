@@ -1,24 +1,25 @@
+/* =========================
+   Base Tokens
+   ========================= */
 :root {
-  /* Tell browser to render native controls in light mode */
-  color-scheme: light;
+  /* Fonts */
+  --font-family-base: 'AG', sans-serif;
 
-  /* Base */
+  /* Colors */
   --background: 0 0% 100%;
   --foreground: 222 40% 9.8%;
 
-  /* Brand */
   --primary: 221 83% 53%;
   --primary-foreground: 0 0% 100%;
 
   --secondary: 173 80% 40%;
   --secondary-foreground: 0 0% 100%;
 
-  /* Neutral / Muted */
   --muted: 210 40% 96%;
   --muted-foreground: 230 10% 47%;
   --neutral: 230 10% 47%;
+  --neutral-foreground: 0 0% 0%;
 
-  /* Feedback */
   --success: 142 71% 45%;
   --success-foreground: 0 0% 100%;
 
@@ -31,32 +32,43 @@
   --border: 215 27.9% 90%;
 }
 
-@layer base {
-  [data-theme="dark"] {
-    color-scheme: dark;
+/* =========================
+   Dark Theme Overrides
+   ========================= */
+[data-theme="dark"] {
+  --background: 222 47% 11%;
+  --foreground: 210 40% 98%;
 
-    --background: 222 47% 11%;
-    --foreground: 210 40% 98%;
+  --muted: 0 0% 20%;
+  --muted-foreground: 0 0% 65%;
+  --neutral: 0 0% 65%;
+  --neutral-foreground: 222 40% 98%;
 
-    --muted: 0 0% 20%;
-    --muted-foreground: 0 0% 65%;
-    --neutral: 0 0% 65%;
+  --border: 217 19% 27%;
+}
 
-    --border: 217 19% 27%;
+/* =========================
+   Custom Font: AG
+   ========================= */
+@font-face {
+  font-family: 'AG';
+  src: url('./fonts/AG-Regular.woff2') format('woff2'),
+       url('./fonts/AG-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
 
-    --primary: 221 83% 53%;
-    --primary-foreground: 0 0% 100%;
+@font-face {
+  font-family: 'AG';
+  src: url('./fonts/AG-Bold.woff2') format('woff2'),
+       url('./fonts/AG-Bold.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
 
-    --secondary: 173 80% 40%;
-    --secondary-foreground: 0 0% 100%;
-
-    --success: 142 71% 45%;
-    --success-foreground: 0 0% 100%;
-
-    --warning: 48 96% 53%;
-    --warning-foreground: 0 0% 0%;
-
-    --error: 0 84% 60%;
-    --error-foreground: 0 0% 100%;
-  }
+/* Usage Example */
+body {
+  font-family: var(--font-family-base);
 }
