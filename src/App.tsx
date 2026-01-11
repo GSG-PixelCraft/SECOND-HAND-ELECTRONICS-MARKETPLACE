@@ -5,29 +5,37 @@ import viteLogo from "/vite.svg";
 import "./App.css";
 
 function App() {
-  const [count, setCount] = useState(0);
-  const [theme, setTheme] = useState<"light" | "dark">("light");
+  const [count, setCount] = useState<number>(0);
 
-  useEffect(() => {
-    const savedTheme = localStorage.getItem("theme") as "light" | "dark" | null;
-
-    if (savedTheme === "dark") {
-      document.documentElement.setAttribute("data-theme", "dark");
-      setTheme("dark");
+  // ✅ Initialize theme from localStorage synchronously to avoid FOUC
+  const getInitialTheme = (): "light" | "dark" => {
+    try {
+      const savedTheme = localStorage.getItem("theme");
+      if (savedTheme === "dark" || savedTheme === "light") {
+        document.documentElement.setAttribute(
+          "data-theme",
+          savedTheme
+        );
+        return savedTheme;
+      }
+    } catch (err) {
+      console.error("Error reading theme from localStorage:", err);
     }
-  }, []);
+    return "light"; // default
+  };
+
+  const [theme, setTheme] = useState<"light" | "dark">(getInitialTheme);
 
   const toggleTheme = () => {
     const html = document.documentElement;
+    const newTheme = theme === "dark" ? "light" : "dark";
 
-    if (theme === "dark") {
-      html.removeAttribute("data-theme");
-      localStorage.setItem("theme", "light");
-      setTheme("light");
-    } else {
-      html.setAttribute("data-theme", "dark");
-      localStorage.setItem("theme", "dark");
-      setTheme("dark");
+    try {
+      html.setAttribute("data-theme", newTheme);
+      localStorage.setItem("theme", newTheme);
+      setTheme(newTheme);
+    } catch (err) {
+      console.error("Error setting theme in localStorage:", err);
     }
   };
 
@@ -41,7 +49,12 @@ function App() {
           <img src={reactLogo} className="logo react" alt="React logo" />
         </a>
 
-        <button type="button" onClick={toggleTheme}>
+        <button
+          type="button"
+          onClick={toggleTheme}
+          aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+          aria-live="polite"
+        >
           {theme === "dark" ? "🌙 Dark" : "☀️ Light"}
         </button>
       </div>
