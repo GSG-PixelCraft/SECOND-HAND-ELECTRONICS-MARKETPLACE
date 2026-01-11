@@ -1,32 +1,11 @@
 @layer base {
-  [data-theme="dark"] {
-    /* الخلفية الرئيسية والنص */
-    --background: 222 47% 11%;
-    --foreground: 210 40% 98%;
-
-    /* الرمادي/المخفف */
-    --muted: 0 0% 20%;
-    --muted-foreground: 0 0% 65%;
-    --neutral: 0 0% 65%;
-
-    /* حدود */
-    --border: 217 19% 27%;
-
-    /* العلامة التجارية */
-    --primary: 221 83% 53%;
-    --primary-foreground: 0 0% 100%;
-
-    --secondary: 173 80% 40%;
-    --secondary-foreground: 0 0% 100%;
-
-    /* ألوان الردود (Feedback) */
+  :root {
+    --background: 255 255% 255%;
+    --foreground: 0 0% 0%;
+    --primary: 221 90% 60%;
+    --secondary: 270 80% 65%;
     --success: 142 71% 45%;
-    --success-foreground: 0 0% 100%;
-
     --warning: 48 96% 53%;
-    --warning-foreground: 0 0% 0%;
-
     --error: 0 84% 60%;
-    --error-foreground: 0 0% 100%;
   }
 }

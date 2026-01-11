@@ -39,8 +39,8 @@
   --background: 222 47% 11%;
   --foreground: 210 40% 98%;
 
-  --neutral: 0 0% 65%;         
-  --muted: 0 0% 15%;            
+  --neutral: 0 0% 65%;
+  --muted: 0 0% 15%;
   --muted-foreground: 0 0% 60%;
 
   --border: 217 19% 27%;
@@ -54,7 +54,7 @@
 /* =========================
    Custom Font: AG
    ========================= */
-@font-face {
+/* @font-face {
   font-family: "AG";
   src:
     url("./fonts/AG-Regular.woff2") format("woff2"),
@@ -73,10 +73,10 @@
   font-style: normal;
   font-display: swap;
 }
-
+*/
 /* Usage Example */
-@layer base {
+/* @layer base {
   body {
     font-family: var(--font-family-base);
   }
-}
+}  */

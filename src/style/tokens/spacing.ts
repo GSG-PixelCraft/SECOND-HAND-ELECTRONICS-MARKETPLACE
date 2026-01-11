@@ -13,7 +13,6 @@ export const spacing = {
   12: "48px",
 } as const;
 
-
 export type Spacing = typeof spacing;
 
 export default spacing;
