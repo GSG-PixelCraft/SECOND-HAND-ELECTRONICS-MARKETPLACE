@@ -71,6 +71,10 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
 
     const resolvedId = id ?? inputId;
 
+    const helperId = helperText ? `${resolvedId}-help` : undefined;
+    const errorId = error ? `${resolvedId}-error` : undefined;
+    const describedBy = error ? errorId : helperId;
+
     return (
       <div className="flex flex-col gap-2">
         {label && (
@@ -85,6 +89,8 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
         <input
           id={resolvedId}
           ref={ref}
+          aria-invalid={error ? true : undefined}
+          aria-describedby={describedBy}
           className={twMerge(
             inputVariants({
               intent: error ? "error" : intent,
@@ -96,9 +102,13 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
         />
 
         {error ? (
-          <p className="text-caption text-error-foreground">{error}</p>
+          <p id={errorId} className="text-caption text-error-foreground">
+            {error}
+          </p>
         ) : helperText ? (
-          <p className="text-caption text-muted-foreground">{helperText}</p>
+          <p id={helperId} className="text-caption text-muted-foreground">
+            {helperText}
+          </p>
         ) : null}
       </div>
     );
