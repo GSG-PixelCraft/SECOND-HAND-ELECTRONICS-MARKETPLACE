@@ -1,4 +1,5 @@
 import * as React from "react";
+import { twMerge } from "tailwind-merge";
 import { cva, type VariantProps } from "class-variance-authority";
 
 const selectVariants = cva(
@@ -63,7 +64,7 @@ export interface SelectProps extends Omit<
 
 export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
   function Select(
-    { className, intent, size, helperText, error, id, children, ...props },
+    { intent, size, helperText, error, id, className, children, ...props },
     ref,
   ) {
     const autoId = React.useId();
@@ -79,10 +80,13 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
           ref={ref}
           aria-invalid={error ? true : undefined}
           aria-describedby={describedBy}
-          className={`${selectVariants({
-            intent: error ? "error" : intent,
-            size,
-          })} ${className ?? ""}`}
+          className={twMerge(
+            selectVariants({
+              intent: error ? "error" : intent,
+              size,
+            }),
+            className,
+          )}
           {...props}
         >
           {children}
