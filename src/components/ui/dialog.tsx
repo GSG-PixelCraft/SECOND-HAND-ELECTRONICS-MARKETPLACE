@@ -32,14 +32,26 @@ const dialogVariants = cva(
 
 type DialogVariantProps = VariantProps<typeof dialogVariants>;
 
-export interface DialogProps extends React.HTMLAttributes<HTMLDialogElement> {
+export interface DialogProps extends React.DialogHTMLAttributes<HTMLDialogElement> {
   open?: boolean;
-  onClose?: () => void;
+  onOpenChange?: (open: boolean) => void;
   size?: DialogVariantProps["size"];
 }
 
 export const Dialog = React.forwardRef<HTMLDialogElement, DialogProps>(
-  function Dialog({ open, onClose, size, children, className, ...props }, ref) {
+  function Dialog(
+    {
+      open,
+      onOpenChange,
+      onClose,
+      onCancel,
+      size,
+      children,
+      className,
+      ...props
+    },
+    ref,
+  ) {
     const dialogRef = React.useRef<HTMLDialogElement | null>(null);
 
     React.useImperativeHandle(
@@ -50,19 +62,37 @@ export const Dialog = React.forwardRef<HTMLDialogElement, DialogProps>(
     React.useEffect(() => {
       if (!dialogRef.current) return;
 
-      if (open) {
-        dialogRef.current.showModal();
-      } else {
-        dialogRef.current.close();
+      const dialog = dialogRef.current;
+      if (open && !dialog.open) {
+        dialog.showModal();
+      } else if (!open && dialog.open) {
+        dialog.close();
       }
     }, [open]);
+
+    const handleClose = React.useCallback(
+      (event: React.SyntheticEvent<HTMLDialogElement>) => {
+        onOpenChange?.(false);
+        onClose?.(event);
+      },
+      [onOpenChange, onClose],
+    );
+
+    const handleCancel = React.useCallback(
+      (event: React.SyntheticEvent<HTMLDialogElement>) => {
+        onOpenChange?.(false);
+        onCancel?.(event);
+      },
+      [onOpenChange, onCancel],
+    );
 
     return (
       <>
         <dialog
           ref={dialogRef}
           className={`${dialogVariants({ size })} ${className ?? ""}`}
-          onCancel={onClose}
+          onClose={handleClose}
+          onCancel={handleCancel}
           {...props}
         >
           {children}
