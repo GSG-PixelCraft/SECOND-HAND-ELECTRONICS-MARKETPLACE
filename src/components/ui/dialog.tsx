@@ -59,10 +59,6 @@ export const Dialog = React.forwardRef<HTMLDialogElement, DialogProps>(
 
     return (
       <>
-        {open && (
-          <div className="fixed inset-0 z-40 bg-black/30" onClick={onClose} />
-        )}
-
         <dialog
           ref={dialogRef}
           className={`${dialogVariants({ size })} ${className ?? ""}`}
