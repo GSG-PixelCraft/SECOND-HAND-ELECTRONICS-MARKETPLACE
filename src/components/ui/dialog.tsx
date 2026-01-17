@@ -53,6 +53,7 @@ export const Dialog = React.forwardRef<HTMLDialogElement, DialogProps>(
     ref,
   ) {
     const dialogRef = React.useRef<HTMLDialogElement | null>(null);
+    const ignoreNextCloseRef = React.useRef(false);
 
     React.useImperativeHandle(
       ref,
@@ -60,7 +61,7 @@ export const Dialog = React.forwardRef<HTMLDialogElement, DialogProps>(
     );
 
     React.useEffect(() => {
-      if (!dialogRef.current) return;
+      if (open === undefined || !dialogRef.current) return;
 
       const dialog = dialogRef.current;
       if (open && !dialog.open) {
@@ -72,6 +73,11 @@ export const Dialog = React.forwardRef<HTMLDialogElement, DialogProps>(
 
     const handleClose = React.useCallback(
       (event: React.SyntheticEvent<HTMLDialogElement>) => {
+        if (ignoreNextCloseRef.current) {
+          ignoreNextCloseRef.current = false;
+          onClose?.(event);
+          return;
+        }
         onOpenChange?.(false);
         onClose?.(event);
       },
@@ -80,8 +86,10 @@ export const Dialog = React.forwardRef<HTMLDialogElement, DialogProps>(
 
     const handleCancel = React.useCallback(
       (event: React.SyntheticEvent<HTMLDialogElement>) => {
-        onOpenChange?.(false);
         onCancel?.(event);
+        if (event.defaultPrevented) return;
+        ignoreNextCloseRef.current = true;
+        onOpenChange?.(false);
       },
       [onOpenChange, onCancel],
     );
