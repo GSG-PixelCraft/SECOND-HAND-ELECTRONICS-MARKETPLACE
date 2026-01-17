@@ -1,6 +1,22 @@
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 
+function mergeRefs<T>(
+  ...refs: Array<React.Ref<T> | undefined>
+): React.RefCallback<T> {
+  return (value) => {
+    refs.forEach((ref) => {
+      if (!ref) return;
+
+      if (typeof ref === "function") {
+        ref(value);
+      } else {
+        (ref as React.MutableRefObject<T | null>).current = value;
+      }
+    });
+  };
+}
+
 const dialogVariants = cva(
   [
     "fixed",
@@ -38,7 +54,7 @@ export interface DialogProps extends React.DialogHTMLAttributes<HTMLDialogElemen
   size?: DialogVariantProps["size"];
 }
 
-export const Dialog = React.forwardRef<HTMLDialogElement, DialogProps>(
+export const Dialog = React.forwardRef<HTMLDialogElement | null, DialogProps>(
   function Dialog(
     {
       open,
@@ -54,11 +70,6 @@ export const Dialog = React.forwardRef<HTMLDialogElement, DialogProps>(
   ) {
     const dialogRef = React.useRef<HTMLDialogElement | null>(null);
     const ignoreNextCloseRef = React.useRef(false);
-
-    React.useImperativeHandle(
-      ref,
-      () => dialogRef.current as HTMLDialogElement,
-    );
 
     React.useEffect(() => {
       if (open === undefined || !dialogRef.current) return;
@@ -95,17 +106,15 @@ export const Dialog = React.forwardRef<HTMLDialogElement, DialogProps>(
     );
 
     return (
-      <>
-        <dialog
-          ref={dialogRef}
-          className={`${dialogVariants({ size })} ${className ?? ""}`}
-          onClose={handleClose}
-          onCancel={handleCancel}
-          {...props}
-        >
-          {children}
-        </dialog>
-      </>
+      <dialog
+        ref={mergeRefs(dialogRef, ref)}
+        className={`${dialogVariants({ size })} ${className ?? ""}`}
+        onClose={handleClose}
+        onCancel={handleCancel}
+        {...props}
+      >
+        {children}
+      </dialog>
     );
   },
 );
