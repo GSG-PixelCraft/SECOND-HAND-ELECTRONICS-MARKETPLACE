@@ -1,0 +1,55 @@
+import type { Meta, StoryObj } from "@storybook/react";
+import * as React from "react";
+import { Dialog } from "./dialog";
+import { Button } from "./button";
+
+const meta: Meta<typeof Dialog> = {
+  title: "UI/Dialog",
+  component: Dialog,
+  tags: ["autodocs"],
+  argTypes: {
+    size: {
+      control: "select",
+      options: ["sm", "md", "lg"],
+    },
+  },
+};
+
+export default meta;
+type Story = StoryObj<typeof Dialog>;
+
+const DialogWithState = (args: React.ComponentProps<typeof Dialog>) => {
+  const [open, setOpen] = React.useState(false);
+
+  return (
+    <div>
+      <Button onClick={() => setOpen(true)}>Open Modal</Button>
+
+      <Dialog open={open} onClose={() => setOpen(false)} {...args}>
+        <h2 className="mb-2 text-lg font-semibold">Dialog Title</h2>
+        <p className="mb-4 text-body text-neutral-foreground">
+          This is a simple modal dialog. Click outside or close to dismiss.
+        </p>
+
+        <div className="flex justify-end gap-2">
+          <Button intent="outline" onClick={() => setOpen(false)}>
+            Cancel
+          </Button>
+          <Button onClick={() => setOpen(false)}>Confirm</Button>
+        </div>
+      </Dialog>
+    </div>
+  );
+};
+
+export const Default: Story = {
+  render: (args) => <DialogWithState {...args} />,
+};
+
+export const Small: Story = {
+  render: () => <DialogWithState size="sm" />,
+};
+
+export const Large: Story = {
+  render: () => <DialogWithState size="lg" />,
+};
