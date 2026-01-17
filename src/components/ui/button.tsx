@@ -1,5 +1,11 @@
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
 
 const buttonVariants = cva(
   [
@@ -82,9 +88,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     return (
       <button
         ref={ref}
-        className={`${buttonVariants({ intent, size, fullWidth })} ${
-          className ?? ""
-        }`}
+        className={cn(buttonVariants({ intent, size, fullWidth }), className)}
         {...props}
       >
         {children}
