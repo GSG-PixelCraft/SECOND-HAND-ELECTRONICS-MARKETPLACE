@@ -68,6 +68,7 @@ export const Dialog = React.forwardRef<HTMLDialogElement, DialogProps>(
     ref,
   ) {
     const dialogRef = React.useRef<HTMLDialogElement | null>(null);
+    // Prevents double onOpenChange(false) when cancel triggers close
     const ignoreNextCloseRef = React.useRef(false);
 
     React.useEffect(() => {
