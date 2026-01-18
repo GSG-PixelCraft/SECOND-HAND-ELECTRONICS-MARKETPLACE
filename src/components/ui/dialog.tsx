@@ -79,6 +79,11 @@ export const Dialog = React.forwardRef<HTMLDialogElement, DialogProps>(
       } else if (!open && dialog.open) {
         dialog.close();
       }
+      return () => {
+        if (dialog.open) {
+          dialog.close();
+        }
+      };
     }, [open]);
 
     const handleClose = React.useCallback(
