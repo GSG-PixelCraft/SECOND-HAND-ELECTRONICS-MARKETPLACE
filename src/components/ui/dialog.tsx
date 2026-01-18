@@ -28,7 +28,6 @@ const dialogVariants = cva(
     "border",
     "border-neutral-20",
     "p-5",
-    "max-w-md",
     "w-full",
     "z-50",
   ],
@@ -54,7 +53,7 @@ export interface DialogProps extends React.DialogHTMLAttributes<HTMLDialogElemen
   size?: DialogVariantProps["size"];
 }
 
-export const Dialog = React.forwardRef<HTMLDialogElement | null, DialogProps>(
+export const Dialog = React.forwardRef<HTMLDialogElement, DialogProps>(
   function Dialog(
     {
       open,
@@ -105,9 +104,11 @@ export const Dialog = React.forwardRef<HTMLDialogElement | null, DialogProps>(
       [onOpenChange, onCancel],
     );
 
+    const combinedRef = React.useMemo(() => mergeRefs(dialogRef, ref), [ref]);
+
     return (
       <dialog
-        ref={mergeRefs(dialogRef, ref)}
+        ref={combinedRef}
         className={`${dialogVariants({ size })} ${className ?? ""}`}
         onClose={handleClose}
         onCancel={handleCancel}
