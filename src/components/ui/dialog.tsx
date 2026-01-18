@@ -1,5 +1,6 @@
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
+import { clsx } from "clsx";
 
 function mergeRefs<T>(
   ...refs: Array<React.Ref<T> | undefined>
@@ -115,7 +116,7 @@ export const Dialog = React.forwardRef<HTMLDialogElement, DialogProps>(
     return (
       <dialog
         ref={combinedRef}
-        className={`${dialogVariants({ size })} ${className ?? ""}`}
+        className={clsx(dialogVariants({ size }), className)}
         onClose={handleClose}
         onCancel={handleCancel}
         {...props}
