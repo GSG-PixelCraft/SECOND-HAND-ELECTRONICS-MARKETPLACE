@@ -123,6 +123,32 @@ const resources = {
       loading: {
         title: "Loading…",
       },
+      footer: {
+        logo: "Logo",
+        description:
+          "We are a trusted marketplace for buying and selling used electronics. Our platform connects buyers and sellers in a safe, transparent environment, focusing on direct communication and clear agreements through in-app chat. We don't handle payments or delivery — instead, we empower users to connect, negotiate, and close deals with confidence.",
+        contactLabel: "Contact us at",
+        contactEmail: "unreal@outlook.com",
+        rights: "©All Rights Reserved",
+        links: {
+          about: "About us",
+          contact: "Contact",
+          privacy: "Privacy policy",
+          terms: "Terms of Use",
+        },
+        social: {
+          facebook: "Facebook",
+          twitter: "Twitter",
+          instagram: "Instagram",
+          youtube: "YouTube",
+          abbr: {
+            facebook: "f",
+            twitter: "x",
+            instagram: "ig",
+            youtube: "yt",
+          },
+        },
+      },
     },
   },
 };
