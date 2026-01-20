@@ -1,11 +1,11 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { authApi, LoginCredentials, RegisterData } from '@/lib/api';
-import { setToken, removeToken } from '@/lib/storage';
-import { useNavigate } from 'react-router-dom';
-import { ROUTES } from '@/constants/routes';
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { authApi } from "@/lib/api";
+import { setToken, removeToken } from "@/lib/storage";
+import { useNavigate } from "react-router-dom";
+import { ROUTES } from "@/constants/routes";
 
 export const AUTH_KEYS = {
-  me: ['auth', 'me'] as const,
+  me: ["auth", "me"] as const,
 };
 
 export const useAuth = () => {

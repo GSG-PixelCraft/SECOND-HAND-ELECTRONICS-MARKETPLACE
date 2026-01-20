@@ -1,4 +1,4 @@
-import "../src/index.css";
+import "../src/style/index.css";
 
 import type { Preview } from "@storybook/react";
 

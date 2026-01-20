@@ -1,13 +1,13 @@
 // Manage user session/auth state
-import { useEffect } from 'react'
-import { useAuth } from './queries'
+import { useEffect } from "react";
+import { useAuth } from "./queries";
 
 export const useSession = () => {
-  const { user, isLoading } = useAuth()
+  const { user, isLoading } = useAuth();
 
   useEffect(() => {
     // Session tracking logic
-  }, [user])
+  }, [user]);
 
-  return { user, isLoading, isAuthenticated: !!user }
-}
+  return { user, isLoading, isAuthenticated: !!user };
+};

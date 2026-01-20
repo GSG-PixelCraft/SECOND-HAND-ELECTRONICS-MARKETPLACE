@@ -1,13 +1,14 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { productsApi, ProductsParams, Product } from '@/lib/api';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { productsApi, ProductsParams, Product } from "@/lib/api";
 
 export const PRODUCTS_KEYS = {
-  all: ['products'] as const,
-  lists: () => [...PRODUCTS_KEYS.all, 'list'] as const,
-  list: (params?: ProductsParams) => [...PRODUCTS_KEYS.lists(), params] as const,
-  details: () => [...PRODUCTS_KEYS.all, 'detail'] as const,
+  all: ["products"] as const,
+  lists: () => [...PRODUCTS_KEYS.all, "list"] as const,
+  list: (params?: ProductsParams) =>
+    [...PRODUCTS_KEYS.lists(), params] as const,
+  details: () => [...PRODUCTS_KEYS.all, "detail"] as const,
   detail: (id: string) => [...PRODUCTS_KEYS.details(), id] as const,
-  categories: ['products', 'categories'] as const,
+  categories: ["products", "categories"] as const,
 };
 
 // Get all products with filters
@@ -57,7 +58,9 @@ export const useUpdateProduct = () => {
     mutationFn: ({ id, data }: { id: string; data: Partial<Product> }) =>
       productsApi.update(id, data),
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: PRODUCTS_KEYS.detail(variables.id) });
+      queryClient.invalidateQueries({
+        queryKey: PRODUCTS_KEYS.detail(variables.id),
+      });
       queryClient.invalidateQueries({ queryKey: PRODUCTS_KEYS.lists() });
     },
   });
