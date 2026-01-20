@@ -14,7 +14,7 @@ const OrderDetailPage = () => {
       <p className="text-sm text-slate-600">{t("orders.detailSubtitle")}</p>
       <Link
         className="text-sm font-semibold text-slate-600 hover:text-slate-900"
-        to={ROUTES.ORDERS}
+        to={ROUTES.NOTIFICATIONS}
       >
         {t("orders.back")}
       </Link>

@@ -16,7 +16,7 @@ const RegisterPage = () => {
       role: "user",
     });
     setToken("demo-token");
-    navigate(ROUTES.DASHBOARD);
+    navigate(ROUTES.PROFILE);
   };
 
   return (

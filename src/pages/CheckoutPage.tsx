@@ -13,7 +13,7 @@ const CheckoutPage = () => {
       <p className="text-sm text-slate-600">{t("checkout.subtitle")}</p>
       <Link
         className="text-sm font-semibold text-slate-600 hover:text-slate-900"
-        to={ROUTES.CART}
+        to={ROUTES.FAVORITES}
       >
         {t("checkout.back")}
       </Link>

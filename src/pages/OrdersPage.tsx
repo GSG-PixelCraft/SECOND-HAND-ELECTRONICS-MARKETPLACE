@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { getOrderRoute } from "@/constants/routes";
+import { ROUTES } from "@/constants/routes";
 
 const OrdersPage = () => {
   const { t } = useTranslation();
@@ -24,7 +24,7 @@ const OrdersPage = () => {
               <span>{orderId}</span>
               <Link
                 className="text-xs font-semibold text-slate-700 hover:text-slate-900"
-                to={getOrderRoute(orderId)}
+                to={ROUTES.NOTIFICATIONS}
               >
                 {t("orders.viewDetail")}
               </Link>

@@ -22,13 +22,13 @@ export const Sidebar = () => {
           <NavLink to={ROUTES.HOME} className={sidebarLinkClass}>
             {t("nav.home")}
           </NavLink>
-          <NavLink to={ROUTES.PRODUCTS} className={sidebarLinkClass}>
+          <NavLink to={ROUTES.RECENT_LISTINGS} className={sidebarLinkClass}>
             {t("nav.products")}
           </NavLink>
-          <NavLink to={ROUTES.CART} className={sidebarLinkClass}>
+          <NavLink to={ROUTES.FAVORITES} className={sidebarLinkClass}>
             {t("nav.cart")}
           </NavLink>
-          <NavLink to={ROUTES.DASHBOARD} className={sidebarLinkClass}>
+          <NavLink to={ROUTES.MY_LISTINGS} className={sidebarLinkClass}>
             {t("nav.dashboard")}
           </NavLink>
         </nav>

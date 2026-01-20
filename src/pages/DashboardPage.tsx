@@ -22,13 +22,13 @@ const DashboardPage = () => {
         <div className="mt-4 grid gap-3 md:grid-cols-3">
           <Link
             className="rounded-2xl border border-slate-200 px-4 py-4 text-sm font-medium text-slate-700 transition hover:border-slate-300 hover:text-slate-900"
-            to={ROUTES.PRODUCTS}
+            to={ROUTES.MY_LISTINGS}
           >
             {t("dashboard.actionSell")}
           </Link>
           <Link
             className="rounded-2xl border border-slate-200 px-4 py-4 text-sm font-medium text-slate-700 transition hover:border-slate-300 hover:text-slate-900"
-            to={ROUTES.ORDERS}
+            to={ROUTES.NOTIFICATIONS}
           >
             {t("dashboard.actionOrders")}
           </Link>

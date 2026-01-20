@@ -21,13 +21,13 @@ const HomePage = () => {
           <div className="flex flex-wrap gap-3">
             <Link
               className="rounded-full bg-slate-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
-              to={ROUTES.PRODUCTS}
+              to={ROUTES.RECENT_LISTINGS}
             >
               {t("home.ctaPrimary")}
             </Link>
             <Link
               className="rounded-full border border-slate-200 px-6 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:text-slate-900"
-              to={ROUTES.REGISTER}
+              to={ROUTES.SIGN_UP}
             >
               {t("home.ctaSecondary")}
             </Link>

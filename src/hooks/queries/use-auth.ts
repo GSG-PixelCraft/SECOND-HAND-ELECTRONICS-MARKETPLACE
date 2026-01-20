@@ -26,7 +26,7 @@ export const useAuth = () => {
     onSuccess: (data) => {
       setToken(data.token);
       queryClient.setQueryData(AUTH_KEYS.me, data.user);
-      navigate(ROUTES.DASHBOARD);
+      navigate(ROUTES.PROFILE);
     },
   });
 
@@ -36,7 +36,7 @@ export const useAuth = () => {
     onSuccess: (data) => {
       setToken(data.token);
       queryClient.setQueryData(AUTH_KEYS.me, data.user);
-      navigate(ROUTES.DASHBOARD);
+      navigate(ROUTES.PROFILE);
     },
   });
 
@@ -46,7 +46,7 @@ export const useAuth = () => {
     onSuccess: () => {
       removeToken();
       queryClient.clear();
-      navigate(ROUTES.LOGIN);
+      navigate(ROUTES.SIGN_IN);
     },
   });
 

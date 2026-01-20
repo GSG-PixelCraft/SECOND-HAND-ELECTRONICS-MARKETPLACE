@@ -30,7 +30,7 @@ const ProductDetailPage = () => {
       <header className="space-y-2">
         <Link
           className="text-sm font-semibold text-slate-500 hover:text-slate-700"
-          to={ROUTES.PRODUCTS}
+          to={ROUTES.RECENT_LISTINGS}
         >
           {t("product.backToProducts")}
         </Link>

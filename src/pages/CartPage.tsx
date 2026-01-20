@@ -17,7 +17,7 @@ const CartPage = () => {
         <p className="text-sm text-slate-600">{t("cart.emptySubtitle")}</p>
         <Link
           className="rounded-full bg-slate-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
-          to={ROUTES.PRODUCTS}
+          to={ROUTES.RECENT_LISTINGS}
         >
           {t("home.ctaPrimary")}
         </Link>

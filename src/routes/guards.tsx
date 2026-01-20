@@ -17,7 +17,7 @@ interface RoleGuardProps {
 export const AuthGuard = ({ children }: AuthGuardProps) => {
   const { user, token } = useAuthStore();
   const isAuthenticated = Boolean(user && token);
-  return isAuthenticated ? children : <Navigate to={ROUTES.LOGIN} />;
+  return isAuthenticated ? children : <Navigate to={ROUTES.SIGN_IN} />;
 };
 
 export const RoleGuard = ({ children, allowedRoles }: RoleGuardProps) => {

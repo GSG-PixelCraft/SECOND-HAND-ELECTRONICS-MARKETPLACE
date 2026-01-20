@@ -26,7 +26,7 @@ export const Header = () => {
       role: "user",
     });
     setToken("demo-token");
-    navigate(ROUTES.DASHBOARD);
+    navigate(ROUTES.PROFILE);
   };
 
   return (
@@ -42,16 +42,16 @@ export const Header = () => {
           <NavLink to={ROUTES.HOME} className={linkClassName}>
             {t("nav.home")}
           </NavLink>
-          <NavLink to={ROUTES.PRODUCTS} className={linkClassName}>
+          <NavLink to={ROUTES.RECENT_LISTINGS} className={linkClassName}>
             {t("nav.products")}
           </NavLink>
-          <NavLink to={ROUTES.CART} className={linkClassName}>
+          <NavLink to={ROUTES.FAVORITES} className={linkClassName}>
             {t("nav.cart")}
           </NavLink>
-          <NavLink to={ROUTES.DASHBOARD} className={linkClassName}>
+          <NavLink to={ROUTES.MY_LISTINGS} className={linkClassName}>
             {t("nav.dashboard")}
           </NavLink>
-          <NavLink to="/admin" className={linkClassName}>
+          <NavLink to={ROUTES.ADMIN_DASHBOARD} className={linkClassName}>
             {t("nav.admin")}
           </NavLink>
         </nav>
@@ -73,7 +73,7 @@ export const Header = () => {
             </button>
           ) : (
             <div className="flex items-center gap-2">
-              <NavLink to={ROUTES.LOGIN} className={linkClassName}>
+              <NavLink to={ROUTES.SIGN_IN} className={linkClassName}>
                 {t("nav.login")}
               </NavLink>
               <button
