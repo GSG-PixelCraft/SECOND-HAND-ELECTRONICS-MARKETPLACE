@@ -1,10 +1,11 @@
-@import "./tokens.css";
-@import "./themes.css";
-
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
+/* Main entry CSS file */
+@import './tokens.css';
+@import './globals.css';
+@import './themes.css';
+@import './animations.css';
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
 dialog::backdrop {
   background-color: rgba(0, 0, 0, 0.3);
 }
