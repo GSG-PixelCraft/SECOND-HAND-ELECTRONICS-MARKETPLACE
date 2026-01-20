@@ -1,13 +1,29 @@
 // Route guards
-import { Navigate } from 'react-router-dom'
-import { useAuthContext } from '@/providers'
+import type { ReactNode } from "react";
+import { Navigate } from "react-router-dom";
+import { ROUTES } from "@/constants/routes";
+import { useAuthContext } from "@/providers";
+import type { User } from "@/types";
 
-export const AuthGuard = ({ children }) => {
-  const { isAuthenticated } = useAuthContext()
-  return isAuthenticated ? children : <Navigate to="/login" />
+interface AuthGuardProps {
+  children: ReactNode;
 }
 
-export const RoleGuard = ({ children, allowedRoles }) => {
-  const { user } = useAuthContext()
-  return allowedRoles.includes(user?.role) ? children : <Navigate to="/403" />
+interface RoleGuardProps {
+  children: ReactNode;
+  allowedRoles: User["role"][];
 }
+
+export const AuthGuard = ({ children }: AuthGuardProps) => {
+  const { isAuthenticated } = useAuthContext();
+  return isAuthenticated ? children : <Navigate to={ROUTES.LOGIN} />;
+};
+
+export const RoleGuard = ({ children, allowedRoles }: RoleGuardProps) => {
+  const { user } = useAuthContext();
+  return allowedRoles.includes(user?.role ?? "user") ? (
+    children
+  ) : (
+    <Navigate to={ROUTES.ACCESS_DENIED} />
+  );
+};

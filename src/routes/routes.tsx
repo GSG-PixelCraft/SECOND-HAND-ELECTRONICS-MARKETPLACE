@@ -1,76 +1,163 @@
-import { createBrowserRouter } from 'react-router-dom';
-import { ROUTES } from '@/constants/routes';
-import { AuthGuard, RoleGuard } from './guards';
-import { AppLayout } from '@/components/layout/app-layout';
-import HomePage from '@/pages/HomePage';
-import DashboardPage from '@/pages/DashboardPage';
-import AuthPage from '@/pages/auth';
-import ErrorPages from '@/pages/error-pages';
+import { createBrowserRouter, Outlet } from "react-router-dom";
+import { ROUTES } from "@/constants/routes";
+import { AppLoading } from "@/components/feedback/loading/app-loading";
+import { AppLayout } from "@/components/layout/app-layout";
+import { AdminLayout } from "@/components/layout/admin-layout";
+import { AuthGuard, RoleGuard } from "./guards";
+import UnexpectedErrorPage from "@/pages/unexpected";
 
 export const router = createBrowserRouter([
   {
     path: ROUTES.HOME,
     element: <AppLayout />,
-    errorElement: <ErrorPages type="unexpected" />,
+    errorElement: <UnexpectedErrorPage />,
+    hydrateFallbackElement: <AppLoading />,
     children: [
       {
         index: true,
-        element: <HomePage />,
+        lazy: async () => {
+          const { default: HomePage } = await import("@/pages/HomePage");
+          return { Component: HomePage };
+        },
       },
       {
         path: ROUTES.LOGIN,
-        element: <AuthPage mode="login" />,
+        lazy: async () => {
+          const { default: LoginPage } = await import("@/pages/LoginPage");
+          return { Component: LoginPage };
+        },
       },
       {
         path: ROUTES.REGISTER,
-        element: <AuthPage mode="register" />,
-      },
-      {
-        path: ROUTES.DASHBOARD,
-        element: (
-          <AuthGuard>
-            <DashboardPage />
-          </AuthGuard>
-        ),
+        lazy: async () => {
+          const { default: RegisterPage } =
+            await import("@/pages/RegisterPage");
+          return { Component: RegisterPage };
+        },
       },
       {
         path: ROUTES.PRODUCTS,
-        element: <ProductsPage />,
+        lazy: async () => {
+          const { default: ProductsPage } =
+            await import("@/pages/ProductsPage");
+          return { Component: ProductsPage };
+        },
       },
       {
         path: ROUTES.PRODUCT_DETAIL,
-        element: <ProductDetailPage />,
+        lazy: async () => {
+          const { default: ProductDetailPage } =
+            await import("@/pages/ProductDetailPage");
+          return { Component: ProductDetailPage };
+        },
       },
       {
-        path: ROUTES.CART,
         element: (
           <AuthGuard>
-            <CartPage />
+            <Outlet />
           </AuthGuard>
         ),
+        children: [
+          {
+            path: ROUTES.DASHBOARD,
+            lazy: async () => {
+              const { default: DashboardPage } =
+                await import("@/pages/DashboardPage");
+              return { Component: DashboardPage };
+            },
+          },
+          {
+            path: ROUTES.CART,
+            lazy: async () => {
+              const { default: CartPage } = await import("@/pages/CartPage");
+              return { Component: CartPage };
+            },
+          },
+          {
+            path: ROUTES.CHECKOUT,
+            lazy: async () => {
+              const { default: CheckoutPage } =
+                await import("@/pages/CheckoutPage");
+              return { Component: CheckoutPage };
+            },
+          },
+          {
+            path: ROUTES.PROFILE,
+            lazy: async () => {
+              const { default: ProfilePage } =
+                await import("@/pages/ProfilePage");
+              return { Component: ProfilePage };
+            },
+          },
+          {
+            path: ROUTES.SETTINGS,
+            lazy: async () => {
+              const { default: SettingsPage } =
+                await import("@/pages/SettingsPage");
+              return { Component: SettingsPage };
+            },
+          },
+          {
+            path: ROUTES.ORDERS,
+            lazy: async () => {
+              const { default: OrdersPage } =
+                await import("@/pages/OrdersPage");
+              return { Component: OrdersPage };
+            },
+          },
+          {
+            path: ROUTES.ORDER_DETAIL,
+            lazy: async () => {
+              const { default: OrderDetailPage } =
+                await import("@/pages/OrderDetailPage");
+              return { Component: OrderDetailPage };
+            },
+          },
+        ],
       },
-      // Admin routes
       {
-        path: '/admin',
+        path: "/admin",
         element: (
           <AuthGuard>
-            <RoleGuard allowedRoles={['admin']}>
+            <RoleGuard allowedRoles={["admin"]}>
               <AdminLayout />
             </RoleGuard>
           </AuthGuard>
         ),
+        hydrateFallbackElement: <AppLoading />,
         children: [
-          // ... admin routes
+          {
+            index: true,
+            lazy: async () => {
+              const { default: AdminOverviewPage } =
+                await import("@/pages/AdminOverviewPage");
+              return { Component: AdminOverviewPage };
+            },
+          },
         ],
       },
     ],
   },
   {
     path: ROUTES.NOT_FOUND,
-    element: <ErrorPages type="not-found" />,
+    lazy: async () => {
+      const { default: NotFoundPage } = await import("@/pages/not-found");
+      return { Component: NotFoundPage };
+    },
   },
   {
-    path: '*',
-    element: <ErrorPages type="not-found" />,
+    path: ROUTES.ACCESS_DENIED,
+    lazy: async () => {
+      const { default: AccessDeniedPage } =
+        await import("@/pages/access-denied");
+      return { Component: AccessDeniedPage };
+    },
+  },
+  {
+    path: "*",
+    lazy: async () => {
+      const { default: NotFoundPage } = await import("@/pages/not-found");
+      return { Component: NotFoundPage };
+    },
   },
 ]);

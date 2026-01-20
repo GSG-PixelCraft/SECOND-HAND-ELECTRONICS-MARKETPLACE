@@ -1,10 +1,13 @@
 // React Query provider
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import type { ReactNode } from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient();
 
-export const QueryProvider = ({ children }) => (
-  <QueryClientProvider client={queryClient}>
-    {children}
-  </QueryClientProvider>
-)
+interface QueryProviderProps {
+  children: ReactNode;
+}
+
+export const QueryProvider = ({ children }: QueryProviderProps) => (
+  <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+);
