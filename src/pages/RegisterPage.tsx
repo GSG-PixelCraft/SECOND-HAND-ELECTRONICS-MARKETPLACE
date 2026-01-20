@@ -1,6 +1,10 @@
-// Registration page
-import { AuthContainer } from '@/containers'
+import { useAuth } from "@/hooks/queries";
+import { RegisterView } from "@/components/auth";
 
 export const RegisterPage = () => {
-  return <AuthContainer mode="register" />
-}
+  const { register, isLoading, error } = useAuth();
+
+  return (
+    <RegisterView onSubmit={register} isLoading={isLoading} error={error} />
+  );
+};

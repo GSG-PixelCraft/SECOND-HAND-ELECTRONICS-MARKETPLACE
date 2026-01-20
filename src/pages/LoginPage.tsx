@@ -1,6 +1,8 @@
-// Login page
-import { AuthContainer } from '@/containers'
+import { useAuth } from "@/hooks/queries";
+import { LoginView } from "@/components/auth";
 
 export const LoginPage = () => {
-  return <AuthContainer mode="login" />
-}
+  const { login, isLoading, error } = useAuth();
+
+  return <LoginView onSubmit={login} isLoading={isLoading} error={error} />;
+};
