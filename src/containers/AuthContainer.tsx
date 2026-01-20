@@ -1,4 +1,6 @@
-// // Smart component - Handles auth logic
+// ! Do not use it
+
+// Smart component - Handles auth logic
 // import { useAuth } from '@/hooks/queries'
 // import { LoginForm } from '@/components/forms'
 

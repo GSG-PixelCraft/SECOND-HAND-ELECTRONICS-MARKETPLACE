@@ -1,12 +1,12 @@
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
-import { useAuthContext } from "@/providers";
+import { useAuthStore } from "@/stores/useAuthStore";
 
 const RegisterPage = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { setUser, setToken } = useAuthContext();
+  const { setUser, setToken } = useAuthStore();
 
   const handleDemoRegister = () => {
     setUser({

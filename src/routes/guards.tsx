@@ -2,7 +2,7 @@
 import type { ReactNode } from "react";
 import { Navigate } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
-import { useAuthContext } from "@/providers";
+import { useAuthStore } from "@/stores/useAuthStore";
 import type { User } from "@/types";
 
 interface AuthGuardProps {
@@ -15,12 +15,13 @@ interface RoleGuardProps {
 }
 
 export const AuthGuard = ({ children }: AuthGuardProps) => {
-  const { isAuthenticated } = useAuthContext();
+  const { user, token } = useAuthStore();
+  const isAuthenticated = Boolean(user && token);
   return isAuthenticated ? children : <Navigate to={ROUTES.LOGIN} />;
 };
 
 export const RoleGuard = ({ children, allowedRoles }: RoleGuardProps) => {
-  const { user } = useAuthContext();
+  const { user } = useAuthStore();
   return allowedRoles.includes(user?.role ?? "user") ? (
     children
   ) : (

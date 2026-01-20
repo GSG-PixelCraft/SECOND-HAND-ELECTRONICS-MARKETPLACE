@@ -1,7 +1,8 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { ROUTES } from "@/constants/routes";
-import { useAuthContext, useThemeContext } from "@/providers";
+import { useThemeContext } from "@/providers";
+import { useAuthStore } from "@/stores/useAuthStore";
 
 const linkClassName = ({ isActive }: { isActive: boolean }) =>
   `rounded-full px-4 py-2 text-sm font-medium transition ${
@@ -13,7 +14,8 @@ const linkClassName = ({ isActive }: { isActive: boolean }) =>
 export const Header = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { user, isAuthenticated, setUser, setToken, logout } = useAuthContext();
+  const { user, token, setUser, setToken, logout } = useAuthStore();
+  const isAuthenticated = Boolean(user && token);
   const { toggleTheme } = useThemeContext();
 
   const handleDemoLogin = () => {
