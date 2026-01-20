@@ -4,7 +4,7 @@ export const Footer = () => {
   const { t } = useTranslation();
 
   return (
-    <footer className="bg-[#2F63F0] text-white">
+    <footer className="bg-primary text-white">
       <div className="mx-auto flex max-w-6xl flex-col gap-10 px-6 py-12">
         <div className="flex flex-col items-center gap-4 text-center">
           <h2 className="text-xl font-semibold tracking-wide">
@@ -35,7 +35,7 @@ export const Footer = () => {
             {["facebook", "twitter", "instagram", "youtube"].map((network) => (
               <button
                 key={network}
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-[#2F63F0] shadow-sm transition hover:scale-105"
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-primary shadow-sm transition hover:scale-105"
                 type="button"
                 aria-label={t(`footer.social.${network}`)}
               >
