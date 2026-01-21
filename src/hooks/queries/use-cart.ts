@@ -1,8 +1,8 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { cartApi } from '@/lib/api';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { cartApi } from "@/lib/api";
 
 export const CART_KEYS = {
-  cart: ['cart'] as const,
+  cart: ["cart"] as const,
 };
 
 export const useCart = () => {

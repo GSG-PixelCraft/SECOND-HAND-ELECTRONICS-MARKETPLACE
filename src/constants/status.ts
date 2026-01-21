@@ -7,11 +7,11 @@ export const HTTP_STATUS = {
   FORBIDDEN: 403,
   NOT_FOUND: 404,
   SERVER_ERROR: 500,
-} as const
+} as const;
 
 export const REQUEST_STATUS = {
-  IDLE: 'idle',
-  LOADING: 'loading',
-  SUCCESS: 'success',
-  ERROR: 'error',
-} as const
+  IDLE: "idle",
+  LOADING: "loading",
+  SUCCESS: "success",
+  ERROR: "error",
+} as const;
