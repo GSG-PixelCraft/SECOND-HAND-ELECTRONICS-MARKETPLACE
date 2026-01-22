@@ -15,7 +15,11 @@ html {
 
 body {
   height: 100%;
-  font-family: var(--font-family-base), system-ui, -apple-system, sans-serif;
+  font-family:
+    var(--font-family-base),
+    system-ui,
+    -apple-system,
+    sans-serif;
   background-color: hsl(var(--background));
   color: hsl(var(--foreground));
   line-height: 1.6;

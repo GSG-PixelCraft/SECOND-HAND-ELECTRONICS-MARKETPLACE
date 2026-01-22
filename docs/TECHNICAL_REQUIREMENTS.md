@@ -175,7 +175,6 @@ This document covers technical specifications including technology stack, develo
 
 ---
 
-
 ---
 
 ### 2.7 Real-time Communication
