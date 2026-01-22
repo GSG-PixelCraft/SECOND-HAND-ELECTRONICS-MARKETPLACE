@@ -1,5 +1,4 @@
 import { NavLink, useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
 import { ROUTES } from "@/constants/routes";
 import { useThemeContext } from "@/providers";
 import { useAuthStore } from "@/stores/useAuthStore";
@@ -12,7 +11,6 @@ const linkClassName = ({ isActive }: { isActive: boolean }) =>
   }`;
 
 export const Header = () => {
-  const { t } = useTranslation();
   const navigate = useNavigate();
   const { user, token, setUser, setToken, logout } = useAuthStore();
   const isAuthenticated = Boolean(user && token);
@@ -21,7 +19,7 @@ export const Header = () => {
   const handleDemoLogin = () => {
     setUser({
       id: "demo-user",
-      name: t("demo.userName"),
+      name: "Demo User",
       email: "demo@marketplace.dev",
       role: "user",
     });
@@ -36,23 +34,23 @@ export const Header = () => {
           to={ROUTES.HOME}
           className="text-lg font-semibold text-slate-900"
         >
-          {t("nav.brand")}
+          Electronics Marketplace
         </NavLink>
         <nav className="hidden items-center gap-2 md:flex">
           <NavLink to={ROUTES.HOME} className={linkClassName}>
-            {t("nav.home")}
+            Home
           </NavLink>
           <NavLink to={ROUTES.RECENT_LISTINGS} className={linkClassName}>
-            {t("nav.products")}
+            Products
           </NavLink>
           <NavLink to={ROUTES.FAVORITES} className={linkClassName}>
-            {t("nav.cart")}
+            Favorites
           </NavLink>
           <NavLink to={ROUTES.MY_LISTINGS} className={linkClassName}>
-            {t("nav.dashboard")}
+            Dashboard
           </NavLink>
           <NavLink to={ROUTES.ADMIN_DASHBOARD} className={linkClassName}>
-            {t("nav.admin")}
+            Admin
           </NavLink>
         </nav>
         <div className="flex items-center gap-3">
@@ -61,7 +59,7 @@ export const Header = () => {
             onClick={toggleTheme}
             type="button"
           >
-            {t("nav.theme")}
+            Theme
           </button>
           {isAuthenticated ? (
             <button
@@ -69,19 +67,19 @@ export const Header = () => {
               onClick={logout}
               type="button"
             >
-              {t("nav.logout")}
+              Logout
             </button>
           ) : (
             <div className="flex items-center gap-2">
               <NavLink to={ROUTES.SIGN_IN} className={linkClassName}>
-                {t("nav.login")}
+                Login
               </NavLink>
               <button
                 className="rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800"
                 onClick={handleDemoLogin}
                 type="button"
               >
-                {t("auth.demoCta")}
+                Demo Login
               </button>
             </div>
           )}

@@ -175,23 +175,6 @@ This document covers technical specifications including technology stack, develo
 
 ---
 
-### 2.6 Internationalization
-
-#### 2.6.1 i18next
-
-- **Version:** 25.7.3 or higher
-- **Purpose:** Internationalization framework
-- **Requirements:**
-  - Translation files in JSON format
-  - Namespace organization
-  - Pluralization support
-  - Interpolation support
-
-#### 2.6.2 react-i18next
-
-- **Version:** 16.5.1 or higher
-- **Purpose:** React bindings for i18next
-- **Usage:** `useTranslation` hook in components
 
 ---
 

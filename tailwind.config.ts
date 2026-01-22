@@ -1,78 +1,111 @@
-import { colors } from "./src/style/tokens/colors";
-import { typography } from "./src/style/tokens/typography";
-
 export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
       colors: {
-        ...colors,
+        white: "#FFFFFF",
+        black: "#000000",
+        transparent: "transparent",
+        neutral: "hsl(var(--neutral))",
+        "neutral-5": "hsl(var(--neutral)/0.05)",
+        "neutral-10": "hsl(var(--neutral)/0.1)",
+        "neutral-20": "hsl(var(--neutral)/0.2)",
+        "neutral-foreground": "hsl(var(--neutral-foreground))",
+        primary: "hsl(var(--primary))",
+        "primary-5": "hsl(var(--primary)/0.05)",
+        "primary-10": "hsl(var(--primary)/0.1)",
+        "primary-20": "hsl(var(--primary)/0.2)",
+        "primary-40": "hsl(var(--primary)/0.4)",
+        "primary-foreground": "hsl(var(--primary-foreground))",
+        secondary: "hsl(var(--secondary))",
+        "secondary-5": "hsl(var(--secondary)/0.05)",
+        "secondary-10": "hsl(var(--secondary)/0.1)",
+        "secondary-20": "hsl(var(--secondary)/0.2)",
+        "secondary-40": "hsl(var(--secondary)/0.4)",
+        "secondary-foreground": "hsl(var(--secondary-foreground))",
+        muted: "hsl(var(--muted))",
+        "muted-5": "hsl(var(--muted)/0.05)",
+        "muted-10": "hsl(var(--muted)/0.1)",
+        "muted-20": "hsl(var(--muted)/0.2)",
+        "muted-foreground": "hsl(var(--muted-foreground))",
+        success: "hsl(var(--success))",
+        "success-10": "hsl(var(--success)/0.1)",
+        "success-20": "hsl(var(--success)/0.2)",
+        "success-foreground": "hsl(var(--success-foreground))",
+        warning: "hsl(var(--warning))",
+        "warning-10": "hsl(var(--warning)/0.1)",
+        "warning-20": "hsl(var(--warning)/0.2)",
+        "warning-foreground": "hsl(var(--warning-foreground))",
+        error: "hsl(var(--error))",
+        "error-10": "hsl(var(--error)/0.1)",
+        "error-20": "hsl(var(--error)/0.2)",
+        "error-foreground": "hsl(var(--error-foreground))",
       },
       fontFamily: {
-        base: typography.fontFamily.base,
+        base: ["var(--font-family-base)", "sans-serif"],
       },
       fontSize: {
         h1: [
-          typography.fontSize.h1.size,
+          "var(--font-size-h1)",
           {
-            lineHeight: typography.fontSize.h1.lineHeight,
-            fontWeight: typography.fontSize.h1.fontWeight,
+            lineHeight: "var(--font-line-height-h1)",
+            fontWeight: "var(--font-weight-h1)",
           },
         ],
         h2: [
-          typography.fontSize.h2.size,
+          "var(--font-size-h2)",
           {
-            lineHeight: typography.fontSize.h2.lineHeight,
-            fontWeight: typography.fontSize.h2.fontWeight,
+            lineHeight: "var(--font-line-height-h2)",
+            fontWeight: "var(--font-weight-h2)",
           },
         ],
         h3: [
-          typography.fontSize.h3.size,
+          "var(--font-size-h3)",
           {
-            lineHeight: typography.fontSize.h3.lineHeight,
-            fontWeight: typography.fontSize.h3.fontWeight,
+            lineHeight: "var(--font-line-height-h3)",
+            fontWeight: "var(--font-weight-h3)",
           },
         ],
         h4: [
-          typography.fontSize.h4.size,
+          "var(--font-size-h4)",
           {
-            lineHeight: typography.fontSize.h4.lineHeight,
-            fontWeight: typography.fontSize.h4.fontWeight,
+            lineHeight: "var(--font-line-height-h4)",
+            fontWeight: "var(--font-weight-h4)",
           },
         ],
         h5: [
-          typography.fontSize.h5.size,
+          "var(--font-size-h5)",
           {
-            lineHeight: typography.fontSize.h5.lineHeight,
-            fontWeight: typography.fontSize.h5.fontWeight,
+            lineHeight: "var(--font-line-height-h5)",
+            fontWeight: "var(--font-weight-h5)",
           },
         ],
         bodyLg: [
-          typography.fontSize.bodyLg.size,
+          "var(--font-size-body-lg)",
           {
-            lineHeight: typography.fontSize.bodyLg.lineHeight,
-            fontWeight: typography.fontSize.bodyLg.fontWeight,
+            lineHeight: "var(--font-line-height-body-lg)",
+            fontWeight: "var(--font-weight-body-lg)",
           },
         ],
         body: [
-          typography.fontSize.body.size,
+          "var(--font-size-body)",
           {
-            lineHeight: typography.fontSize.body.lineHeight,
-            fontWeight: typography.fontSize.body.fontWeight,
+            lineHeight: "var(--font-line-height-body)",
+            fontWeight: "var(--font-weight-body)",
           },
         ],
         caption: [
-          typography.fontSize.caption.size,
+          "var(--font-size-caption)",
           {
-            lineHeight: typography.fontSize.caption.lineHeight,
-            fontWeight: typography.fontSize.caption.fontWeight,
+            lineHeight: "var(--font-line-height-caption)",
+            fontWeight: "var(--font-weight-caption)",
           },
         ],
         label: [
-          typography.fontSize.label.size,
+          "var(--font-size-label)",
           {
-            lineHeight: typography.fontSize.label.lineHeight,
-            fontWeight: typography.fontSize.label.fontWeight,
+            lineHeight: "var(--font-line-height-label)",
+            fontWeight: "var(--font-weight-label)",
           },
         ],
       },
