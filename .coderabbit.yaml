@@ -1,0 +1,32 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+reviews:
+  profile: assertive
+  request_changes_workflow: true
+
+  auto_review:
+    enabled: true
+    base_branches:
+      - main
+      - dev
+
+  high_level_summary_instructions: |-
+    Summarize intent, architectural impact, and risk.
+    Do not restate diffs. Focus on why the change exists.
+  high_level_summary_in_walkthrough: true
+
+  auto_title_instructions: |
+    Generate a concise semantic title:
+    type(scope): intent
+    Example: fix(auth): prevent double login requests
+
+  fail_commit_status: true
+  sequence_diagrams: false
+  suggested_labels: false
+  poem: false
+  enable_prompt_for_ai_agents: false
+
+  path_filters:
+    - src/**
+    - '!dist/**'
+    - '!build/**'
+    - '!cov
