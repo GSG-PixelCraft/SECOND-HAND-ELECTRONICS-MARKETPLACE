@@ -1,6 +1,5 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
-import { useThemeContext } from "@/providers";
 import { useAuthStore } from "@/stores/useAuthStore";
 
 const linkClassName = ({ isActive }: { isActive: boolean }) =>
@@ -14,7 +13,6 @@ export const Header = () => {
   const navigate = useNavigate();
   const { user, token, setUser, setToken, logout } = useAuthStore();
   const isAuthenticated = Boolean(user && token);
-  const { toggleTheme } = useThemeContext();
 
   const handleDemoLogin = () => {
     setUser({
@@ -56,7 +54,7 @@ export const Header = () => {
         <div className="flex items-center gap-3">
           <button
             className="rounded-full border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-slate-300 hover:text-slate-900"
-            onClick={toggleTheme}
+            onClick={() => {}}
             type="button"
           >
             Theme
