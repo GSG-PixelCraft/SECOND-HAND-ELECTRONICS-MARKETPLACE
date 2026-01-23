@@ -1,0 +1,95 @@
+import { NavLink, useNavigate } from "react-router-dom";
+import { ROUTES } from "@/constants/routes";
+import { useThemeContext } from "@/providers";
+import { useAuthStore } from "@/stores/useAuthStore";
+
+const linkClassName = ({ isActive }: { isActive: boolean }) =>
+  `rounded-full px-4 py-2 text-sm font-medium transition ${
+    isActive
+      ? "bg-slate-900 text-white"
+      : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+  }`;
+
+export const Header = () => {
+  const navigate = useNavigate();
+  const { user, token, setUser, setToken, logout } = useAuthStore();
+  const isAuthenticated = Boolean(user && token);
+  const { toggleTheme } = useThemeContext();
+
+  const handleDemoLogin = () => {
+    setUser({
+      id: "demo-user",
+      name: "Demo User",
+      email: "demo@marketplace.dev",
+      role: "user",
+    });
+    setToken("demo-token");
+    navigate(ROUTES.PROFILE);
+  };
+
+  return (
+    <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/80 backdrop-blur">
+      <div className="mx-auto flex max-w-6xl items-center justify-between gap-6 px-6 py-4">
+        <NavLink
+          to={ROUTES.HOME}
+          className="text-lg font-semibold text-slate-900"
+        >
+          Electronics Marketplace
+        </NavLink>
+        <nav className="hidden items-center gap-2 md:flex">
+          <NavLink to={ROUTES.HOME} className={linkClassName}>
+            Home
+          </NavLink>
+          <NavLink to={ROUTES.RECENT_LISTINGS} className={linkClassName}>
+            Products
+          </NavLink>
+          <NavLink to={ROUTES.FAVORITES} className={linkClassName}>
+            Favorites
+          </NavLink>
+          <NavLink to={ROUTES.MY_LISTINGS} className={linkClassName}>
+            Dashboard
+          </NavLink>
+          <NavLink to={ROUTES.ADMIN_DASHBOARD} className={linkClassName}>
+            Admin
+          </NavLink>
+        </nav>
+        <div className="flex items-center gap-3">
+          <button
+            className="rounded-full border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-slate-300 hover:text-slate-900"
+            onClick={toggleTheme}
+            type="button"
+          >
+            Theme
+          </button>
+          {isAuthenticated ? (
+            <button
+              className="rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800"
+              onClick={logout}
+              type="button"
+            >
+              Logout
+            </button>
+          ) : (
+            <div className="flex items-center gap-2">
+              <NavLink to={ROUTES.SIGN_IN} className={linkClassName}>
+                Login
+              </NavLink>
+              <button
+                className="rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800"
+                onClick={handleDemoLogin}
+                type="button"
+              >
+                Demo Login
+              </button>
+            </div>
+          )}
+          {user ? (
+            <span className="hidden rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600 md:inline-flex">
+              {user.name}
+            </span>
+          ) : null}
+        </div>
+      </div>
+    </header>
+  );
+};
