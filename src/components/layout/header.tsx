@@ -136,7 +136,7 @@ export const Header = () => {
                   intent="primary"
                   size="md"
                   onClick={handleAddListing}
-                  className="rounded-lg"
+                  className="rounded-lg text-white"
                 >
                   Add listing
                 </Button>
