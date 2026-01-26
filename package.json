@@ -6,16 +6,19 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "type-check": "tsc -b",
-    "lint": "eslint . --ext ts,tsx --max-warnings=0",
+    "preview": "vite preview",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint . --max-warnings=0",
+    "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "check-format": "prettier --check .",
+    "validate": "npm run check-format && npm run lint && npm run type-check && npm run build",
     "test": "vitest",
     "test:run": "vitest run --passWithNoTests",
+    "test:coverage": "vitest run --coverage",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "prepare": "husky",
-    "preview": "vite preview"
+    "prepare": "husky"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
@@ -48,6 +51,8 @@
     "@storybook/react-vite": "^10.1.11",
     "@tanstack/react-query-devtools": "^5.90.16",
     "@testing-library/react": "^16.3.1",
+    "@types/js-cookie": "^3.0.6",
+    "@types/leaflet": "^1.9.18",
     "@types/node": "^24.10.1",
     "@types/react": "^19.2.5",
     "@types/react-dom": "^19.2.3",
@@ -74,7 +79,10 @@
   },
   "lint-staged": {
     "*.{ts,tsx}": [
-      "eslint --fix",
+      "eslint --fix --max-warnings=0",
+      "prettier --write"
+    ],
+    "*.{json,md,yaml,yml}": [
       "prettier --write"
     ]
   }
