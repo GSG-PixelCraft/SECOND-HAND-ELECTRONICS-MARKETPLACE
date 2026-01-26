@@ -1,31 +1,72 @@
 # yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+# coderabbit.yaml configuration file for CodeRabbit AI integrations on GitHub repository
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+
+language: en-US
+
 reviews:
   profile: assertive
   request_changes_workflow: true
+  high_level_summary: true
+
+  high_level_summary_placeholder: "@coderabbitai summary"
+
+  poem: false
+  collapse_walkthrough: false
+  sequence_diagrams: false
+  changed_files_summary: true
+
+  labeling_instructions: []
+
+  path_filters:
+    - "!**/*.lock"
+    - "!**/package-lock.json"
+    - "!**/dist/**"
+    - "!**/build/**"
+    - "!**/node_modules/**"
+    - "!**/.husky/**"
+    - "!**/storybook-static/**"
+
+  path_instructions:
+    - path: "src/components/**"
+      instructions: |
+        Review for React best practices:
+        - Check hooks usage and dependencies
+        - Verify prop types and interfaces
+        - Ensure proper component composition
+        - Check for proper key usage in lists
+        - Verify accessibility (a11y) attributes
+
+    - path: "src/hooks/**"
+      instructions: |
+        Review for custom hooks best practices:
+        - Check dependencies array completeness
+        - Verify cleanup functions in useEffect
+        - Ensure proper memoization
+
+    - path: "src/api/**"
+      instructions: |
+        Review for API best practices:
+        - Check error handling
+        - Verify request/response types
+        - Ensure proper authentication handling
+        - Check for proper loading states
+
+    - path: "src/stores/**"
+      instructions: |
+        Review for Zustand store best practices:
+        - Check for proper state immutability
+        - Verify action naming conventions
+        - Ensure proper TypeScript types
 
   auto_review:
     enabled: true
+    drafts: false
     base_branches:
       - main
       - dev
 
-  high_level_summary_instructions: |-
-    Summarize intent, architectural impact, and risk.
-    Do not restate diffs. Focus on why the change exists.
-  high_level_summary_in_walkthrough: true
-  auto_title_instructions: |
-    Generate a concise semantic title:
-    type(scope): intent
-    Example: fix(auth): prevent double login requests
-
-  fail_commit_status: true
-  sequence_diagrams: false
-  suggested_labels: false
-  poem: false
-  enable_prompt_for_ai_agents: false
-
-  path_filters:
-    - src/**
-    - "!dist/**"
-    - "!build/**"
-    - "!cov"
+chat:
+  auto_reply: true
