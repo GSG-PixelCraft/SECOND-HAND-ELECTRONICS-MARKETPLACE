@@ -79,8 +79,8 @@ export function NotificationItem({
   return (
     <div
       className={cn(
-        "flex gap-3 rounded-lg p-4 transition-colors",
-        !read && "bg-blue-50",
+        "flex gap-3 p-4 transition-colors",
+        !read && "bg-blue-50/50",
       )}
     >
       <div
@@ -93,14 +93,14 @@ export function NotificationItem({
       </div>
 
       <div className="min-w-0 flex-1">
-        <div className="mb-1 flex items-start justify-between gap-2">
+        <div className="mb-1 flex items-start justify-between gap-3">
           <h3 className="text-sm font-semibold text-gray-900">{title}</h3>
-          <span className="whitespace-nowrap text-xs text-gray-500">
+          <span className="flex-shrink-0 whitespace-nowrap text-xs text-gray-500">
             {timestamp}
           </span>
         </div>
 
-        <p className="mb-1 text-sm text-gray-600">
+        <p className="text-sm leading-relaxed text-gray-600">
           {message}
           {actionLabel && (
             <>
