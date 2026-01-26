@@ -13,7 +13,7 @@ type Story = StoryObj<typeof SearchSuggestions>;
 export const Default: Story = {
   args: {
     suggestions: ["Laptop", "Laptop charger", "Laptop bag", "Laptop stand"],
-    onSelect: (value) => {
+    onSuggestionSelect: (value) => {
       console.log("Selected:", value);
     },
   },

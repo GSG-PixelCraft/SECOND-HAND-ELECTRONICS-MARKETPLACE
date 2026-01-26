@@ -1,5 +1,3 @@
-import * as React from "react";
-
 export type ListingStatus =
   | "active"
   | "product"
@@ -28,14 +26,18 @@ export function ListingOptions({ status, onAction }: ListingOptionsProps) {
   const options = OPTIONS_MAP[status];
 
   return (
-    <ul className="w-56 rounded-md border border-neutral-20 bg-white shadow-sm">
+    <ul
+      role="menu"
+      className="w-56 rounded-md border border-neutral-20 bg-white shadow-sm"
+    >
       {options.map((option, index) => {
         const isDelete = option === "Delete";
 
         return (
-          <li key={option}>
+          <li key={option} role="none">
             <button
               type="button"
+              role="menuitem"
               onClick={() => onAction?.(option)}
               className={`flex w-full items-center px-4 py-2 text-left text-body transition-colors ${isDelete ? "text-error hover:bg-error-10" : "hover:bg-neutral-5"} `}
             >

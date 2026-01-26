@@ -4,6 +4,9 @@ import { ListingOptions } from "./ListingOptions";
 const meta: Meta<typeof ListingOptions> = {
   title: "UI/ListingOptions",
   component: ListingOptions,
+  argTypes: {
+    onAction: { action: "onAction" },
+  },
 };
 
 export default meta;

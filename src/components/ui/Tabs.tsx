@@ -1,5 +1,3 @@
-import * as React from "react";
-
 export type TabValue =
   | "all"
   | "pending"
@@ -27,14 +25,16 @@ const TABS: { label: string; value: TabValue }[] = [
 export function Tabs({ value, onChange }: TabsProps) {
   return (
     <div className="border-b border-neutral-20 bg-primary-5">
-      <ul className="flex justify-between">
+      <ul className="flex justify-between" role="tablist">
         {TABS.map((tab) => {
           const isActive = value === tab.value;
 
           return (
-            <li key={tab.value}>
+            <li key={tab.value} role="presentation">
               <button
                 type="button"
+                role="tab"
+                aria-selected={isActive}
                 onClick={() => onChange(tab.value)}
                 className={`relative pb-3 text-body transition-colors ${
                   isActive
