@@ -13,7 +13,6 @@ reviews:
     Summarize intent, architectural impact, and risk.
     Do not restate diffs. Focus on why the change exists.
   high_level_summary_in_walkthrough: true
-
   auto_title_instructions: |
     Generate a concise semantic title:
     type(scope): intent
@@ -27,6 +26,6 @@ reviews:
 
   path_filters:
     - src/**
-    - '!dist/**'
-    - '!build/**'
-    - '!cov
+    - "!dist/**"
+    - "!build/**"
+    - "!cov"
