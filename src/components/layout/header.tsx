@@ -5,7 +5,6 @@ import {
   MapPin,
   Globe,
   CircleUser,
-  Bell,
   MessageCircle,
   Heart,
   Menu,
@@ -14,6 +13,7 @@ import { ROUTES } from "@/constants/routes";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { Button } from "@/components/ui/button";
 import { LocationLanguageDropdown } from "@/components/ui/location-language-dropdown";
+import { NotificationDropdown } from "@/pages/NotificationsPage/components/notification-dropdown";
 
 const categories = [
   "Phones",
@@ -193,13 +193,7 @@ export const Header = () => {
 
             {/* Right side - Action Icons */}
             <div className="flex items-center gap-4">
-              <button
-                type="button"
-                className="flex items-center justify-center rounded-full p-2 text-primary transition-colors hover:bg-primary-10"
-                onClick={() => {}}
-              >
-                <Bell size={20} />
-              </button>
+              <NotificationDropdown />
               <button
                 type="button"
                 className="flex items-center justify-center rounded-full p-2 text-primary transition-colors hover:bg-primary-10"
