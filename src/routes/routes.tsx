@@ -91,7 +91,10 @@ const protectedRoutes = [
   },
   {
     path: "/chat",
-    title: "Chat",
+    lazy: async () => {
+      const { default: ChatPage } = await import("@/pages/ChatPage/ChatPage");
+      return { Component: ChatPage };
+    },
   },
   {
     path: "/blocked-users",
