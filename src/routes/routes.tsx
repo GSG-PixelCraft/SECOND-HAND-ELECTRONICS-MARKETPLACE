@@ -107,7 +107,11 @@ const protectedRoutes = [
   },
   {
     path: "/listings/new",
-    title: "Add listing",
+    lazy: async () => {
+      const { default: AddListingPage } =
+        await import("@/pages/AddListingPage/AddListingPage");
+      return { Component: AddListingPage };
+    },
   },
   {
     path: "/favorites",

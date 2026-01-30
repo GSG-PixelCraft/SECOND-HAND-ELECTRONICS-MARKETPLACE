@@ -22,3 +22,18 @@ export const productSchema = z.object({
   price: z.number().positive(),
   category: z.string(),
 });
+
+export const listingSchema = z.object({
+  title: z.string().min(3, "Title must be at least 3 characters"),
+  description: z.string().min(10, "Description must be at least 10 characters"),
+  price: z.number().positive("Price must be greater than 0"),
+  category: z.string().min(1, "Category is required"),
+  condition: z.string().min(1, "Condition is required"),
+  location: z.string().min(1, "Location is required"),
+  brand: z.string().optional(),
+  model: z.string().optional(),
+  storage: z.string().optional(),
+  batteryHealth: z.string().optional(),
+  isNegotiable: z.boolean().optional(),
+  confirmNotStolen: z.boolean().optional(),
+});

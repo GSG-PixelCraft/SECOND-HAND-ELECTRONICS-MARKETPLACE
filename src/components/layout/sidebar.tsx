@@ -30,14 +30,6 @@ export const Sidebar = () => {
           </NavLink>
         </nav>
       </div>
-      <div className="rounded-3xl bg-slate-900 px-5 py-6 text-white">
-        <p className="text-sm font-semibold">Key Features</p>
-        <ul className="mt-3 space-y-2 text-xs text-slate-200">
-          <li>Trusted Marketplace</li>
-          <li>Fast Shipping</li>
-          <li>24/7 Support</li>
-        </ul>
-      </div>
     </aside>
   );
 };
