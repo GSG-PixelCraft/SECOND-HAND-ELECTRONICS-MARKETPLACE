@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
 import Container from "./Container";
-import Card from "../ui/Card";
 
 interface PageLayoutProps {
   title?: string;

@@ -1,3 +1,4 @@
+// Root component - Wrap with all providers
 import { RouterProvider } from "react-router-dom";
 import { AppErrorBoundary } from "@/components/AppErrorBoundary";
 import { QueryProvider } from "@/providers";

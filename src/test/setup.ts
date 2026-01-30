@@ -1,7 +1,7 @@
-// // Test environment setup
-// import "@testing-library/jest-dom";
-// import { server } from "./mocks/server";
+// Test environment setup
+import "@testing-library/jest-dom";
+import { server } from "./mocks/server";
 
-// beforeAll(() => server.listen());
-// afterEach(() => server.resetHandlers());
-// afterAll(() => server.close());
+beforeAll(() => server.listen());
+afterEach(() => server.resetHandlers());
+afterAll(() => server.close());
