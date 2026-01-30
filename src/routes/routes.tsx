@@ -3,7 +3,6 @@ import { AppLoading } from "@/components/feedback/loading/app-loading";
 import { AppLayout } from "@/components/layout/app-layout";
 import { AdminLayout } from "@/components/layout/admin-layout";
 import { AuthGuard, RoleGuard } from "./guards";
-import PageLayout from "@/components/layout/PageLayout";
 import UnexpectedErrorPage from "@/pages/UnexpectedPage/UnexpectedPage";
 
 // Route configuration arrays
@@ -41,38 +40,70 @@ const publicRoutes = [
   },
 ];
 
-const simpleScreenRoutes = [
+const publicSimpleRoutes = [
   {
     path: "/forgot-password/email",
-    title: "Forgot password (email)",
+    lazy: async () => {
+      const { default: ForgotPasswordEmailPage } =
+        await import("@/pages/ForgotPasswordEmailPage/ForgotPasswordEmailPage");
+      return { Component: ForgotPasswordEmailPage };
+    },
   },
   {
     path: "/forgot-password/phone",
-    title: "Forgot password (phone)",
+    lazy: async () => {
+      const { default: ForgotPasswordPhonePage } =
+        await import("@/pages/ForgotPasswordPhonePage/ForgotPasswordPhonePage");
+      return { Component: ForgotPasswordPhonePage };
+    },
   },
   {
     path: "/otp/email",
-    title: "OTP (email)",
+    lazy: async () => {
+      const { default: OtpEmailPage } =
+        await import("@/pages/OtpEmailPage/OtpEmailPage");
+      return { Component: OtpEmailPage };
+    },
   },
   {
     path: "/otp/phone",
-    title: "OTP (phone)",
+    lazy: async () => {
+      const { default: OtpPhonePage } =
+        await import("@/pages/OtpPhonePage/OtpPhonePage");
+      return { Component: OtpPhonePage };
+    },
   },
   {
     path: "/search",
-    title: "Search",
+    lazy: async () => {
+      const { default: SearchPage } =
+        await import("@/pages/SearchPage/SearchPage");
+      return { Component: SearchPage };
+    },
   },
   {
     path: "/recent-listings",
-    title: "Recent listings",
+    lazy: async () => {
+      const { default: RecentListingsPage } =
+        await import("@/pages/RecentListingsPage/RecentListingsPage");
+      return { Component: RecentListingsPage };
+    },
   },
   {
     path: "/profile/:id",
-    title: "Public profile",
+    lazy: async () => {
+      const { default: PublicProfilePage } =
+        await import("@/pages/PublicProfilePage/PublicProfilePage");
+      return { Component: PublicProfilePage };
+    },
   },
   {
     path: "/verify",
-    title: "Verify",
+    lazy: async () => {
+      const { default: VerifyPage } =
+        await import("@/pages/VerifyPage/VerifyPage");
+      return { Component: VerifyPage };
+    },
   },
 ];
 
@@ -87,7 +118,11 @@ const protectedRoutes = [
   },
   {
     path: "/change-password",
-    title: "Change password",
+    lazy: async () => {
+      const { default: ChangePasswordPage } =
+        await import("@/pages/ChangePasswordPage/ChangePasswordPage");
+      return { Component: ChangePasswordPage };
+    },
   },
   {
     path: "/chat",
@@ -98,27 +133,51 @@ const protectedRoutes = [
   },
   {
     path: "/blocked-users",
-    title: "Blocked users",
+    lazy: async () => {
+      const { default: BlockedUsersPage } =
+        await import("@/pages/BlockedUsersPage/BlockedUsersPage");
+      return { Component: BlockedUsersPage };
+    },
   },
   {
     path: "/my-listings",
-    title: "All my listings",
+    lazy: async () => {
+      const { default: MyListingsPage } =
+        await import("@/pages/MyListingsPage/MyListingsPage");
+      return { Component: MyListingsPage };
+    },
   },
   {
     path: "/my-listings/category/:category",
-    title: "Listings by category",
+    lazy: async () => {
+      const { default: MyListingsPage } =
+        await import("@/pages/MyListingsPage/MyListingsPage");
+      return { Component: MyListingsPage };
+    },
   },
   {
     path: "/listings/new",
-    title: "Add listing",
+    lazy: async () => {
+      const { default: AddListingPage } =
+        await import("@/pages/AddListingPage/AddListingPage");
+      return { Component: AddListingPage };
+    },
   },
   {
     path: "/favorites",
-    title: "Favorites",
+    lazy: async () => {
+      const { default: FavoritesPage } =
+        await import("@/pages/FavoritesPage/FavoritesPage");
+      return { Component: FavoritesPage };
+    },
   },
   {
     path: "/notifications",
-    title: "Notifications",
+    lazy: async () => {
+      const { NotificationsPage } =
+        await import("@/pages/NotificationsPage/NotificationPage");
+      return { Component: NotificationsPage };
+    },
   },
 ];
 
@@ -141,14 +200,7 @@ export const router = createBrowserRouter([
     hydrateFallbackElement: <AppLoading />,
     children: [
       ...publicRoutes,
-      ...simpleScreenRoutes.map(({ path, title }) => ({
-        path,
-        element: (
-          <PageLayout title={title} maxWidth="4xl" showPlaceholder={true}>
-            {/* Placeholder content */}
-          </PageLayout>
-        ),
-      })),
+      ...publicSimpleRoutes,
       {
         element: (
           <AuthGuard>
@@ -156,23 +208,7 @@ export const router = createBrowserRouter([
           </AuthGuard>
         ),
         children: [
-          ...protectedRoutes.map((route) => {
-            if (route.lazy) {
-              return route;
-            }
-            return {
-              path: route.path,
-              element: (
-                <PageLayout
-                  title={route.title}
-                  maxWidth="3xl"
-                  showPlaceholder={true}
-                >
-                  {/* Placeholder content */}
-                </PageLayout>
-              ),
-            };
-          }),
+          ...protectedRoutes,
           {
             path: "/admin",
             element: (
