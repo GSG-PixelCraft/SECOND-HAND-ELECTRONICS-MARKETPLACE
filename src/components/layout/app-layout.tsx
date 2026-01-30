@@ -1,4 +1,4 @@
-// Main app layout with header, sidebar, footer
+// Main app layout with header and footer
 //Layout عام يلف أغلب الصفحات.
 // خصائصه
 
@@ -14,11 +14,9 @@ import { Footer } from "./footer";
 export const AppLayout = () => (
   <div className="flex min-h-screen flex-col bg-slate-50">
     <Header />
-    <div className="flex flex-1">
-      <main className="flex-1 px-6 py-8">
-        <Outlet />
-      </main>
-    </div>
+    <main className="flex-1 px-6 py-8">
+      <Outlet />
+    </main>
     <Footer />
   </div>
 );
