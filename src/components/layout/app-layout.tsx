@@ -1,4 +1,12 @@
-// Main app layout with header, sidebar, footer
+// Main app layout with header and footer
+//Layout عام يلف أغلب الصفحات.
+// خصائصه
+
+// لا API
+
+// لا state معقّد
+
+// فقط هيكل
 import { Outlet } from "react-router-dom";
 import { Header } from "./header";
 import { Footer } from "./footer";
