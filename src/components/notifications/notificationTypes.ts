@@ -7,6 +7,7 @@ export type NotificationType =
   | "listing_update"
   | "identity"
   | "order"
+  | "pending"
   | "system"
   | "warning"
   | "deleted";
@@ -74,7 +75,7 @@ export const MOCK_NOTIFICATIONS: NotificationItemData[] = [
   },
   {
     id: "4",
-    type: "order",
+    type: "pending",
     category: "listings",
     title: "Your listing under review",
     message:

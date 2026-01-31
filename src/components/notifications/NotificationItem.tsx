@@ -1,5 +1,6 @@
 import {
   Bell,
+  Clock,
   FileText,
   MessageCircle,
   Package,
@@ -34,13 +35,13 @@ const notificationConfig: Record<
     icon: MessageCircle,
     iconBg: "bg-[rgba(37,99,235,0.1)]",
     iconColor: "text-[#2563eb]",
-    itemBg: "bg-white",
+    itemBg: "bg-[rgba(37,99,235,0.05)]",
   },
   listing_update: {
     icon: FileText,
     iconBg: "bg-[rgba(37,99,235,0.1)]",
     iconColor: "text-[#2563eb]",
-    itemBg: "bg-[rgba(37,99,235,0.05)]",
+    itemBg: "bg-white",
   },
   identity: {
     icon: User,
@@ -54,6 +55,12 @@ const notificationConfig: Record<
     iconColor: "text-[#2563eb]",
     itemBg: "bg-white",
   },
+  pending: {
+    icon: Clock,
+    iconBg: "bg-[rgba(250,204,21,0.1)]",
+    iconColor: "text-[#facc15]",
+    itemBg: "bg-white",
+  },
   system: {
     icon: Bell,
     iconBg: "bg-[rgba(37,99,235,0.1)]",
@@ -64,7 +71,7 @@ const notificationConfig: Record<
     icon: SquareX,
     iconBg: "bg-[rgba(239,68,68,0.2)]",
     iconColor: "text-[#ef4444]",
-    itemBg: "bg-white",
+    itemBg: "bg-[rgba(37,99,235,0.05)]",
   },
   deleted: {
     icon: Trash,
@@ -88,12 +95,12 @@ export function NotificationItem({
 
   return (
     <div
-      className={cn("flex w-full items-center gap-3 p-4", config.itemBg)}
+      className={cn("flex w-full items-center gap-4 p-4", config.itemBg)}
       data-read={read}
     >
       <div
         className={cn(
-          "flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full",
+          "flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full p-2",
           config.iconBg,
         )}
       >
@@ -101,23 +108,23 @@ export function NotificationItem({
       </div>
 
       <div className="min-w-0 flex-1">
-        <div className="mb-2 flex items-center justify-between gap-4">
-          <h3 className="text-[14px] font-medium leading-[14px] text-[#3d3d3d]">
+        <div className="mb-2 flex items-center justify-between gap-10">
+          <h3 className="font-['Poppins'] text-[16px] font-medium leading-normal text-[#3d3d3d]">
             {title}
           </h3>
-          <span className="flex-shrink-0 whitespace-nowrap text-[12px] leading-[12px] text-[#828282]">
+          <span className="flex-shrink-0 whitespace-nowrap font-['Poppins'] text-[14px] font-normal leading-normal text-[#828282]">
             {timestamp}
           </span>
         </div>
 
-        <p className="text-[12px] leading-[14px] text-[#828282]">
+        <p className="font-['Poppins'] text-[14px] font-normal leading-normal text-[#828282]">
           {message}
           {actionLabel && (
             <>
               {" "}
               <button
                 onClick={onAction}
-                className="font-medium text-[#212121] hover:underline"
+                className="font-['Poppins'] font-medium text-[#212121] hover:underline"
                 type="button"
               >
                 {actionLabel}
