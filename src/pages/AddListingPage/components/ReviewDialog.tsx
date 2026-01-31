@@ -56,12 +56,20 @@ export const ReviewDialog: React.FC<ReviewDialogProps> = ({
   handleSubmit,
 }): React.ReactElement => {
   const { t } = useTranslation();
-  const mainImage = photos[0]?.url ?? fallbackImage;
+  const [currentSlide, setCurrentSlide] = React.useState(0);
+
+  const mainImage = photos[currentSlide]?.url ?? fallbackImage;
+
+  const handleNext = () => {
+    setCurrentSlide((prev) => (prev + 1) % photos.length);
+  };
+
+  const handlePrevious = () => {
+    setCurrentSlide((prev) => (prev - 1 + photos.length) % photos.length);
+  };
   const coordinates = locationCoordinates ?? { lat: 31.5017, lng: 34.4668 };
   const locationLabel = values.location || "Gaza, Palestine";
   const priceLabel = values.price ? `${values.price} ILS` : "—";
-  const dotsAsset =
-    "http://localhost:3845/assets/4fae76f8424aedc71006e4b7fbb2de8101ecdd08.svg";
   const categoryLabel = values.category
     ? t(`addListing.categories.${values.category}`, {
         defaultValue: values.category,
@@ -122,6 +130,8 @@ export const ReviewDialog: React.FC<ReviewDialogProps> = ({
                 type="button"
                 className="absolute left-6 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white shadow-[0px_1px_4px_0px_rgba(255,255,255,0.3)]"
                 aria-label="Previous"
+                onClick={handlePrevious}
+                disabled={photos.length <= 1}
               >
                 <ChevronLeft className="h-5 w-5 text-[#3d3d3d]" />
               </button>
@@ -129,11 +139,25 @@ export const ReviewDialog: React.FC<ReviewDialogProps> = ({
                 type="button"
                 className="absolute right-6 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white shadow-[0px_1px_4px_0px_rgba(255,255,255,0.3)]"
                 aria-label="Next"
+                onClick={handleNext}
+                disabled={photos.length <= 1}
               >
                 <ChevronRight className="h-5 w-5 text-[#3d3d3d]" />
               </button>
-              <div className="absolute bottom-6 left-1/2 h-[10px] w-[61px] -translate-x-1/2">
-                <img src={dotsAsset} alt="" className="h-full w-full" />
+              <div className="absolute bottom-6 left-1/2 flex -translate-x-1/2 gap-2">
+                {photos.map((_, index) => (
+                  <button
+                    key={index}
+                    type="button"
+                    className={`h-2 rounded-full transition-all duration-200 ${
+                      index === currentSlide
+                        ? "w-6 bg-white"
+                        : "w-2 bg-white/50"
+                    }`}
+                    aria-label={`Go to slide ${index + 1}`}
+                    onClick={() => setCurrentSlide(index)}
+                  />
+                ))}
               </div>
             </div>
 
