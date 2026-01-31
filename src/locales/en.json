@@ -1,0 +1,37 @@
+{
+  "chats": {
+    "title": "Chats",
+    "sectionLabel": "Chats panel",
+    "searchLabel": "Search chats",
+    "searchPlaceholder": "Search ...",
+    "actions": {
+      "more": "More options"
+    },
+    "tabs": {
+      "all": "All",
+      "unread": "Unread",
+      "buying": "Buying",
+      "selling": "Selling",
+      "archive": "Archive"
+    },
+    "avatarAlt": "User avatar",
+    "productAlt": "Product thumbnail",
+    "demo": {
+      "ahmadAli": "Ahmad Ali",
+      "ahmedSami": "Ahmed Sami",
+      "omarAli": "Omar Ali",
+      "mohammedSaid": "Mohammed Said",
+      "messageAvailable": "Is it still available?",
+      "messageAvailableLong": "I want to know if it is still available?",
+      "messageMeet": "Where can we meet?",
+      "messageTomorrow": "We can definitely meet tomorrow",
+      "time1h": "1hr",
+      "time28m": "28m",
+      "time1w": "1w",
+      "productCanon": "Canon EOS M50",
+      "productDell": "Dell XPS 15",
+      "productRedmi": "Redmi Note 12",
+      "productIphone": "iPhone 13 Pro Max"
+    }
+  }
+}
