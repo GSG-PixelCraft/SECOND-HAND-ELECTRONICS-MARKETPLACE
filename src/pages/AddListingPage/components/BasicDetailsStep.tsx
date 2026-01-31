@@ -1,12 +1,13 @@
 // src/pages/AddListingPage/components/BasicDetailsStep.tsx
 import * as React from "react";
+import { useState } from "react";
 import type { UseFormRegister, FieldErrors } from "react-hook-form";
-import { useTranslation } from "react-i18next";
-import { Input } from "@/components/ui/input";
-import { Select } from "@/components/ui/select";
-import { FileUpload, type PhotoItem } from "@/components/ui/file-upload";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Button } from "@/components/ui/button";
+import { Info, Plus, X } from "lucide-react";
+import { type PhotoItem } from "@/components/ui/file-upload";
+
+interface PhotoItemWithProgress extends PhotoItem {
+  uploadProgress?: number;
+}
 
 interface ListingFormData {
   title: string;
@@ -26,8 +27,8 @@ interface ListingFormData {
 interface BasicDetailsStepProps {
   register: UseFormRegister<ListingFormData>;
   errors: FieldErrors<ListingFormData>;
-  photos: PhotoItem[];
-  setPhotos: (photos: PhotoItem[]) => void;
+  photos: PhotoItemWithProgress[];
+  setPhotos: React.Dispatch<React.SetStateAction<PhotoItemWithProgress[]>>;
   photoError: string | null;
   setPhotoError: (error: string | null) => void;
   onTipsClick: () => void;
@@ -35,136 +36,635 @@ interface BasicDetailsStepProps {
 }
 
 const CATEGORIES = [
-  { value: "", labelKey: "addListing.fields.category.placeholder" },
-  { value: "phones", labelKey: "addListing.categories.phones" },
-  { value: "tablets", labelKey: "addListing.categories.tablets" },
-  { value: "laptops", labelKey: "addListing.categories.laptops" },
-  { value: "pc-parts", labelKey: "addListing.categories.pcParts" },
-  { value: "gaming", labelKey: "addListing.categories.gaming" },
-  { value: "audio", labelKey: "addListing.categories.audio" },
-  { value: "accessories", labelKey: "addListing.categories.accessories" },
+  { value: "phones", label: "Phones" },
+  { value: "tablets", label: "Tablets" },
+  { value: "laptops", label: "Laptops" },
+  { value: "pc-parts", label: "PC Parts" },
+  { value: "gaming", label: "Gaming" },
+  { value: "audio", label: "Audio" },
+  { value: "accessories", label: "Accessories" },
 ];
 
 const CONDITIONS = [
-  { value: "", labelKey: "addListing.fields.condition.placeholder" },
-  { value: "new", labelKey: "addListing.conditions.new" },
-  { value: "like-new", labelKey: "addListing.conditions.likeNew" },
-  { value: "excellent", labelKey: "addListing.conditions.excellent" },
-  { value: "good", labelKey: "addListing.conditions.good" },
-  { value: "fair", labelKey: "addListing.conditions.fair" },
+  { value: "new", label: "New" },
+  { value: "like-new", label: "Like New" },
+  { value: "excellent", label: "Excellent" },
+  { value: "good", label: "Good" },
+  { value: "fair", label: "Fair" },
 ];
 
 export const BasicDetailsStep: React.FC<BasicDetailsStepProps> = ({
   register,
-  errors,
   photos,
   setPhotos,
-  photoError,
   setPhotoError,
   onTipsClick,
   onNext,
 }): React.ReactElement => {
-  const { t } = useTranslation();
+  const [categoryOpen, setCategoryOpen] = useState(false);
+  const [conditionOpen, setConditionOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState("Phones");
+  const [selectedCondition, setSelectedCondition] = useState("Like New");
+  const [draggingPhotoId, setDraggingPhotoId] = useState<string | null>(null);
+  const [dragOverPhotoId, setDragOverPhotoId] = useState<string | null>(null);
+
+  // Simulate file upload with progress
+  const simulateUpload = (photo: PhotoItemWithProgress) => {
+    let progress = 0;
+    const interval = setInterval(() => {
+      progress += 10;
+      if (progress <= 100) {
+        setPhotos((prevPhotos) =>
+          prevPhotos.map((p) =>
+            p.id === photo.id ? { ...p, uploadProgress: progress } : p,
+          ),
+        );
+      } else {
+        clearInterval(interval);
+        // Remove progress after upload completes
+        setPhotos((prevPhotos) =>
+          prevPhotos.map((p) =>
+            p.id === photo.id ? { ...p, uploadProgress: undefined } : p,
+          ),
+        );
+      }
+    }, 100);
+  };
+
+  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+
+    const remainingSlots = Math.max(0, 6 - photos.length);
+    const nextFiles = Array.from(files).slice(0, remainingSlots);
+    const newPhotos: PhotoItemWithProgress[] = nextFiles.map((file) => ({
+      id: crypto.randomUUID(),
+      url: URL.createObjectURL(file),
+      file,
+      uploadProgress: 0,
+    }));
+
+    setPhotos((prevPhotos) => [...prevPhotos, ...newPhotos]);
+    setPhotoError(null);
+
+    // Start upload simulation for each new photo
+    newPhotos.forEach((photo) => simulateUpload(photo));
+    e.target.value = "";
+  };
+
+  const handleRemovePhoto = (id: string) => {
+    const photo = photos.find((p) => p.id === id);
+    if (photo) {
+      URL.revokeObjectURL(photo.url);
+    }
+    setPhotos((prevPhotos) => prevPhotos.filter((p) => p.id !== id));
+  };
+
+  const handleReorder = (dragId: string, hoverId: string) => {
+    if (dragId === hoverId) return;
+    setPhotos((prevPhotos) => {
+      const dragIndex = prevPhotos.findIndex((p) => p.id === dragId);
+      const hoverIndex = prevPhotos.findIndex((p) => p.id === hoverId);
+      if (dragIndex < 0 || hoverIndex < 0) return prevPhotos;
+      const next = [...prevPhotos];
+      const [moved] = next.splice(dragIndex, 1);
+      next.splice(hoverIndex, 0, moved);
+      return next;
+    });
+  };
 
   return (
-    <div className="space-y-8">
-      <FileUpload
-        photos={photos}
-        maxPhotos={8}
-        maxPhotoSize={5 * 1024 * 1024}
-        onPhotosChange={setPhotos}
-        error={photoError}
-        onErrorChange={setPhotoError}
-        emptyTitle={t("addListing.photos.emptyTitle")}
-        emptyHint={t("addListing.photos.emptyHint")}
-        addMoreLabel={t("addListing.photos.addMore")}
-        mainLabel={t("addListing.photos.main")}
-        helperText={t("addListing.photos.helper")}
-        tipsLabel={t("addListing.photos.label")}
-        onTipsClick={onTipsClick}
-      />
+    <div className="flex w-full flex-col gap-6">
+      {/* Photos */}
+      <div className="flex w-full flex-col gap-2">
+        <div className="flex w-full items-center gap-2">
+          <div className="flex flex-1 items-center gap-2">
+            <p className="font-['Poppins'] text-base leading-normal text-[#101010]">
+              Photos
+            </p>
+            <div className="flex flex-col items-center justify-center text-center leading-[0]">
+              <p className="font-['Poppins'] text-sm leading-normal text-[#ef4444]">
+                *
+              </p>
+            </div>
+          </div>
+          <div
+            className="flex shrink-0 cursor-pointer items-center justify-center gap-2"
+            onClick={onTipsClick}
+          >
+            <Info className="size-4 text-[#828282]" />
+            <p className="text-right font-['Poppins'] text-base leading-normal text-[#828282]">
+              Tips
+            </p>
+          </div>
+        </div>
+        <div className="flex w-full flex-col gap-2">
+          <div className="flex w-full gap-6 rounded-[10px] border border-dashed border-[#e4e4e4] bg-white p-3">
+            {/* Add photo button */}
+            {photos.length < 6 && (
+              <label className="flex h-[196px] w-[170px] shrink-0 cursor-pointer items-center justify-center rounded-[10px] border border-solid border-[#e4e4e4] bg-white">
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  className="hidden"
+                  onChange={handlePhotoUpload}
+                />
+                <Plus className="size-10 text-[#828282]" />
+              </label>
+            )}
 
-      <Input
-        id="title"
-        label={`${t("addListing.fields.title.label")} *`}
-        placeholder={t("addListing.fields.title.placeholder")}
-        helperText={t("addListing.fields.title.helper")}
-        error={errors.title?.message}
-        {...register("title")}
-      />
+            {/* Photo previews */}
+            {photos.map((photo, index) => (
+              <div
+                key={photo.id}
+                className={`relative h-[196px] w-[170px] shrink-0 rounded-[10px] transition-all duration-150 ${
+                  draggingPhotoId === photo.id
+                    ? "scale-[0.98] opacity-80 shadow-[0_12px_30px_rgba(0,0,0,0.18)]"
+                    : "hover:shadow-[0_8px_20px_rgba(0,0,0,0.12)]"
+                } ${dragOverPhotoId === photo.id ? "ring-2 ring-[#2563eb] ring-offset-2 ring-offset-white" : ""} cursor-grab active:cursor-grabbing`}
+                draggable
+                onDragStart={(event) => {
+                  setDraggingPhotoId(photo.id);
+                  event.dataTransfer.effectAllowed = "move";
+                  event.dataTransfer.setData("text/plain", photo.id);
+                }}
+                onDragEnter={() => setDragOverPhotoId(photo.id)}
+                onDragLeave={() =>
+                  setDragOverPhotoId((prev) =>
+                    prev === photo.id ? null : prev,
+                  )
+                }
+                onDragOver={(event) => {
+                  event.preventDefault();
+                  event.dataTransfer.dropEffect = "move";
+                }}
+                onDrop={(event) => {
+                  event.preventDefault();
+                  const dragId = event.dataTransfer.getData("text/plain");
+                  if (dragId) {
+                    handleReorder(dragId, photo.id);
+                  }
+                  setDraggingPhotoId(null);
+                  setDragOverPhotoId(null);
+                }}
+                onDragEnd={() => {
+                  setDraggingPhotoId(null);
+                  setDragOverPhotoId(null);
+                }}
+              >
+                <img
+                  src={photo.url}
+                  alt={`Photo ${index + 1}`}
+                  className="size-full rounded-[10px] object-cover"
+                />
+                {/* Dark overlay for uploading state */}
+                {photo.uploadProgress !== undefined &&
+                  photo.uploadProgress < 100 && (
+                    <div className="absolute inset-0 rounded-[10px] bg-[rgba(0,0,0,0.75)]">
+                      {/* Progress ring */}
+                      <div className="absolute left-1/2 top-1/2 size-11 -translate-x-1/2 -translate-y-1/2">
+                        <div className="absolute inset-[4.55%_6.57%] aspect-square">
+                          <svg
+                            className="size-full"
+                            viewBox="0 0 32 32"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <circle
+                              cx="16"
+                              cy="16"
+                              r="14"
+                              fill="none"
+                              stroke="rgba(255,255,255,0.3)"
+                              strokeWidth="2"
+                            />
+                            <circle
+                              cx="16"
+                              cy="16"
+                              r="14"
+                              fill="none"
+                              stroke="white"
+                              strokeWidth="2"
+                              strokeDasharray="87.96"
+                              strokeDashoffset={
+                                87.96 - (87.96 * photo.uploadProgress) / 100
+                              }
+                              strokeLinecap="round"
+                              transform="rotate(-90 16 16)"
+                            />
+                          </svg>
+                        </div>
+                        <p className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-center font-['Poppins'] text-xs leading-normal text-white">
+                          {photo.uploadProgress}%
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                {/* Delete button */}
+                <button
+                  type="button"
+                  onClick={() => handleRemovePhoto(photo.id)}
+                  className="absolute left-2 top-2 z-10"
+                >
+                  <div className="flex size-6 items-center justify-center rounded-[6px] bg-white">
+                    <X className="size-4 text-[#525252]" />
+                  </div>
+                </button>
+                {/* Main badge */}
+                {index === 0 && (
+                  <div className="absolute bottom-2 left-2 flex items-center justify-center rounded-[8px] bg-[#2563eb] px-3 py-1">
+                    <p className="font-['Poppins'] text-sm leading-normal text-white">
+                      Main
+                    </p>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+          <p className="w-full whitespace-pre-wrap font-['Poppins'] text-sm leading-normal text-[#828282]">
+            Add up to 6 photos.{"\n"}The first photo will be the main photo.
+            Drag and drop photos to different positions to change their order
+          </p>
+        </div>
+      </div>
 
-      <div className="flex flex-col gap-2">
+      {/* Title */}
+      <div className="flex w-full flex-col gap-2">
+        <div className="flex w-full items-center gap-2">
+          <p className="font-['Poppins'] text-base leading-normal text-[#212121]">
+            Title
+          </p>
+          <div className="flex flex-col items-center justify-center text-center leading-[0]">
+            <p className="font-['Poppins'] text-sm leading-normal text-[#ef4444]">
+              *
+            </p>
+          </div>
+        </div>
+        <div className="flex w-full flex-col gap-1">
+          <div className="flex w-full items-center gap-2.5 rounded-[10px] border border-solid border-[#e4e4e4] bg-white p-4">
+            <input
+              type="text"
+              placeholder="iPhone 11 Pro Max"
+              defaultValue="iPhone 11 Pro Max"
+              className="flex-1 whitespace-pre-wrap font-['Poppins'] text-base leading-normal text-[#3d3d3d] outline-none placeholder:text-[#c7c7c7]"
+              {...register("title")}
+            />
+          </div>
+          <p className="w-full whitespace-pre-wrap font-['Poppins'] text-sm leading-normal text-[#828282]">
+            Describe what you're selling in a few words
+          </p>
+        </div>
+      </div>
+
+      {/* Category */}
+      <div className="relative flex w-full flex-col gap-2">
+        <div className="flex w-full items-center gap-2">
+          <p className="font-['Poppins'] text-base leading-normal text-[#212121]">
+            Category
+          </p>
+          <div className="flex flex-col items-center justify-center text-center leading-[0]">
+            <p className="font-['Poppins'] text-sm leading-normal text-[#ef4444]">
+              *
+            </p>
+          </div>
+        </div>
+        <div className="flex w-full flex-col gap-1">
+          <button
+            type="button"
+            onClick={() => setCategoryOpen(!categoryOpen)}
+            className="flex w-full items-center gap-2.5 rounded-[10px] border border-solid border-[#e4e4e4] bg-white p-4 text-left"
+          >
+            <p
+              className={`flex-1 whitespace-pre-wrap font-['Poppins'] text-base leading-normal ${
+                selectedCategory ? "text-[#3d3d3d]" : "text-[#c7c7c7]"
+              }`}
+            >
+              {selectedCategory || "Select category"}
+            </p>
+            <svg
+              className="size-6 shrink-0"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M19 9L12 15L5 9"
+                stroke="#828282"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
+
+          {/* Category Dropdown - appears below the input */}
+          {categoryOpen && (
+            <div className="relative z-10 flex h-[320px] w-full gap-2.5 overflow-clip rounded-xl border border-solid border-[#e4e4e4] bg-white p-4 pr-6">
+              <div className="flex flex-1 flex-col gap-4">
+                {/* Search */}
+                <div className="flex w-full items-center gap-3 rounded-xl border border-solid border-[#e4e4e4] bg-white p-4">
+                  <svg
+                    className="size-6 shrink-0"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z"
+                      stroke="#828282"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <path
+                      d="M21 21L16.65 16.65"
+                      stroke="#828282"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                  <input
+                    type="text"
+                    placeholder="Search about country"
+                    className="flex-1 whitespace-pre-wrap font-['Poppins'] text-base leading-normal text-[#3d3d3d] outline-none placeholder:text-[#c7c7c7]"
+                  />
+                </div>
+
+                {/* Options */}
+                <div className="flex flex-col gap-3 overflow-y-auto">
+                  {CATEGORIES.map((category) => (
+                    <button
+                      key={category.value}
+                      type="button"
+                      onClick={() => {
+                        setSelectedCategory(category.label);
+                        setCategoryOpen(false);
+                      }}
+                      className={`flex w-full items-center gap-2.5 rounded-xl border border-solid px-4 py-3 ${
+                        category.value === "phones"
+                          ? "border-[#2563eb] bg-white"
+                          : "border-[#e4e4e4] bg-white"
+                      }`}
+                    >
+                      <p
+                        className={`flex-1 whitespace-pre-wrap text-left font-['Poppins'] text-base leading-normal ${
+                          category.value === "phones"
+                            ? "text-[#3d3d3d]"
+                            : "text-[#828282]"
+                        }`}
+                      >
+                        {category.label}
+                      </p>
+                      <div className="relative size-6 overflow-clip">
+                        {category.value === "phones" ? (
+                          <svg
+                            className="size-full"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <circle
+                              cx="12"
+                              cy="12"
+                              r="9"
+                              fill="#2563eb"
+                              stroke="#2563eb"
+                              strokeWidth="2"
+                            />
+                            <circle cx="12" cy="12" r="4" fill="white" />
+                          </svg>
+                        ) : (
+                          <svg
+                            className="size-full"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <circle
+                              cx="12"
+                              cy="12"
+                              r="9"
+                              stroke="#828282"
+                              strokeWidth="2"
+                              fill="none"
+                            />
+                          </svg>
+                        )}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Scrollbar */}
+              <div className="absolute right-[6px] top-[88px] h-[221px] w-2.5 rounded-[10px] bg-[rgba(107,114,128,0.1)]">
+                <div className="h-[34.938px] w-full rounded-[10px] bg-[#c7c7c7]" />
+              </div>
+            </div>
+          )}
+
+          <p className="font-['Poppins'] text-sm leading-normal text-[#828282]">
+            Fields on next step will be customized based on category
+          </p>
+        </div>
+      </div>
+
+      {/* Condition */}
+      <div className="relative flex w-full flex-col gap-2">
+        <div className="flex w-full items-center gap-2">
+          <p className="font-['Poppins'] text-base leading-normal text-[#212121]">
+            Condition
+          </p>
+          <div className="flex flex-col items-center justify-center text-center leading-[0]">
+            <p className="font-['Poppins'] text-sm leading-normal text-[#ef4444]">
+              *
+            </p>
+          </div>
+        </div>
+        <div className="flex w-full flex-col gap-1">
+          <button
+            type="button"
+            onClick={() => setConditionOpen(!conditionOpen)}
+            className="flex w-full items-center gap-2.5 rounded-[10px] border border-solid border-[#e4e4e4] bg-white p-4 text-left"
+          >
+            <p
+              className={`flex-1 whitespace-pre-wrap font-['Poppins'] text-base leading-normal ${
+                selectedCondition ? "text-[#3d3d3d]" : "text-[#c7c7c7]"
+              }`}
+            >
+              {selectedCondition || "Select your item condition"}
+            </p>
+            <svg
+              className="size-6 shrink-0"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M19 9L12 15L5 9"
+                stroke="#828282"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
+
+          {/* Condition Dropdown - appears below the input (no search) */}
+          {conditionOpen && (
+            <div className="relative z-10 flex w-full gap-2.5 overflow-clip rounded-xl border border-solid border-[#e4e4e4] bg-white p-4 pr-6">
+              <div className="flex flex-1 flex-col gap-3">
+                {/* Options */}
+                {CONDITIONS.map((condition) => (
+                  <button
+                    key={condition.value}
+                    type="button"
+                    onClick={() => {
+                      setSelectedCondition(condition.label);
+                      setConditionOpen(false);
+                    }}
+                    className={`flex w-full items-center gap-2.5 rounded-xl border border-solid px-4 py-3 ${
+                      selectedCondition === condition.label
+                        ? "border-[#2563eb] bg-white"
+                        : "border-[#e4e4e4] bg-white"
+                    }`}
+                  >
+                    <p
+                      className={`flex-1 whitespace-pre-wrap text-left font-['Poppins'] text-base leading-normal ${
+                        selectedCondition === condition.label
+                          ? "text-[#3d3d3d]"
+                          : "text-[#828282]"
+                      }`}
+                    >
+                      {condition.label}
+                    </p>
+                    <div className="relative size-6 overflow-clip">
+                      {selectedCondition === condition.label ? (
+                        <svg
+                          className="size-full"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <circle
+                            cx="12"
+                            cy="12"
+                            r="9"
+                            fill="#2563eb"
+                            stroke="#2563eb"
+                            strokeWidth="2"
+                          />
+                          <circle cx="12" cy="12" r="4" fill="white" />
+                        </svg>
+                      ) : (
+                        <svg
+                          className="size-full"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <circle
+                            cx="12"
+                            cy="12"
+                            r="9"
+                            stroke="#828282"
+                            strokeWidth="2"
+                            fill="none"
+                          />
+                        </svg>
+                      )}
+                    </div>
+                  </button>
+                ))}
+              </div>
+
+              {/* Scrollbar */}
+              {CONDITIONS.length > 5 && (
+                <div className="absolute right-[6px] top-[16px] h-[calc(100%-32px)] w-2.5 rounded-[10px] bg-[rgba(107,114,128,0.1)]">
+                  <div className="h-[34.938px] w-full rounded-[10px] bg-[#c7c7c7]" />
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Price */}
+      <div className="flex w-full flex-col gap-2">
+        <div className="flex w-full items-center gap-2">
+          <p className="font-['Poppins'] text-base leading-normal text-[#212121]">
+            Price
+          </p>
+          <div className="flex flex-col items-center justify-center text-center leading-[0]">
+            <p className="font-['Poppins'] text-sm leading-normal text-[#ef4444]">
+              *
+            </p>
+          </div>
+        </div>
+        <div className="flex w-full flex-col gap-1">
+          <div className="flex w-full items-center gap-2.5 rounded-[10px] border border-solid border-[#e4e4e4] bg-white p-4">
+            <input
+              type="text"
+              placeholder="1500"
+              defaultValue="1500"
+              className="flex-1 whitespace-pre-wrap font-['Poppins'] text-base leading-normal text-[#3d3d3d] outline-none placeholder:text-[#c7c7c7]"
+              {...register("price", { valueAsNumber: true })}
+            />
+            <p className="text-right font-['Poppins'] text-base leading-normal text-[#c7c7c7]">
+              ILS
+            </p>
+          </div>
+          <p className="font-['Poppins'] text-sm leading-normal text-[#828282]">
+            Set a competitive price
+          </p>
+        </div>
+      </div>
+
+      {/* Price is negotiable checkbox */}
+      <div className="flex w-full items-center gap-2">
+        <div className="relative size-6">
+          <input
+            type="checkbox"
+            id="isNegotiable"
+            defaultChecked
+            className="peer size-6 cursor-pointer appearance-none rounded-md border border-[#e4e4e4] checked:border-[#2563eb] checked:bg-[#2563eb]"
+            {...register("isNegotiable")}
+          />
+          <svg
+            className="pointer-events-none absolute inset-0 hidden size-full p-1 text-white peer-checked:block"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="3"
+              d="M5 13l4 4L19 7"
+            />
+          </svg>
+        </div>
         <label
-          htmlFor="category"
-          className="text-label text-neutral-foreground"
+          htmlFor="isNegotiable"
+          className="cursor-pointer font-['Poppins'] text-lg leading-normal text-[#212121]"
         >
-          {t("addListing.fields.category.label")} *
+          Price is negotiable
         </label>
-        <Select
-          id="category"
-          aria-label={t("addListing.fields.category.label")}
-          intent={errors.category ? "error" : "default"}
-          helperText={t("addListing.fields.category.helper")}
-          error={errors.category?.message}
-          {...register("category")}
-        >
-          {CATEGORIES.map((cat) => (
-            <option key={cat.value} value={cat.value}>
-              {t(cat.labelKey)}
-            </option>
-          ))}
-        </Select>
       </div>
 
-      <div className="flex flex-col gap-2">
-        <label
-          htmlFor="condition"
-          className="text-label text-neutral-foreground"
-        >
-          {t("addListing.fields.condition.label")} *
-        </label>
-        <Select
-          id="condition"
-          aria-label={t("addListing.fields.condition.label")}
-          intent={errors.condition ? "error" : "default"}
-          error={errors.condition?.message}
-          {...register("condition")}
-        >
-          {CONDITIONS.map((cond) => (
-            <option key={cond.value} value={cond.value}>
-              {t(cond.labelKey)}
-            </option>
-          ))}
-        </Select>
-      </div>
-
-      <Input
-        id="price"
-        label={`${t("addListing.fields.price.label")} *`}
-        type="number"
-        step="0.01"
-        placeholder={t("addListing.fields.price.placeholder")}
-        helperText={t("addListing.fields.price.helper")}
-        error={errors.price?.message}
-        {...register("price", { valueAsNumber: true })}
-      />
-
-      <Checkbox
-        id="isNegotiable"
-        label={t("addListing.fields.price.negotiable")}
-        {...register("isNegotiable")}
-      />
-
-      <div className="flex items-center justify-center">
-        <Button
-          type="button"
-          size="lg"
-          className="w-full max-w-md"
-          onClick={onNext}
-        >
-          {t("addListing.buttons.next")}
-        </Button>
-      </div>
+      {/* Next Button */}
+      <button
+        type="button"
+        onClick={onNext}
+        className="flex h-14 w-[358px] items-center justify-center self-center rounded-xl bg-[#2563eb] px-[119px] py-4"
+      >
+        <div className="flex flex-col items-center justify-center text-center leading-[0]">
+          <p className="font-['Poppins'] text-base font-medium leading-normal text-white">
+            Next
+          </p>
+        </div>
+      </button>
     </div>
   );
 };

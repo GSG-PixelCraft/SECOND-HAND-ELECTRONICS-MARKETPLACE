@@ -5,8 +5,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useTranslation } from "react-i18next";
 import { listingSchema } from "@/components/forms/zod-schemas";
-import Container from "@/components/layout/Container";
-import { Button } from "@/components/ui/button";
 import { type PhotoItem } from "@/components/ui/file-upload";
 import { StepIndicator } from "./components/StepIndicator";
 import { BasicDetailsStep } from "./components/BasicDetailsStep";
@@ -17,13 +15,14 @@ import { ReviewDialog } from "./components/ReviewDialog";
 import { ConfirmationDialogs } from "./components/ConfirmationDialogs";
 
 type ListingFormData = z.infer<typeof listingSchema>;
+type PhotoItemWithProgress = PhotoItem & { uploadProgress?: number };
 
 const FALLBACK_IMAGE = new URL("../../images/Phone.jpg", import.meta.url).href;
 
 export default function AddListingPage(): React.ReactElement {
   const { t } = useTranslation();
   const [currentStep, setCurrentStep] = useState<1 | 2>(1);
-  const [photos, setPhotos] = useState<PhotoItem[]>([]);
+  const [photos, setPhotos] = useState<PhotoItemWithProgress[]>([]);
   const [photoError, setPhotoError] = useState<string | null>(null);
   const [tipsOpen, setTipsOpen] = useState(false);
   const [locationOpen, setLocationOpen] = useState(false);
@@ -83,45 +82,50 @@ export default function AddListingPage(): React.ReactElement {
   };
 
   return (
-    <Container maxWidth="4xl" className="pb-16">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <h1 className="text-h3 text-neutral-foreground">
-            {t("addListing.title")}
+    <div className="flex min-h-screen flex-col bg-white">
+      {/* Body */}
+      <div className="flex flex-col gap-8 px-24 pb-14 pt-10">
+        {/* Title */}
+        <div className="flex w-full items-center">
+          <h1 className="flex-1 whitespace-pre-wrap font-['Poppins'] text-2xl font-medium leading-normal text-[#212121]">
+            Add Listings
           </h1>
         </div>
-        <Button intent="outline" size="sm" onClick={() => setLeaveOpen(true)}>
-          {t("addListing.buttons.back")}
-        </Button>
+
+        <StepIndicator currentStep={currentStep} steps={steps} />
+
+        {/* Inputs container with centered max-width */}
+        <div className="flex w-full flex-col items-center px-[212px]">
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="flex w-full flex-col gap-6"
+          >
+            {currentStep === 1 && (
+              <BasicDetailsStep
+                register={register}
+                errors={errors}
+                photos={photos}
+                setPhotos={setPhotos}
+                photoError={photoError}
+                setPhotoError={setPhotoError}
+                onTipsClick={() => setTipsOpen(true)}
+                onNext={handleNextStep}
+              />
+            )}
+
+            {currentStep === 2 && (
+              <MoreDetailsStep
+                register={register}
+                errors={errors}
+                watch={watch}
+                onBack={handleBackStep}
+                onReview={handleReview}
+                onLocationClick={() => setLocationOpen(true)}
+              />
+            )}
+          </form>
+        </div>
       </div>
-
-      <StepIndicator currentStep={currentStep} steps={steps} />
-
-      <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-8">
-        {currentStep === 1 && (
-          <BasicDetailsStep
-            register={register}
-            errors={errors}
-            photos={photos}
-            setPhotos={setPhotos}
-            photoError={photoError}
-            setPhotoError={setPhotoError}
-            onTipsClick={() => setTipsOpen(true)}
-            onNext={handleNextStep}
-          />
-        )}
-
-        {currentStep === 2 && (
-          <MoreDetailsStep
-            register={register}
-            errors={errors}
-            watch={watch}
-            onBack={handleBackStep}
-            onReview={handleReview}
-            onLocationClick={() => setLocationOpen(true)}
-          />
-        )}
-      </form>
 
       <PhotoTipsDialog open={tipsOpen} onOpenChange={setTipsOpen} />
 
@@ -144,6 +148,6 @@ export default function AddListingPage(): React.ReactElement {
         setReviewSuccessOpen={setReviewSuccessOpen}
         isSending={isSending}
       />
-    </Container>
+    </div>
   );
 }

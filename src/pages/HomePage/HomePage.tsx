@@ -29,6 +29,13 @@ const HomePage = () => {
             >
               Sign Up
             </Link>
+            {/* TEMPORARY DEMO BUTTON */}
+            <Link
+              className="rounded-full bg-primary px-6 py-3 text-sm font-semibold text-white ring-2 ring-primary ring-offset-2 transition hover:bg-primary/90"
+              to={ROUTES.ADD_LISTING}
+            >
+              🎨 DEMO: Add Listing
+            </Link>
           </div>
         </div>
       </section>
