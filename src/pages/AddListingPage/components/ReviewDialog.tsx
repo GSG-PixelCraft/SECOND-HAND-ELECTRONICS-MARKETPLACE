@@ -5,7 +5,7 @@ import type { UseFormHandleSubmit } from "react-hook-form";
 import { Dialog } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { type PhotoItem } from "@/components/ui/file-upload";
-import { ChevronLeft, ChevronRight, MapPin } from "lucide-react";
+import { Check, ChevronLeft, ChevronRight, MapPin } from "lucide-react";
 import { MapContainer, Marker, TileLayer } from "react-leaflet";
 import L from "leaflet";
 import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
@@ -22,7 +22,7 @@ interface ListingFormData {
   storage: string;
   model: string;
   batteryHealth?: string;
-  description?: string;
+  description: string | undefined;
   location: string;
   isPickupAvailable?: boolean;
 }
@@ -60,16 +60,38 @@ export const ReviewDialog: React.FC<ReviewDialogProps> = ({
   const coordinates = locationCoordinates ?? { lat: 31.5017, lng: 34.4668 };
   const locationLabel = values.location || "Gaza, Palestine";
   const priceLabel = values.price ? `${values.price} ILS` : "—";
+  const dotsAsset =
+    "http://localhost:3845/assets/4fae76f8424aedc71006e4b7fbb2de8101ecdd08.svg";
+  const categoryLabel = values.category
+    ? t(`addListing.categories.${values.category}`, {
+        defaultValue: values.category,
+      })
+    : "—";
+  const brandLabel = values.brand
+    ? t(`addListing.brands.${values.brand}`, { defaultValue: values.brand })
+    : "—";
+  const storageLabel = values.storage
+    ? t(`addListing.storage.${values.storage}`, {
+        defaultValue: values.storage,
+      })
+    : "—";
+  const conditionLabel = values.condition || "New";
   const descriptionText =
     values.description ||
     "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ultricies nisl sit ut varius dapibus et interdum donecaccumsan risus erat Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ultricies nisl sit ut varius dapibus et interdum donecaccumsan risus erat...";
+
+  const handlePublish = handleSubmit(async (data) => {
+    onOpenChange(false);
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await onSubmit(data);
+  });
 
   return (
     <Dialog
       open={open}
       onOpenChange={onOpenChange}
       size="lg"
-      className="max-w-[1248px] overflow-hidden rounded-[20px] border border-neutral-20 p-0 shadow-xl backdrop:bg-black/85"
+      className="max-h-[90vh] w-[1340px] max-w-[1340px] overflow-y-auto rounded-[20px] border border-neutral-20 p-0 shadow-xl backdrop:bg-black/85"
     >
       <div className="flex items-center justify-between px-8 pb-2 pt-6">
         <div className="h-6 w-6 opacity-0" aria-hidden="true" />
@@ -79,7 +101,7 @@ export const ReviewDialog: React.FC<ReviewDialogProps> = ({
         <button
           type="button"
           onClick={() => onOpenChange(false)}
-          className="flex h-6 w-6 items-center justify-center rounded-md border border-neutral-20 text-sm"
+          className="flex h-6 w-6 items-center justify-center rounded-md border border-neutral-20 text-sm text-[#828282]"
           aria-label={t("common.close")}
         >
           ×
@@ -87,8 +109,8 @@ export const ReviewDialog: React.FC<ReviewDialogProps> = ({
       </div>
 
       <div className="flex flex-col gap-6 px-8 pb-8">
-        <div className="flex gap-6">
-          <div className="flex min-w-0 flex-1 flex-col gap-6">
+        <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
+          <div className="flex min-w-0 flex-col gap-6 xl:col-span-2">
             <div className="relative h-[645px] overflow-hidden rounded-[12px]">
               <img
                 src={mainImage}
@@ -110,13 +132,8 @@ export const ReviewDialog: React.FC<ReviewDialogProps> = ({
               >
                 <ChevronRight className="h-5 w-5 text-[#3d3d3d]" />
               </button>
-              <div className="absolute bottom-6 left-1/2 flex -translate-x-1/2 gap-2">
-                {[0, 1, 2, 3].map((index) => (
-                  <span
-                    key={index}
-                    className={`h-2 w-2 rounded-full ${index === 1 ? "bg-white" : "bg-white/50"}`}
-                  />
-                ))}
+              <div className="absolute bottom-6 left-1/2 h-[10px] w-[61px] -translate-x-1/2">
+                <img src={dotsAsset} alt="" className="h-full w-full" />
               </div>
             </div>
 
@@ -124,48 +141,44 @@ export const ReviewDialog: React.FC<ReviewDialogProps> = ({
               <h3 className="text-[18px] font-medium text-[#212121]">
                 Key features
               </h3>
-              <div className="mt-4 grid gap-4 sm:grid-cols-2">
-                <div className="flex items-center justify-between rounded-[12px] bg-[#14b8a6]/5 p-4 text-[16px]">
-                  <span className="text-[#828282]">
+              <div className="mt-4 grid gap-6 sm:grid-cols-2">
+                <div className="grid grid-cols-[1fr_auto] items-center gap-4 rounded-[12px] bg-[#14b8a6]/5 p-4 text-[16px]">
+                  <span className="min-w-0 text-[#828282]">
                     {t("addListing.fields.category.label")}
                   </span>
-                  <span className="text-[#3d3d3d]">
-                    {values.category
-                      ? t(`addListing.categories.${values.category}`)
-                      : "—"}
+                  <span className="text-right text-[#3d3d3d]">
+                    {categoryLabel}
                   </span>
                 </div>
-                <div className="flex items-center justify-between rounded-[12px] bg-white p-4 text-[16px]">
-                  <span className="text-[#828282]">
+                <div className="grid grid-cols-[1fr_auto] items-center gap-4 rounded-[12px] bg-white p-4 text-[16px]">
+                  <span className="min-w-0 text-[#828282]">
                     {t("addListing.fields.brand.label")}
                   </span>
-                  <span className="text-[#3d3d3d]">
-                    {values.brand
-                      ? t(`addListing.brands.${values.brand}`)
-                      : "—"}
+                  <span className="text-right text-[#3d3d3d]">
+                    {brandLabel}
                   </span>
                 </div>
-                <div className="flex items-center justify-between rounded-[12px] bg-white p-4 text-[16px]">
-                  <span className="text-[#828282]">
+                <div className="grid grid-cols-[1fr_auto] items-center gap-4 rounded-[12px] bg-white p-4 text-[16px]">
+                  <span className="min-w-0 text-[#828282]">
                     {t("addListing.fields.model.label")}
                   </span>
-                  <span className="text-[#3d3d3d]">{values.model || "—"}</span>
+                  <span className="text-right text-[#3d3d3d]">
+                    {values.model || "—"}
+                  </span>
                 </div>
-                <div className="flex items-center justify-between rounded-[12px] bg-[#14b8a6]/5 p-4 text-[16px]">
-                  <span className="text-[#828282]">
+                <div className="grid grid-cols-[1fr_auto] items-center gap-4 rounded-[12px] bg-[#14b8a6]/5 p-4 text-[16px]">
+                  <span className="min-w-0 text-[#828282]">
                     {t("addListing.fields.storage.label")}
                   </span>
-                  <span className="text-[#3d3d3d]">
-                    {values.storage
-                      ? t(`addListing.storage.${values.storage}`)
-                      : "—"}
+                  <span className="text-right text-[#3d3d3d]">
+                    {storageLabel}
                   </span>
                 </div>
-                <div className="flex items-center justify-between rounded-[12px] bg-[#14b8a6]/5 p-4 text-[16px]">
-                  <span className="text-[#828282]">
+                <div className="grid grid-cols-[1fr_auto] items-center gap-4 rounded-[12px] bg-[#14b8a6]/5 p-4 text-[16px]">
+                  <span className="min-w-0 text-[#828282]">
                     {t("addListing.fields.batteryHealth.label")}
                   </span>
-                  <span className="text-[#3d3d3d]">
+                  <span className="text-right text-[#3d3d3d]">
                     {values.batteryHealth || "—"}
                   </span>
                 </div>
@@ -208,7 +221,7 @@ export const ReviewDialog: React.FC<ReviewDialogProps> = ({
             </div>
           </div>
 
-          <div className="flex w-[400px] flex-col gap-6">
+          <div className="flex w-full flex-col gap-6 xl:col-span-1 xl:w-[400px]">
             <div className="rounded-[12px] border border-neutral-20 p-4">
               <div className="flex items-end gap-3">
                 <div className="flex-1">
@@ -227,11 +240,7 @@ export const ReviewDialog: React.FC<ReviewDialogProps> = ({
                   </div>
                 </div>
                 <span className="rounded-[12px] bg-primary px-4 py-2 text-[14px] text-white">
-                  {values.condition
-                    ? t(
-                        `addListing.conditions.${values.condition.replace("-", "")}`,
-                      )
-                    : t("addListing.fields.condition.label")}
+                  {conditionLabel}
                 </span>
               </div>
             </div>
@@ -244,6 +253,9 @@ export const ReviewDialog: React.FC<ReviewDialogProps> = ({
                     alt={t("addListing.reviewModal.seller")}
                     className="h-full w-full object-cover"
                   />
+                  <span className="absolute bottom-0 right-0 flex h-6 w-6 items-center justify-center rounded-[10px] bg-white">
+                    <Check className="h-4 w-4 text-[#22c55e]" />
+                  </span>
                 </div>
                 <div className="flex-1">
                   <p className="text-[18px] text-[#3d3d3d]">Eleanor Vance</p>
@@ -293,7 +305,7 @@ export const ReviewDialog: React.FC<ReviewDialogProps> = ({
           <Button
             type="button"
             className="h-[58px] w-[371px] rounded-[12px] text-[16px] font-medium"
-            onClick={handleSubmit(onSubmit)}
+            onClick={handlePublish}
           >
             {t("addListing.buttons.publish")}
           </Button>

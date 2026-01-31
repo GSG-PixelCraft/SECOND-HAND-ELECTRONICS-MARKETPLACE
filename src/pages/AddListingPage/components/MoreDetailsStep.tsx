@@ -19,7 +19,7 @@ interface ListingFormData {
   storage: string;
   model: string;
   batteryHealth?: string;
-  description?: string;
+  description: string | undefined;
   location: string;
   isPickupAvailable?: boolean;
 }
