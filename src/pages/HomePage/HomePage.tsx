@@ -1,6 +1,6 @@
 // Landing page
 import { Link } from "react-router-dom";
-import { ROUTES } from "@/constants/routes";
+import { ROUTES, getProductRoute } from "@/constants/routes";
 import { ChatsParts } from "@/components/chats/ChatsParts";
 
 const HomePage = () => {
@@ -36,6 +36,12 @@ const HomePage = () => {
               to={ROUTES.ADD_LISTING}
             >
               🎨 DEMO: Add Listing
+            </Link>
+            <Link
+              className="rounded-full border border-primary px-6 py-3 text-sm font-semibold text-primary transition hover:bg-primary/10"
+              to={`${getProductRoute("p-101")}?demo=1`}
+            >
+              🎨 DEMO: Product Details
             </Link>
           </div>
         </div>

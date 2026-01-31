@@ -21,6 +21,14 @@ export class AppErrorBoundary extends React.Component<
     return { hasError: true };
   }
 
+  componentDidCatch(error: Error, info: React.ErrorInfo) {
+    console.error("[AppErrorBoundary] Unhandled error", {
+      message: error.message,
+      stack: error.stack,
+      componentStack: info.componentStack,
+    });
+  }
+
   render() {
     if (this.state.hasError) {
       return (
