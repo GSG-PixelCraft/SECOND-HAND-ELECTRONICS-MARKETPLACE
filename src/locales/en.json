@@ -174,5 +174,50 @@
   "common": {
     "close": "Close",
     "searchPlaceholder": "Search ..."
+  },
+  "favorites": {
+    "pageTitle": "Favorites",
+    "heading": "My Favorites",
+    "subtitle": "Products you've saved for later",
+    "filterLabel": "Filter by Category",
+    "filters": {
+      "all": "All",
+      "phones": "Phones",
+      "laptops": "Laptops",
+      "tablets": "Tablets",
+      "accessories": "Accessories"
+    },
+    "empty": {
+      "title": "No favorites yet",
+      "body": "Tap the heart icon on products to save them here."
+    }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "tabs": {
+      "all": "All",
+      "listings": "Listings",
+      "chats": "Chats",
+      "general": "General & System"
+    },
+    "filters": {
+      "all": "All",
+      "unread": "Unread"
+    },
+    "sections": {
+      "today": "Today",
+      "yesterday": "Yesterday"
+    },
+    "actions": {
+      "openMenu": "Open notifications",
+      "moreOptions": "More options",
+      "markAllRead": "Mark all as read",
+      "settings": "Notification settings",
+      "openNotifications": "Open Notifications"
+    },
+    "empty": {
+      "title": "No notifications yet",
+      "body": "You'll see updates about your listings, messages, and account activity here."
+    }
   }
 }

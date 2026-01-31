@@ -1,6 +1,7 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
 import { useAuthStore } from "@/stores/useAuthStore";
+import { NotificationMenu } from "@/components/notifications/notificationMenu";
 
 const linkClassName = ({ isActive }: { isActive: boolean }) =>
   `rounded-full px-4 py-2 text-sm font-medium transition ${
@@ -52,6 +53,7 @@ export const Header = () => {
           </NavLink>
         </nav>
         <div className="flex items-center gap-3">
+          <NotificationMenu />
           {isAuthenticated ? (
             <button
               className="rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800"
