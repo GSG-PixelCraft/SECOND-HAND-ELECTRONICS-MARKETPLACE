@@ -17,32 +17,38 @@ export const StepIndicator: React.FC<StepIndicatorProps> = ({
           <React.Fragment key={step.id}>
             {index > 0 && (
               <div className="flex h-full shrink-0 items-center justify-center py-3">
-                <div className="h-0.5 w-[157px] rounded-[10px] bg-[#e4e4e4]" />
+                <div className="h-[2px] w-[157px] rounded-[10px] bg-[#e4e4e4]" />
               </div>
             )}
             <div className="flex shrink-0 items-center gap-2">
               <div
-                className={`flex size-8 shrink-0 items-center justify-center rounded-[30px] border border-solid px-[23px] py-[3px] ${
-                  step.id === currentStep
-                    ? "border-[#2563eb] bg-white"
-                    : "border-[rgba(37,99,235,0.1)] bg-white"
+                className={`flex size-8 shrink-0 items-center justify-center rounded-[30px] border border-solid ${
+                  step.id < currentStep
+                    ? "border-[#2563eb] bg-[#2563eb]"
+                    : "border-[#2563eb] bg-white"
                 }`}
               >
-                <p
-                  className={`font-['Poppins'] text-sm leading-normal ${
-                    step.id === currentStep
-                      ? "text-[#2563eb]"
-                      : "text-[#828282]"
-                  }`}
-                >
-                  {step.id}
-                </p>
+                {step.id < currentStep ? (
+                  <svg
+                    className="size-4 text-white"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="3"
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                ) : (
+                  <p className="font-['Poppins'] text-[14px] font-normal leading-normal text-[#2563eb]">
+                    {step.id}
+                  </p>
+                )}
               </div>
-              <p
-                className={`text-center font-['Poppins'] text-xl leading-normal ${
-                  step.id === currentStep ? "text-[#3d3d3d]" : "text-[#828282]"
-                }`}
-              >
+              <p className="text-center font-['Poppins'] text-[20px] font-normal leading-normal text-[#3d3d3d]">
                 {step.label}
               </p>
             </div>

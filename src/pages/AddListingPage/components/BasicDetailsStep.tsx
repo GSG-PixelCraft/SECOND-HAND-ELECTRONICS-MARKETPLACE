@@ -1,7 +1,11 @@
 // src/pages/AddListingPage/components/BasicDetailsStep.tsx
 import * as React from "react";
 import { useState } from "react";
-import type { UseFormRegister, FieldErrors } from "react-hook-form";
+import type {
+  UseFormRegister,
+  FieldErrors,
+  UseFormSetValue,
+} from "react-hook-form";
 import { Info, Plus, X } from "lucide-react";
 import { type PhotoItem } from "@/components/ui/file-upload";
 
@@ -26,6 +30,7 @@ interface ListingFormData {
 
 interface BasicDetailsStepProps {
   register: UseFormRegister<ListingFormData>;
+  setValue: UseFormSetValue<ListingFormData>;
   errors: FieldErrors<ListingFormData>;
   photos: PhotoItemWithProgress[];
   setPhotos: React.Dispatch<React.SetStateAction<PhotoItemWithProgress[]>>;
@@ -33,6 +38,7 @@ interface BasicDetailsStepProps {
   setPhotoError: (error: string | null) => void;
   onTipsClick: () => void;
   onNext: () => void;
+  isNextDisabled: boolean;
 }
 
 const CATEGORIES = [
@@ -55,16 +61,25 @@ const CONDITIONS = [
 
 export const BasicDetailsStep: React.FC<BasicDetailsStepProps> = ({
   register,
+  setValue,
   photos,
   setPhotos,
   setPhotoError,
   onTipsClick,
   onNext,
+  isNextDisabled,
 }): React.ReactElement => {
   const [categoryOpen, setCategoryOpen] = useState(false);
   const [conditionOpen, setConditionOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("Phones");
   const [selectedCondition, setSelectedCondition] = useState("Like New");
+  React.useEffect(() => {
+    setValue("category", selectedCategory, { shouldValidate: true });
+  }, [selectedCategory, setValue]);
+
+  React.useEffect(() => {
+    setValue("condition", selectedCondition, { shouldValidate: true });
+  }, [selectedCondition, setValue]);
   const [draggingPhotoId, setDraggingPhotoId] = useState<string | null>(null);
   const [dragOverPhotoId, setDragOverPhotoId] = useState<string | null>(null);
 
@@ -657,10 +672,17 @@ export const BasicDetailsStep: React.FC<BasicDetailsStepProps> = ({
       <button
         type="button"
         onClick={onNext}
-        className="flex h-14 w-[358px] items-center justify-center self-center rounded-xl bg-[#2563eb] px-[119px] py-4"
+        disabled={isNextDisabled}
+        className={`flex h-14 w-[358px] items-center justify-center self-center rounded-xl px-[119px] py-4 ${
+          isNextDisabled ? "cursor-not-allowed bg-[#e4e4e4]" : "bg-[#2563eb]"
+        }`}
       >
         <div className="flex flex-col items-center justify-center text-center leading-[0]">
-          <p className="font-['Poppins'] text-base font-medium leading-normal text-white">
+          <p
+            className={`font-['Poppins'] text-base font-medium leading-normal ${
+              isNextDisabled ? "text-[#c7c7c7]" : "text-white"
+            }`}
+          >
             Next
           </p>
         </div>

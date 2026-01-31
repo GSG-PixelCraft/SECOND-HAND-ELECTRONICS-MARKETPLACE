@@ -16,6 +16,13 @@ import { ConfirmationDialogs } from "./components/ConfirmationDialogs";
 
 type ListingFormData = z.infer<typeof listingSchema>;
 type PhotoItemWithProgress = PhotoItem & { uploadProgress?: number };
+type LocationValue = {
+  country: string;
+  city: string;
+  street: string;
+  lat: number;
+  lng: number;
+};
 
 const FALLBACK_IMAGE = new URL("../../images/Phone.jpg", import.meta.url).href;
 
@@ -26,6 +33,13 @@ export default function AddListingPage(): React.ReactElement {
   const [photoError, setPhotoError] = useState<string | null>(null);
   const [tipsOpen, setTipsOpen] = useState(false);
   const [locationOpen, setLocationOpen] = useState(false);
+  const [locationValue, setLocationValue] = useState<LocationValue>({
+    country: "Palestine",
+    city: "Gaza",
+    street: "",
+    lat: 31.5017,
+    lng: 34.4668,
+  });
   const [reviewOpen, setReviewOpen] = useState(false);
   const [leaveOpen, setLeaveOpen] = useState(false);
   const [reviewSuccessOpen, setReviewSuccessOpen] = useState(false);
@@ -36,12 +50,28 @@ export default function AddListingPage(): React.ReactElement {
     handleSubmit,
     trigger,
     watch,
+    setValue,
     formState: { errors },
   } = useForm<ListingFormData>({
     resolver: zodResolver(listingSchema),
   });
 
   const values = watch();
+  const isBasicDetailsValid =
+    Boolean(values.title?.trim().length) &&
+    Boolean(values.category?.trim().length) &&
+    Boolean(values.condition?.trim().length) &&
+    Number(values.price) > 0 &&
+    photos.length > 0;
+
+  React.useEffect(() => {
+    const formatted = [locationValue.city, locationValue.country]
+      .filter(Boolean)
+      .join(", ");
+    if (formatted) {
+      setValue("location", formatted, { shouldValidate: true });
+    }
+  }, [locationValue.city, locationValue.country, setValue]);
 
   const onSubmit = async (data: ListingFormData) => {
     console.log("Listing data:", data);
@@ -81,6 +111,12 @@ export default function AddListingPage(): React.ReactElement {
     }
   };
 
+  const handleApplyLocation = (next: LocationValue) => {
+    setLocationValue(next);
+    const formatted = [next.city, next.country].filter(Boolean).join(", ");
+    setValue("location", formatted, { shouldValidate: true });
+  };
+
   return (
     <div className="flex min-h-screen flex-col bg-white">
       {/* Body */}
@@ -103,6 +139,7 @@ export default function AddListingPage(): React.ReactElement {
             {currentStep === 1 && (
               <BasicDetailsStep
                 register={register}
+                setValue={setValue}
                 errors={errors}
                 photos={photos}
                 setPhotos={setPhotos}
@@ -110,12 +147,14 @@ export default function AddListingPage(): React.ReactElement {
                 setPhotoError={setPhotoError}
                 onTipsClick={() => setTipsOpen(true)}
                 onNext={handleNextStep}
+                isNextDisabled={!isBasicDetailsValid}
               />
             )}
 
             {currentStep === 2 && (
               <MoreDetailsStep
                 register={register}
+                setValue={setValue}
                 errors={errors}
                 watch={watch}
                 onBack={handleBackStep}
@@ -129,7 +168,12 @@ export default function AddListingPage(): React.ReactElement {
 
       <PhotoTipsDialog open={tipsOpen} onOpenChange={setTipsOpen} />
 
-      <LocationDialog open={locationOpen} onOpenChange={setLocationOpen} />
+      <LocationDialog
+        open={locationOpen}
+        onOpenChange={setLocationOpen}
+        value={locationValue}
+        onApply={handleApplyLocation}
+      />
 
       <ReviewDialog
         open={reviewOpen}
@@ -137,6 +181,10 @@ export default function AddListingPage(): React.ReactElement {
         values={values}
         photos={photos}
         fallbackImage={FALLBACK_IMAGE}
+        locationCoordinates={{
+          lat: locationValue.lat,
+          lng: locationValue.lng,
+        }}
         onSubmit={onSubmit}
         handleSubmit={handleSubmit}
       />
