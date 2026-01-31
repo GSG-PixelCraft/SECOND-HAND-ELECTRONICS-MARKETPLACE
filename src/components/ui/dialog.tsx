@@ -77,11 +77,21 @@ export const Dialog = React.forwardRef<HTMLDialogElement, DialogProps>(
 
       const dialog = dialogRef.current;
       if (open && !dialog.open) {
+        // Lock body scroll when modal opens
+        document.body.style.overflow = "hidden";
+        document.body.style.position = "fixed";
+        document.body.style.width = "100%";
         dialog.showModal();
       } else if (!open && dialog.open) {
+        // Unlock body scroll when modal closes
+        document.body.style.overflow = "auto";
+        document.body.style.position = "static";
         dialog.close();
       }
       return () => {
+        // Ensure body scroll is unlocked when component unmounts
+        document.body.style.overflow = "auto";
+        document.body.style.position = "static";
         if (dialog.open) {
           dialog.close();
         }
