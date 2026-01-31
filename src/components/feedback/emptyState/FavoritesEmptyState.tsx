@@ -1,4 +1,4 @@
-import { Heart } from "lucide-react";
+import { HeartIcon } from "@/components/icons/HeartIcon";
 import { EmptyState } from "./EmptyState.tsx";
 
 interface FavoritesEmptyStateProps {
@@ -16,7 +16,7 @@ export function FavoritesEmptyState({
       description={description}
       illustration={
         <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary-10">
-          <Heart className="h-8 w-8 text-primary" />
+          <HeartIcon className="h-8 w-8 text-primary" />
         </div>
       }
     />

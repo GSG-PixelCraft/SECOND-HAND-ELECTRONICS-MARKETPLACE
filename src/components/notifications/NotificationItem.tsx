@@ -1,10 +1,11 @@
 import {
   Bell,
+  FileText,
   MessageCircle,
-  CheckCircle,
-  AlertCircle,
   Package,
+  SquareX,
   Trash,
+  User,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { NotificationType } from "./notificationTypes";
@@ -22,42 +23,54 @@ export interface NotificationItemProps {
 
 const notificationConfig: Record<
   NotificationType,
-  { icon: typeof Bell; bgColor: string; iconColor: string }
+  {
+    icon: typeof Bell;
+    iconBg: string;
+    iconColor: string;
+    itemBg: string;
+  }
 > = {
   message: {
     icon: MessageCircle,
-    bgColor: "bg-primary-10",
-    iconColor: "text-primary",
+    iconBg: "bg-[rgba(37,99,235,0.1)]",
+    iconColor: "text-[#2563eb]",
+    itemBg: "bg-white",
   },
   listing_update: {
-    icon: Bell,
-    bgColor: "bg-primary-10",
-    iconColor: "text-primary",
+    icon: FileText,
+    iconBg: "bg-[rgba(37,99,235,0.1)]",
+    iconColor: "text-[#2563eb]",
+    itemBg: "bg-[rgba(37,99,235,0.05)]",
   },
   identity: {
-    icon: CheckCircle,
-    bgColor: "bg-teal-10",
-    iconColor: "text-teal",
+    icon: User,
+    iconBg: "bg-[rgba(20,184,166,0.1)]",
+    iconColor: "text-[#14b8a6]",
+    itemBg: "bg-[rgba(37,99,235,0.05)]",
   },
   order: {
     icon: Package,
-    bgColor: "bg-yellow-10",
-    iconColor: "text-yellow",
+    iconBg: "bg-[rgba(37,99,235,0.1)]",
+    iconColor: "text-[#2563eb]",
+    itemBg: "bg-white",
   },
   system: {
-    icon: AlertCircle,
-    bgColor: "bg-primary-10",
-    iconColor: "text-primary",
+    icon: Bell,
+    iconBg: "bg-[rgba(37,99,235,0.1)]",
+    iconColor: "text-[#2563eb]",
+    itemBg: "bg-white",
   },
   warning: {
-    icon: AlertCircle,
-    bgColor: "bg-danger-10",
-    iconColor: "text-danger",
+    icon: SquareX,
+    iconBg: "bg-[rgba(239,68,68,0.2)]",
+    iconColor: "text-[#ef4444]",
+    itemBg: "bg-white",
   },
   deleted: {
     icon: Trash,
-    bgColor: "bg-danger-10",
-    iconColor: "text-danger",
+    iconBg: "bg-[rgba(239,68,68,0.2)]",
+    iconColor: "text-[#ef4444]",
+    itemBg: "bg-white",
   },
 };
 
@@ -75,36 +88,37 @@ export function NotificationItem({
 
   return (
     <div
-      className={cn(
-        "flex gap-3 p-4 transition-colors",
-        !read && "bg-blue-50/50",
-      )}
+      className={cn("flex w-full items-center gap-3 p-4", config.itemBg)}
+      data-read={read}
     >
       <div
         className={cn(
-          "flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full",
-          config.bgColor,
+          "flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full",
+          config.iconBg,
         )}
       >
-        <Icon className={cn("h-5 w-5", config.iconColor)} />
+        <Icon className={cn("h-6 w-6", config.iconColor)} />
       </div>
 
       <div className="min-w-0 flex-1">
-        <div className="mb-1 flex items-start justify-between gap-3">
-          <h3 className="text-sm font-semibold text-gray-900">{title}</h3>
-          <span className="flex-shrink-0 whitespace-nowrap text-xs text-gray-500">
+        <div className="mb-2 flex items-center justify-between gap-4">
+          <h3 className="text-[14px] font-medium leading-[14px] text-[#3d3d3d]">
+            {title}
+          </h3>
+          <span className="flex-shrink-0 whitespace-nowrap text-[12px] leading-[12px] text-[#828282]">
             {timestamp}
           </span>
         </div>
 
-        <p className="text-sm leading-relaxed text-gray-600">
+        <p className="text-[12px] leading-[14px] text-[#828282]">
           {message}
           {actionLabel && (
             <>
               {" "}
               <button
                 onClick={onAction}
-                className="font-semibold text-primary hover:underline"
+                className="font-medium text-[#212121] hover:underline"
+                type="button"
               >
                 {actionLabel}
               </button>
