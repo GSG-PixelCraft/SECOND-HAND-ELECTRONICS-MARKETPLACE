@@ -1,11 +1,33 @@
+import { useMemo } from "react";
 import { MapPin } from "lucide-react";
+import { MapContainer, Marker, TileLayer } from "react-leaflet";
+import L from "leaflet";
+import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
+import markerIcon from "leaflet/dist/images/marker-icon.png";
+import markerShadow from "leaflet/dist/images/marker-shadow.png";
 import { Card, CardContent } from "@/components/ui/Card";
 
 interface LocationCardProps {
   location: string;
+  coordinates?: {
+    lat: number;
+    lng: number;
+  };
 }
 
-export const LocationCard = ({ location }: LocationCardProps) => {
+delete (L.Icon.Default.prototype as { _getIconUrl?: () => string })._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: markerIcon2x,
+  iconUrl: markerIcon,
+  shadowUrl: markerShadow,
+});
+
+export const LocationCard = ({ location, coordinates }: LocationCardProps) => {
+  const position = useMemo<[number, number]>(() => {
+    if (coordinates) return [coordinates.lat, coordinates.lng];
+    return [31.5017, 34.4668];
+  }, [coordinates]);
+
   return (
     <Card className="gap-3 rounded-2xl border border-neutral-10 bg-white">
       <CardContent className="space-y-3">
@@ -16,11 +38,19 @@ export const LocationCard = ({ location }: LocationCardProps) => {
           <MapPin className="h-4 w-4 text-primary" />
           <span>{location}</span>
         </div>
-        <div className="relative h-44 w-full overflow-hidden rounded-xl bg-muted/60">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(37,99,235,0.2),transparent_60%)]" />
-          <div className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-primary/20 p-3">
-            <MapPin className="h-5 w-5 text-primary" />
-          </div>
+        <div className="relative h-44 w-full overflow-hidden rounded-xl border border-neutral-10">
+          <MapContainer
+            center={position}
+            zoom={13}
+            scrollWheelZoom={false}
+            className="h-full w-full"
+          >
+            <TileLayer
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+            <Marker position={position} />
+          </MapContainer>
         </div>
       </CardContent>
     </Card>

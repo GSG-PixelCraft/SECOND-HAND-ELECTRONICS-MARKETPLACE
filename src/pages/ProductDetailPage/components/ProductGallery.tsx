@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import {
   ChevronLeft,
   ChevronRight,
@@ -29,8 +30,24 @@ export const ProductGallery = ({
   onShare,
   ownerActions,
 }: ProductGalleryProps) => {
-  const activeImage = images[0];
+  const [activeIndex, setActiveIndex] = useState(0);
+  const activeImage = images[activeIndex] ?? images[0];
   const hasOwnerActions = Boolean(ownerActions);
+  const hasMultipleImages = images.length > 1;
+
+  useEffect(() => {
+    setActiveIndex(0);
+  }, [images]);
+
+  const handlePrev = () => {
+    if (!images.length) return;
+    setActiveIndex((prev) => (prev - 1 + images.length) % images.length);
+  };
+
+  const handleNext = () => {
+    if (!images.length) return;
+    setActiveIndex((prev) => (prev + 1) % images.length);
+  };
 
   return (
     <div className="relative overflow-hidden rounded-3xl border border-neutral-10 bg-white">
@@ -43,6 +60,8 @@ export const ProductGallery = ({
       <div className="absolute left-4 top-1/2 flex -translate-y-1/2 items-center justify-center">
         <button
           type="button"
+          onClick={handlePrev}
+          disabled={!hasMultipleImages}
           className="flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-neutral-foreground shadow transition hover:bg-white"
           aria-label="Previous image"
         >
@@ -53,6 +72,8 @@ export const ProductGallery = ({
       <div className="absolute right-4 top-1/2 flex -translate-y-1/2 items-center justify-center">
         <button
           type="button"
+          onClick={handleNext}
+          disabled={!hasMultipleImages}
           className="flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-neutral-foreground shadow transition hover:bg-white"
           aria-label="Next image"
         >
@@ -62,9 +83,14 @@ export const ProductGallery = ({
 
       <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 items-center gap-2">
         {images.map((_, index) => (
-          <span
+          <button
+            type="button"
             key={`indicator-${index}`}
-            className={`h-2.5 w-2.5 rounded-full ${index === 0 ? "bg-white" : "bg-white/60"}`}
+            onClick={() => setActiveIndex(index)}
+            aria-label={`View image ${index + 1}`}
+            className={`h-2.5 w-2.5 rounded-full transition ${
+              index === activeIndex ? "bg-white" : "bg-white/60"
+            }`}
           />
         ))}
       </div>

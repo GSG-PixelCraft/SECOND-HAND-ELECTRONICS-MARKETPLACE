@@ -87,6 +87,7 @@ const ProductDetailPage = () => {
       description:
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ultricies nisl sit ut varius dapibus et interdum donec accumsan risus erat. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ultricies nisl sit ut varius dapibus et interdum donec accumsan risus erat.",
       location: "Gaza, Palestine",
+      locationCoordinates: { lat: 31.5017, lng: 34.4668 },
     }),
     [id],
   );
@@ -264,7 +265,10 @@ const ProductDetailPage = () => {
           />
           <KeyFeaturesCard features={product.features} />
           <DescriptionCard description={product.description} />
-          <LocationCard location={product.location} />
+          <LocationCard
+            location={product.location}
+            coordinates={product.locationCoordinates}
+          />
         </div>
 
         <div className="space-y-6">
