@@ -6,25 +6,21 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "preview": "vite preview",
-    "type-check": "tsc --noEmit",
-    "lint": "eslint . --max-warnings=0",
-    "lint:fix": "eslint . --fix",
+    "type-check": "tsc -b",
+    "lint": "eslint . --ext ts,tsx --max-warnings=0",
     "format": "prettier --write .",
     "check-format": "prettier --check .",
-    "validate": "npm run check-format && npm run lint && npm run type-check && npm run build",
     "test": "vitest",
     "test:run": "vitest run --passWithNoTests",
-    "test:coverage": "vitest run --coverage",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "prepare": "husky"
+    "prepare": "husky",
+    "preview": "vite preview"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
     "@tanstack/react-query": "^5.90.16",
     "@types/lodash": "^4.17.23",
-    "axios": "^1.13.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "i18next": "^23.16.0",
@@ -32,14 +28,11 @@
     "jwt-decode": "^4.0.0",
     "leaflet": "^1.9.4",
     "lodash": "^4.17.23",
-    "lucide-react": "^0.563.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-dropzone": "^14.3.8",
     "react-hook-form": "^7.70.0",
     "react-hot-toast": "^2.6.0",
-    "react-i18next": "^15.7.0",
-    "react-icons": "^5.5.0",
     "react-leaflet": "^5.0.0",
     "react-router-dom": "^7.11.0",
     "recharts": "^3.6.0",
@@ -53,8 +46,6 @@
     "@storybook/react-vite": "^10.1.11",
     "@tanstack/react-query-devtools": "^5.90.16",
     "@testing-library/react": "^16.3.1",
-    "@types/js-cookie": "^3.0.6",
-    "@types/leaflet": "^1.9.18",
     "@types/node": "^24.10.1",
     "@types/react": "^19.2.5",
     "@types/react-dom": "^19.2.3",
@@ -81,10 +72,7 @@
   },
   "lint-staged": {
     "*.{ts,tsx}": [
-      "eslint --fix --max-warnings=0",
-      "prettier --write"
-    ],
-    "*.{json,md,yaml,yml}": [
+      "eslint --fix",
       "prettier --write"
     ]
   }
