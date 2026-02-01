@@ -97,54 +97,6 @@ const publicSimpleRoutes = [
       return { Component: PublicProfilePage };
     },
   },
-  {
-    path: "/verify",
-    lazy: async () => {
-      const { default: VerifyPage } =
-        await import("@/pages/VerifyPage/VerifyPage");
-      return { Component: VerifyPage };
-    },
-  },
-  {
-    path: "/verify/identity",
-    lazy: async () => {
-      const { IdentityVerificationSelectPage } =
-        await import("@/pages/IdentityVerificationPage");
-      return { Component: IdentityVerificationSelectPage };
-    },
-  },
-  {
-    path: "/verify/identity/status",
-    lazy: async () => {
-      const { IdentityVerificationStatusPage } =
-        await import("@/pages/IdentityVerificationPage");
-      return { Component: IdentityVerificationStatusPage };
-    },
-  },
-  {
-    path: "/verify/phone",
-    lazy: async () => {
-      const { PhoneVerificationPage } =
-        await import("@/pages/PhoneVerificationPage");
-      return { Component: PhoneVerificationPage };
-    },
-  },
-  {
-    path: "/verify/phone/otp",
-    lazy: async () => {
-      const { PhoneVerificationOTPPage } =
-        await import("@/pages/PhoneVerificationPage");
-      return { Component: PhoneVerificationOTPPage };
-    },
-  },
-  {
-    path: "/verify/email",
-    lazy: async () => {
-      const { EmailVerificationPage } =
-        await import("@/pages/EmailVerificationPage");
-      return { Component: EmailVerificationPage };
-    },
-  },
 ];
 
 const protectedRoutes = [
@@ -217,6 +169,54 @@ const protectedRoutes = [
       const { NotificationsPage } =
         await import("@/pages/NotificationsPage/NotificationPage");
       return { Component: NotificationsPage };
+    },
+  },
+  {
+    path: "/verify",
+    lazy: async () => {
+      const { default: VerifyPage } =
+        await import("@/pages/VerifyPage/VerifyPage");
+      return { Component: VerifyPage };
+    },
+  },
+  {
+    path: "/verify/identity",
+    lazy: async () => {
+      const { IdentityVerificationSelectPage } =
+        await import("@/pages/IdentityVerificationPage");
+      return { Component: IdentityVerificationSelectPage };
+    },
+  },
+  {
+    path: "/verify/identity/status",
+    lazy: async () => {
+      const { IdentityVerificationStatusPage } =
+        await import("@/pages/IdentityVerificationPage");
+      return { Component: IdentityVerificationStatusPage };
+    },
+  },
+  {
+    path: "/verify/phone",
+    lazy: async () => {
+      const { PhoneVerificationPage } =
+        await import("@/pages/PhoneVerificationPage");
+      return { Component: PhoneVerificationPage };
+    },
+  },
+  {
+    path: "/verify/phone/otp",
+    lazy: async () => {
+      const { PhoneVerificationOTPPage } =
+        await import("@/pages/PhoneVerificationPage");
+      return { Component: PhoneVerificationOTPPage };
+    },
+  },
+  {
+    path: "/verify/email",
+    lazy: async () => {
+      const { EmailVerificationPage } =
+        await import("@/pages/EmailVerificationPage");
+      return { Component: EmailVerificationPage };
     },
   },
 ];
