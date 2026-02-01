@@ -1,11 +1,20 @@
 import { useNavigate } from "react-router-dom";
 import PageLayout from "@/components/layout/PageLayout";
 import { Button } from "@/components/ui/button";
-import { Shield, CheckCircle2, Mail, Phone } from "lucide-react";
+import {
+  Shield,
+  CheckCircle2,
+  Mail,
+  Phone,
+  Clock,
+  XCircle,
+} from "lucide-react";
 import { ROUTES } from "@/constants/routes";
+import { useAuthStore } from "@/stores/useAuthStore";
 
 export default function VerifyPage() {
   const navigate = useNavigate();
+  const { user, verification } = useAuthStore();
 
   return (
     <PageLayout title="Verify Account" maxWidth="4xl">
@@ -39,12 +48,22 @@ export default function VerifyPage() {
                       Verify your email address to secure your account
                     </p>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 className="h-5 w-5 text-success" />
-                    <span className="text-bodySmall font-medium text-success">
-                      Verified
-                    </span>
-                  </div>
+                  {user?.emailVerified ? (
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 className="h-5 w-5 text-success" />
+                      <span className="text-bodySmall font-medium text-success">
+                        Verified
+                      </span>
+                    </div>
+                  ) : (
+                    <Button
+                      intent="primary"
+                      size="sm"
+                      onClick={() => navigate(ROUTES.VERIFY_EMAIL)}
+                    >
+                      Verify
+                    </Button>
+                  )}
                 </div>
               </div>
             </div>
@@ -66,13 +85,9 @@ export default function VerifyPage() {
                       Add a phone number to increase your credibility
                     </p>
                   </div>
-                  <Button
-                    intent="primary"
-                    size="sm"
-                    onClick={() => navigate(ROUTES.OTP_PHONE)}
-                  >
-                    Verify
-                  </Button>
+                  {renderVerificationStatus(verification.phoneStatus, () =>
+                    navigate(ROUTES.VERIFY_PHONE),
+                  )}
                 </div>
               </div>
             </div>
@@ -94,9 +109,9 @@ export default function VerifyPage() {
                       Submit a government-issued ID to become a verified seller
                     </p>
                   </div>
-                  <Button intent="primary" size="sm">
-                    Start
-                  </Button>
+                  {renderIdentityStatus(verification.identityStatus, () =>
+                    navigate(ROUTES.VERIFY_IDENTITY),
+                  )}
                 </div>
               </div>
             </div>
@@ -130,4 +145,87 @@ export default function VerifyPage() {
       </div>
     </PageLayout>
   );
+}
+
+// Helper function to render verification status for phone and email
+function renderVerificationStatus(
+  status: "not_verified" | "verified",
+  onVerifyClick: () => void,
+) {
+  if (status === "verified") {
+    return (
+      <div className="flex items-center gap-2">
+        <CheckCircle2 className="h-5 w-5 text-success" />
+        <span className="text-bodySmall font-medium text-success">
+          Verified
+        </span>
+      </div>
+    );
+  }
+
+  return (
+    <Button intent="primary" size="sm" onClick={onVerifyClick}>
+      Verify
+    </Button>
+  );
+}
+
+// Helper function to render identity verification status
+function renderIdentityStatus(
+  status:
+    | "not_started"
+    | "uploading"
+    | "waiting_approval"
+    | "approved"
+    | "rejected",
+  onStartClick: () => void,
+) {
+  switch (status) {
+    case "approved":
+      return (
+        <div className="flex items-center gap-2">
+          <CheckCircle2 className="h-5 w-5 text-success" />
+          <span className="text-bodySmall font-medium text-success">
+            Verified
+          </span>
+        </div>
+      );
+
+    case "waiting_approval":
+      return (
+        <div className="flex items-center gap-2">
+          <Clock className="h-5 w-5 text-warning" />
+          <span className="text-bodySmall font-medium text-warning">
+            Under Review
+          </span>
+        </div>
+      );
+
+    case "uploading":
+      return (
+        <div className="flex items-center gap-2">
+          <Clock className="h-5 w-5 text-primary" />
+          <span className="text-bodySmall font-medium text-primary">
+            Uploading...
+          </span>
+        </div>
+      );
+
+    case "rejected":
+      return (
+        <div className="flex items-center gap-2">
+          <XCircle className="h-5 w-5 text-error" />
+          <span className="text-bodySmall font-medium text-error">
+            Rejected
+          </span>
+        </div>
+      );
+
+    default:
+      return (
+        <Button intent="primary" size="sm" onClick={onStartClick}>
+          Start
+        </Button>
+      );
+  }
 }

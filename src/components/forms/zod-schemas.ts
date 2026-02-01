@@ -41,3 +41,30 @@ export const listingSchema = z.object({
   isNegotiable: z.boolean().optional(),
   isPickupAvailable: z.boolean().optional(),
 });
+
+// Verification schemas
+export const otpSchema = z.object({
+  code: z
+    .string()
+    .length(6, "Code must be 6 digits")
+    .regex(/^\d+$/, "Code must contain only numbers"),
+});
+
+export const phoneNumberSchema = z.object({
+  phoneNumber: z
+    .string()
+    .min(10, "Phone number must be at least 10 digits")
+    .regex(/^\+?[\d\s-()]+$/, "Invalid phone number format"),
+});
+
+export const emailVerificationSchema = z.object({
+  email: z.string().email("Invalid email address"),
+});
+
+export const documentUploadSchema = z.object({
+  type: z.enum(["id", "passport", "driver_license"]),
+  frontImage: z
+    .instanceof(File, { message: "Please upload the front of your document" })
+    .optional(),
+  backImage: z.instanceof(File).optional(),
+});
