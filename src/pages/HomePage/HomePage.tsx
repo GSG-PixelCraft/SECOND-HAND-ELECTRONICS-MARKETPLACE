@@ -1,6 +1,7 @@
 // Landing page
 import { Link } from "react-router-dom";
-import { ROUTES } from "@/constants/routes";
+import { ROUTES, getProductRoute } from "@/constants/routes";
+import { ChatsParts } from "@/components/chats/ChatsParts";
 
 const HomePage = () => {
   return (
@@ -29,6 +30,19 @@ const HomePage = () => {
             >
               Sign Up
             </Link>
+            {/* TEMPORARY DEMO BUTTON */}
+            <Link
+              className="rounded-full bg-primary px-6 py-3 text-sm font-semibold text-white ring-2 ring-primary ring-offset-2 transition hover:bg-primary/90"
+              to={ROUTES.ADD_LISTING}
+            >
+              🎨 DEMO: Add Listing
+            </Link>
+            <Link
+              className="rounded-full border border-primary px-6 py-3 text-sm font-semibold text-primary transition hover:bg-primary/10"
+              to={`${getProductRoute("p-101")}?demo=1`}
+            >
+              🎨 DEMO: Product Details
+            </Link>
           </div>
         </div>
       </section>
@@ -53,6 +67,21 @@ const HomePage = () => {
         <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
           <h3 className="text-lg font-semibold text-slate-900">24/7 Support</h3>
           <p className="mt-2 text-sm text-slate-600">Always here to help</p>
+        </div>
+      </section>
+
+      <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-xl font-semibold text-slate-900">Chats Demo</h2>
+          <Link
+            to={ROUTES.CHAT}
+            className="text-sm font-medium text-slate-600 transition hover:text-slate-900"
+          >
+            Open Chat
+          </Link>
+        </div>
+        <div className="flex justify-center">
+          <ChatsParts aria-label="Chats demo" />
         </div>
       </section>
     </div>

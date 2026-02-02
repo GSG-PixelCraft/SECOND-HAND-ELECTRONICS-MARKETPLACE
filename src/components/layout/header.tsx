@@ -1,7 +1,7 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
-import { useThemeContext } from "@/providers";
 import { useAuthStore } from "@/stores/useAuthStore";
+import { NotificationMenu } from "@/components/notifications/notificationMenu";
 
 const linkClassName = ({ isActive }: { isActive: boolean }) =>
   `rounded-full px-4 py-2 text-sm font-medium transition ${
@@ -14,7 +14,6 @@ export const Header = () => {
   const navigate = useNavigate();
   const { user, token, setUser, setToken, logout } = useAuthStore();
   const isAuthenticated = Boolean(user && token);
-  const { toggleTheme } = useThemeContext();
 
   const handleDemoLogin = () => {
     setUser({
@@ -54,13 +53,7 @@ export const Header = () => {
           </NavLink>
         </nav>
         <div className="flex items-center gap-3">
-          <button
-            className="rounded-full border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-slate-300 hover:text-slate-900"
-            onClick={toggleTheme}
-            type="button"
-          >
-            Theme
-          </button>
+          <NotificationMenu />
           {isAuthenticated ? (
             <button
               className="rounded-full bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800"

@@ -19,6 +19,25 @@ interface ContainerProps {
 }
 
 const maxWidthClasses: Record<MaxWidth, string> = {
+import { cn } from "@/lib/utils";
+
+interface ContainerProps {
+  children: ReactNode;
+  maxWidth?:
+    | "sm"
+    | "md"
+    | "lg"
+    | "xl"
+    | "2xl"
+    | "3xl"
+    | "4xl"
+    | "5xl"
+    | "6xl"
+    | "7xl";
+  className?: string;
+}
+
+const maxWidthClasses = {
   sm: "max-w-sm",
   md: "max-w-md",
   lg: "max-w-lg",
@@ -39,6 +58,18 @@ const Container = ({
   return (
     <div
       className={`mx-auto w-full px-4 ${maxWidthClasses[maxWidth]} ${className}`}
+export default function Container({
+  children,
+  maxWidth = "7xl",
+  className = "",
+}: ContainerProps) {
+  return (
+    <div
+      className={cn(
+        "mx-auto w-full px-4 py-6",
+        maxWidth && maxWidthClasses[maxWidth],
+        className,
+      )}
     >
       {children}
     </div>
@@ -46,3 +77,4 @@ const Container = ({
 };
 
 export default Container;
+}
