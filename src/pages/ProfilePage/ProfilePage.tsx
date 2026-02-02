@@ -31,21 +31,23 @@ const ProfilePage = () => {
         <div className="grid grid-cols-1 gap-6 md:grid-cols-[260px_1fr]">
           <aside className="rounded-lg border border-neutral-20 bg-white">
             <ul>
-              {[
-                { key: "profile", label: "Profile Details" },
-                { key: "notifications", label: "Notification settings" },
-                { key: "language", label: "Language & Currency" },
-                { key: "password", label: "Change password" },
-                { key: "help", label: "Help center" },
-                { key: "logout", label: "Logout" },
-              ].map((item) => {
+              {(
+                [
+                  { key: "profile", label: "Profile Details" },
+                  { key: "notifications", label: "Notification settings" },
+                  { key: "language", label: "Language & Currency" },
+                  { key: "password", label: "Change password" },
+                  { key: "help", label: "Help center" },
+                  { key: "logout", label: "Logout" },
+                ] as const satisfies readonly { key: Section; label: string }[]
+              ).map((item) => {
                 const isActive = activeSection === item.key;
 
                 return (
                   <li key={item.key}>
                     <button
                       type="button"
-                      onClick={() => setActiveSection(item.key as Section)}
+                      onClick={() => setActiveSection(item.key)}
                       className={`w-full px-4 py-4 text-left text-body transition-colors ${
                         isActive
                           ? "font-semibold text-neutral-foreground"
@@ -68,6 +70,21 @@ const ProfilePage = () => {
             {activeSection === "password" && <ChangePassword />}
 
             {activeSection === "help" && <HelpCenter />}
+            {activeSection === "logout" && (
+              // TODO: Implement logout confirmation or trigger logout action
+              <div className="rounded-lg border border-neutral-20 bg-white p-5">
+                <p>Are you sure you want to logout?</p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    /* Call logout handler */
+                  }}
+                  className="mt-4 rounded-md bg-primary px-4 py-2 text-primary-foreground"
+                >
+                  Confirm Logout
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </PageLayout>

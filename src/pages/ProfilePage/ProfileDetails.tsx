@@ -13,6 +13,10 @@ import { EditProfileForm } from "./EditProfileForm";
 export default function ProfileDetails() {
   const [isEditing, setIsEditing] = React.useState(false);
 
+  const handleVerify = (label: string) => {
+    console.log("Verify clicked:", label);
+  };
+
   if (isEditing) {
     return (
       <EditProfileForm
@@ -87,9 +91,14 @@ export default function ProfileDetails() {
             const Icon = item.icon;
 
             return (
-              <div
+              <button
+                type="button"
+                onClick={() => !item.verified && handleVerify(item.label)}
+                disabled={item.verified}
                 key={item.label}
-                className="relative flex flex-col items-center gap-2 rounded-lg border border-neutral-20 p-4"
+                className={`relative flex flex-col items-center gap-2 rounded-lg border border-neutral-20 p-4 ${
+                  !item.verified ? "cursor-pointer hover:border-primary" : ""
+                }`}
               >
                 <Icon className="text-primary" />
                 <span className="text-caption text-neutral-foreground">
@@ -102,7 +111,7 @@ export default function ProfileDetails() {
                     className="absolute -right-2 -top-2 text-success"
                   />
                 )}
-              </div>
+              </button>
             );
           })}
         </div>

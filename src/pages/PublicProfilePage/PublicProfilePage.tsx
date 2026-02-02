@@ -63,7 +63,11 @@ export const PublicProfilePage = () => {
                 </div>
               </div>
 
-              <button className="text-muted-foreground hover:text-neutral-foreground">
+              <button
+                type="button"
+                aria-label="More options"
+                className="text-muted-foreground hover:text-neutral-foreground"
+              >
                 <MoreVertical />
               </button>
             </div>
@@ -111,12 +115,19 @@ export const PublicProfilePage = () => {
               </p>
 
               <div className="flex gap-3">
-                <button className="flex items-center gap-2 rounded-lg border border-neutral-20 bg-white px-3 py-2 text-sm text-neutral-foreground">
+                <button
+                  type="button"
+                  className="flex items-center gap-2 rounded-lg border border-neutral-20 bg-white px-3 py-2 text-sm text-neutral-foreground"
+                >
                   <ArrowUpDown size={14} />
                   Sort by: {sort}
                 </button>
 
-                <button className="flex items-center gap-2 rounded-lg border border-neutral-20 bg-white px-3 py-2 text-sm text-neutral-foreground">
+                <button
+                  type="button"
+                  className="flex items-center gap-2 rounded-lg border border-neutral-20 bg-white px-3 py-2 text-sm text-neutral-foreground"
+                >
+                  {" "}
                   <Filter size={14} />
                   Filter
                 </button>

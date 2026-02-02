@@ -38,13 +38,17 @@ const Badge = ({
   label: string;
   onRemove: () => void;
 }) => (
-  <span
+  <button
+    type="button"
     className="inline-flex cursor-pointer items-center gap-1 rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-800 hover:bg-blue-200"
     onClick={onRemove}
+    aria-label={`Remove ${label} filter`}
   >
     {label}
-    <span className="h-3 w-3 text-blue-600">×</span>
-  </span>
+    <span className="h-3 w-3 text-blue-600" aria-hidden="true">
+      ×
+    </span>
+  </button>
 );
 
 const Checkbox = ({
@@ -70,6 +74,8 @@ const Checkbox = ({
 const SearchIcon = () => (
   <svg
     className="h-4 w-4 text-gray-500"
+    aria-hidden="true"
+    focusable="false"
     fill="none"
     stroke="currentColor"
     viewBox="0 0 24 24"
@@ -121,7 +127,7 @@ export const FiltersPart = ({
 
   useEffect(() => {
     onFilterChange?.(filters);
-  }, [filters]);
+  }, [filters, onFilterChange]);
 
   const getModels = () => {
     const m: string[] = [];
@@ -181,6 +187,7 @@ export const FiltersPart = ({
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold text-gray-900">Filters</h2>
             <button
+              type="button"
               onClick={reset}
               className="text-sm text-blue-600 hover:text-blue-700"
             >
@@ -280,8 +287,14 @@ export const FiltersPart = ({
             <h3 className="text-sm font-semibold text-gray-900">Price Range</h3>
             <div className="flex gap-2">
               <div className="flex-1">
-                <label className="mb-1 block text-xs text-gray-600">From</label>
+                <label
+                  htmlFor="price-min"
+                  className="mb-1 block text-xs text-gray-600"
+                >
+                  From
+                </label>
                 <input
+                  id="price-min"
                   type="number"
                   placeholder="0 ILS"
                   value={filters.priceRange.min}
@@ -295,8 +308,14 @@ export const FiltersPart = ({
                 />
               </div>
               <div className="flex-1">
-                <label className="mb-1 block text-xs text-gray-600">To</label>
+                <label
+                  htmlFor="price-max"
+                  className="mb-1 block text-xs text-gray-600"
+                >
+                  To
+                </label>
                 <input
+                  id="price-max"
                   type="number"
                   placeholder="100 ILS"
                   value={filters.priceRange.max}
@@ -448,6 +467,7 @@ export const FiltersPart = ({
               </select>
             )}
             <button
+              type="button"
               onClick={() =>
                 update("location", {
                   ...filters.location,
