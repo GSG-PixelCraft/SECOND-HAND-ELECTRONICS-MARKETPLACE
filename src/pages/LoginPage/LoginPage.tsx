@@ -1,7 +1,42 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
 import { useAuthStore } from "@/stores/useAuthStore";
+
+interface Country {
+  name: string;
+  flag: string;
+  code: string;
+  dialCode: string;
+}
+
+const COUNTRIES_FALLBACK: Country[] = [
+  { name: "Palestine", flag: "🇵🇸", code: "PS", dialCode: "+970" },
+  { name: "United States", flag: "🇺🇸", code: "US", dialCode: "+1" },
+  { name: "United Kingdom", flag: "🇬🇧", code: "GB", dialCode: "+44" },
+  { name: "United Arab Emirates", flag: "🇦🇪", code: "AE", dialCode: "+971" },
+  { name: "Saudi Arabia", flag: "🇸🇦", code: "SA", dialCode: "+966" },
+  { name: "Egypt", flag: "🇪🇬", code: "EG", dialCode: "+20" },
+  { name: "Jordan", flag: "🇯🇴", code: "JO", dialCode: "+962" },
+  { name: "Lebanon", flag: "🇱🇧", code: "LB", dialCode: "+961" },
+  { name: "Syria", flag: "🇸🇾", code: "SY", dialCode: "+963" },
+  { name: "Iraq", flag: "🇮🇶", code: "IQ", dialCode: "+964" },
+  { name: "Kuwait", flag: "🇰🇼", code: "KW", dialCode: "+965" },
+  { name: "Qatar", flag: "🇶🇦", code: "QA", dialCode: "+974" },
+  { name: "Bahrain", flag: "🇧🇭", code: "BH", dialCode: "+973" },
+  { name: "Oman", flag: "🇴🇲", code: "OM", dialCode: "+968" },
+  { name: "Yemen", flag: "🇾🇪", code: "YE", dialCode: "+967" },
+  { name: "Canada", flag: "🇨🇦", code: "CA", dialCode: "+1" },
+  { name: "France", flag: "🇫🇷", code: "FR", dialCode: "+33" },
+  { name: "Germany", flag: "🇩🇪", code: "DE", dialCode: "+49" },
+  { name: "Italy", flag: "🇮🇹", code: "IT", dialCode: "+39" },
+  { name: "Spain", flag: "🇪🇸", code: "ES", dialCode: "+34" },
+  { name: "Australia", flag: "🇦🇺", code: "AU", dialCode: "+61" },
+  { name: "India", flag: "🇮🇳", code: "IN", dialCode: "+91" },
+  { name: "Japan", flag: "🇯🇵", code: "JP", dialCode: "+81" },
+  { name: "China", flag: "🇨🇳", code: "CN", dialCode: "+86" },
+  { name: "Brazil", flag: "🇧🇷", code: "BR", dialCode: "+55" },
+];
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -10,6 +45,45 @@ const LoginPage = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+  const [countryCode, setCountryCode] = useState("+970");
+  const [countries, setCountries] = useState<Country[]>(COUNTRIES_FALLBACK);
+
+  const isPhoneNumber = /^\d+$/.test(emailOrPhone.replace(/\s/g, ""));
+
+  useEffect(() => {
+    const fetchCountries = async () => {
+      try {
+        const response = await fetch("https://restcountries.com/v3.1/all");
+        const data = (await response.json()) as Array<{
+          name: { common: string };
+          flag: string;
+          cca2: string;
+          idd?: { root: string; suffixes?: string[] };
+        }>;
+
+        const countryList: Country[] = data
+          .map((country) => ({
+            name: country.name.common,
+            flag: country.flag || "🌍",
+            code: country.cca2,
+            dialCode: country.idd?.root
+              ? `${country.idd.root}${country.idd.suffixes?.[0] || ""}`
+              : "",
+          }))
+          .filter((c: Country) => c.dialCode)
+          .sort((a: Country, b: Country) => a.name.localeCompare(b.name));
+
+        if (countryList.length > 0) {
+          setCountries(countryList);
+        }
+      } catch (error) {
+        console.error("Failed to fetch countries, using fallback:", error);
+        // Fallback is already set
+      }
+    };
+
+    fetchCountries();
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,14 +102,19 @@ const LoginPage = () => {
     console.log(`Login with ${provider}`);
   };
 
+  const isFormValid =
+    emailOrPhone.trim().length > 0 && password.trim().length > 0;
+
   return (
     <div className="min-h-screen bg-white">
       <div className="border-b border-gray-200 px-6 py-4">
-        <div className="mx-auto flex max-w-6xl items-center justify-between">
-          <div className="text-xl font-bold text-blue-600">Logo</div>
+        <div className="relative mx-auto flex max-w-6xl items-center justify-center gap-6 px-6">
+          <div className="bg-blue-100 px-4 py-2 text-lg font-bold text-blue-600">
+            Logo
+          </div>
           <Link
             to={ROUTES.HOME}
-            className="text-sm text-gray-600 underline hover:text-gray-900"
+            className="absolute right-6 text-sm text-gray-600 underline hover:text-gray-900"
           >
             continue as a Guest
           </Link>
@@ -64,15 +143,43 @@ const LoginPage = () => {
               >
                 Email or Phone number <span className="text-red-500">*</span>
               </label>
-              <input
-                id="emailOrPhone"
-                type="text"
-                value={emailOrPhone}
-                onChange={(e) => setEmailOrPhone(e.target.value)}
-                placeholder="Enter your email or phone number"
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2.5 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                required
-              />
+              <div className="relative mt-1 flex items-center">
+                {isPhoneNumber && (
+                  <>
+                    <div className="absolute inset-y-0 left-0 z-10 flex items-center pl-3">
+                      <select
+                        value={countryCode}
+                        onChange={(e) => setCountryCode(e.target.value)}
+                        className="h-full cursor-pointer appearance-none border-0 bg-transparent px-0 py-0 text-2xl font-semibold focus:outline-none focus:ring-0"
+                      >
+                        {countries.map((country) => (
+                          <option key={country.code} value={country.dialCode}>
+                            {country.flag}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="absolute inset-y-0 left-12 flex items-center text-gray-400">
+                      |
+                    </div>
+                  </>
+                )}
+                <input
+                  id="emailOrPhone"
+                  type="text"
+                  value={emailOrPhone}
+                  onChange={(e) => setEmailOrPhone(e.target.value)}
+                  placeholder={
+                    isPhoneNumber
+                      ? "597762307"
+                      : "Enter your email or phone number"
+                  }
+                  className={`block w-full rounded-md border border-gray-300 py-2.5 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 ${
+                    isPhoneNumber ? "pl-16 pr-3" : "px-3"
+                  }`}
+                  required
+                />
+              </div>
             </div>
 
             {/* Password Input */}
@@ -144,7 +251,7 @@ const LoginPage = () => {
                   type="checkbox"
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
-                  className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  className="h-4 w-4 rounded border-gray-300 accent-blue-600 focus:ring-blue-600"
                 />
                 <span className="ml-2 text-sm text-gray-700">Remember me</span>
               </label>
@@ -159,7 +266,12 @@ const LoginPage = () => {
             {/* Sign In Button */}
             <button
               type="submit"
-              className="w-full rounded-md bg-gray-300 px-4 py-2.5 text-sm font-medium text-gray-500 transition hover:bg-gray-400 disabled:cursor-not-allowed"
+              disabled={!isFormValid}
+              className={`w-full rounded-md px-4 py-2.5 text-sm font-medium transition ${
+                isFormValid
+                  ? "bg-blue-600 text-white hover:bg-blue-700"
+                  : "cursor-not-allowed bg-gray-300 text-gray-500"
+              }`}
             >
               Sign in
             </button>
