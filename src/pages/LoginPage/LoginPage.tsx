@@ -47,8 +47,46 @@ const LoginPage = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const [countryCode, setCountryCode] = useState("+970");
   const [countries, setCountries] = useState<Country[]>(COUNTRIES_FALLBACK);
+  const [emailValidation, setEmailValidation] = useState<{
+    isValid: boolean;
+    isEmail: boolean;
+    isTouched: boolean;
+  }>({ isValid: false, isEmail: false, isTouched: false });
 
   const isPhoneNumber = /^\d+$/.test(emailOrPhone.replace(/\s/g, ""));
+
+  const validateEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const handleEmailOrPhoneChange = (value: string) => {
+    setEmailOrPhone(value);
+    if (value.trim().length > 0) {
+      const cleanValue = value.replace(/\s/g, "");
+      const isPhone = /^\d+$/.test(cleanValue);
+      const containsAt = value.includes("@");
+      const isValidPhone = isPhone && cleanValue.length === 10;
+      const isValidEmail = containsAt ? validateEmail(value) : false;
+
+      setEmailValidation({
+        isValid: isValidPhone || isValidEmail,
+        isEmail: !isPhone,
+        isTouched: true,
+      });
+    } else {
+      setEmailValidation({ isValid: false, isEmail: false, isTouched: false });
+    }
+  };
+
+  const isFormValid = () => {
+    const hasInput =
+      emailOrPhone.trim().length > 0 && password.trim().length > 0;
+    if (!hasInput) return false;
+
+    // Must be either a valid phone number or a valid email
+    return emailValidation.isValid;
+  };
 
   useEffect(() => {
     const fetchCountries = async () => {
@@ -101,9 +139,6 @@ const LoginPage = () => {
   const handleSocialLogin = (provider: string) => {
     console.log(`Login with ${provider}`);
   };
-
-  const isFormValid =
-    emailOrPhone.trim().length > 0 && password.trim().length > 0;
 
   return (
     <div className="min-h-screen bg-white">
@@ -168,18 +203,29 @@ const LoginPage = () => {
                   id="emailOrPhone"
                   type="text"
                   value={emailOrPhone}
-                  onChange={(e) => setEmailOrPhone(e.target.value)}
+                  onChange={(e) => handleEmailOrPhoneChange(e.target.value)}
                   placeholder={
                     isPhoneNumber
                       ? "597762307"
                       : "Enter your email or phone number"
                   }
-                  className={`block w-full rounded-md border border-gray-300 py-2.5 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 ${
+                  className={`block w-full rounded-md border py-2.5 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-1 ${
                     isPhoneNumber ? "pl-16 pr-3" : "px-3"
+                  } ${
+                    emailValidation.isTouched && !emailValidation.isValid
+                      ? "border-red-500 focus:border-red-500 focus:ring-red-500"
+                      : "border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                   }`}
                   required
                 />
               </div>
+              {emailValidation.isTouched && !emailValidation.isValid && (
+                <p className="mt-1 text-sm text-red-600">
+                  {emailValidation.isEmail
+                    ? "Please enter a valid email address"
+                    : "The number is wrong"}
+                </p>
+              )}
             </div>
 
             {/* Password Input */}
@@ -266,9 +312,9 @@ const LoginPage = () => {
             {/* Sign In Button */}
             <button
               type="submit"
-              disabled={!isFormValid}
+              disabled={!isFormValid()}
               className={`w-full rounded-md px-4 py-2.5 text-sm font-medium transition ${
-                isFormValid
+                isFormValid()
                   ? "bg-blue-600 text-white hover:bg-blue-700"
                   : "cursor-not-allowed bg-gray-300 text-gray-500"
               }`}
