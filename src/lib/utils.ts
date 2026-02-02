@@ -1,8 +1,11 @@
 // Utility functions
 
-// export const cn = (...inputs: ClassValue[]) => {
-//   return twMerge(clsx(inputs))
-// }
+import clsx, { type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
+
+export const cn = (...inputs: ClassValue[]) => {
+  return twMerge(clsx(inputs));
+};
 
 export const formatPrice = (price: number) => {
   return new Intl.NumberFormat("en-US", {
