@@ -142,34 +142,68 @@ const LoginPage = () => {
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="border-b border-gray-200 px-6 py-4">
-        <div className="relative mx-auto flex max-w-6xl items-center justify-center gap-6 px-6">
-          <div className="bg-blue-100 px-4 py-2 text-lg font-bold text-blue-600">
-            Logo
-          </div>
-          <Link
-            to={ROUTES.HOME}
-            className="absolute right-6 text-sm text-gray-600 underline hover:text-gray-900"
-          >
-            continue as a Guest
-          </Link>
-        </div>
-      </div>
-
       {/* Main Content */}
-      <div className="flex items-center justify-center px-6 py-12">
-        <div className="w-full max-w-md space-y-8">
+      <div className="flex items-start justify-center px-5 py-6 sm:items-center sm:px-6 sm:py-10">
+        <div className="w-full max-w-md space-y-6 sm:space-y-8">
           {/* Title */}
           <div className="text-center">
-            <h1 className="text-3xl font-bold text-gray-900">Sign in</h1>
-            <p className="mt-2 text-xl text-gray-900">Welcome back</p>
-            <p className="mt-1 text-sm text-gray-500">
+            <div className="grid grid-cols-[auto,1fr,auto] items-center">
+              {/* Hidden Close Button (left spacer) */}
+              <Link
+                to={ROUTES.HOME}
+                className="pointer-events-none justify-self-start opacity-0"
+                aria-hidden="true"
+                tabIndex={-1}
+              >
+                <svg
+                  className="h-6 w-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </Link>
+              <h1 className="text-2xl text-gray-900 sm:text-3xl">Sign in</h1>
+              {/* Close Button */}
+              <Link
+                to={ROUTES.HOME}
+                className="justify-self-end text-gray-400 hover:text-gray-600"
+                aria-label="Close"
+              >
+                <svg
+                  className="h-6 w-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </Link>
+            </div>
+            <p className="mt-10 text-[18pt] text-base text-gray-900 sm:text-lg">
+              Welcome back
+            </p>
+            <p className="mt-4 text-lg text-gray-400 sm:text-sm">
               Please log in to continue.
             </p>
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="mt-8 space-y-6">
+          <form
+            onSubmit={handleSubmit}
+            className="mt-6 space-y-5 sm:mt-8 sm:space-y-6"
+          >
             {/* Email or Phone Input */}
             <div>
               <label
@@ -303,7 +337,7 @@ const LoginPage = () => {
               </label>
               <Link
                 to={ROUTES.FORGOT_PASSWORD_EMAIL}
-                className="text-sm text-gray-900 hover:underline"
+                className="text-md text-gray-900 hover:underline"
               >
                 Forgot password?
               </Link>
@@ -313,7 +347,7 @@ const LoginPage = () => {
             <button
               type="submit"
               disabled={!isFormValid()}
-              className={`w-full rounded-md px-4 py-2.5 text-sm font-medium transition ${
+              className={`w-full rounded-md px-4 py-3 text-sm font-medium transition ${
                 isFormValid()
                   ? "bg-blue-600 text-white hover:bg-blue-700"
                   : "cursor-not-allowed bg-gray-300 text-gray-500"
@@ -339,7 +373,7 @@ const LoginPage = () => {
               <button
                 type="button"
                 onClick={() => handleSocialLogin("Google")}
-                className="flex items-center justify-center gap-2 rounded-md border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                className="flex items-center justify-center gap-2 rounded-md border border-gray-300 bg-white px-0 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 sm:px-4"
               >
                 <svg className="h-5 w-5" viewBox="0 0 24 24">
                   <path
@@ -359,12 +393,12 @@ const LoginPage = () => {
                     d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                   />
                 </svg>
-                Google
+                <span className="hidden sm:inline">Google</span>
               </button>
               <button
                 type="button"
                 onClick={() => handleSocialLogin("Apple")}
-                className="flex items-center justify-center gap-2 rounded-md border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                className="flex items-center justify-center gap-2 rounded-md border border-gray-300 bg-white px-0 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 sm:px-4"
               >
                 <svg
                   className="h-5 w-5"
@@ -373,28 +407,28 @@ const LoginPage = () => {
                 >
                   <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z" />
                 </svg>
-                Apple
+                <span className="hidden sm:inline">Apple</span>
               </button>
               <button
                 type="button"
                 onClick={() => handleSocialLogin("Facebook")}
-                className="flex items-center justify-center gap-2 rounded-md border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                className="flex items-center justify-center gap-2 rounded-md border border-gray-300 bg-white px-0 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 sm:px-4"
               >
                 <svg className="h-5 w-5" fill="#1877F2" viewBox="0 0 24 24">
                   <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
                 </svg>
-                Facebook
+                <span className="hidden sm:inline">Facebook</span>
               </button>
             </div>
 
             {/* Sign Up Link */}
             <div className="text-center">
-              <span className="text-sm text-gray-600">
+              <span className="text-lg text-gray-600">
                 Don't have an account?{" "}
               </span>
               <Link
                 to={ROUTES.SIGN_UP}
-                className="text-sm font-medium text-gray-900 hover:underline"
+                className="text-lg font-medium text-gray-900 hover:underline"
               >
                 Sign up
               </Link>
