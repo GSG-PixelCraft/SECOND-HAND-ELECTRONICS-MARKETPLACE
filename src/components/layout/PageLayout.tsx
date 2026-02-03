@@ -25,7 +25,7 @@ const PageLayout = ({
   title,
   subtitle,
   children,
-  maxWidth = "3xl",
+  maxWidth = "6xl",
   className = "",
   showPlaceholder = false,
 }: PageLayoutProps) => {

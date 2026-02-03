@@ -1,5 +1,6 @@
 // Axios HTTP client setup
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosError } from "axios";
+import axios from "axios";
+import type { AxiosInstance, AxiosRequestConfig, AxiosError } from "axios";
 import { getToken, removeToken } from "@/lib/storage";
 import { apiConfig } from "@/config";
 
@@ -36,29 +37,42 @@ apiClient.interceptors.response.use(
 
 // Generic API methods
 export const api = {
-  get: <T>(url: string, config?: AxiosRequestConfig): Promise<T> =>
-    apiClient.get<T>(url, config),
+  get: async <T>(url: string, config?: AxiosRequestConfig): Promise<T> => {
+    const response = await apiClient.get<T>(url, config);
+    return response as T;
+  },
 
-  post: <T>(
+  post: async <T>(
     url: string,
     data?: unknown,
     config?: AxiosRequestConfig,
-  ): Promise<T> => apiClient.post<T>(url, data, config),
+  ): Promise<T> => {
+    const response = await apiClient.post<T>(url, data, config);
+    return response as T;
+  },
 
-  put: <T>(
+  put: async <T>(
     url: string,
     data?: unknown,
     config?: AxiosRequestConfig,
-  ): Promise<T> => apiClient.put<T>(url, data, config),
+  ): Promise<T> => {
+    const response = await apiClient.put<T>(url, data, config);
+    return response as T;
+  },
 
-  patch: <T>(
+  patch: async <T>(
     url: string,
     data?: unknown,
     config?: AxiosRequestConfig,
-  ): Promise<T> => apiClient.patch<T>(url, data, config),
+  ): Promise<T> => {
+    const response = await apiClient.patch<T>(url, data, config);
+    return response as T;
+  },
 
-  delete: <T>(url: string, config?: AxiosRequestConfig): Promise<T> =>
-    apiClient.delete<T>(url, config),
+  delete: async <T>(url: string, config?: AxiosRequestConfig): Promise<T> => {
+    const response = await apiClient.delete<T>(url, config);
+    return response as T;
+  },
 };
 
 export default apiClient;

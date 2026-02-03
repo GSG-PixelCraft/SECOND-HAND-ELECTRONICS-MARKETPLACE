@@ -1,25 +1,63 @@
 import { create } from "zustand";
 
-import type { User } from "../types";
+import type { User, VerificationState } from "../types";
 
 interface AuthState {
   user: User | null;
   token: string | null;
+  verification: VerificationState;
   setUser: (user: User | null) => void;
   setToken: (token: string | null) => void;
+  setVerification: (verification: Partial<VerificationState>) => void;
   logout: () => void;
 }
+
+const initialVerificationState: VerificationState = {
+  identity: {
+    type: null,
+    status: "not_started",
+  },
+  phone: {
+    phoneNumber: null,
+    status: "not_verified",
+  },
+  email: {
+    email: null,
+    status: "not_verified",
+  },
+};
 
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   token: null,
+  verification: initialVerificationState,
   setUser: (user: User | null) => {
     set({ user });
   },
   setToken: (token: string | null) => {
     set({ token });
   },
+  setVerification: (verification: Partial<VerificationState>) => {
+    set((state) => ({
+      verification: {
+        ...state.verification,
+        ...verification,
+        identity: {
+          ...state.verification.identity,
+          ...(verification.identity || {}),
+        },
+        phone: {
+          ...state.verification.phone,
+          ...(verification.phone || {}),
+        },
+        email: {
+          ...state.verification.email,
+          ...(verification.email || {}),
+        },
+      },
+    }));
+  },
   logout: () => {
-    set({ user: null, token: null });
+    set({ user: null, token: null, verification: initialVerificationState });
   },
 }));

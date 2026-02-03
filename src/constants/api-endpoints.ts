@@ -34,4 +34,22 @@ export const API_ENDPOINTS = {
     REMOVE_ITEM: (id: string) => `/cart/items/${id}`,
     CLEAR: "/cart/clear",
   },
+  VERIFICATION: {
+    STATUS: "/verification/status",
+    IDENTITY: {
+      UPLOAD: "/verification/identity/upload",
+      STATUS: "/verification/identity/status",
+    },
+    PHONE: {
+      SEND_OTP: "/verification/phone/send-otp",
+      VERIFY_OTP: "/verification/phone/verify-otp",
+      CHANGE: "/verification/phone/change",
+      CHANGE_SEND_OTP: "/verification/phone/change/send-otp",
+      CHANGE_VERIFY_OTP: "/verification/phone/change/verify-otp",
+    },
+    EMAIL: {
+      SEND_OTP: "/verification/email/send-otp",
+      VERIFY_OTP: "/verification/email/verify-otp",
+    },
+  },
 } as const;

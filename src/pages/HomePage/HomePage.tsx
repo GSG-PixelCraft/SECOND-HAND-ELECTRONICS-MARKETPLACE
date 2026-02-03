@@ -43,6 +43,12 @@ const HomePage = () => {
             >
               🎨 DEMO: Product Details
             </Link>
+            <Link
+              className="rounded-full bg-emerald-600 px-6 py-3 text-sm font-semibold text-white ring-2 ring-emerald-600 ring-offset-2 transition hover:bg-emerald-700"
+              to={ROUTES.VERIFY}
+            >
+              ✨ DEMO: Verification
+            </Link>
           </div>
         </div>
       </section>
