@@ -1,6 +1,9 @@
 // src/components/ui/file-upload.tsx
 import * as React from "react";
 import { twMerge } from "tailwind-merge";
+import { Text } from "@/components/ui/text";
+import { Span } from "@/components/ui/span";
+import { Image } from "@/components/ui/image";
 
 export interface PhotoItem {
   id: string;
@@ -114,16 +117,18 @@ export const FileUpload: React.FC<FileUploadProps> = ({
   return (
     <div>
       <div className="flex items-center justify-between">
-        <label className="text-label text-neutral-foreground">
-          {tipsLabel ?? "Photos"}
+        <label>
+          <Span variant="label">{tipsLabel ?? "Photos"}</Span>
         </label>
         {onTipsClick && (
           <button
             type="button"
             onClick={onTipsClick}
-            className="text-caption font-medium text-primary hover:underline"
+            className="font-medium hover:underline"
           >
-            Tips
+            <Span variant="muted" className="text-primary">
+              Tips
+            </Span>
           </button>
         )}
       </div>
@@ -169,12 +174,12 @@ export const FileUpload: React.FC<FileUploadProps> = ({
               </svg>
             </div>
             <div>
-              <p className="text-body font-medium text-neutral-foreground">
+              <Text variant="body" className="font-medium">
                 {emptyTitle ?? "Click to upload or drag and drop"}
-              </p>
-              <p className="text-caption text-muted-foreground">
+              </Text>
+              <Text variant="muted">
                 {emptyHint ?? "JPG, JPEG, PNG less than 5MB"}
-              </p>
+              </Text>
             </div>
           </button>
         ) : (
@@ -184,15 +189,18 @@ export const FileUpload: React.FC<FileUploadProps> = ({
                 key={photo.id}
                 className="group relative aspect-square overflow-hidden rounded-lg border border-neutral-10"
               >
-                <img
+                <Image
+                  variant="cover"
                   src={photo.url}
                   alt={`Preview ${index + 1}`}
-                  className="h-full w-full object-cover"
                 />
                 {index === 0 && (
-                  <span className="absolute bottom-2 left-2 rounded bg-primary px-2 py-0.5 text-caption font-medium text-white">
+                  <Span
+                    variant="caption"
+                    className="absolute bottom-2 left-2 rounded bg-primary px-2 py-0.5 font-medium text-white"
+                  >
                     {mainLabel ?? "Main"}
-                  </span>
+                  </Span>
                 )}
                 <button
                   type="button"
@@ -228,9 +236,9 @@ export const FileUpload: React.FC<FileUploadProps> = ({
                       />
                     </svg>
                   </div>
-                  <span className="text-caption font-medium text-neutral-foreground">
+                  <Span variant="caption" className="font-medium">
                     {addMoreLabel ?? "Add photo"}
-                  </span>
+                  </Span>
                 </div>
               </button>
             )}
@@ -239,12 +247,14 @@ export const FileUpload: React.FC<FileUploadProps> = ({
       </div>
 
       {error ? (
-        <p className="mt-2 text-caption text-error">{error}</p>
+        <Text variant="error" className="mt-2">
+          {error}
+        </Text>
       ) : (
         helperText && (
-          <p className="mt-2 text-caption text-muted-foreground">
+          <Text variant="muted" className="mt-2">
             {helperText}
-          </p>
+          </Text>
         )
       )}
     </div>

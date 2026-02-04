@@ -2,6 +2,8 @@ import { Link } from "react-router-dom";
 import { useMemo } from "react";
 import { getProductRoute } from "@/constants/routes";
 import { formatPrice } from "@/lib/utils";
+import { Text } from "@/components/ui/text";
+import { Span } from "@/components/ui/span";
 
 interface DemoProduct {
   id: string;
@@ -43,9 +45,9 @@ const ProductsPage = () => {
     <div className="mx-auto flex w-full max-w-5xl flex-col gap-8">
       <header className="space-y-2">
         <h1 className="text-2xl font-semibold text-slate-900">Products</h1>
-        <p className="text-sm text-slate-600">
+        <Text className="text-sm text-slate-600">
           Browse our selection of second-hand electronics
-        </p>
+        </Text>
       </header>
 
       <div className="grid gap-5 md:grid-cols-3">
@@ -55,26 +57,26 @@ const ProductsPage = () => {
             className="flex flex-col gap-4 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm"
           >
             <div className="space-y-1">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
+              <Text className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
                 {product.category}
-              </p>
+              </Text>
               <h2 className="text-lg font-semibold text-slate-900">
                 {product.name}
               </h2>
             </div>
             <div className="flex items-center justify-between text-sm text-slate-600">
-              <span>Condition</span>
-              <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
+              <Span>Condition</Span>
+              <Span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
                 {product.condition === "like-new"
                   ? "Like New"
                   : product.condition.charAt(0).toUpperCase() +
                     product.condition.slice(1)}
-              </span>
+              </Span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-base font-semibold text-slate-900">
+              <Span className="text-base font-semibold text-slate-900">
                 {formatPrice(product.price)}
-              </span>
+              </Span>
               <Link
                 className="rounded-full border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-700 transition hover:border-slate-300 hover:text-slate-900"
                 to={getProductRoute(product.id)}

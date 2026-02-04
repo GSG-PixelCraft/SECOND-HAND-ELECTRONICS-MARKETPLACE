@@ -1,5 +1,6 @@
 import { Clock, Eye, Heart } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/Card";
+import { Span } from "@/components/ui/span";
 
 interface ProductSummaryCardProps {
   postedAt: string;
@@ -26,17 +27,17 @@ export const ProductSummaryCard = ({
         <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground">
           <div className="flex items-center gap-1">
             <Clock className="h-3.5 w-3.5" />
-            <span>{postedAt}</span>
+            <Span>{postedAt}</Span>
           </div>
           <div className="flex items-center gap-3">
-            <span className="flex items-center gap-1">
+            <Span className="flex items-center gap-1">
               <Eye className="h-3.5 w-3.5" />
               {views}
-            </span>
-            <span className="flex items-center gap-1">
+            </Span>
+            <Span className="flex items-center gap-1">
               <Heart className="h-3.5 w-3.5" />
               {favorites}
-            </span>
+            </Span>
           </div>
         </div>
 
@@ -46,20 +47,20 @@ export const ProductSummaryCard = ({
               {title}
             </h2>
             <div className="flex items-center gap-2">
-              <span className="text-xl font-semibold text-primary">
+              <Span className="text-xl font-semibold text-primary">
                 {priceLabel}
-              </span>
+              </Span>
               {negotiable && (
-                <span className="text-xs text-muted-foreground">
+                <Span variant="muted" className="text-xs">
                   Price is negotiable
-                </span>
+                </Span>
               )}
             </div>
           </div>
           {conditionLabel && (
-            <span className="rounded-full bg-primary-10 px-3 py-1 text-xs font-semibold text-primary">
+            <Span className="rounded-full bg-primary-10 px-3 py-1 text-xs font-semibold text-primary">
               {conditionLabel}
-            </span>
+            </Span>
           )}
         </div>
       </CardContent>

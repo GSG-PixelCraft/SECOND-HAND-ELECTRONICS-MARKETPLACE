@@ -3,6 +3,8 @@ import { useNavigate, useLocation } from "react-router-dom";
 import PageLayout from "@/components/layout/PageLayout";
 import { Button } from "@/components/ui/button";
 import { OTPInput } from "@/components/forms";
+import { Text } from "@/components/ui/text";
+import { Span } from "@/components/ui/span";
 import { useVerifyPhoneOTP, useSendPhoneOTP } from "@/services";
 import { useAuthStore } from "@/stores";
 import { ROUTES } from "@/constants/routes";
@@ -77,12 +79,12 @@ export const PhoneVerificationOTPPage: React.FC = () => {
                 <h2 className="text-xl font-medium text-[#101010]">
                   {MESSAGES.VERIFICATION.PHONE.ENTER_CODE}
                 </h2>
-                <p className="text-sm text-[#828282]">
+                <Text className="text-sm text-[#828282]">
                   We've sent a 6-digit code to{" "}
-                  <span className="font-medium text-[#3d3d3d]">
+                  <Span className="font-medium text-[#3d3d3d]">
                     {phoneNumber}
-                  </span>
-                </p>
+                  </Span>
+                </Text>
               </div>
 
               <OTPInput
@@ -95,9 +97,9 @@ export const PhoneVerificationOTPPage: React.FC = () => {
               />
 
               {verifyMutation.isError && (
-                <p className="text-center text-sm text-red-500">
+                <Text className="text-center text-sm text-red-500">
                   {MESSAGES.ERROR.INVALID_OTP}
-                </p>
+                </Text>
               )}
 
               <div className="space-y-4">
@@ -112,9 +114,9 @@ export const PhoneVerificationOTPPage: React.FC = () => {
 
                 <div className="text-center">
                   {timer > 0 ? (
-                    <p className="text-sm text-[#828282]">
+                    <Text className="text-sm text-[#828282]">
                       Resend code in {timer}s
-                    </p>
+                    </Text>
                   ) : (
                     <button
                       onClick={handleResend}
@@ -140,9 +142,9 @@ export const PhoneVerificationOTPPage: React.FC = () => {
             <h3 className="text-xl font-medium text-[#101010]">
               {MESSAGES.SUCCESS.PHONE_VERIFIED}
             </h3>
-            <p className="text-sm text-[#828282]">
+            <Text className="text-sm text-[#828282]">
               Your phone number has been successfully verified
-            </p>
+            </Text>
           </div>
         </div>
       </Dialog>

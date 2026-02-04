@@ -2,6 +2,10 @@ import { useMemo, useState } from "react";
 import { MoreVertical, Pin, Search } from "lucide-react";
 import type { HTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Image } from "@/components/ui/image";
+import { Text } from "@/components/ui/text";
+import { Span } from "@/components/ui/span";
 
 const avatarAhmadAli =
   "http://localhost:3845/assets/23fdb52cc83cd9a5da2b787fda4ccebfbcee347f.png";
@@ -91,13 +95,13 @@ export function ChatsParts({ className, ...props }: ChatsPartsProps) {
     >
       <div className="flex items-center gap-6">
         <h2 className="flex-1 text-2xl font-medium text-[#101010]">Chats</h2>
-        <button
+        <Button
           type="button"
           aria-label="More options"
           className="flex size-8 items-center justify-center rounded-full text-[#828282] transition-colors hover:bg-[#f6f6f6]"
         >
           <MoreVertical size={18} />
-        </button>
+        </Button>
       </div>
 
       <div className="flex items-center gap-3 rounded-[12px] border border-[#e4e4e4] bg-white px-4 py-3">
@@ -114,7 +118,7 @@ export function ChatsParts({ className, ...props }: ChatsPartsProps) {
         {tabs.map((tab) => {
           const isActive = activeTab === tab;
           return (
-            <button
+            <Button
               key={tab}
               type="button"
               role="tab"
@@ -128,7 +132,7 @@ export function ChatsParts({ className, ...props }: ChatsPartsProps) {
               )}
             >
               {tab.charAt(0).toUpperCase() + tab.slice(1)}
-            </button>
+            </Button>
           );
         })}
       </div>
@@ -145,12 +149,12 @@ export function ChatsParts({ className, ...props }: ChatsPartsProps) {
             <div className="flex items-start justify-between gap-4">
               <div className="flex flex-1 items-center gap-3">
                 <div className="relative size-[44px] shrink-0">
-                  <img
+                  <Image
                     src={chat.avatarUrl}
                     alt="User avatar"
                     className="size-full rounded-full object-cover"
                   />
-                  <span
+                  <Span
                     className={cn(
                       "absolute bottom-0 right-0 size-[10px] rounded-full border-2 border-white",
                       chat.isOnline ? "bg-[#22c55e]" : "bg-[#c7c7c7]",
@@ -159,21 +163,23 @@ export function ChatsParts({ className, ...props }: ChatsPartsProps) {
                   />
                 </div>
                 <div className="flex-1 space-y-1">
-                  <p className="text-[16px] font-medium text-[#3d3d3d]">
+                  <Text className="text-[16px] font-medium text-[#3d3d3d]">
                     {chat.name}
-                  </p>
+                  </Text>
                   <div className="space-y-0.5 text-[#828282]">
-                    <p className="text-[14px] font-medium">{chat.message}</p>
-                    <p className="text-[10px]">{chat.time}</p>
+                    <Text className="text-[14px] font-medium">
+                      {chat.message}
+                    </Text>
+                    <Text className="text-[10px]">{chat.time}</Text>
                   </div>
                 </div>
               </div>
               <div className="flex flex-col items-center justify-between gap-3">
                 {chat.isPinned && <Pin size={16} className="text-[#828282]" />}
                 {typeof chat.unreadCount === "number" && (
-                  <span className="flex size-5 items-center justify-center rounded-full bg-[#2563eb] text-[12px] text-white">
+                  <Span className="flex size-5 items-center justify-center rounded-full bg-[#2563eb] text-[12px] text-white">
                     {chat.unreadCount}
-                  </span>
+                  </Span>
                 )}
               </div>
             </div>
@@ -181,12 +187,12 @@ export function ChatsParts({ className, ...props }: ChatsPartsProps) {
             <div className="my-3 h-px bg-[#e4e4e4]" />
 
             <div className="flex items-center gap-2">
-              <img
+              <Image
                 src={productThumb}
                 alt="Product thumbnail"
                 className="size-6 rounded-[2px] object-cover"
               />
-              <p className="text-[12px] text-[#3d3d3d]">{chat.product}</p>
+              <Text className="text-[12px] text-[#3d3d3d]">{chat.product}</Text>
             </div>
           </article>
         ))}

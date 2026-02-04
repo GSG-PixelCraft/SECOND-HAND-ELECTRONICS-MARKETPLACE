@@ -1,5 +1,7 @@
 import { cn } from "@/lib/utils";
 import React from "react";
+import { Button } from "./button";
+import { Text } from "./text";
 
 export default function ListingsHome({
   children,
@@ -15,14 +17,14 @@ export default function ListingsHome({
   return (
     <div className={cn("container", className)}>
       <div className="mb-6 flex items-center justify-between">
-        <p className="text-2xl font-medium">{title}</p>
-        <button
+        <Text className="text-2xl font-medium">{title}</Text>
+        <Button
           type="button"
           className="text-lg font-normal text-neutral"
           onClick={() => (window.location.href = seeAllLink)}
         >
           see all
-        </button>{" "}
+        </Button>{" "}
         {/* Simple navigation to see all listings //* i will change it for Link */}
       </div>
       <div className="grid justify-center gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">

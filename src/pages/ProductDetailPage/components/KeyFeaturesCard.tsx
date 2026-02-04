@@ -1,4 +1,5 @@
 import { Card, CardContent } from "@/components/ui/Card";
+import { Span } from "@/components/ui/span";
 
 interface FeatureItem {
   label: string;
@@ -22,12 +23,12 @@ export const KeyFeaturesCard = ({ features }: KeyFeaturesCardProps) => {
               key={feature.label}
               className="flex items-center justify-between rounded-lg bg-muted/60 px-3 py-2"
             >
-              <span className="text-xs text-muted-foreground">
+              <Span variant="muted" className="text-xs">
                 {feature.label}
-              </span>
-              <span className="text-xs font-semibold text-neutral-foreground">
+              </Span>
+              <Span className="text-xs font-semibold text-neutral-foreground">
                 {feature.value}
-              </span>
+              </Span>
             </div>
           ))}
         </div>

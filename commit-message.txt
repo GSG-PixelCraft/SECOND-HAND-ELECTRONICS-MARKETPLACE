@@ -1,0 +1,24 @@
+refactor: standardize UI elements with new component library
+
+- Add Image, Text, and Span components with built-in error handling and consistent styling
+- Refactor 85+ files to replace native HTML elements with new UI components
+- Update all pages and components to use the new component library
+- Remove redundant onError handlers from img elements (now handled by Image component)
+- Improve code consistency and maintainability by using standardized UI components
+
+## Key Changes
+
+### New Components Added:
+- `src/components/ui/image.tsx`: Generic Image component with automatic error fallback
+- `src/components/ui/text.tsx`: Generic Text component for `<p>` elements
+- `src/components/ui/span.tsx`: Generic Span component for `<span>` elements
+
+### Files Refactored (85+ files):
+- All page components (HomePage, ProductDetailPage, AddListingPage, etc.)
+- All UI components (AdCard, FiltersPart, ListingSection, etc.)
+- Layout components (header, footer, sidebar, etc.)
+- Feedback components (EmptyState, PageLoader, etc.)
+- Form components (VerifyIdentityInput, FileUpload, etc.)
+
+### Breaking Changes:
+- None - all changes are backward compatible with existing functionality

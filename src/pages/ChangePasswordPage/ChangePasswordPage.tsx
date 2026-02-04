@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { ROUTES } from "@/constants/routes";
 import PageLayout from "@/components/layout/PageLayout";
 import { Lock } from "lucide-react";
+import { Text } from "@/components/ui/text";
 
 const changePasswordSchema = z
   .object({
@@ -60,9 +61,9 @@ export default function ChangePasswordPage() {
             <Lock className="h-6 w-6 text-primary" />
           </div>
           <h1 className="text-h2 font-semibold">Create New Password</h1>
-          <p className="text-body text-muted-foreground">
+          <Text variant="muted">
             Your new password must be different from previously used passwords.
-          </p>
+          </Text>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -89,14 +90,22 @@ export default function ChangePasswordPage() {
           </div>
 
           <div className="rounded-md bg-neutral-5 p-3">
-            <p className="mb-2 text-caption text-muted-foreground">
+            <Text variant="muted" className="mb-2 text-caption">
               Password must contain:
-            </p>
-            <ul className="list-inside list-disc space-y-1 text-caption text-muted-foreground">
-              <li>At least 8 characters</li>
-              <li>One uppercase letter</li>
-              <li>One lowercase letter</li>
-              <li>One number</li>
+            </Text>
+            <ul className="list-inside list-disc space-y-1 text-caption">
+              <Text variant="muted" className="text-caption" as="li">
+                At least 8 characters
+              </Text>
+              <Text variant="muted" className="text-caption" as="li">
+                One uppercase letter
+              </Text>
+              <Text variant="muted" className="text-caption" as="li">
+                One lowercase letter
+              </Text>
+              <Text variant="muted" className="text-caption" as="li">
+                One number
+              </Text>
             </ul>
           </div>
 
