@@ -19,7 +19,6 @@ interface ContainerProps {
 }
 
 const maxWidthClasses: Record<MaxWidth, string> = {
-import { cn } from "@/lib/utils";
 
 interface ContainerProps {
   children: ReactNode;
