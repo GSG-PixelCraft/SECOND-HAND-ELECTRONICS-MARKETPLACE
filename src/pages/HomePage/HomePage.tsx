@@ -2,6 +2,7 @@
 import { Link } from "react-router-dom";
 import { ROUTES, getProductRoute } from "@/constants/routes";
 import { ChatsParts } from "@/components/chats/ChatsParts";
+import { Button } from "@/components/ui/button";
 
 const HomePage = () => {
   return (
@@ -18,36 +19,31 @@ const HomePage = () => {
             </p>
           </div>
           <div className="flex flex-wrap gap-3">
-            <Link
-              className="rounded-full bg-slate-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
-              to={ROUTES.RECENT_LISTINGS}
-            >
-              Browse Listings
+            <Link to={ROUTES.RECENT_LISTINGS}>
+              <Button intent="primary" size="md">
+                Browse Listings
+              </Button>
             </Link>
-            <Link
-              className="rounded-full border border-slate-200 px-6 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:text-slate-900"
-              to={ROUTES.SIGN_UP}
-            >
-              Sign Up
+            <Link to={ROUTES.SIGN_UP}>
+              <Button intent="outline" size="md">
+                Sign Up
+              </Button>
             </Link>
             {/* TEMPORARY DEMO BUTTON */}
-            <Link
-              className="rounded-full bg-primary px-6 py-3 text-sm font-semibold text-white ring-2 ring-primary ring-offset-2 transition hover:bg-primary/90"
-              to={ROUTES.ADD_LISTING}
-            >
-              🎨 DEMO: Add Listing
+            <Link to={ROUTES.ADD_LISTING}>
+              <Button intent="primary" size="md">
+                🎨 DEMO: Add Listing
+              </Button>
             </Link>
-            <Link
-              className="rounded-full border border-primary px-6 py-3 text-sm font-semibold text-primary transition hover:bg-primary/10"
-              to={`${getProductRoute("p-101")}?demo=1`}
-            >
-              🎨 DEMO: Product Details
+            <Link to={`${getProductRoute("p-101")}?demo=1`}>
+              <Button intent="outline" size="md">
+                🎨 DEMO: Product Details
+              </Button>
             </Link>
-            <Link
-              className="rounded-full bg-emerald-600 px-6 py-3 text-sm font-semibold text-white ring-2 ring-emerald-600 ring-offset-2 transition hover:bg-emerald-700"
-              to={ROUTES.VERIFY}
-            >
-              ✨ DEMO: Verification
+            <Link to={ROUTES.VERIFY}>
+              <Button intent="primary" size="md">
+                ✨ DEMO: Verification
+              </Button>
             </Link>
           </div>
         </div>

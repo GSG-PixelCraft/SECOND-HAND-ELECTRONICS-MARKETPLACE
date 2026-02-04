@@ -5,6 +5,7 @@ interface EmptyStateProps {
   title: string;
   description?: string;
   illustration?: ReactNode;
+  action?: ReactNode;
   size?: "sm" | "md";
   className?: string;
 }
@@ -31,6 +32,7 @@ export function EmptyState({
   title,
   description,
   illustration,
+  action,
   size = "md",
   className,
 }: EmptyStateProps) {
@@ -53,6 +55,7 @@ export function EmptyState({
           </p>
         ) : null}
       </div>
+      {action ? <div className="mt-4">{action}</div> : null}
     </div>
   );
 }
