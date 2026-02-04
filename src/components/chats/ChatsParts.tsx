@@ -149,6 +149,9 @@ export function ChatsParts({ className, ...props }: ChatsPartsProps) {
                     src={chat.avatarUrl}
                     alt="User avatar"
                     className="size-full rounded-full object-cover"
+                    onError={(e) => {
+                      e.currentTarget.src = "src\\images\\ErrorImage.png";
+                    }}
                   />
                   <span
                     className={cn(
@@ -185,6 +188,9 @@ export function ChatsParts({ className, ...props }: ChatsPartsProps) {
                 src={productThumb}
                 alt="Product thumbnail"
                 className="size-6 rounded-[2px] object-cover"
+                onError={(e) => {
+                  e.currentTarget.src = "src\\images\\ErrorImage.png";
+                }}
               />
               <p className="text-[12px] text-[#3d3d3d]">{chat.product}</p>
             </div>
