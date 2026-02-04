@@ -7,6 +7,9 @@ import {
   Globe,
   Instagram,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Span } from "@/components/ui/span";
+import { Text } from "@/components/ui/text";
 
 type Tab = "faq" | "contact";
 
@@ -53,7 +56,7 @@ export const HelpCenter = () => {
       </h2>
 
       <div className="mb-6 flex rounded-full border border-neutral-20 p-1">
-        <button
+        <Button
           onClick={() => setActiveTab("faq")}
           className={`flex-1 rounded-full py-2 text-sm font-medium transition ${
             activeTab === "faq"
@@ -62,9 +65,9 @@ export const HelpCenter = () => {
           }`}
         >
           FAQ
-        </button>
+        </Button>
 
-        <button
+        <Button
           onClick={() => setActiveTab("contact")}
           className={`flex-1 rounded-full py-2 text-sm font-medium transition ${
             activeTab === "contact"
@@ -73,7 +76,7 @@ export const HelpCenter = () => {
           }`}
         >
           Contact us
-        </button>
+        </Button>
       </div>
 
       {activeTab === "faq" && (
@@ -86,21 +89,21 @@ export const HelpCenter = () => {
                 key={item.question}
                 className="rounded-lg border border-neutral-20 bg-white p-4 shadow-sm"
               >
-                <button
+                <Button
                   onClick={() => toggleAccordion(index)}
                   className="flex w-full items-center justify-between text-left"
                 >
-                  <span className="font-medium text-neutral-foreground">
+                  <Span className="font-medium text-neutral-foreground">
                     {item.question}
-                  </span>
+                  </Span>
 
                   {isOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-                </button>
+                </Button>
 
                 {isOpen && (
-                  <p className="mt-3 text-body text-muted-foreground">
+                  <Text variant="muted" className="mt-3">
                     {item.answer}
-                  </p>
+                  </Text>
                 )}
               </div>
             );
@@ -127,9 +130,9 @@ export const HelpCenter = () => {
                   <Icon size={18} />
                 </div>
 
-                <span className="font-medium text-neutral-foreground">
+                <Span variant="body" className="font-medium">
                   {item.label}
-                </span>
+                </Span>
               </div>
             );
           })}

@@ -10,6 +10,9 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { NotificationType } from "./notificationTypes";
+import { Text } from "@/components/ui/text";
+import { Span } from "@/components/ui/span";
+import { Button } from "@/components/ui/button";
 
 export interface NotificationItemProps {
   type: NotificationType;
@@ -112,26 +115,26 @@ export function NotificationItem({
           <h3 className="font-['Poppins'] text-[16px] font-medium leading-normal text-[#3d3d3d]">
             {title}
           </h3>
-          <span className="flex-shrink-0 whitespace-nowrap font-['Poppins'] text-[14px] font-normal leading-normal text-[#828282]">
+          <Span className="flex-shrink-0 whitespace-nowrap font-['Poppins'] text-[14px] font-normal leading-normal text-[#828282]">
             {timestamp}
-          </span>
+          </Span>
         </div>
 
-        <p className="font-['Poppins'] text-[14px] font-normal leading-normal text-[#828282]">
+        <Text className="font-['Poppins'] text-[14px] font-normal leading-normal text-[#828282]">
           {message}
           {actionLabel && (
             <>
               {" "}
-              <button
+              <Button
                 onClick={onAction}
                 className="font-['Poppins'] font-medium text-[#212121] hover:underline"
                 type="button"
               >
                 {actionLabel}
-              </button>
+              </Button>
             </>
           )}
-        </p>
+        </Text>
       </div>
     </div>
   );

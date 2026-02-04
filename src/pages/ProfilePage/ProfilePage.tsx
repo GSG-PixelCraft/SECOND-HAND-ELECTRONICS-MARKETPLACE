@@ -1,13 +1,13 @@
 import * as React from "react";
 import PageLayout from "@/components/layout/PageLayout";
-// import { Header } from "@/components/layout/header";
-import { Footer } from "@/components/layout/footer";
 import { Fragment } from "react";
 import ProfileDetails from "./ProfileDetails";
 import { NotificationSettings } from "./NotificationSettings";
 import { LanguageSettings } from "./LanguageSettings";
 import { ChangePassword } from "./ChangePassword";
 import { HelpCenter } from "./HelpCenter";
+import { Button } from "@/components/ui/button";
+import { Text } from "@/components/ui/text";
 
 type Section =
   | "profile"
@@ -45,17 +45,18 @@ const ProfilePage = () => {
 
                 return (
                   <li key={item.key}>
-                    <button
+                    <Button
                       type="button"
+                      intent={isActive ? "primary" : "ghost"}
                       onClick={() => setActiveSection(item.key)}
                       className={`w-full px-4 py-4 text-left text-body transition-colors ${
                         isActive
-                          ? "font-semibold text-neutral-foreground"
+                          ? "font-semibold text-white"
                           : "text-muted-foreground hover:text-neutral-foreground"
                       }`}
                     >
                       {item.label}
-                    </button>
+                    </Button>
                   </li>
                 );
               })}
@@ -73,8 +74,8 @@ const ProfilePage = () => {
             {activeSection === "logout" && (
               // TODO: Implement logout confirmation or trigger logout action
               <div className="rounded-lg border border-neutral-20 bg-white p-5">
-                <p>Are you sure you want to logout?</p>
-                <button
+                <Text>Are you sure you want to logout?</Text>
+                <Button
                   type="button"
                   onClick={() => {
                     /* Call logout handler */
@@ -82,13 +83,12 @@ const ProfilePage = () => {
                   className="mt-4 rounded-md bg-primary px-4 py-2 text-primary-foreground"
                 >
                   Confirm Logout
-                </button>
+                </Button>
               </div>
             )}
           </div>
         </div>
       </PageLayout>
-      <Footer></Footer>
     </Fragment>
   );
 };

@@ -1,4 +1,5 @@
 import { type ReactNode } from "react";
+import { Text } from "@/components/ui/text";
 
 interface PageTitleProps {
   children: ReactNode;
@@ -16,7 +17,11 @@ export function PageTitle({
       <h1 className="text-2xl font-semibold text-neutral-foreground">
         {children}
       </h1>
-      {subtitle && <p className="text-sm text-muted-foreground">{subtitle}</p>}
+      {subtitle && (
+        <Text variant="muted" className="text-sm">
+          {subtitle}
+        </Text>
+      )}
     </div>
   );
 }

@@ -2,6 +2,8 @@ import { Link } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
 import { Button } from "@/components/ui/button";
 import { PageTitle } from "@/components/layout/PageTitle";
+import { Text } from "@/components/ui/text";
+import { Span } from "@/components/ui/span";
 
 const CheckoutPage = () => {
   return (
@@ -36,19 +38,21 @@ const CheckoutPage = () => {
           <div className="space-y-2">
             <label className="flex items-center gap-2">
               <input type="radio" name="payment" />
-              <span className="text-sm text-slate-600">Credit Card</span>
+              <Span className="text-sm text-slate-600">Credit Card</Span>
             </label>
             <label className="flex items-center gap-2">
               <input type="radio" name="payment" />
-              <span className="text-sm text-slate-600">PayPal</span>
+              <Span className="text-sm text-slate-600">PayPal</Span>
             </label>
           </div>
         </div>
 
         <div className="flex items-center justify-between border-t border-slate-200 pt-4">
           <div>
-            <p className="text-sm text-slate-600">Total</p>
-            <p className="text-2xl font-semibold text-slate-900">$99.99</p>
+            <Text className="text-sm text-slate-600">Total</Text>
+            <Text className="text-2xl font-semibold text-slate-900">
+              $99.99
+            </Text>
           </div>
           <Link to={ROUTES.HOME}>
             <Button intent="primary" size="md">

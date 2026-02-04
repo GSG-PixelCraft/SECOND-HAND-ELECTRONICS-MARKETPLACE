@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
 import { Button } from "@/components/ui/button";
 import { PageTitle } from "@/components/layout/PageTitle";
+import { Text } from "@/components/ui/text";
 
 const DashboardPage = () => {
   return (
@@ -14,9 +15,9 @@ const DashboardPage = () => {
       <div className="grid gap-6 md:grid-cols-2">
         <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
           <h2 className="text-lg font-semibold text-slate-900">My Listings</h2>
-          <p className="mt-2 text-sm text-slate-600">
+          <Text className="mt-2 text-sm text-slate-600">
             Manage your product listings
-          </p>
+          </Text>
           <Link to={ROUTES.MY_LISTINGS}>
             <Button intent="primary" size="md" className="mt-4">
               View Listings
@@ -26,9 +27,9 @@ const DashboardPage = () => {
 
         <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
           <h2 className="text-lg font-semibold text-slate-900">Orders</h2>
-          <p className="mt-2 text-sm text-slate-600">
+          <Text className="mt-2 text-sm text-slate-600">
             Track your purchase orders
-          </p>
+          </Text>
           <Link to={ROUTES.HOME}>
             <Button intent="primary" size="md" className="mt-4">
               View Orders

@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import PageLayout from "@/components/layout/PageLayout";
 import { Button } from "@/components/ui/button";
 import { OTPInput } from "@/components/forms";
+import { Text } from "@/components/ui/text";
+import { Span } from "@/components/ui/span";
 import { useVerifyEmailOTP, useSendEmailOTP } from "@/services";
 import { useAuthStore } from "@/stores";
 import { ROUTES } from "@/constants/routes";
@@ -85,11 +87,11 @@ export const EmailVerificationPage: React.FC = () => {
                 <h2 className="text-xl font-medium text-[#101010]">
                   {MESSAGES.VERIFICATION.EMAIL.OTP_SENT}
                 </h2>
-                <p className="text-sm text-[#828282]">
+                <Text variant="caption">
                   {MESSAGES.VERIFICATION.EMAIL.DESCRIPTION}
                   <br />
-                  <span className="font-medium text-[#3d3d3d]">{email}</span>
-                </p>
+                  <Span className="font-medium text-[#3d3d3d]">{email}</Span>
+                </Text>
               </div>
 
               <OTPInput
@@ -102,9 +104,9 @@ export const EmailVerificationPage: React.FC = () => {
               />
 
               {verifyMutation.isError && (
-                <p className="text-center text-sm text-red-500">
+                <Text variant="error" className="text-center text-sm">
                   {MESSAGES.ERROR.INVALID_OTP}
-                </p>
+                </Text>
               )}
 
               <div className="space-y-4">
@@ -119,9 +121,7 @@ export const EmailVerificationPage: React.FC = () => {
 
                 <div className="text-center">
                   {timer > 0 ? (
-                    <p className="text-sm text-[#828282]">
-                      Resend code in {timer}s
-                    </p>
+                    <Text variant="caption">Resend code in {timer}s</Text>
                   ) : (
                     <button
                       onClick={handleResend}
@@ -147,9 +147,9 @@ export const EmailVerificationPage: React.FC = () => {
             <h3 className="text-xl font-medium text-[#101010]">
               {MESSAGES.SUCCESS.EMAIL_VERIFIED}
             </h3>
-            <p className="text-sm text-[#828282]">
+            <Text variant="caption">
               Your email has been successfully verified
-            </p>
+            </Text>
           </div>
         </div>
       </Dialog>

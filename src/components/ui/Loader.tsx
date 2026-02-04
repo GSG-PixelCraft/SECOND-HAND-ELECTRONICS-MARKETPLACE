@@ -1,5 +1,6 @@
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
+import { Span } from "./span";
 
 const loaderVariants = cva(
   [
@@ -32,7 +33,7 @@ export interface LoaderProps extends LoaderVariantProps {
 
 export const Loader: React.FC<LoaderProps> = ({ size, className }) => {
   return (
-    <span
+    <Span
       role="status"
       aria-label="Loading"
       className={loaderVariants({ size, className })}

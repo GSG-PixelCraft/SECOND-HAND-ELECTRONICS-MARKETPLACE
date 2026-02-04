@@ -1,3 +1,5 @@
+import { Button } from "./button";
+
 export interface FilterButtonProps {
   value: string;
   label: string;
@@ -11,7 +13,7 @@ export const FilterButton = ({
   onClick,
 }: Omit<FilterButtonProps, "value">) => {
   return (
-    <button
+    <Button
       type="button"
       onClick={onClick}
       className={`whitespace-nowrap rounded-md px-4 py-2 ${
@@ -22,6 +24,6 @@ export const FilterButton = ({
       aria-pressed={isActive}
     >
       {label}
-    </button>
+    </Button>
   );
 };

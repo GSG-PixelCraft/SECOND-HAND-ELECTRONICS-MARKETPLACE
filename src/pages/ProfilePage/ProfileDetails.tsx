@@ -9,6 +9,9 @@ import {
   CheckCircle,
 } from "lucide-react";
 import { EditProfileForm } from "./EditProfileForm";
+import { Button } from "@/components/ui/button";
+import { Text } from "@/components/ui/text";
+import { Span } from "@/components/ui/span";
 
 export default function ProfileDetails() {
   const [isEditing, setIsEditing] = React.useState(false);
@@ -34,38 +37,40 @@ export default function ProfileDetails() {
             <div className="h-16 w-16 rounded-full bg-muted-10" />
 
             <div className="space-y-1">
-              <p className="text-bodyLg font-semibold text-neutral-foreground">
+              <Text variant="bodyLg" className="font-semibold">
                 Eleanor Vance
-              </p>
+              </Text>
 
-              <div className="flex items-center gap-2 text-caption text-muted-foreground">
-                <MapPin size={14} />
-                <span>Palestine</span>
+              <div className="flex items-center gap-2">
+                <MapPin size={14} className="text-muted-foreground" />
+                <Span variant="caption">Palestine</Span>
               </div>
 
-              <div className="flex items-center gap-2 text-caption text-muted-foreground">
-                <Calendar size={14} />
-                <span>Member since May 2023</span>
+              <div className="flex items-center gap-2">
+                <Calendar size={14} className="text-muted-foreground" />
+                <Span variant="caption">Member since May 2023</Span>
               </div>
             </div>
           </div>
 
-          <button
+          <Button
             type="button"
             onClick={() => setIsEditing(true)}
             className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-10 text-primary transition hover:bg-primary-20"
           >
             <Pencil size={18} />
-          </button>
+          </Button>
         </div>
       </section>
 
       <section className="rounded-lg border border-neutral-20 bg-white p-5">
         <div className="mb-3 flex items-center justify-between">
-          <p className="font-semibold text-neutral-foreground">
+          <Text variant="body" className="font-semibold">
             Profile Completion
-          </p>
-          <p className="text-body font-semibold text-primary">50%</p>
+          </Text>
+          <Text variant="body" className="font-semibold text-primary">
+            50%
+          </Text>
         </div>
 
         <div className="h-2 w-full rounded-full bg-neutral-10">
@@ -74,13 +79,13 @@ export default function ProfileDetails() {
       </section>
 
       <section className="rounded-lg border border-neutral-20 bg-white p-5">
-        <p className="mb-1 font-semibold text-neutral-foreground">
+        <Text variant="body" className="mb-1 font-semibold">
           Trust indicators
-        </p>
-        <p className="mb-4 text-caption text-muted-foreground">
-          Verify your identity, mobile and email to get “Verified” badge. Tap to
+        </Text>
+        <Text variant="muted" className="mb-4">
+          Verify your identity, mobile and email to get "Verified" badge. Tap to
           verify missing items
-        </p>
+        </Text>
 
         <div className="grid grid-cols-3 gap-4">
           {[
@@ -91,7 +96,7 @@ export default function ProfileDetails() {
             const Icon = item.icon;
 
             return (
-              <button
+              <Button
                 type="button"
                 onClick={() => !item.verified && handleVerify(item.label)}
                 disabled={item.verified}
@@ -101,9 +106,7 @@ export default function ProfileDetails() {
                 }`}
               >
                 <Icon className="text-primary" />
-                <span className="text-caption text-neutral-foreground">
-                  {item.label}
-                </span>
+                <Span variant="caption">{item.label}</Span>
 
                 {item.verified && (
                   <CheckCircle
@@ -111,30 +114,30 @@ export default function ProfileDetails() {
                     className="absolute -right-2 -top-2 text-success"
                   />
                 )}
-              </button>
+              </Button>
             );
           })}
         </div>
       </section>
 
       <section className="rounded-lg border border-neutral-20 bg-white p-5">
-        <p className="mb-4 font-semibold text-neutral-foreground">
+        <Text variant="body" className="mb-4 font-semibold">
           Activity Summary
-        </p>
+        </Text>
 
         <div className="grid grid-cols-2 gap-4">
           <div className="rounded-lg border border-neutral-20 p-4">
-            <p className="text-bodyLg font-semibold text-neutral-foreground">
+            <Text variant="bodyLg" className="font-semibold">
               10 hours
-            </p>
-            <p className="text-caption text-muted-foreground">Avg. response</p>
+            </Text>
+            <Text variant="muted">Avg. response</Text>
           </div>
 
           <div className="rounded-lg border border-neutral-20 p-4">
-            <p className="text-bodyLg font-semibold text-neutral-foreground">
+            <Text variant="bodyLg" className="font-semibold">
               12
-            </p>
-            <p className="text-caption text-muted-foreground">Active listing</p>
+            </Text>
+            <Text variant="muted">Active listing</Text>
           </div>
         </div>
       </section>

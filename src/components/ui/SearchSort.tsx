@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Span } from "@/components/ui/span";
 
 interface SearchSortProps {
   onSortChange?: (sortBy: string) => void;
@@ -52,8 +53,8 @@ const SearchSort = ({ onSortChange, className = "" }: SearchSortProps) => {
             strokeLinejoin="round"
           />
         </svg>
-        <span className="text-muted-foreground">Sort by:</span>
-        <span className="font-medium text-neutral-foreground">{selected}</span>
+        <Span variant="muted">Sort by:</Span>
+        <Span className="font-medium text-neutral-foreground">{selected}</Span>
         <svg
           className={`h-4 w-4 transition-transform ${isOpen ? "rotate-180" : ""}`}
           viewBox="0 0 16 16"
@@ -85,11 +86,11 @@ const SearchSort = ({ onSortChange, className = "" }: SearchSortProps) => {
                   onChange={() => handleSelect(option)}
                   className="h-4 w-4 cursor-pointer border-[hsl(var(--border))] text-primary focus:ring-primary"
                 />
-                <span
+                <Span
                   className={`text-caption ${selected === option ? "font-medium text-neutral-foreground" : "text-muted-foreground"}`}
                 >
                   {option}
-                </span>
+                </Span>
               </label>
             ))}
           </div>

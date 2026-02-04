@@ -5,6 +5,7 @@ import { formatPrice } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { PageTitle } from "@/components/layout/PageTitle";
 import { EmptyState } from "@/components/feedback/emptyState/EmptyState";
+import { Text } from "@/components/ui/text";
 
 const CartPage = () => {
   const { items, clearCart, getTotalPrice } = useCartStore();
@@ -46,9 +47,9 @@ const CartPage = () => {
             <div className="h-16 w-16 rounded-lg bg-slate-100" />
             <div className="flex-1">
               <h3 className="font-medium text-slate-900">{item.name}</h3>
-              <p className="text-sm text-slate-600">
+              <Text variant="muted" className="text-sm">
                 {formatPrice(item.price)}
-              </p>
+              </Text>
             </div>
             <div className="text-sm text-slate-600">x{item.quantity}</div>
           </div>
@@ -57,10 +58,12 @@ const CartPage = () => {
 
       <div className="flex items-center justify-between border-t border-slate-200 pt-4">
         <div>
-          <p className="text-sm text-slate-600">Total</p>
-          <p className="text-2xl font-semibold text-slate-900">
+          <Text variant="muted" className="text-sm">
+            Total
+          </Text>
+          <Text className="text-2xl font-semibold text-slate-900">
             {formatPrice(totalPrice)}
-          </p>
+          </Text>
         </div>
         <div className="flex gap-3">
           <Button intent="outline" size="md" onClick={clearCart} type="button">

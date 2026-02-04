@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
+import { Text } from "@/components/ui/text";
 
 interface EmptyStateProps {
   title: string;
@@ -50,9 +51,9 @@ export function EmptyState({
       <div className="space-y-1">
         <h3 className={cn("text-gray-900", titleStyles[size])}>{title}</h3>
         {description ? (
-          <p className={cn("text-gray-500", descriptionStyles[size])}>
+          <Text className={cn("text-gray-500", descriptionStyles[size])}>
             {description}
-          </p>
+          </Text>
         ) : null}
       </div>
       {action ? <div className="mt-4">{action}</div> : null}

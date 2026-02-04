@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/constants/routes";
 import PageLayout from "@/components/layout/PageLayout";
 import { Phone } from "lucide-react";
+import { Text } from "@/components/ui/text";
 
 export default function OtpPhonePage() {
   const navigate = useNavigate();
@@ -84,10 +85,10 @@ export default function OtpPhonePage() {
             <Phone className="h-6 w-6 text-primary" />
           </div>
           <h1 className="text-h2 font-semibold">Verify Your Phone</h1>
-          <p className="text-body text-muted-foreground">
+          <Text variant="muted">
             We've sent a 6-digit verification code to your phone number. Please
             enter it below.
-          </p>
+          </Text>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -121,9 +122,9 @@ export default function OtpPhonePage() {
 
         <div className="space-y-2 text-center">
           {resendTimer > 0 ? (
-            <p className="text-bodySmall text-muted-foreground">
+            <Text variant="muted" className="text-bodySmall">
               Resend code in {resendTimer}s
-            </p>
+            </Text>
           ) : (
             <button
               onClick={handleResend}

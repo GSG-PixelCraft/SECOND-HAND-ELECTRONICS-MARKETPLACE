@@ -1,6 +1,9 @@
 import * as React from "react";
 import { Camera } from "lucide-react";
 import { countries } from "countries-list";
+import { Button } from "@/components/ui/button";
+import { Image } from "@/components/ui/image";
+import { Span } from "@/components/ui/span";
 
 interface EditProfileFormProps {
   onCancel: () => void;
@@ -30,11 +33,11 @@ export const EditProfileForm = ({
   return (
     <div className="rounded-xl border border-neutral-20 bg-white p-6">
       <div className="flex flex-col items-center gap-6">
-        <button
+        <Button
           type="button"
           className="group relative h-28 w-28 overflow-hidden rounded-full border border-neutral-20"
         >
-          <img
+          <Image
             src="https://i.pravatar.cc/150?img=32"
             alt="Profile"
             className="h-full w-full object-cover"
@@ -42,13 +45,11 @@ export const EditProfileForm = ({
           <div className="absolute inset-0 hidden items-center justify-center bg-black/40 group-hover:flex">
             <Camera size={20} className="text-white" />
           </div>
-        </button>
+        </Button>
 
         <div className="flex w-full flex-col gap-4">
           <label className="flex flex-col gap-1">
-            <span className="text-label text-neutral-foreground">
-              Full name
-            </span>
+            <Span variant="label">Full name</Span>
             <input
               type="text"
               value={fullName}
@@ -58,7 +59,7 @@ export const EditProfileForm = ({
           </label>
 
           <label className="flex flex-col gap-1">
-            <span className="text-label text-neutral-foreground">Email</span>
+            <Span variant="label">Email</Span>
             <input
               type="email"
               value={email}
@@ -68,9 +69,7 @@ export const EditProfileForm = ({
           </label>
 
           <label className="flex flex-col gap-1">
-            <span className="text-label text-neutral-foreground">
-              Phone number
-            </span>
+            <Span variant="label">Phone number</Span>
             <input
               type="tel"
               value={phone}
@@ -80,7 +79,7 @@ export const EditProfileForm = ({
           </label>
 
           <label className="flex flex-col gap-1">
-            <span className="text-label text-neutral-foreground">Country</span>
+            <Span variant="label">Country</Span>
             <select
               value={country}
               onChange={(e) => setCountry(e.target.value)}
@@ -97,21 +96,21 @@ export const EditProfileForm = ({
         </div>
 
         <div className="flex w-full justify-between pt-4">
-          <button
+          <Button
             type="button"
             onClick={onCancel}
             className="rounded-md bg-neutral-10 px-4 py-2 text-body text-neutral-foreground hover:bg-neutral-10"
           >
             Cancel
-          </button>
+          </Button>
 
-          <button
+          <Button
             type="button"
             onClick={onSubmit}
             className="rounded-md bg-primary px-4 py-2 text-body text-primary-foreground hover:bg-primary-40"
           >
             Update profile
-          </button>
+          </Button>
         </div>
       </div>
     </div>

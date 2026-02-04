@@ -6,6 +6,7 @@ import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
 import { Card, CardContent } from "@/components/ui/Card";
+import { Span } from "@/components/ui/span";
 
 interface LocationCardProps {
   location: string;
@@ -36,7 +37,7 @@ export const LocationCard = ({ location, coordinates }: LocationCardProps) => {
         </h3>
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
           <MapPin className="h-4 w-4 text-primary" />
-          <span>{location}</span>
+          <Span>{location}</Span>
         </div>
         <div className="relative h-44 w-full overflow-hidden rounded-xl border border-neutral-10">
           <MapContainer

@@ -1,3 +1,5 @@
+import { Button } from "./button";
+
 interface LocationPermissionModalProps {
   isOpen: boolean;
   onAllow: () => void;
@@ -46,24 +48,24 @@ export const LocationPermissionModal = ({
         </div>
 
         <div className="space-y-3">
-          <button
+          <Button
             onClick={onAllow}
             className="w-full rounded-lg bg-blue-600 px-4 py-3 font-medium text-white transition-colors hover:bg-blue-700"
           >
             Allow while visiting the site
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={onAllow}
             className="w-full rounded-lg border-2 border-blue-600 bg-white px-4 py-3 font-medium text-blue-600 transition-colors hover:bg-blue-50"
           >
             Allow this time
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={onDeny}
             className="w-full rounded-lg px-4 py-3 font-medium text-gray-700 transition-colors hover:bg-gray-50"
           >
             Never allow
-          </button>
+          </Button>
         </div>
       </div>
     </div>

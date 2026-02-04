@@ -2,6 +2,8 @@
 import * as React from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Dialog } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Text } from "@/components/ui/text";
 import {
   MapContainer,
   Marker,
@@ -178,29 +180,29 @@ export const LocationDialog: React.FC<LocationDialogProps> = ({
       className="max-w-[577px] rounded-[20px] border border-[#e4e4e4] p-8"
     >
       <div className="relative flex items-center justify-center">
-        <p className="font-['Poppins'] text-xl font-medium leading-normal text-[#212121]">
+        <Text className="font-['Poppins'] text-xl font-medium leading-normal text-[#212121]">
           Location
-        </p>
-        <button
+        </Text>
+        <Button
           type="button"
           onClick={() => onOpenChange(false)}
           className="absolute right-0 flex h-7 w-7 items-center justify-center rounded-full border border-[#e4e4e4] text-sm text-[#3d3d3d]"
           aria-label="Close"
         >
           ×
-        </button>
+        </Button>
       </div>
 
       <div className="mt-6 flex flex-col gap-4">
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
-            <p className="font-['Poppins'] text-base leading-normal text-[#3d3d3d]">
+            <Text className="font-['Poppins'] text-base leading-normal text-[#3d3d3d]">
               Country
-            </p>
+            </Text>
             <div className="flex flex-col items-center justify-center text-center leading-[0]">
-              <p className="font-['Poppins'] text-sm leading-normal text-[#ef4444]">
+              <Text className="font-['Poppins'] text-sm leading-normal text-[#ef4444]">
                 *
-              </p>
+              </Text>
             </div>
           </div>
           <div className="flex w-full items-center gap-2.5 rounded-[10px] border border-solid border-[#e4e4e4] bg-white p-4">
@@ -233,13 +235,13 @@ export const LocationDialog: React.FC<LocationDialogProps> = ({
 
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
-            <p className="font-['Poppins'] text-base leading-normal text-[#3d3d3d]">
+            <Text className="font-['Poppins'] text-base leading-normal text-[#3d3d3d]">
               City
-            </p>
+            </Text>
             <div className="flex flex-col items-center justify-center text-center leading-[0]">
-              <p className="font-['Poppins'] text-sm leading-normal text-[#ef4444]">
+              <Text className="font-['Poppins'] text-sm leading-normal text-[#ef4444]">
                 *
-              </p>
+              </Text>
             </div>
           </div>
           <div className="flex w-full items-center gap-2.5 rounded-[10px] border border-solid border-[#e4e4e4] bg-white p-4">
@@ -271,9 +273,9 @@ export const LocationDialog: React.FC<LocationDialogProps> = ({
         </div>
 
         <div className="flex flex-col gap-2">
-          <p className="font-['Poppins'] text-base leading-normal text-[#3d3d3d]">
+          <Text className="font-['Poppins'] text-base leading-normal text-[#3d3d3d]">
             Street
-          </p>
+          </Text>
           <div className="flex w-full items-center gap-2.5 rounded-[10px] border border-solid border-[#e4e4e4] bg-white p-4">
             <input
               type="text"
@@ -290,9 +292,9 @@ export const LocationDialog: React.FC<LocationDialogProps> = ({
 
         <div className="flex items-center gap-3 text-[#828282]">
           <span className="h-px flex-1 bg-[#e4e4e4]" />
-          <p className="font-['Poppins'] text-sm leading-normal">
+          <Text className="font-['Poppins'] text-sm leading-normal">
             Or use the map
-          </p>
+          </Text>
           <span className="h-px flex-1 bg-[#e4e4e4]" />
         </div>
 
@@ -323,15 +325,15 @@ export const LocationDialog: React.FC<LocationDialogProps> = ({
           </MapContainer>
         </div>
 
-        <button
+        <Button
           type="button"
           onClick={handleApply}
           className="flex h-14 w-full items-center justify-center rounded-xl bg-[#2563eb] px-[119px] py-4"
         >
-          <p className="font-['Poppins'] text-base font-medium leading-normal text-white">
+          <Text className="font-['Poppins'] text-base font-medium leading-normal text-white">
             Use this address
-          </p>
-        </button>
+          </Text>
+        </Button>
       </div>
     </Dialog>
   );

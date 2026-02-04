@@ -1,6 +1,7 @@
 // src/components/forms/form-components.tsx
 import * as React from "react";
 import { twMerge } from "tailwind-merge";
+import { Text } from "@/components/ui/text";
 
 export interface FormFieldProps {
   children: React.ReactNode;
@@ -47,12 +48,13 @@ export const FormHelperText: React.FC<FormHelperTextProps> = ({
   ...props
 }): React.ReactElement => {
   return (
-    <p
-      className={twMerge("text-caption text-muted-foreground", className)}
+    <Text
+      variant="muted"
+      className={twMerge("text-caption", className)}
       {...props}
     >
       {children}
-    </p>
+    </Text>
   );
 };
 
@@ -68,9 +70,13 @@ export const FormError: React.FC<FormErrorProps> = ({
   if (!children) return <></>;
 
   return (
-    <p className={twMerge("text-caption text-error", className)} {...props}>
+    <Text
+      variant="error"
+      className={twMerge("text-caption", className)}
+      {...props}
+    >
       {children}
-    </p>
+    </Text>
   );
 };
 
@@ -84,11 +90,12 @@ export const FormDescription: React.FC<FormDescriptionProps> = ({
   ...props
 }): React.ReactElement => {
   return (
-    <p
-      className={twMerge("text-caption text-muted-foreground", className)}
+    <Text
+      variant="muted"
+      className={twMerge("text-caption", className)}
       {...props}
     >
       {children}
-    </p>
+    </Text>
   );
 };

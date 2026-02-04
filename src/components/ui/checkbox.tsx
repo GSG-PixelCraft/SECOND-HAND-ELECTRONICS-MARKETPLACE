@@ -2,6 +2,8 @@
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { twMerge } from "tailwind-merge";
+import { Span } from "./span";
+import { Text } from "./text";
 
 const checkboxVariants = cva(
   [
@@ -85,25 +87,22 @@ export const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
             {...props}
           />
           {label && (
-            <label
-              htmlFor={resolvedId}
-              className="cursor-pointer text-caption text-neutral-foreground"
-            >
-              {label}
+            <label htmlFor={resolvedId} className="cursor-pointer">
+              <Span variant="caption">{label}</Span>
             </label>
           )}
         </div>
 
         {helperText && !error && (
-          <p id={helperId} className="text-caption text-muted-foreground">
+          <Text variant="muted" className="text-caption" id={helperId}>
             {helperText}
-          </p>
+          </Text>
         )}
 
         {error && (
-          <p id={errorId} className="text-caption text-error">
+          <Text variant="error" className="text-caption" id={errorId}>
             {error}
-          </p>
+          </Text>
         )}
       </div>
     );

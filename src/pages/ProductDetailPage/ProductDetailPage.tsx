@@ -14,6 +14,8 @@ import { ListingStatusCard } from "./components/ListingStatusCard";
 import { ReportListingDialog } from "./components/ReportListingDialog";
 import { ReportSuccessDialog } from "./components/ReportSuccessDialog";
 import { ReportLoadingOverlay } from "./components/ReportLoadingOverlay";
+import { Button } from "@/components/ui/button";
+import { Span } from "@/components/ui/span";
 
 type OwnerStatus = "pending" | "rejected" | null;
 
@@ -171,80 +173,89 @@ const ProductDetailPage = () => {
       {isDemo && (
         <section className="rounded-2xl border border-neutral-10 bg-muted/40 p-4">
           <div className="flex flex-wrap items-center gap-3">
-            <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            <Span
+              variant="muted"
+              className="text-xs font-semibold uppercase tracking-wide"
+            >
               Demo controls
-            </span>
+            </Span>
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-xs text-muted-foreground">View</span>
-              <button
+              <Span variant="muted" className="text-xs">
+                View
+              </Span>
+              <Button
                 type="button"
                 className={getToggleClass(demoViewMode === "public")}
                 onClick={() => setDemoViewMode("public")}
               >
                 Public
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
                 className={getToggleClass(demoViewMode === "owner")}
                 onClick={() => setDemoViewMode("owner")}
               >
                 Owner
-              </button>
+              </Button>
             </div>
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-xs text-muted-foreground">Status</span>
-              <button
+              <Span variant="muted" className="text-xs">
+                Status
+              </Span>
+              <Button
                 type="button"
                 className={getToggleClass(demoOwnerStatus === null)}
                 onClick={() => setDemoOwnerStatus(null)}
               >
                 None
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
                 className={getToggleClass(demoOwnerStatus === "pending")}
                 onClick={() => setDemoOwnerStatus("pending")}
               >
                 Pending
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
                 className={getToggleClass(demoOwnerStatus === "rejected")}
                 onClick={() => setDemoOwnerStatus("rejected")}
               >
                 Rejected
-              </button>
+              </Button>
             </div>
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-xs text-muted-foreground">Report flow</span>
-              <button
+              <Span variant="muted" className="text-xs">
+                Report flow
+              </Span>
+              <Button
                 type="button"
                 className={getToggleClass(reportStep === "form")}
                 onClick={() => setReportStep("form")}
               >
                 Form
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
                 className={getToggleClass(reportStep === "loading")}
                 onClick={() => setReportStep("loading")}
               >
                 Loading
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
                 className={getToggleClass(reportStep === "success")}
                 onClick={() => setReportStep("success")}
               >
                 Success
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
                 className={getToggleClass(reportStep === "idle")}
                 onClick={() => setReportStep("idle")}
               >
                 Reset
-              </button>
+              </Button>
             </div>
           </div>
         </section>

@@ -17,6 +17,9 @@ import { Footer } from "@/components/layout/footer";
 import { Fragment } from "react";
 import { AdCard } from "@/components/ui/AdCard";
 import PageLayout from "@/components/layout/PageLayout";
+import { Button } from "@/components/ui/button";
+import { Text } from "@/components/ui/text";
+import { Span } from "@/components/ui/span";
 
 export const PublicProfilePage = () => {
   const [sort] = useState("Newest");
@@ -63,20 +66,20 @@ export const PublicProfilePage = () => {
                 </div>
               </div>
 
-              <button
+              <Button
                 type="button"
                 aria-label="More options"
                 className="text-muted-foreground hover:text-neutral-foreground"
               >
                 <MoreVertical />
-              </button>
+              </Button>
             </div>
           </section>
 
           <section>
-            <p className="mb-3 font-semibold text-neutral-foreground">
+            <Text className="mb-3 font-semibold text-neutral-foreground">
               Trust indicators
-            </p>
+            </Text>
 
             <div className="grid grid-cols-3 gap-4">
               {[
@@ -92,9 +95,9 @@ export const PublicProfilePage = () => {
                     className="relative flex flex-col items-center gap-2 rounded-lg border border-neutral-20 bg-white p-4"
                   >
                     <Icon className="text-primary" />
-                    <span className="text-caption text-neutral-foreground">
+                    <Span className="text-caption text-neutral-foreground">
                       {item.label}
-                    </span>
+                    </Span>
 
                     {item.verified && (
                       <CheckCircle
@@ -110,27 +113,27 @@ export const PublicProfilePage = () => {
 
           <section className="flex flex-col gap-4">
             <div className="flex items-center justify-between border-b border-neutral-20 pb-2">
-              <p className="border-b-2 border-neutral-foreground pb-2 font-semibold text-neutral-foreground">
+              <Text className="border-b-2 border-neutral-foreground pb-2 font-semibold text-neutral-foreground">
                 Active Listings
-              </p>
+              </Text>
 
               <div className="flex gap-3">
-                <button
+                <Button
                   type="button"
                   className="flex items-center gap-2 rounded-lg border border-neutral-20 bg-white px-3 py-2 text-sm text-neutral-foreground"
                 >
                   <ArrowUpDown size={14} />
                   Sort by: {sort}
-                </button>
+                </Button>
 
-                <button
+                <Button
                   type="button"
                   className="flex items-center gap-2 rounded-lg border border-neutral-20 bg-white px-3 py-2 text-sm text-neutral-foreground"
                 >
                   {" "}
                   <Filter size={14} />
                   Filter
-                </button>
+                </Button>
               </div>
             </div>
 

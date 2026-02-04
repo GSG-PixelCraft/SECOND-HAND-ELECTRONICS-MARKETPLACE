@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { ROUTES, getProductRoute } from "@/constants/routes";
 import { ChatsParts } from "@/components/chats/ChatsParts";
 import { Button } from "@/components/ui/button";
+import { Text } from "@/components/ui/text";
 
 const HomePage = () => {
   return (
@@ -13,10 +14,10 @@ const HomePage = () => {
             <h1 className="text-3xl font-semibold text-slate-900">
               Welcome to Second-Hand Electronics Marketplace
             </h1>
-            <p className="max-w-xl text-base text-slate-600">
+            <Text variant="muted" className="max-w-xl text-base">
               Buy and sell used electronics safely and easily. Find great deals
               on quality pre-owned devices.
-            </p>
+            </Text>
           </div>
           <div className="flex flex-wrap gap-3">
             <Link to={ROUTES.RECENT_LISTINGS}>
@@ -54,21 +55,23 @@ const HomePage = () => {
           <h3 className="text-lg font-semibold text-slate-900">
             Trusted Marketplace
           </h3>
-          <p className="mt-2 text-sm text-slate-600">
+          <Text variant="muted" className="mt-2 text-sm">
             Buy and sell with confidence
-          </p>
+          </Text>
         </div>
         <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
           <h3 className="text-lg font-semibold text-slate-900">
             Fast Shipping
           </h3>
-          <p className="mt-2 text-sm text-slate-600">
+          <Text variant="muted" className="mt-2 text-sm">
             Quick and secure delivery
-          </p>
+          </Text>
         </div>
         <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
           <h3 className="text-lg font-semibold text-slate-900">24/7 Support</h3>
-          <p className="mt-2 text-sm text-slate-600">Always here to help</p>
+          <Text variant="muted" className="mt-2 text-sm">
+            Always here to help
+          </Text>
         </div>
       </section>
 
