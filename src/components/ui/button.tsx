@@ -77,9 +77,9 @@ const buttonVariants = cva(
         ],
       },
       size: {
-        sm: "px-3 py-1.5 text-caption",
-        md: "px-4 py-2 text-body",
-        lg: "px-5 py-2.5 text-bodyLg",
+        sm: "px-3 py-1.5 ",
+        md: "px-4 py-2 y",
+        lg: "px-5 py-2.5 ",
       },
       fullWidth: {
         true: "w-full",
