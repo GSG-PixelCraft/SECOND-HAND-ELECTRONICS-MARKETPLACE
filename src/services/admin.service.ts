@@ -1,6 +1,4 @@
 import { useQuery } from "@tanstack/react-query";
-import { api } from "./client";
-import { API_ENDPOINTS } from "@/constants/api-endpoints";
 import type {
   AdminDashboardData,
   DashboardStats,

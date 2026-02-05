@@ -1,8 +1,6 @@
-import { createBrowserRouter, Outlet } from "react-router-dom";
+import { createBrowserRouter } from "react-router-dom";
 import { AppLoading } from "@/components/feedback/loading/app-loading";
 import { AppLayout } from "@/components/layout/app-layout";
-import { AdminLayout } from "@/components/layout/admin-layout";
-import { AuthGuard, RoleGuard } from "./guards";
 import UnexpectedErrorPage from "@/pages/UnexpectedPage/UnexpectedPage";
 
 // Route configuration arrays
@@ -181,49 +179,30 @@ const protectedRoutes = [
   },
 ];
 
-const adminRoutes = [
-  {
-    index: true,
-    lazy: async () => {
-      const { default: AdminOverviewPage } =
-        await import("@/pages/AdminOverviewPage/AdminOverviewPage");
-      return { Component: AdminOverviewPage };
-    },
-  },
-];
-
 export const router = createBrowserRouter([
   {
     path: "/",
     element: <AppLayout />,
     errorElement: <UnexpectedErrorPage />,
     hydrateFallbackElement: <AppLoading />,
-    children: [
-      ...publicRoutes,
-      ...publicSimpleRoutes,
-      {
-        element: (
-          <AuthGuard>
-            <Outlet />
-          </AuthGuard>
+    children: [...publicRoutes, ...publicSimpleRoutes, ...protectedRoutes],
+  },
+  {
+    path: "/admin",
+    lazy: async () => {
+      const [{ default: AdminOverviewPage }, { AdminDashboardLayout }] =
+        await Promise.all([
+          import("@/pages/AdminOverviewPage/AdminOverviewPage"),
+          import("@/components/layout/AdminDashboardLayout"),
+        ]);
+      return {
+        Component: () => (
+          <AdminDashboardLayout>
+            <AdminOverviewPage />
+          </AdminDashboardLayout>
         ),
-        children: [
-          ...protectedRoutes,
-          {
-            path: "/admin",
-            element: (
-              <AuthGuard>
-                <RoleGuard allowedRoles={["admin"]}>
-                  <AdminLayout />
-                </RoleGuard>
-              </AuthGuard>
-            ),
-            hydrateFallbackElement: <AppLoading />,
-            children: adminRoutes,
-          },
-        ],
-      },
-    ],
+      };
+    },
   },
   {
     path: "*",

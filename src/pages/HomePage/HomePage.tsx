@@ -11,9 +11,9 @@ const HomePage = () => {
       <section className="rounded-3xl bg-white px-8 py-10 shadow-sm">
         <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
           <div className="space-y-4">
-            <h1 className="text-3xl font-semibold text-slate-900">
+            <Text className="text-3xl font-semibold text-slate-900">
               Welcome to Second-Hand Electronics Marketplace
-            </h1>
+            </Text>
             <Text variant="muted" className="max-w-xl text-base">
               Buy and sell used electronics safely and easily. Find great deals
               on quality pre-owned devices.
@@ -36,7 +36,7 @@ const HomePage = () => {
                 🎨 DEMO: Add Listing
               </Button>
             </Link>
-            <Link to={`${getProductRoute("p-101")}?demo=1`}>
+            <Link to={getProductRoute("p-101")}>
               <Button intent="outline" size="md">
                 🎨 DEMO: Product Details
               </Button>
@@ -57,23 +57,25 @@ const HomePage = () => {
 
       <section className="grid gap-6 md:grid-cols-3">
         <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h3 className="text-lg font-semibold text-slate-900">
+          <Text className="text-lg font-semibold text-slate-900">
             Trusted Marketplace
-          </h3>
+          </Text>
           <Text variant="muted" className="mt-2 text-sm">
             Buy and sell with confidence
           </Text>
         </div>
         <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h3 className="text-lg font-semibold text-slate-900">
+          <Text className="text-lg font-semibold text-slate-900">
             Fast Shipping
-          </h3>
+          </Text>
           <Text variant="muted" className="mt-2 text-sm">
             Quick and secure delivery
           </Text>
         </div>
         <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h3 className="text-lg font-semibold text-slate-900">24/7 Support</h3>
+          <Text className="text-lg font-semibold text-slate-900">
+            24/7 Support
+          </Text>
           <Text variant="muted" className="mt-2 text-sm">
             Always here to help
           </Text>
@@ -82,7 +84,9 @@ const HomePage = () => {
 
       <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-slate-900">Chats Demo</h2>
+          <Text className="text-xl font-semibold text-slate-900">
+            Chats Demo
+          </Text>
           <Link
             to={ROUTES.CHAT}
             className="text-sm font-medium text-slate-600 transition hover:text-slate-900"

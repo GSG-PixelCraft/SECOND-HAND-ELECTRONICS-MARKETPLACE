@@ -85,13 +85,13 @@ export const MoreDetailsStep: React.FC<MoreDetailsStepProps> = ({
     if (watchedBrand && watchedBrand !== selectedBrand) {
       setSelectedBrand(watchedBrand);
     }
-  }, [watchedBrand]);
+  }, [watchedBrand, selectedBrand]);
 
   React.useEffect(() => {
     if (watchedStorage && watchedStorage !== selectedStorage) {
       setSelectedStorage(watchedStorage);
     }
-  }, [watchedStorage]);
+  }, [watchedStorage, selectedStorage]);
 
   React.useEffect(() => {
     setValue("brand", selectedBrand, { shouldValidate: true });

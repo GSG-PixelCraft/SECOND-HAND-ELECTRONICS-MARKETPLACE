@@ -21,7 +21,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "./Card";
 // ============================================================================
 
 interface LineChartProps {
-  data: any[];
+  data: Record<string, unknown>[];
   title?: string;
   lines: {
     dataKey: string;
@@ -88,7 +88,7 @@ const LineChart = React.forwardRef<HTMLDivElement, LineChartProps>(
         </CardContent>
       </Card>
     );
-  }
+  },
 );
 
 LineChart.displayName = "LineChart";
@@ -98,7 +98,7 @@ LineChart.displayName = "LineChart";
 // ============================================================================
 
 interface BarChartProps {
-  data: any[];
+  data: Record<string, unknown>[];
   title?: string;
   bars: {
     dataKey: string;
@@ -162,7 +162,7 @@ const BarChart = React.forwardRef<HTMLDivElement, BarChartProps>(
         </CardContent>
       </Card>
     );
-  }
+  },
 );
 
 BarChart.displayName = "BarChart";
@@ -172,7 +172,7 @@ BarChart.displayName = "BarChart";
 // ============================================================================
 
 interface PieChartProps {
-  data: any[];
+  data: Record<string, unknown>[];
   title?: string;
   dataKey: string;
   nameKey: string;
@@ -192,7 +192,7 @@ const PieChart = React.forwardRef<HTMLDivElement, PieChartProps>(
       className,
       colors: customColors,
     },
-    ref
+    ref,
   ) => {
     const defaultColors = [
       "hsl(var(--primary))",
@@ -250,7 +250,7 @@ const PieChart = React.forwardRef<HTMLDivElement, PieChartProps>(
         </CardContent>
       </Card>
     );
-  }
+  },
 );
 
 PieChart.displayName = "PieChart";

@@ -1,5 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Search, MapPin, Crosshair, X } from "lucide-react";
+import { Span } from "@/components/ui/span";
+import { Button } from "@/components/ui/button";
 
 interface Option {
   value: string;
@@ -66,13 +68,12 @@ export const LocationLanguageDropdown = ({
   return (
     <div className="relative" ref={dropdownRef}>
       {/* Trigger Button */}
-      <button
-        type="button"
+      <Button
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-2 rounded-md px-3 py-2 text-body text-neutral-foreground transition-colors hover:bg-neutral-5"
       >
         {icon}
-        <span>{selectedOption?.label || value}</span>
+        <Span>{selectedOption?.label || value}</Span>
         <svg
           className={`h-4 w-4 text-neutral transition-transform ${isOpen ? "rotate-180" : ""}`}
           fill="none"
@@ -86,7 +87,7 @@ export const LocationLanguageDropdown = ({
             d="M19 9l-7 7-7-7"
           />
         </svg>
-      </button>
+      </Button>
 
       {/* Dropdown Panel */}
       {isOpen && (
@@ -94,8 +95,7 @@ export const LocationLanguageDropdown = ({
           {/* Action Buttons - Only for location */}
           {type === "location" && (
             <>
-              <button
-                type="button"
+              <Button
                 onClick={() => {
                   onDetectLocation?.();
                   setIsOpen(false);
@@ -103,11 +103,10 @@ export const LocationLanguageDropdown = ({
                 className="mb-3 flex w-full items-center gap-3 rounded-lg border border-neutral-20 px-4 py-3 text-body text-neutral-foreground transition-colors hover:bg-neutral-5"
               >
                 <Crosshair size={20} className="text-neutral" />
-                <span>Detect my location</span>
-              </button>
+                <Span>Detect my location</Span>
+              </Button>
 
-              <button
-                type="button"
+              <Button
                 onClick={() => {
                   onManualEntry?.();
                   setIsOpen(false);
@@ -115,8 +114,8 @@ export const LocationLanguageDropdown = ({
                 className="mb-3 flex w-full items-center gap-3 rounded-lg border border-neutral-20 px-4 py-3 text-body text-neutral-foreground transition-colors hover:bg-neutral-5"
               >
                 <MapPin size={20} className="text-neutral" />
-                <span>Enter location manually</span>
-              </button>
+                <Span>Enter location manually</Span>
+              </Button>
 
               <div className="mb-4 text-center text-caption text-neutral">
                 Or
@@ -138,13 +137,12 @@ export const LocationLanguageDropdown = ({
               className="w-full rounded-lg border border-neutral-20 bg-white py-2.5 pl-10 pr-10 text-body outline-none transition-colors placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary-20"
             />
             {searchQuery && (
-              <button
-                type="button"
+              <Button
                 onClick={() => setSearchQuery("")}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral hover:text-neutral-foreground"
               >
                 <X size={16} />
-              </button>
+              </Button>
             )}
           </div>
 
@@ -153,9 +151,8 @@ export const LocationLanguageDropdown = ({
             {filteredOptions.length > 0 ? (
               <div className="space-y-2">
                 {filteredOptions.map((option) => (
-                  <button
+                  <Button
                     key={option.value}
-                    type="button"
                     onClick={() => handleSelect(option.value)}
                     className={`flex w-full items-center justify-between rounded-lg border px-4 py-3 text-body transition-colors ${
                       value === option.value
@@ -163,7 +160,7 @@ export const LocationLanguageDropdown = ({
                         : "border-neutral-20 hover:bg-neutral-5"
                     }`}
                   >
-                    <span
+                    <Span
                       className={
                         value === option.value
                           ? "text-neutral-foreground"
@@ -171,7 +168,7 @@ export const LocationLanguageDropdown = ({
                       }
                     >
                       {option.label}
-                    </span>
+                    </Span>
                     <div
                       className={`relative h-5 w-5 rounded-full border-2 transition-colors ${
                         value === option.value
@@ -183,7 +180,7 @@ export const LocationLanguageDropdown = ({
                         <div className="absolute left-1/2 top-1/2 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary" />
                       )}
                     </div>
-                  </button>
+                  </Button>
                 ))}
               </div>
             ) : (

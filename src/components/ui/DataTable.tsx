@@ -1,8 +1,8 @@
 import * as React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "./Card";
-import { Button } from "./button";
 import { cn } from "@/lib/utils";
 import { ChevronUp, ChevronDown, ChevronsUpDown } from "lucide-react";
+import { Text } from "@/components/ui/text";
+import { Button } from "@/components/ui/button";
 
 export interface Column<T> {
   key: string;
@@ -10,6 +10,7 @@ export interface Column<T> {
   sortable?: boolean;
   render?: (item: T) => React.ReactNode;
   className?: string;
+  width?: string;
 }
 
 interface DataTableProps<T> {
@@ -19,6 +20,8 @@ interface DataTableProps<T> {
   className?: string;
   onRowClick?: (item: T) => void;
   emptyMessage?: string;
+  showSeeAll?: boolean;
+  onSeeAll?: () => void;
 }
 
 type SortConfig = {
@@ -34,6 +37,8 @@ function DataTable<T extends Record<string, any>>({
   className,
   onRowClick,
   emptyMessage = "No data available",
+  showSeeAll = false,
+  onSeeAll,
 }: DataTableProps<T>) {
   const [sortConfig, setSortConfig] = React.useState<SortConfig>({
     key: "",
@@ -72,7 +77,7 @@ function DataTable<T extends Record<string, any>>({
 
   const getSortIcon = (columnKey: string) => {
     if (sortConfig.key !== columnKey) {
-      return <ChevronsUpDown className="ml-2 h-4 w-4 opacity-50" />;
+      return <ChevronsUpDown className="ml-2 h-4 w-4" />;
     }
     if (sortConfig.direction === "asc") {
       return <ChevronUp className="ml-2 h-4 w-4" />;
@@ -80,62 +85,76 @@ function DataTable<T extends Record<string, any>>({
     if (sortConfig.direction === "desc") {
       return <ChevronDown className="ml-2 h-4 w-4" />;
     }
-    return <ChevronsUpDown className="ml-2 h-4 w-4 opacity-50" />;
+    return <ChevronsUpDown className="ml-2 h-4 w-4" />;
   };
 
   return (
-    <Card className={className}>
-      {title && (
-        <CardHeader>
-          <CardTitle>{title}</CardTitle>
-        </CardHeader>
+    <div
+      className={cn(
+        "overflow-hidden rounded-xl bg-white shadow-[0_1px_4px_0_rgba(0,0,0,0.1)]",
+        className,
       )}
-      <CardContent>
-        <div className="relative w-full overflow-auto">
-          <table className="w-full caption-bottom text-sm">
-            <thead className="[&_tr]:border-b">
-              <tr className="border-b transition-colors hover:bg-muted/50">
-                {columns.map((column) => (
-                  <th
-                    key={column.key}
-                    className={cn(
-                      "h-12 px-4 text-left align-middle font-medium text-muted-foreground",
-                      column.className,
-                    )}
-                  >
-                    {column.sortable ? (
-                      <Button
-                        intent="outline"
-                        size="sm"
-                        onClick={() => handleSort(column.key)}
-                        className="-ml-4 h-8"
-                      >
-                        {column.header}
-                        {getSortIcon(column.key)}
-                      </Button>
-                    ) : (
-                      column.header
-                    )}
-                  </th>
-                ))}
+    >
+      {/* Title Header */}
+      {title && (
+        <div className="flex items-center justify-between p-4">
+          <Text className="text-foreground text-xl font-medium">{title}</Text>
+          {showSeeAll && (
+            <Button
+              onClick={onSeeAll}
+              className="text-sm text-primary hover:underline"
+            >
+              See all
+            </Button>
+          )}
+        </div>
+      )}
+
+      {/* Table */}
+      <div className="relative w-full overflow-auto">
+        <table className="w-full">
+          <thead>
+            <tr className="bg-[rgba(37,99,235,0.1)]">
+              {columns.map((column) => (
+                <th
+                  key={column.key}
+                  className={cn(
+                    "text-foreground h-12 px-4 text-left text-sm font-medium",
+                    column.className,
+                  )}
+                  style={column.width ? { width: column.width } : undefined}
+                >
+                  {column.sortable ? (
+                    <Button
+                      onClick={() => handleSort(column.key)}
+                      className="flex items-center gap-1 transition-colors hover:text-primary"
+                    >
+                      {column.header}
+                      {getSortIcon(column.key)}
+                    </Button>
+                  ) : (
+                    column.header
+                  )}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {sortedData.length === 0 ? (
+              <tr>
+                <td
+                  colSpan={columns.length}
+                  className="h-24 text-center text-[#828282]"
+                >
+                  {emptyMessage}
+                </td>
               </tr>
-            </thead>
-            <tbody className="[&_tr:last-child]:border-0">
-              {sortedData.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={columns.length}
-                    className="h-24 text-center text-muted-foreground"
-                  >
-                    {emptyMessage}
-                  </td>
-                </tr>
-              ) : (
-                sortedData.map((item, rowIndex) => (
+            ) : (
+              sortedData.map((item, rowIndex) => (
+                <React.Fragment key={rowIndex}>
                   <tr
-                    key={rowIndex}
                     className={cn(
-                      "border-b transition-colors hover:bg-muted/50",
+                      "h-12 bg-white transition-colors hover:bg-muted/30",
                       onRowClick && "cursor-pointer",
                     )}
                     onClick={() => onRowClick?.(item)}
@@ -143,19 +162,29 @@ function DataTable<T extends Record<string, any>>({
                     {columns.map((column) => (
                       <td
                         key={column.key}
-                        className={cn("p-4 align-middle", column.className)}
+                        className={cn(
+                          "px-4 py-3 text-sm text-[#3D3D3D]",
+                          column.className,
+                        )}
                       >
                         {column.render ? column.render(item) : item[column.key]}
                       </td>
                     ))}
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-      </CardContent>
-    </Card>
+                  {rowIndex < sortedData.length - 1 && (
+                    <tr>
+                      <td colSpan={columns.length} className="p-0">
+                        <div className="bg-border h-px" />
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
   );
 }
 

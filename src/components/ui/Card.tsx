@@ -1,7 +1,7 @@
 import * as React from "react";
 import { cn } from "../../lib/utils";
 
-export default function Card({
+function Card({
   className,
   size = "default",
   ...props
@@ -90,6 +90,8 @@ function CardFooter({ className, ...props }: React.ComponentProps<"div">) {
     />
   );
 }
+
+export default Card;
 
 export {
   Card,

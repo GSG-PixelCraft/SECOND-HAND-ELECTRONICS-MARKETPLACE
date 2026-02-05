@@ -21,7 +21,7 @@ import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import { Span } from "@/components/ui/span";
 
-export const PublicProfilePage = () => {
+export default function PublicProfilePage() {
   const [sort] = useState("Newest");
 
   // dummy listings until API arrives
@@ -148,4 +148,4 @@ export const PublicProfilePage = () => {
       <Footer></Footer>
     </Fragment>
   );
-};
+}

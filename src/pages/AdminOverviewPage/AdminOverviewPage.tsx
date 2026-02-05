@@ -1,10 +1,31 @@
 import { StatCard } from "@/components/ui/StatCard";
-import { LineChart, BarChart, PieChart } from "@/components/ui/Charts";
-import { DataTable, Column } from "@/components/ui/DataTable";
+import { DataTable } from "@/components/ui/DataTable";
+import { StatusBadge } from "@/components/ui/StatusBadge";
+import { ActivityCard, ActivityIcon } from "@/components/ui/ActivityCard";
+import type { Column } from "@/components/ui/DataTable";
 import { useAdminDashboard } from "@/services/admin.service";
-import { RecentUser, RecentProduct, RecentOrder } from "@/types/admin";
-import { Users, Package, ShoppingCart, DollarSign } from "lucide-react";
 import { Text } from "@/components/ui/text";
+import { Span } from "@/components/ui/span";
+import { Button } from "@/components/ui/button";
+import {
+  FileText,
+  Flag,
+  CheckCircle,
+  MessageSquare,
+  Package as PackageIcon,
+  User,
+  Eye,
+} from "lucide-react";
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
+
+interface PendingListing {
+  title: string;
+  seller: string;
+  verified: boolean;
+  category: string;
+  date: string;
+  status: string;
+}
 
 const AdminOverviewPage = () => {
   const { data, isLoading, error } = useAdminDashboard();
@@ -14,7 +35,7 @@ const AdminOverviewPage = () => {
       <div className="flex min-h-[400px] items-center justify-center">
         <div className="text-center">
           <div className="mb-4 inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent motion-reduce:animate-[spin_1.5s_linear_infinite]" />
-          <Text className="text-muted-foreground">Loading dashboard...</Text>
+          <Text className="text-[#828282]">Loading dashboard...</Text>
         </div>
       </div>
     );
@@ -27,9 +48,7 @@ const AdminOverviewPage = () => {
           <Text className="text-lg font-semibold text-error">
             Error loading dashboard
           </Text>
-          <Text className="mt-2 text-sm text-muted-foreground">
-            {error.message}
-          </Text>
+          <Text className="mt-2 text-sm text-[#828282]">{error.message}</Text>
         </div>
       </div>
     );
@@ -37,244 +56,337 @@ const AdminOverviewPage = () => {
 
   if (!data) return null;
 
-  // Column definitions for tables
-  const userColumns: Column<RecentUser>[] = [
-    {
-      key: "name",
-      header: "Name",
-      sortable: true,
-    },
-    {
-      key: "email",
-      header: "Email",
-      sortable: true,
-    },
-    {
-      key: "role",
-      header: "Role",
-      sortable: true,
-      render: (user) => (
-        <span className="inline-flex items-center rounded-full bg-primary/10 px-2 py-1 text-xs font-medium text-primary">
-          {user.role}
-        </span>
-      ),
-    },
-    {
-      key: "status",
-      header: "Status",
-      sortable: true,
-      render: (user) => (
-        <span
-          className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
-            user.status === "active"
-              ? "bg-success/10 text-success"
-              : "bg-warning/10 text-warning"
-          }`}
-        >
-          {user.status}
-        </span>
-      ),
-    },
-    {
-      key: "joinedAt",
-      header: "Joined",
-      sortable: true,
-      render: (user) => new Date(user.joinedAt).toLocaleDateString(),
-    },
+  // Traffic by Location Data
+  const locationData = [
+    { name: "Palestine", value: 52.1, color: "#2563EB" },
+    { name: "Jordan", value: 22.8, color: "#14B8A6" },
+    { name: "USA", value: 13.9, color: "#22C55E" },
+    { name: "Other", value: 11.2, color: "#FACC15" },
   ];
 
-  const productColumns: Column<RecentProduct>[] = [
+  // Pending Listings Table Columns
+  const listingColumns: Column<PendingListing>[] = [
     {
-      key: "name",
-      header: "Product",
+      key: "title",
+      header: "Listing Title",
       sortable: true,
-    },
-    {
-      key: "category",
-      header: "Category",
-      sortable: true,
-    },
-    {
-      key: "price",
-      header: "Price",
-      sortable: true,
-      render: (product) => `$${product.price.toLocaleString()}`,
-    },
-    {
-      key: "condition",
-      header: "Condition",
-      sortable: true,
-      render: (product) => (
-        <span className="inline-flex items-center rounded-full bg-secondary/10 px-2 py-1 text-xs font-medium text-secondary">
-          {product.condition}
-        </span>
+      render: (item: PendingListing) => (
+        <div className="flex items-center gap-2">
+          <div className="size-8 flex-shrink-0 rounded bg-muted" />
+          <Span className="text-sm text-[#3D3D3D]">{item.title}</Span>
+        </div>
       ),
     },
     {
       key: "seller",
       header: "Seller",
       sortable: true,
+      render: (item: PendingListing) => (
+        <div className="flex items-center gap-2">
+          <Span className="text-sm text-[#3D3D3D]">{item.seller}</Span>
+          {item.verified && <CheckCircle className="size-3.5 text-success" />}
+        </div>
+      ),
+    },
+    {
+      key: "category",
+      header: "Category",
+      sortable: true,
+      render: (item: PendingListing) => (
+        <StatusBadge variant="neutral">{item.category}</StatusBadge>
+      ),
+    },
+    {
+      key: "date",
+      header: "Submission date",
+      sortable: true,
+      render: (item: PendingListing) => (
+        <Span className="text-sm text-[#3D3D3D]">{item.date}</Span>
+      ),
     },
     {
       key: "status",
       header: "Status",
       sortable: true,
-      render: (product) => (
-        <span
-          className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
-            product.status === "active"
-              ? "bg-success/10 text-success"
-              : "bg-warning/10 text-warning"
-          }`}
+      render: (item: PendingListing) => (
+        <StatusBadge
+          variant={
+            item.status.toLowerCase() as
+              | "pending"
+              | "active"
+              | "completed"
+              | "neutral"
+              | "rejected"
+              | "processing"
+          }
         >
-          {product.status}
-        </span>
+          {item.status}
+        </StatusBadge>
+      ),
+    },
+    {
+      key: "actions",
+      header: "Actions",
+      render: () => (
+        <Button className="text-[#828282] transition-colors hover:text-primary">
+          <Eye className="size-5" />
+        </Button>
       ),
     },
   ];
 
-  const orderColumns: Column<RecentOrder>[] = [
+  // Mock data for pending listings
+  const pendingListings = [
     {
-      key: "id",
-      header: "Order ID",
-      sortable: true,
-      render: (order) => `#${order.id}`,
+      title: "iPhone 14 Pro Max",
+      seller: "Eleanor Vance",
+      verified: true,
+      category: "Phone",
+      date: "20-10-2025",
+      status: "Pending",
     },
     {
-      key: "customer",
-      header: "Customer",
-      sortable: true,
+      title: "Nintendo Switch",
+      seller: "Salma Ahmad",
+      verified: true,
+      category: "Gaming",
+      date: "20-10-2025",
+      status: "Pending",
     },
     {
-      key: "product",
-      header: "Product",
-      sortable: true,
-    },
-    {
-      key: "amount",
-      header: "Amount",
-      sortable: true,
-      render: (order) => `$${order.amount.toLocaleString()}`,
-    },
-    {
-      key: "status",
-      header: "Status",
-      sortable: true,
-      render: (order) => {
-        const statusColors = {
-          completed: "bg-success/10 text-success",
-          processing: "bg-primary/10 text-primary",
-          pending: "bg-warning/10 text-warning",
-          cancelled: "bg-error/10 text-error",
-        };
-        return (
-          <span
-            className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${statusColors[order.status]}`}
-          >
-            {order.status}
-          </span>
-        );
-      },
-    },
-    {
-      key: "createdAt",
-      header: "Date",
-      sortable: true,
-      render: (order) => new Date(order.createdAt).toLocaleDateString(),
+      title: "Samsung Galaxy S21",
+      seller: "Yosef Emad",
+      verified: false,
+      category: "Phone",
+      date: "20-10-2025",
+      status: "Pending",
     },
   ];
 
   return (
-    <div className="space-y-6">
-      {/* Stats Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+    <div className="space-y-8 p-6">
+      {/* Welcome Section */}
+      <div className="space-y-1">
+        <Text className="text-foreground text-2xl font-medium">
+          Welcome, Ahmed 👋
+        </Text>
+        <Text className="text-sm text-[#828282]">
+          Here's a quick look at your project today.
+        </Text>
+      </div>
+
+      {/* KPI Cards */}
+      <div className="grid grid-cols-4 gap-6">
         <StatCard
-          title="Total Users"
-          value={data.stats.totalUsers.toLocaleString()}
-          icon={<Users className="h-6 w-6" />}
-          change={data.stats.userGrowth}
-          changeLabel="from last month"
+          title="Active Listings"
+          value="1154"
+          icon={<FileText className="size-6" />}
+          iconColor="primary"
         />
         <StatCard
-          title="Total Products"
-          value={data.stats.totalProducts.toLocaleString()}
-          icon={<Package className="h-6 w-6" />}
-          change={data.stats.productGrowth}
-          changeLabel="from last month"
+          title="Pending Listings"
+          value="43"
+          icon={<FileText className="size-6" />}
+          iconColor="primary"
         />
         <StatCard
-          title="Total Orders"
-          value={data.stats.totalOrders.toLocaleString()}
-          icon={<ShoppingCart className="h-6 w-6" />}
-          change={data.stats.orderGrowth}
-          changeLabel="from last month"
+          title="Pending Verifications"
+          value="16"
+          icon={<CheckCircle className="size-6" />}
+          iconColor="primary"
         />
         <StatCard
-          title="Total Revenue"
-          value={`$${data.stats.totalRevenue.toLocaleString()}`}
-          icon={<DollarSign className="h-6 w-6" />}
-          change={data.stats.revenueGrowth}
-          changeLabel="from last month"
+          title="Reported Items"
+          value="23"
+          icon={<Flag className="size-6" />}
+          iconColor="warning"
         />
       </div>
 
-      {/* Charts Row 1 */}
-      <div className="grid gap-4 lg:grid-cols-2">
-        <LineChart
-          title="Revenue & Orders Trend"
-          data={data.revenueChart}
-          xAxisKey="date"
-          lines={[
-            { dataKey: "revenue", name: "Revenue ($)", stroke: "hsl(var(--primary))" },
-            { dataKey: "orders", name: "Orders", stroke: "hsl(var(--success))" },
-          ]}
-          height={300}
-        />
-        <BarChart
-          title="User Activity"
-          data={data.userActivityChart}
-          xAxisKey="date"
-          bars={[
-            { dataKey: "newUsers", name: "New Users", fill: "hsl(var(--primary))" },
-            { dataKey: "activeUsers", name: "Active Users", fill: "hsl(var(--secondary))" },
-          ]}
-          height={300}
-        />
-      </div>
-
-      {/* Chart Row 2 */}
-      <div className="grid gap-4 lg:grid-cols-3">
-        <div className="lg:col-span-1">
-          <PieChart
-            title="Products by Category"
-            data={data.categoryChart}
-            dataKey="value"
-            nameKey="name"
-            height={300}
-          />
+      {/* Row 1: Traffic by Location + Recent Activity */}
+      <div className="grid grid-cols-2 gap-6">
+        {/* Traffic by Location */}
+        <div className="rounded-xl bg-white p-4 shadow-[0_1px_4px_0_rgba(0,0,0,0.1)]">
+          <Text className="text-foreground mb-4 text-xl font-medium">
+            Traffic by Location
+          </Text>
+          <div className="flex items-center gap-6">
+            <ResponsiveContainer width={184} height={184}>
+              <PieChart>
+                <Pie
+                  data={locationData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={50}
+                  outerRadius={80}
+                  dataKey="value"
+                >
+                  {locationData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip />
+              </PieChart>
+            </ResponsiveContainer>
+            <div className="flex-1 space-y-3">
+              {locationData.map((item) => (
+                <div
+                  key={item.name}
+                  className="flex items-center justify-between"
+                >
+                  <div className="flex items-center gap-2">
+                    <div
+                      className="size-5 rounded"
+                      style={{ backgroundColor: item.color }}
+                    />
+                    <Span className="text-sm text-[#3D3D3D]">{item.name}</Span>
+                  </div>
+                  <Span className="text-foreground text-sm font-medium">
+                    {item.value}%
+                  </Span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
-        <div className="lg:col-span-2">
-          <DataTable
-            title="Recent Orders"
-            data={data.recentOrders}
-            columns={orderColumns}
-          />
+
+        {/* Recent Activity */}
+        <div className="rounded-xl bg-white p-4 shadow-[0_1px_4px_0_rgba(0,0,0,0.1)]">
+          <div className="mb-4 flex items-center justify-between">
+            <Text className="text-foreground text-xl font-medium">
+              Recent Activity
+            </Text>
+            <Button className="text-sm text-primary hover:underline">
+              See all
+            </Button>
+          </div>
+          <div className="space-y-4">
+            <ActivityCard
+              icon={
+                <ActivityIcon variant="primary">
+                  <User className="size-6 text-primary" />
+                </ActivityIcon>
+              }
+              title="User submitted ID for verification"
+              subtitle="Submitted by Mohammed Ali"
+              timestamp="Just Now"
+            />
+            <ActivityCard
+              icon={
+                <ActivityIcon variant="primary">
+                  <PackageIcon className="size-6 text-primary" />
+                </ActivityIcon>
+              }
+              title="Listing submitted for approval"
+              subtitle="Submitted by Khaled Yaseen"
+              timestamp="48 min ago"
+            />
+            <ActivityCard
+              icon={
+                <ActivityIcon variant="primary">
+                  <MessageSquare className="size-6 text-primary" />
+                </ActivityIcon>
+              }
+              title="User sent a message to customer support"
+              subtitle="Sent by Emaan Ismail"
+              timestamp="2 hours ago"
+            />
+          </div>
         </div>
       </div>
 
-      {/* Data Tables */}
-      <div className="grid gap-4 lg:grid-cols-2">
-        <DataTable
-          title="Recent Users"
-          data={data.recentUsers}
-          columns={userColumns}
-        />
-        <DataTable
-          title="Recent Products"
-          data={data.recentProducts}
-          columns={productColumns}
-        />
+      {/* Row 2: Customer Service + Recent Reports */}
+      <div className="grid grid-cols-2 gap-6">
+        {/* Customer Service */}
+        <div className="rounded-xl bg-white p-4 shadow-[0_1px_4px_0_rgba(0,0,0,0.1)]">
+          <div className="mb-4 flex items-center justify-between">
+            <Text className="text-foreground text-xl font-medium">
+              Customer Service
+            </Text>
+            <Button className="text-sm text-primary hover:underline">
+              See all
+            </Button>
+          </div>
+          <div className="space-y-4">
+            <ActivityCard
+              icon={
+                <div className="size-12 flex-shrink-0 rounded-full bg-gradient-to-br from-primary to-secondary" />
+              }
+              title="Sara Khaled"
+              subtitle="Voice message"
+              timestamp="22 min ago"
+            />
+            <ActivityCard
+              icon={
+                <div className="size-12 flex-shrink-0 rounded-full bg-gradient-to-br from-primary to-secondary" />
+              }
+              title="Lina Ahmad"
+              subtitle="I have a question about pricing"
+              timestamp="45 min ago"
+            />
+            <ActivityCard
+              icon={
+                <div className="size-12 flex-shrink-0 rounded-full bg-gradient-to-br from-primary to-secondary" />
+              }
+              title="Yazan Omar"
+              subtitle="How do I verify my account?"
+              timestamp="2 hours ago"
+            />
+          </div>
+        </div>
+
+        {/* Recent Reports */}
+        <div className="rounded-xl bg-white p-4 shadow-[0_1px_4px_0_rgba(0,0,0,0.1)]">
+          <div className="mb-4 flex items-center justify-between">
+            <Text className="text-foreground text-xl font-medium">
+              Recent Reports
+            </Text>
+            <Button className="text-sm text-primary hover:underline">
+              See all
+            </Button>
+          </div>
+          <div className="space-y-4">
+            <ActivityCard
+              icon={
+                <ActivityIcon variant="primary">
+                  <PackageIcon className="size-6 text-primary" />
+                </ActivityIcon>
+              }
+              title="iPhone 14 Pro Max"
+              subtitle="Reported by Mohammed Ali"
+              timestamp="15 min ago"
+            />
+            <ActivityCard
+              icon={
+                <ActivityIcon variant="secondary">
+                  <User className="size-6 text-secondary" />
+                </ActivityIcon>
+              }
+              title="User Khaled Omar"
+              subtitle="Reported by Liam Johnson"
+              timestamp="25 min ago"
+            />
+            <ActivityCard
+              icon={
+                <ActivityIcon variant="primary">
+                  <MessageSquare className="size-6 text-primary" />
+                </ActivityIcon>
+              }
+              title="Conversation with Ahmed Saleh"
+              subtitle="Reported by Emma Brown"
+              timestamp="1hr min ago"
+            />
+          </div>
+        </div>
       </div>
+
+      {/* Pending Listings Table */}
+      <DataTable
+        title="Pending Listings"
+        data={pendingListings}
+        columns={listingColumns}
+        showSeeAll
+      />
     </div>
   );
 };
