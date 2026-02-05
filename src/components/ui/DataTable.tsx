@@ -41,7 +41,7 @@ function DataTable<T extends Record<string, any>>({
 
   const handleSort = (key: string) => {
     let direction: "asc" | "desc" | null = "asc";
-    
+
     if (sortConfig.key === key) {
       if (sortConfig.direction === "asc") {
         direction = "desc";
@@ -99,14 +99,15 @@ function DataTable<T extends Record<string, any>>({
                     key={column.key}
                     className={cn(
                       "h-12 px-4 text-left align-middle font-medium text-muted-foreground",
-                      column.className
+                      column.className,
                     )}
                   >
                     {column.sortable ? (
                       <Button
                         intent="ghost"
+                        size="sm"
                         onClick={() => handleSort(column.key)}
-                        className="-ml-4 h-8 data-[state=open]:bg-accent"
+                        className="-ml-4 h-8"
                       >
                         {column.header}
                         {getSortIcon(column.key)}
@@ -134,21 +135,16 @@ function DataTable<T extends Record<string, any>>({
                     key={rowIndex}
                     className={cn(
                       "border-b transition-colors hover:bg-muted/50",
-                      onRowClick && "cursor-pointer"
+                      onRowClick && "cursor-pointer",
                     )}
                     onClick={() => onRowClick?.(item)}
                   >
                     {columns.map((column) => (
                       <td
                         key={column.key}
-                        className={cn(
-                          "p-4 align-middle",
-                          column.className
-                        )}
+                        className={cn("p-4 align-middle", column.className)}
                       >
-                        {column.render
-                          ? column.render(item)
-                          : item[column.key]}
+                        {column.render ? column.render(item) : item[column.key]}
                       </td>
                     ))}
                   </tr>
