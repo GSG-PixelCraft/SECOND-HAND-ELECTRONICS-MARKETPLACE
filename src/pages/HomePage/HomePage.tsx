@@ -1,7 +1,7 @@
 // Landing page
 import { Link } from "react-router-dom";
 import { ROUTES, getProductRoute } from "@/constants/routes";
-import { ChatsParts } from "@/components/chats/ChatsParts";
+import { ChatsParts } from "@/pages/ChatPage/components";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 
@@ -44,6 +44,11 @@ const HomePage = () => {
             <Link to={ROUTES.VERIFY}>
               <Button intent="primary" size="md">
                 ✨ DEMO: Verification
+              </Button>
+            </Link>
+            <Link to={ROUTES.ADMIN_DASHBOARD}>
+              <Button intent="outline" size="md">
+                🔑 DEMO: Admin Dashboard
               </Button>
             </Link>
           </div>

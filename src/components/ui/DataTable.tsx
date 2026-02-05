@@ -26,6 +26,7 @@ type SortConfig = {
   direction: "asc" | "desc" | null;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function DataTable<T extends Record<string, any>>({
   data,
   columns,
@@ -104,7 +105,7 @@ function DataTable<T extends Record<string, any>>({
                   >
                     {column.sortable ? (
                       <Button
-                        intent="ghost"
+                        intent="outline"
                         size="sm"
                         onClick={() => handleSort(column.key)}
                         className="-ml-4 h-8"

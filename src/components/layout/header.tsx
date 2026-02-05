@@ -1,7 +1,7 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
 import { useAuthStore } from "@/stores/useAuthStore";
-import { NotificationMenu } from "@/components/notifications/notificationMenu";
+import { NotificationMenu } from "@/pages/NotificationsPage/components";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";

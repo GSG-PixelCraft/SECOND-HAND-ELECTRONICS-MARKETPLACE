@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { ChatsParts } from "@/components/chats/ChatsParts";
+import { ChatsParts } from "./components";
 
 export default function ChatPage() {
   const { t } = useTranslation();
