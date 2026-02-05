@@ -52,4 +52,14 @@ export const API_ENDPOINTS = {
       VERIFY_OTP: "/verification/email/verify-otp",
     },
   },
+  ADMIN: {
+    DASHBOARD: "/admin/dashboard",
+    STATS: "/admin/statistics",
+    REVENUE_CHART: "/admin/analytics/revenue",
+    CATEGORY_CHART: "/admin/analytics/categories",
+    USER_ACTIVITY_CHART: "/admin/analytics/user-activity",
+    RECENT_USERS: "/admin/recent-users",
+    RECENT_PRODUCTS: "/admin/recent-products",
+    RECENT_ORDERS: "/admin/recent-orders",
+  },
 } as const;

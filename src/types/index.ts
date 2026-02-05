@@ -2,6 +2,7 @@ export * from "./verification";
 export * from "./product";
 export * from "./cart";
 export * from "./order";
+export * from "./admin";
 
 export interface User {
   id: string;
