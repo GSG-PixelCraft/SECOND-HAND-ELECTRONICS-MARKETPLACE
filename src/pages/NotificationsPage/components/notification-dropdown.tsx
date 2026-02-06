@@ -6,6 +6,8 @@ import { NotificationItem } from "./NotificationItem";
 import {
   NOTIFICATION_TABS,
   MOCK_NOTIFICATIONS,
+  type NotificationItemData,
+  type NotificationTab,
   getNotificationTabCounts,
   filterNotifications,
   groupNotificationsByDate,
@@ -17,28 +19,43 @@ import { ROUTES } from "@/constants/routes";
 
 export interface NotificationMenuProps {
   className?: string;
+  items?: NotificationItemData[];
+  tabs?: NotificationTab[];
+  notificationsHref?: string;
+  showOpenLink?: boolean;
+  buttonVariant?: "ghost" | "filled";
 }
 
-export function NotificationMenu({ className }: NotificationMenuProps) {
+export function NotificationMenu({
+  className,
+  items,
+  tabs,
+  notificationsHref = ROUTES.NOTIFICATIONS,
+  showOpenLink = true,
+  buttonVariant = "ghost",
+}: NotificationMenuProps) {
   const { t } = useTranslation();
+  const notificationItems = items ?? MOCK_NOTIFICATIONS;
+  const notificationTabs = tabs ?? NOTIFICATION_TABS;
+  const initialTab = notificationTabs[0]?.id ?? "all";
   const [isOpen, setIsOpen] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
   const [filter, setFilter] = useState<"all" | "unread">("all");
-  const [activeTab, setActiveTab] = useState<NotificationTabId>("all");
+  const [activeTab, setActiveTab] = useState<NotificationTabId>(initialTab);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const filterRef = useRef<HTMLDivElement>(null);
 
   const tabCounts = useMemo(
-    () => getNotificationTabCounts(MOCK_NOTIFICATIONS),
-    [],
+    () => getNotificationTabCounts(notificationItems, notificationTabs),
+    [notificationItems, notificationTabs],
   );
 
   const filteredNotifications = useMemo(
     () =>
-      filterNotifications(MOCK_NOTIFICATIONS, activeTab, filter === "unread"),
-    [activeTab, filter],
+      filterNotifications(notificationItems, activeTab, filter === "unread"),
+    [notificationItems, activeTab, filter],
   );
 
   const groupedNotifications = useMemo(
@@ -48,7 +65,7 @@ export function NotificationMenu({ className }: NotificationMenuProps) {
 
   const todayNotifications = groupedNotifications.Today ?? [];
 
-  const unreadCount = MOCK_NOTIFICATIONS.filter((n) => !n.read).length;
+  const unreadCount = notificationItems.filter((n) => !n.read).length;
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -78,10 +95,12 @@ export function NotificationMenu({ className }: NotificationMenuProps) {
       <button
         onClick={() => setIsOpen((prev) => !prev)}
         className={cn(
-          "relative rounded-full p-2 transition-colors",
-          isOpen
-            ? "bg-primary text-white hover:bg-primary"
-            : "text-primary hover:bg-primary-10",
+          "relative flex h-9 w-9 items-center justify-center rounded-full transition-colors",
+          buttonVariant === "filled"
+            ? "bg-primary text-white hover:bg-primary/90"
+            : isOpen
+              ? "bg-primary text-white hover:bg-primary"
+              : "text-primary hover:bg-primary-10",
         )}
         aria-label={t("notifications.actions.openMenu")}
         type="button"
@@ -107,12 +126,14 @@ export function NotificationMenu({ className }: NotificationMenuProps) {
                 {t("notifications.title")}
               </h2>
               <div className="relative flex items-center gap-3" ref={menuRef}>
-                <Link
-                  to={ROUTES.NOTIFICATIONS}
-                  className="text-[14px] font-medium leading-[14px] text-[#2563eb]"
-                >
-                  {t("notifications.actions.openNotifications")}
-                </Link>
+                {showOpenLink && (
+                  <Link
+                    to={notificationsHref}
+                    className="text-[14px] font-medium leading-[14px] text-[#2563eb]"
+                  >
+                    {t("notifications.actions.openNotifications")}
+                  </Link>
+                )}
                 <button
                   onClick={() => setShowMenu((prev) => !prev)}
                   className="flex h-6 w-6 items-center justify-center text-[#828282] transition-colors hover:text-[#212121]"
@@ -136,19 +157,21 @@ export function NotificationMenu({ className }: NotificationMenuProps) {
                     >
                       {t("notifications.actions.settings")}
                     </button>
-                    <button
-                      className="w-full px-4 py-2 text-left text-[14px] leading-[14px] text-[#3d3d3d] transition-colors hover:bg-[#f9fafb]"
-                      type="button"
-                    >
-                      {t("notifications.actions.openNotifications")}
-                    </button>
+                    {showOpenLink && (
+                      <button
+                        className="w-full px-4 py-2 text-left text-[14px] leading-[14px] text-[#3d3d3d] transition-colors hover:bg-[#f9fafb]"
+                        type="button"
+                      >
+                        {t("notifications.actions.openNotifications")}
+                      </button>
+                    )}
                   </div>
                 )}
               </div>
             </div>
 
             <div className="flex flex-nowrap items-center gap-1.5 overflow-hidden">
-              {NOTIFICATION_TABS.map((tab) => (
+              {notificationTabs.map((tab) => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}

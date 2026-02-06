@@ -61,5 +61,16 @@ export const API_ENDPOINTS = {
     RECENT_USERS: "/admin/recent-users",
     RECENT_PRODUCTS: "/admin/recent-products",
     RECENT_ORDERS: "/admin/recent-orders",
+    LISTINGS: {
+      LIST: "/admin/listings",
+      BY_ID: (id: string) => `/admin/listings/${id}`,
+      APPROVE: (id: string) => `/admin/listings/${id}/approve`,
+      REJECT: (id: string) => `/admin/listings/${id}/reject`,
+      HIDE: (id: string) => `/admin/listings/${id}/hide`,
+      UNHIDE: (id: string) => `/admin/listings/${id}/unhide`,
+      BULK_APPROVE: "/admin/listings/bulk/approve",
+      BULK_REJECT: "/admin/listings/bulk/reject",
+      BULK_DELETE: "/admin/listings/bulk/delete",
+    },
   },
 } as const;

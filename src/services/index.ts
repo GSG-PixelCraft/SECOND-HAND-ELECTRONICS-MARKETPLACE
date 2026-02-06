@@ -5,4 +5,5 @@ export * from "./cart.service";
 export * from "./order.service";
 export * from "./verification.service";
 export * from "./admin.service";
+export * from "./admin-listings.service";
 export { api } from "./client";

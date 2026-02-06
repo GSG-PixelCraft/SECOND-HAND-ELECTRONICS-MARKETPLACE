@@ -69,3 +69,97 @@ export interface AdminDashboardData {
   recentProducts: RecentProduct[];
   recentOrders: RecentOrder[];
 }
+
+// Listings Management types
+
+export type ListingStatus =
+  | "pending"
+  | "active"
+  | "rejected"
+  | "sold"
+  | "hidden"
+  | "removed";
+
+export type HideReason =
+  | "inappropriate_content"
+  | "spam"
+  | "duplicate"
+  | "policy_violation"
+  | "other";
+
+export type RejectionReason =
+  | "incomplete_information"
+  | "poor_quality_images"
+  | "inappropriate_content"
+  | "prohibited_item"
+  | "pricing_issue"
+  | "other";
+
+export interface AdminListing extends RecentProduct {
+  description: string;
+  images: string[];
+  sellerId: string;
+  sellerName: string;
+  sellerEmail: string;
+  sellerAvatar?: string;
+  views: number;
+  favorites: number;
+  rejectionReason?: RejectionReason;
+  rejectionComment?: string;
+  hideReason?: HideReason;
+  hideComment?: string;
+  hiddenAt?: string;
+  hiddenBy?: string;
+  rejectedAt?: string;
+  rejectedBy?: string;
+  approvedAt?: string;
+  approvedBy?: string;
+  soldAt?: string;
+  soldTo?: string;
+  removedAt?: string;
+  removedBy?: string;
+  removalReason?: string;
+  removalComment?: string;
+  updatedAt: string;
+}
+
+export interface ListingFilterParams {
+  search?: string;
+  status?: ListingStatus | "all";
+  category?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  startDate?: string;
+  endDate?: string;
+  page?: number;
+  limit?: number;
+  sortBy?: "createdAt" | "updatedAt" | "price" | "name";
+  sortOrder?: "asc" | "desc";
+}
+
+export interface PaginatedListingsResponse {
+  items: AdminListing[];
+  total: number;
+  page: number;
+  totalPages: number;
+  limit: number;
+}
+
+export interface HideListingData {
+  listingId: string;
+  reason: HideReason;
+  comment?: string;
+}
+
+export interface RejectListingData {
+  listingId: string;
+  reason: RejectionReason;
+  comment: string;
+}
+
+export interface BulkActionPayload {
+  listingIds: string[];
+  action: "approve" | "reject" | "delete";
+  reason?: RejectionReason;
+  comment?: string;
+}

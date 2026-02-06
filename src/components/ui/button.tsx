@@ -75,6 +75,18 @@ const buttonVariants = cva(
           "focus:ring-offset-2",
           "focus:ring-error-20",
         ],
+        ghost: [
+          "inline-flex",
+          "items-center",
+          "justify-center",
+          "rounded-md",
+          "font-medium",
+          "transition-colors",
+          "bg-transparent",
+          "text-neutral-foreground",
+          "hover:bg-neutral-5",
+          "focus:outline-none",
+        ],
       },
       size: {
         sm: "px-3 py-1.5 ",

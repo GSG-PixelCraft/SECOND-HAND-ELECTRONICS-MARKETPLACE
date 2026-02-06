@@ -198,7 +198,9 @@
       "all": "All",
       "listings": "Listings",
       "chats": "Chats",
-      "general": "General & System"
+      "general": "General & System",
+      "verifications": "Verifications",
+      "users": "Users"
     },
     "filters": {
       "all": "All",

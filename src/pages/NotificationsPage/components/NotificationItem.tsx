@@ -7,6 +7,8 @@ import {
   SquareX,
   Trash,
   User,
+  UserCheck,
+  UserPlus,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { NotificationType } from "./notificationTypes";
@@ -64,8 +66,26 @@ const notificationConfig: Record<
     iconColor: "text-[#facc15]",
     itemBg: "bg-white",
   },
+  pending_review: {
+    icon: FileText,
+    iconBg: "bg-[rgba(37,99,235,0.1)]",
+    iconColor: "text-[#2563eb]",
+    itemBg: "bg-white",
+  },
   system: {
     icon: Bell,
+    iconBg: "bg-[rgba(37,99,235,0.1)]",
+    iconColor: "text-[#2563eb]",
+    itemBg: "bg-white",
+  },
+  verification_request: {
+    icon: UserCheck,
+    iconBg: "bg-[rgba(20,184,166,0.1)]",
+    iconColor: "text-[#14b8a6]",
+    itemBg: "bg-[rgba(20,184,166,0.05)]",
+  },
+  user_signup: {
+    icon: UserPlus,
     iconBg: "bg-[rgba(37,99,235,0.1)]",
     iconColor: "text-[#2563eb]",
     itemBg: "bg-white",

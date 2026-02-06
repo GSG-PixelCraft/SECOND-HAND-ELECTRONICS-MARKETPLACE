@@ -205,6 +205,60 @@ export const router = createBrowserRouter([
     },
   },
   {
+    path: "/admin/listings",
+    lazy: async () => {
+      const [
+        { default: AdminListingsPage },
+        { AdminDashboardLayout },
+        { AdminGuard },
+      ] = await Promise.all([
+        import("@/pages/AdminListingsPage/AdminListingsPage"),
+        import("@/components/layout/AdminDashboardLayout"),
+        import("@/routes/access-control"),
+      ]);
+      return {
+        Component: () => (
+          <AdminGuard>
+            <AdminDashboardLayout>
+              <AdminListingsPage />
+            </AdminDashboardLayout>
+          </AdminGuard>
+        ),
+      };
+    },
+  },
+  {
+    path: "/admin/listings/:id",
+    lazy: async () => {
+      const [
+        { default: AdminListingDetailPage },
+        { AdminDashboardLayout },
+        { AdminGuard },
+      ] = await Promise.all([
+        import("@/pages/AdminListingDetailPage/AdminListingDetailPage"),
+        import("@/components/layout/AdminDashboardLayout"),
+        import("@/routes/access-control"),
+      ]);
+      return {
+        Component: () => (
+          <AdminGuard>
+            <AdminDashboardLayout>
+              <AdminListingDetailPage />
+            </AdminDashboardLayout>
+          </AdminGuard>
+        ),
+      };
+    },
+  },
+  {
+    path: "/403",
+    lazy: async () => {
+      const { default: AccessDeniedPage } =
+        await import("@/pages/AccessDeniedPage/AccessDeniedPage");
+      return { Component: AccessDeniedPage };
+    },
+  },
+  {
     path: "*",
     lazy: async () => {
       const { default: NotFoundPage } =

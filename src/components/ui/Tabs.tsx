@@ -1,4 +1,3 @@
-import { Button } from "./button";
 import { Span } from "./span";
 
 export type TabValue =
@@ -13,6 +12,7 @@ export type TabValue =
 export interface TabsProps {
   value: TabValue;
   onChange: (value: TabValue) => void;
+  counts?: Partial<Record<TabValue, number>>;
 }
 
 const TABS: { label: string; value: TabValue }[] = [
@@ -21,40 +21,52 @@ const TABS: { label: string; value: TabValue }[] = [
   { label: "Active", value: "active" },
   { label: "Rejected", value: "rejected" },
   { label: "Sold", value: "sold" },
-  { label: "Archived", value: "archived" },
-  { label: "Drafts", value: "drafts" },
+  { label: "Hidden", value: "archived" },
+  { label: "Removed", value: "drafts" },
 ];
 
-export function Tabs({ value, onChange }: TabsProps) {
+export function Tabs({ value, onChange, counts }: TabsProps) {
   return (
-    <div className="border-b border-neutral-20 bg-primary-5">
-      <ul className="flex justify-between" role="tablist">
-        {TABS.map((tab) => {
-          const isActive = value === tab.value;
+    <div className="flex gap-3">
+      {TABS.map((tab) => {
+        const isActive = value === tab.value;
+        const count = counts?.[tab.value];
 
-          return (
-            <li key={tab.value} role="presentation">
-              <Button
-                type="button"
-                role="tab"
-                aria-selected={isActive}
-                onClick={() => onChange(tab.value)}
-                className={`relative pb-3 text-body transition-colors ${
+        return (
+          <button
+            key={tab.value}
+            type="button"
+            role="tab"
+            aria-selected={isActive}
+            onClick={() => onChange(tab.value)}
+            className={`flex items-center gap-2 border-b-2 px-3 pb-2 text-base transition-colors ${
+              isActive
+                ? "border-[#2563eb] text-[#2563eb]"
+                : "border-transparent text-[#828282] hover:text-[#3d3d3d]"
+            }`}
+          >
+            <Span
+              variant="body"
+              className={
+                isActive ? "font-medium text-[#2563eb]" : "text-[#828282]"
+              }
+            >
+              {tab.label}
+            </Span>
+            {count !== undefined && count > 0 && (
+              <Span
+                className={`rounded-xl px-2 py-0.5 text-xs ${
                   isActive
-                    ? "text-primary"
-                    : "text-muted-foreground hover:text-neutral-foreground"
-                } `}
+                    ? "bg-[rgba(37,99,235,0.2)] text-[#2563eb]"
+                    : "bg-[rgba(107,114,128,0.2)] text-[#6b7280]"
+                }`}
               >
-                {tab.label}
-
-                {isActive && (
-                  <Span className="absolute -bottom-px left-0 right-0 h-0.5 bg-primary" />
-                )}
-              </Button>
-            </li>
-          );
-        })}
-      </ul>
+                {count}
+              </Span>
+            )}
+          </button>
+        );
+      })}
     </div>
   );
 }

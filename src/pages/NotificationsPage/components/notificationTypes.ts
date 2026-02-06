@@ -1,6 +1,17 @@
-export type NotificationTabId = "all" | "listings" | "chats" | "general";
+export type NotificationTabId =
+    | "all"
+    | "listings"
+    | "chats"
+    | "general"
+    | "verifications"
+    | "users";
 
-export type NotificationCategory = "listings" | "chats" | "general";
+export type NotificationCategory =
+    | "listings"
+    | "chats"
+    | "general"
+    | "verifications"
+    | "users";
 
 export type NotificationType =
     | "message"
@@ -10,7 +21,10 @@ export type NotificationType =
     | "pending"
     | "system"
     | "warning"
-    | "deleted";
+    | "deleted"
+    | "pending_review"
+    | "verification_request"
+    | "user_signup";
 
 export interface NotificationItemData {
     id: string;
@@ -35,6 +49,13 @@ export const NOTIFICATION_TABS: NotificationTab[] = [
     { id: "listings", labelKey: "notifications.tabs.listings" },
     { id: "chats", labelKey: "notifications.tabs.chats" },
     { id: "general", labelKey: "notifications.tabs.general" },
+];
+
+export const ADMIN_NOTIFICATION_TABS: NotificationTab[] = [
+    { id: "all", labelKey: "notifications.tabs.all" },
+    { id: "listings", labelKey: "notifications.tabs.listings" },
+    { id: "verifications", labelKey: "notifications.tabs.verifications" },
+    { id: "users", labelKey: "notifications.tabs.users" },
 ];
 
 export const MOCK_NOTIFICATIONS: NotificationItemData[] = [
@@ -143,23 +164,71 @@ export const MOCK_NOTIFICATIONS: NotificationItemData[] = [
     },
 ];
 
+export const ADMIN_NOTIFICATIONS: NotificationItemData[] = [
+    {
+        id: "a1",
+        type: "pending_review",
+        category: "listings",
+        title: "New Product Pending Review",
+        message: "User \"Ali Ahmed\" submitted a product \"Samsung A71\".",
+        timestamp: "05:30 pm",
+        read: false,
+        dateGroup: "Today",
+    },
+    {
+        id: "a2",
+        type: "verification_request",
+        category: "verifications",
+        title: "New Verification Request",
+        message: "User \"Mona Saeed\" submitted a verification document.",
+        timestamp: "01:30 pm",
+        read: false,
+        dateGroup: "Today",
+    },
+    {
+        id: "a3",
+        type: "user_signup",
+        category: "users",
+        title: "New User Signed Up",
+        message: "New user \"Ibrahim Khaled\" registered an account.",
+        timestamp: "12:30 pm",
+        read: false,
+        actionLabel: "View Profile",
+        dateGroup: "Today",
+    },
+    {
+        id: "a4",
+        type: "pending_review",
+        category: "listings",
+        title: "New Product Pending Review",
+        message: "User \"Salma Ali\" submitted a product \"iPhone 14\".",
+        timestamp: "11:40 am",
+        read: true,
+        dateGroup: "Today",
+    },
+    {
+        id: "a5",
+        type: "pending_review",
+        category: "listings",
+        title: "New Product Pending Review",
+        message: "User \"Ali Ahmed\" submitted a product \"Samsung A71\".",
+        timestamp: "10:32 am",
+        read: true,
+        dateGroup: "Today",
+    },
+];
+
 export const getNotificationTabCounts = (
     items: NotificationItemData[],
-): Record<NotificationTabId, number> => {
-    const listingCount = items.filter(
-        (item) => item.category === "listings",
-    ).length;
-    const chatCount = items.filter((item) => item.category === "chats").length;
-    const generalCount = items.filter(
-        (item) => item.category === "general",
-    ).length;
-
-    return {
-        all: items.length,
-        listings: listingCount,
-        chats: chatCount,
-        general: generalCount,
-    };
+    tabs: NotificationTab[] = NOTIFICATION_TABS,
+): Record<string, number> => {
+    return tabs.reduce<Record<string, number>>((acc, tab) => {
+        acc[tab.id] =
+            tab.id === "all"
+                ? items.length
+                : items.filter((item) => item.category === tab.id).length;
+        return acc;
+    }, {});
 };
 
 export const filterNotifications = (

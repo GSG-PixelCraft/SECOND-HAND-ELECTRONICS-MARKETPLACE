@@ -6,67 +6,79 @@ import {
   Flag,
   FolderOpen,
   Settings,
-  ChevronDown,
   LogOut,
+  ChevronDown,
+  ShieldCheck,
 } from "lucide-react";
-import { NavLink } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
-import { cn } from "@/lib/utils";
+import { Menu } from "@/components/admin";
 import { Text } from "@/components/ui/text";
+import { Span } from "@/components/ui/span";
 import { Button } from "@/components/ui/button";
 
-const navigation = [
-  { name: "Dashboard", href: ROUTES.ADMIN_DASHBOARD, icon: LayoutDashboard },
-  { name: "Listings", href: "/admin/listings", icon: Package },
-  { name: "Verifications", href: "/admin/verifications", icon: CheckCircle },
-  { name: "Users", href: "/admin/users", icon: Users },
-  { name: "Reports", href: "/admin/reports", icon: Flag },
-  { name: "Categories", href: "/admin/categories", icon: FolderOpen },
-  { name: "Settings", href: "/admin/settings", icon: Settings },
+const navigationItems = [
+  { id: "dashboard", label: "Dashboard", href: ROUTES.ADMIN_DASHBOARD, icon: <LayoutDashboard /> },
+  { id: "listings", label: "Listings", href: "/admin/listings", icon: <Package />, badge: 12 },
+  { id: "verifications", label: "Verifications", href: "/admin/verifications", icon: <CheckCircle />, badge: 5 },
+  { id: "users", label: "Users", href: "/admin/users", icon: <Users /> },
+  { id: "reports", label: "Reports", href: "/admin/reports", icon: <Flag />, badge: 3 },
+  { id: "categories", label: "Categories", href: "/admin/categories", icon: <FolderOpen /> },
+  { id: "settings", label: "Settings", href: "/admin/settings", icon: <Settings /> },
 ];
 
 export function AdminSidebar() {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const activeItemId = navigationItems.find(item => location.pathname === item.href)?.id || "dashboard";
+
   return (
-    <aside className="border-border flex w-[240px] flex-col border-r bg-white">
+    <aside className="flex w-[260px] flex-col border-r border-neutral-10 bg-white">
+      <div className="flex items-center gap-2 border-b border-neutral-10 px-4 py-6">
+        <div className="flex h-10 w-10 items-center justify-center rounded-full border border-primary/30 text-primary">
+          <ShieldCheck className="h-5 w-5" />
+        </div>
+        <span className="font-['Poppins'] text-[18px] font-semibold text-primary">
+          ElectroLink
+        </span>
+      </div>
+
       {/* Navigation */}
-      <nav className="flex-1 space-y-1 p-4 pt-6">
-        {navigation.map((item) => (
-          <NavLink
-            key={item.name}
-            to={item.href}
-            className={({ isActive }) =>
-              cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-normal transition-colors",
-                isActive
-                  ? "bg-primary/10 font-medium text-primary"
-                  : "hover:text-foreground text-[#828282] hover:bg-muted",
-              )
-            }
-          >
-            <item.icon className="size-5 shrink-0" />
-            <Text>{item.name}</Text>
-          </NavLink>
-        ))}
-      </nav>
+      <div className="flex-1 px-4 py-6">
+        <Menu
+          items={navigationItems}
+          activeItemId={activeItemId}
+          onItemClick={(id) => {
+            const item = navigationItems.find(i => i.id === id);
+            if (item) navigate(item.href);
+          }}
+        />
+      </div>
 
       {/* User Profile Section */}
-      <div className="border-border border-t p-4">
-        <Button className="flex w-full items-center gap-3 rounded-lg p-3 transition-colors hover:bg-muted">
-          <div className="size-10 flex-shrink-0 rounded-full bg-gradient-to-br from-primary to-secondary" />
-          <div className="min-w-0 flex-1 text-left">
-            <Text className="text-foreground truncate text-sm font-medium">
+      <div className="border-t border-neutral-10 p-4">
+        <div className="flex items-center gap-3 rounded-xl p-3 hover:bg-neutral-5 transition-colors cursor-pointer group">
+          <div className="size-10 flex-shrink-0 rounded-full bg-gradient-to-br from-primary to-secondary shadow-sm" />
+          <div className="min-w-0 flex-1 overflow-hidden">
+            <Text variant="body" className="font-semibold text-neutral-90 truncate">
               Yousef Yahia
             </Text>
-            <Text className="truncate text-xs text-[#828282]">
+            <Span variant="caption" className="text-neutral-50 truncate">
               Yousef@gmail.com
-            </Text>
+            </Span>
           </div>
-          <ChevronDown className="size-4 flex-shrink-0 text-[#828282]" />
-        </Button>
+          <ChevronDown className="size-4 flex-shrink-0 text-neutral-40 group-hover:text-neutral-60" />
+        </div>
 
-        <Button className="mt-2 flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-[#828282] transition-colors hover:bg-muted hover:text-error">
-          <LogOut className="size-5" />
-          <Text>Logout</Text>
+        <Button
+          intent="outline"
+          fullWidth
+          className="mt-4 border-neutral-20 text-neutral-60 hover:text-error hover:bg-error/5 hover:border-error/20"
+          size="sm"
+        >
+          <LogOut className="mr-2 size-4" />
+          Logout
         </Button>
       </div>
     </aside>
