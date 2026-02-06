@@ -2,15 +2,15 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { VerificationStatus } from "./VerificationStatus";
 
 const meta = {
-    title: "Admin/UI/Status/VerificationStatus",
-    component: VerificationStatus,
-    tags: ["autodocs"],
-    argTypes: {
-        status: {
-            control: "select",
-            options: ["pending", "verified", "rejected", "under-review"],
-        },
+  title: "Components/Admin/UI/Status/VerificationStatus",
+  component: VerificationStatus,
+  tags: ["autodocs"],
+  argTypes: {
+    status: {
+      control: "select",
+      options: ["pending", "verified", "rejected", "under-review"],
     },
+  },
 } satisfies Meta<typeof VerificationStatus>;
 
 export default meta;

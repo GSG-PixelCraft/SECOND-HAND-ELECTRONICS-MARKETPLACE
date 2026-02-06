@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { SearchSuggestions } from "./SearchSuggestions";
 
 const meta: Meta<typeof SearchSuggestions> = {
-  title: "UI/SearchSuggestions",
+  title: "Components/UI/SearchSuggestions",
   component: SearchSuggestions,
 };
 

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { FileUpload, type PhotoItem } from "./file-upload";
 
 const meta: Meta<typeof FileUpload> = {
-  title: "UI/FileUpload",
+  title: "Components/UI/FileUpload",
   component: FileUpload,
   tags: ["autodocs"],
   parameters: {
@@ -105,7 +105,7 @@ const WithTipsExample = () => {
       mainLabel="Main"
       helperText="Add up to 8 photos. The first photo will be the main photo."
       tipsLabel="Photos"
-      onTipsClick={() => alert("Tips clicked!")}
+      onTipsClick={() => console.log("Tips clicked")}
     />
   );
 };

@@ -2,15 +2,15 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { VerificationCheck } from "./VerificationCheck";
 
 const meta = {
-    title: "Admin/UI/Verification/VerificationCheck",
-    component: VerificationCheck,
-    tags: ["autodocs"],
-    argTypes: {
-        size: {
-            control: "select",
-            options: ["sm", "md", "lg"],
-        },
+  title: "Components/Admin/UI/Verification/VerificationCheck",
+  component: VerificationCheck,
+  tags: ["autodocs"],
+  argTypes: {
+    size: {
+      control: "select",
+      options: ["sm", "md", "lg"],
     },
+  },
 } satisfies Meta<typeof VerificationCheck>;
 
 export default meta;

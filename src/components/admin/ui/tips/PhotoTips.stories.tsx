@@ -2,9 +2,9 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { PhotoTips } from "./PhotoTips";
 
 const meta = {
-    title: "Admin/UI/Tips/PhotoTips",
-    component: PhotoTips,
-    tags: ["autodocs"],
+  title: "Components/Admin/UI/Tips/PhotoTips",
+  component: PhotoTips,
+  tags: ["autodocs"],
 } satisfies Meta<typeof PhotoTips>;
 
 export default meta;

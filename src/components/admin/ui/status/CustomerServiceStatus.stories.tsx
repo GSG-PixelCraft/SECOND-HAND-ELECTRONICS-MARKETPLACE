@@ -2,18 +2,18 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { CustomerServiceStatus } from "./CustomerServiceStatus";
 
 const meta = {
-    title: "Admin/UI/Status/CustomerServiceStatus",
-    component: CustomerServiceStatus,
-    tags: ["autodocs"],
-    argTypes: {
-        status: {
-            control: "select",
-            options: ["open", "in-progress", "resolved", "closed"],
-        },
-        showDot: {
-            control: "boolean",
-        },
+  title: "Components/Admin/UI/Status/CustomerServiceStatus",
+  component: CustomerServiceStatus,
+  tags: ["autodocs"],
+  argTypes: {
+    status: {
+      control: "select",
+      options: ["open", "in-progress", "resolved", "closed"],
     },
+    showDot: {
+      control: "boolean",
+    },
+  },
 } satisfies Meta<typeof CustomerServiceStatus>;
 
 export default meta;
@@ -24,4 +24,3 @@ export const InProgress: Story = { args: { status: "in-progress" } };
 export const Resolved: Story = { args: { status: "resolved" } };
 export const Closed: Story = { args: { status: "closed" } };
 export const NoDot: Story = { args: { status: "open", showDot: false } };
-export const CustomLabel: Story = { args: { status: "open", label: "Newly Opened" } };

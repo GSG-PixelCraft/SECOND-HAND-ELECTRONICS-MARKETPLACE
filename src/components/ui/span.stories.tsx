@@ -1,9 +1,8 @@
-// src/components/ui/span.stories.tsx
 import type { Meta, StoryObj } from "@storybook/react";
 import { Span } from "./span";
 
 const meta: Meta<typeof Span> = {
-  title: "UI/Span",
+  title: "Components/UI/Span",
   component: Span,
   tags: ["autodocs"],
   argTypes: {
@@ -11,7 +10,6 @@ const meta: Meta<typeof Span> = {
       control: "select",
       options: [
         "body",
-        "bodyLg",
         "bodySmall",
         "caption",
         "label",
@@ -31,14 +29,6 @@ const meta: Meta<typeof Span> = {
       description: "Additional CSS classes (merged last for overrides)",
     },
   },
-  parameters: {
-    docs: {
-      description: {
-        component:
-          "Span component (`<span>`) with semantic variants for inline text, badges, and status indicators. Includes status color variants (primary, success, warning, error).",
-      },
-    },
-  },
 };
 
 export default meta;
@@ -48,13 +38,6 @@ export const Body: Story = {
   args: {
     variant: "body",
     children: "Inline body text",
-  },
-};
-
-export const BodyLarge: Story = {
-  args: {
-    variant: "bodyLg",
-    children: "Larger inline text",
   },
 };
 
@@ -86,58 +69,23 @@ export const Muted: Story = {
   },
 };
 
-export const Primary: Story = {
-  args: {
-    variant: "primary",
-    children: "Primary status",
-  },
-};
-
-export const Success: Story = {
-  args: {
-    variant: "success",
-    children: "✓ Verified",
-  },
-};
-
-export const Warning: Story = {
-  args: {
-    variant: "warning",
-    children: "⚠ Pending",
-  },
-};
-
-export const Error: Story = {
-  args: {
-    variant: "error",
-    children: "✗ Failed",
-  },
-};
-
-export const StatusBadges: Story = {
+export const StatusVariants: Story = {
   render: () => (
     <div className="flex flex-wrap gap-3">
       <div className="flex items-center gap-2 rounded-lg border border-neutral-20 bg-white px-3 py-2">
-        <Span variant="success">✓ Email Verified</Span>
+        <Span variant="success">Verified</Span>
       </div>
       <div className="flex items-center gap-2 rounded-lg border border-neutral-20 bg-white px-3 py-2">
-        <Span variant="warning">⏳ Phone Pending</Span>
+        <Span variant="warning">Under Review</Span>
       </div>
       <div className="flex items-center gap-2 rounded-lg border border-neutral-20 bg-white px-3 py-2">
-        <Span variant="primary">🕐 In Review</Span>
+        <Span variant="primary">Uploading</Span>
       </div>
       <div className="flex items-center gap-2 rounded-lg border border-neutral-20 bg-white px-3 py-2">
-        <Span variant="error">✗ Rejected</Span>
+        <Span variant="error">Rejected</Span>
       </div>
     </div>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: "Common usage pattern for status badges with semantic variants.",
-      },
-    },
-  },
 };
 
 export const AllVariants: Story = {
@@ -145,9 +93,6 @@ export const AllVariants: Story = {
     <div className="space-y-3">
       <div>
         <Span variant="body">Body</Span>
-      </div>
-      <div>
-        <Span variant="bodyLg">Body Large</Span>
       </div>
       <div>
         <Span variant="bodySmall">Body Small</Span>
@@ -162,24 +107,17 @@ export const AllVariants: Story = {
         <Span variant="muted">Muted</Span>
       </div>
       <div>
-        <Span variant="primary">Primary Status</Span>
+        <Span variant="primary">Primary</Span>
       </div>
       <div>
-        <Span variant="success">Success Status</Span>
+        <Span variant="success">Success</Span>
       </div>
       <div>
-        <Span variant="warning">Warning Status</Span>
+        <Span variant="warning">Warning</Span>
       </div>
       <div>
-        <Span variant="error">Error Status</Span>
+        <Span variant="error">Error</Span>
       </div>
     </div>
   ),
-  parameters: {
-    docs: {
-      description: {
-        story: "Overview of all available Span variants in a single view.",
-      },
-    },
-  },
 };
