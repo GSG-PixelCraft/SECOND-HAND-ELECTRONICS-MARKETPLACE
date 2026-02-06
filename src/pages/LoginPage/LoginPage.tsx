@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
 import { useAuthStore } from "@/stores/useAuthStore";
+import AuthHeader from "@/components/layout/AuthHeader";
 
 interface Country {
   name: string;
@@ -142,12 +143,16 @@ const LoginPage = () => {
 
   return (
     <div className="min-h-screen bg-white">
+      {/* Header - Desktop Only */}
+      <AuthHeader />
+
       {/* Main Content */}
       <div className="flex items-start justify-center px-5 py-6 sm:items-center sm:px-6 sm:py-10">
         <div className="w-full max-w-md space-y-6 sm:space-y-8">
           {/* Title */}
           <div className="text-center">
-            <div className="grid grid-cols-[auto,1fr,auto] items-center">
+            {/* Mobile - Title with Close Button */}
+            <div className="grid grid-cols-[auto,1fr,auto] items-center sm:hidden">
               {/* Hidden Close Button (left spacer) */}
               <Link
                 to={ROUTES.HOME}
@@ -169,7 +174,7 @@ const LoginPage = () => {
                   />
                 </svg>
               </Link>
-              <h1 className="text-2xl text-gray-900 sm:text-3xl">Sign in</h1>
+              <h1 className="text-2xl font-bold text-gray-900">Sign in</h1>
               {/* Close Button */}
               <Link
                 to={ROUTES.HOME}
@@ -191,6 +196,10 @@ const LoginPage = () => {
                 </svg>
               </Link>
             </div>
+            {/* Desktop - Simple Title */}
+            <h1 className="hidden text-2xl text-gray-900 sm:block sm:text-3xl">
+              Sign in
+            </h1>
             <p className="mt-10 text-[18pt] text-base text-gray-900 sm:text-lg">
               Welcome back
             </p>
