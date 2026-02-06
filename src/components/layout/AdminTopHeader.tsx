@@ -1,6 +1,7 @@
-import { Bell, MessageSquare, Search } from "lucide-react";
+import { MessageSquare, Search } from "lucide-react";
 import { Link } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
+import { NotificationMenu } from "@/pages/NotificationsPage/components";
 
 export function AdminTopHeader() {
   return (
@@ -34,14 +35,7 @@ export function AdminTopHeader() {
       {/* Right Icons */}
       <div className="flex items-center gap-4">
         {/* Notifications */}
-        <button
-          type="button"
-          className="relative rounded-lg p-2 transition-colors hover:bg-muted"
-          aria-label="Notifications"
-        >
-          <Bell className="size-6 text-[#828282]" />
-          <span className="absolute right-1.5 top-1.5 flex size-2 items-center justify-center rounded-full bg-error" />
-        </button>
+        <NotificationMenu />
 
         {/* Messages */}
         <button
