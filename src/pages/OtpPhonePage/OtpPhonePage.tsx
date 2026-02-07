@@ -77,7 +77,7 @@ export default function OtpPhonePage() {
   };
 
   return (
-    <PageLayout title="Verify Phone" maxWidth="md" centerContent>
+    <PageLayout title="Verify Phone" maxWidth="md">
       <div className="w-full max-w-md space-y-6">
         <div className="space-y-2 text-center">
           <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
@@ -95,7 +95,9 @@ export default function OtpPhonePage() {
             {otp.map((digit, index) => (
               <input
                 key={index}
-                ref={(el) => (inputRefs.current[index] = el)}
+                ref={(el) => {
+                  inputRefs.current[index] = el;
+                }}
                 type="text"
                 inputMode="numeric"
                 maxLength={1}
