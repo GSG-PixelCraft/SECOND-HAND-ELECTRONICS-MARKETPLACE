@@ -66,9 +66,7 @@ const ProfilePage = () => {
             {activeSection === "profile" && <ProfileDetails />}
             {activeSection === "notifications" && <NotificationSettings />}
             {activeSection === "language" && <LanguageSettings />}
-
             {activeSection === "password" && <ChangePassword />}
-
             {activeSection === "help" && <HelpCenter />}
             {activeSection === "logout" && (
               // TODO: Implement logout confirmation or trigger logout action

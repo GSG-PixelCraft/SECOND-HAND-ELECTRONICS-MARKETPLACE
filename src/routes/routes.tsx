@@ -42,6 +42,14 @@ const publicRoutes = [
 
 const publicSimpleRoutes = [
   {
+    path: "/test-identity-verification",
+    lazy: async () => {
+      const { default: IdentityVerificationSelectPage } =
+        await import("@/pages/IdentityVerificationPage/IdentityVerificationSelectPage");
+      return { Component: IdentityVerificationSelectPage };
+    },
+  },
+  {
     path: "/forgot-password/email",
     lazy: async () => {
       const { default: ForgotPasswordEmailPage } =
@@ -89,20 +97,13 @@ const publicSimpleRoutes = [
       return { Component: RecentListingsPage };
     },
   },
+
   {
     path: "/profile/:id",
     lazy: async () => {
-      const { default: PublicProfilePage } =
+      const { PublicProfilePage } =
         await import("@/pages/PublicProfilePage/PublicProfilePage");
       return { Component: PublicProfilePage };
-    },
-  },
-  {
-    path: "/verify",
-    lazy: async () => {
-      const { default: VerifyPage } =
-        await import("@/pages/VerifyPage/VerifyPage");
-      return { Component: VerifyPage };
     },
   },
 ];
@@ -116,6 +117,16 @@ const protectedRoutes = [
       return { Component: ProfilePage };
     },
   },
+
+  {
+    path: "/verify/identity",
+    lazy: async () => {
+      const { default: IdentityVerificationSelectPage } =
+        await import("@/pages/IdentityVerificationPage/IdentityVerificationSelectPage");
+      return { Component: IdentityVerificationSelectPage };
+    },
+  },
+
   {
     path: "/change-password",
     lazy: async () => {
