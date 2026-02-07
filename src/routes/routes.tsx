@@ -115,6 +115,14 @@ const protectedRoutes = [
     },
   },
   {
+    path: "/settings",
+    lazy: async () => {
+      const { default: SettingsPage } =
+        await import("@/pages/SettingsPage/SettingsPage");
+      return { Component: SettingsPage };
+    },
+  },
+  {
     path: "/change-password",
     lazy: async () => {
       const { default: ChangePasswordPage } =

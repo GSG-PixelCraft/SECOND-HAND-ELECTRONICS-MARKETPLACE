@@ -11,6 +11,7 @@ export const ROUTES = {
   RECENT_LISTINGS: "/recent-listings",
   PUBLIC_PROFILE: "/profile/:id",
   PROFILE: "/profile",
+  SETTINGS: "/settings",
   VERIFY: "/verify",
   VERIFY_IDENTITY: "/verify/identity",
   VERIFY_IDENTITY_UPLOAD: "/verify/identity/upload",

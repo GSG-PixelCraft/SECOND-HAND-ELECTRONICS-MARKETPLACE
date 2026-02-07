@@ -1,6 +1,10 @@
 // Landing page
 import { Link } from "react-router-dom";
-import { ROUTES, getProductRoute } from "@/constants/routes";
+import {
+  ROUTES,
+  getProductRoute,
+  getPublicProfileRoute,
+} from "@/constants/routes";
 import { ChatsParts } from "@/pages/ChatPage/components";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
@@ -31,6 +35,21 @@ const HomePage = () => {
               </Button>
             </Link>
             {/* TEMPORARY DEMO BUTTON */}
+            <Link to={ROUTES.PROFILE}>
+              <Button intent="primary" size="md">
+                DEMO: Profile
+              </Button>
+            </Link>
+            <Link to={getPublicProfileRoute("u-101")}>
+              <Button intent="outline" size="md">
+                DEMO: Public Profile
+              </Button>
+            </Link>
+            <Link to={ROUTES.SETTINGS}>
+              <Button intent="primary" size="md">
+                DEMO: Settings
+              </Button>
+            </Link>
             <Link to={ROUTES.ADD_LISTING}>
               <Button intent="primary" size="md">
                 🎨 DEMO: Add Listing
