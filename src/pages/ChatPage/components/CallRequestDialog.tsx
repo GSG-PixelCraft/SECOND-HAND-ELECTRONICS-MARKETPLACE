@@ -51,6 +51,7 @@ export default function CallRequestDialog({
         {/* Footer */}
         <div className="flex flex-col gap-4 px-6 py-5">
           <button
+            type="button"
             onClick={onConfirm}
             className={`focus:ring-offset-background flex-1 rounded-lg bg-primary px-5 py-3.5 font-medium text-primary-foreground transition-colors hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2`}
           >
@@ -58,6 +59,7 @@ export default function CallRequestDialog({
           </button>
 
           <button
+            type="button"
             onClick={onCancel}
             className={`bg-background text-foreground border-border focus:ring-offset-background flex-1 rounded-lg border px-5 py-3.5 font-medium transition-colors hover:bg-muted focus:outline-none focus:ring-2 focus:ring-muted-foreground/50 focus:ring-offset-2`}
           >

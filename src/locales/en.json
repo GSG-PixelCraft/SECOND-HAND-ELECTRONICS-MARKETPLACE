@@ -265,10 +265,12 @@
       "close": "Close",
       "cancel": "Cancel",
       "submitting": "Submitting...",
-      "trying": "Trying..."
+      "trying": "Trying...",
+      "decline": "Decline",
+      "accept": "Accept"
     },
     "block": {
-      "title": "Are you sure you want to block",
+      "title": "Are you sure you want to block {{name}} ?",
       "warning": "Once blocked, neither of you will be able to send messages or see each other's listings.",
       "confirm": "Yes, Block",
       "action": "Block user"
@@ -277,6 +279,14 @@
       "title": "You have blocked this user",
       "description": "You cannot send messages or see their listings.",
       "unblock": "Unblock"
+    },
+    "call": {
+      "isCalling": "is calling...",
+      "speaker": "Speaker",
+      "muteSpeaker": "Mute Speaker",
+      "mute": "Mute",
+      "unmute": "Unmute",
+      "end": "End"
     },
     "report": {
       "title": "Report Chat",

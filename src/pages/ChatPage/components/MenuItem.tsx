@@ -1,7 +1,8 @@
+import type { ElementType } from "react";
 type MenuItemProps = {
   label: string;
   danger?: boolean;
-  Icon?: React.ElementType;
+  Icon?: ElementType;
   onClick?: () => void;
 };
 

@@ -16,7 +16,7 @@ interface VoiceCallModalProps {
   sellerName: string;
   avatarUrl?: string;
   isIncoming?: boolean;
-  onAccept?: () => void;
+  onAccept: () => void;
   onDecline: () => void;
   onToggleMic?: (muted: boolean) => void;
   onToggleSpeaker?: (enabled: boolean) => void;
@@ -41,6 +41,7 @@ export default function VoiceCallModal({
 
   useEffect(() => {
     if (!isOpen || isIncoming) return;
+    setSeconds(0);
     const interval = setInterval(() => setSeconds((s) => s + 1), 1000);
     return () => clearInterval(interval);
   }, [isOpen, isIncoming]);
@@ -93,9 +94,7 @@ export default function VoiceCallModal({
               {sellerName}
             </h3>
             <p className="mt-2 text-lg text-muted-foreground">
-              {isIncoming
-                ? t("call.isCalling", "is calling...")
-                : formatTime(seconds)}
+              {isIncoming ? t("chat.call.isCalling") : formatTime(seconds)}
             </p>
           </div>
 
@@ -103,6 +102,7 @@ export default function VoiceCallModal({
             {isIncoming ? (
               <>
                 <button
+                  type="button"
                   onClick={onDecline}
                   className="group flex flex-col items-center gap-3"
                 >
@@ -110,11 +110,12 @@ export default function VoiceCallModal({
                     <X className="h-8 w-8 text-white" strokeWidth={2.5} />
                   </div>
                   <span className="group-hover:text-foreground text-sm text-muted-foreground">
-                    {t("common.decline", "Decline")}
+                    {t("chat.common.decline")}
                   </span>
                 </button>
 
                 <button
+                  type="button"
                   onClick={onAccept}
                   className="group flex flex-col items-center gap-3"
                 >
@@ -122,13 +123,14 @@ export default function VoiceCallModal({
                     <PhoneIncoming className="h-8 w-8 text-white" />
                   </div>
                   <span className="text-sm font-medium text-success group-hover:text-success/90">
-                    {t("common.accept", "Accept")}
+                    {t("chat.common.accept")}
                   </span>
                 </button>
               </>
             ) : (
               <>
                 <button
+                  type="button"
                   onClick={() => {
                     const next = !isSpeakerOn;
                     setIsSpeakerOn(next);
@@ -149,12 +151,14 @@ export default function VoiceCallModal({
                   </div>
                   <span className="text-sm">
                     {t(
-                      "call.speaker",
-                      isSpeakerOn ? "Speaker" : "Mute Speaker",
+                      isSpeakerOn
+                        ? "chat.call.speaker"
+                        : "chat.call.muteSpeaker",
                     )}
                   </span>
                 </button>
                 <button
+                  type="button"
                   onClick={() => {
                     const next = !isMicMuted;
                     setIsMicMuted(next);
@@ -174,10 +178,11 @@ export default function VoiceCallModal({
                     )}
                   </div>
                   <span className="text-sm">
-                    {t("call.mic", isMicMuted ? "Unmute" : "Mute")}
+                    {t(isMicMuted ? "chat.call.unmute" : "chat.call.mute")}
                   </span>
                 </button>
                 <button
+                  type="button"
                   onClick={onEndCall}
                   className="group flex flex-col items-center gap-3"
                 >
@@ -188,7 +193,7 @@ export default function VoiceCallModal({
                     />
                   </div>
                   <span className="text-sm font-medium text-error">
-                    {t("call.end", "End")}
+                    {t("chat.call.end")}
                   </span>
                 </button>
               </>

@@ -23,6 +23,7 @@ export default function BlockedUserNotice({
         </p>
       </div>
       <button
+        type="button"
         onClick={onUnblock}
         className="focus:ring-offset-background rounded-xl bg-primary px-10 py-3.5 font-medium text-primary-foreground transition-colors hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
       >

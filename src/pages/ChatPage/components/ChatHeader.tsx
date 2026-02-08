@@ -60,6 +60,7 @@ export default function ChatHeader({
 
             <div className="flex items-center gap-3 text-neutral" ref={menuRef}>
               <button
+                type="button"
                 className="hover:text-primary"
                 onClick={() => setShowCallDialog(true)}
               >
@@ -67,6 +68,7 @@ export default function ChatHeader({
               </button>
 
               <button
+                type="button"
                 className="hover:text-primary"
                 onClick={() => setSearchActive(true)}
               >
@@ -74,6 +76,7 @@ export default function ChatHeader({
               </button>
 
               <button
+                type="button"
                 className="hover:text-primary"
                 onClick={() => setOpen((v) => !v)}
               >
@@ -103,6 +106,7 @@ export default function ChatHeader({
           /* Search mode header */
           <div className="bg-background flex w-full items-center gap-3 px-4 py-3">
             <button
+              type="button"
               onClick={handleCloseSearch}
               className="rounded-full p-2 transition-colors hover:bg-muted"
             >
@@ -125,6 +129,7 @@ export default function ChatHeader({
 
               {searchQuery && (
                 <button
+                  type="button"
                   onClick={() => setSearchQuery("")}
                   className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 hover:bg-muted/80"
                 >
@@ -134,6 +139,7 @@ export default function ChatHeader({
             </div>
 
             <button
+              type="button"
               onClick={handleCloseSearch}
               className="px-2 text-sm font-medium text-primary hover:opacity-80"
             >
@@ -184,7 +190,6 @@ export default function ChatHeader({
         isOpen={showReport}
         onClose={() => setShowReport(false)}
         onSubmit={async (reason, details) => {
-          // your API call here
           console.log(reason, details);
         }}
       />

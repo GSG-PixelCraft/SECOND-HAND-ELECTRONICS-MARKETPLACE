@@ -51,6 +51,7 @@ export default function BlockUserDialog({
 
         <div className="flex flex-col gap-3 px-6 pb-6">
           <button
+            type="button"
             onClick={onConfirm}
             className="focus:ring-offset-background rounded-xl bg-error py-3.5 font-medium text-error-foreground transition-colors hover:bg-error/90 focus:outline-none focus:ring-2 focus:ring-error/50 focus:ring-offset-2"
           >
@@ -58,7 +59,10 @@ export default function BlockUserDialog({
           </button>
 
           <button
+            type="button"
             onClick={onCancel}
+            role="dialog"
+            aria-modal="true"
             className="text-foreground border-border focus:ring-offset-background rounded-xl border bg-transparent py-3.5 font-medium transition-colors hover:bg-muted focus:outline-none focus:ring-2 focus:ring-muted-foreground/50 focus:ring-offset-2"
           >
             {t("common.cancel", "Cancel")}

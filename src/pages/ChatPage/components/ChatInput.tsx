@@ -48,12 +48,13 @@ export default function ChatInput() {
           placeholder={t("chat.sendMessage", "Send message")}
           className="border-border flex-1 rounded-lg border bg-muted-10 px-4 py-2 text-body focus:outline-none focus:ring-2 focus:ring-primary-20"
         />
-        <span
+        <button
+          type="button"
           className="absolute end-2 cursor-pointer text-neutral hover:text-primary"
           onClick={() => setOpen(!open)}
         >
           <Paperclip size={18} />
-        </span>
+        </button>
       </div>
       <div className="flex items-center gap-1">
         <button

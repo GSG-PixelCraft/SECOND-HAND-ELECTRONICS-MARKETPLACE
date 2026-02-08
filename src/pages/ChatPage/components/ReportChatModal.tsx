@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { X, AlertTriangle, CheckCircle2, Loader2 } from "lucide-react";
 
@@ -19,14 +19,22 @@ export default function ReportChatModal({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [showError, setShowError] = useState(false);
-  const reasons = [
+  useEffect(() => {
+    if (isOpen) {
+      setSelectedReason("");
+      setOtherDetails("");
+      setShowSuccess(false);
+      setShowError(false);
+    }
+  }, [isOpen]);
+  const REPORT_REASONS = [
     "spam-irrelevant",
     "harassment-abusive",
     "scam-suspicious",
     "offensive-inappropriate",
     "prohibited-items",
     "other",
-  ];
+  ] as const;
 
   const handleSubmit = async () => {
     if (!selectedReason) return;
@@ -135,7 +143,7 @@ export default function ReportChatModal({
           </p>
 
           <div className="space-y-3">
-            {reasons.map((reason) => (
+            {REPORT_REASONS.map((reason) => (
               <label
                 key={reason}
                 className="group flex cursor-pointer items-center gap-3"
