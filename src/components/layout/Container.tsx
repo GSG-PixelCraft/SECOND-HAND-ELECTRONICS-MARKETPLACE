@@ -1,23 +1,25 @@
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
+type MaxWidth =
+  | "sm"
+  | "md"
+  | "lg"
+  | "xl"
+  | "2xl"
+  | "3xl"
+  | "4xl"
+  | "5xl"
+  | "6xl"
+  | "7xl";
+
 interface ContainerProps {
   children: ReactNode;
-  maxWidth?:
-    | "sm"
-    | "md"
-    | "lg"
-    | "xl"
-    | "2xl"
-    | "3xl"
-    | "4xl"
-    | "5xl"
-    | "6xl"
-    | "7xl";
+  maxWidth?: MaxWidth;
   className?: string;
 }
 
-const maxWidthClasses = {
+const maxWidthClasses: Record<MaxWidth, string> = {
   sm: "max-w-sm",
   md: "max-w-md",
   lg: "max-w-lg",
@@ -30,22 +32,20 @@ const maxWidthClasses = {
   "7xl": "max-w-7xl",
 };
 
-const Container = ({
+export default function Container({
   children,
-  maxWidth = "3xl",
+  maxWidth = "7xl",
   className = "",
-}: ContainerProps) => {
+}: ContainerProps) {
   return (
     <div
       className={cn(
-        "mx-auto w-full px-4",
-        maxWidthClasses[maxWidth],
+        "mx-auto w-full px-4 py-6",
+        maxWidth && maxWidthClasses[maxWidth],
         className,
       )}
     >
       {children}
     </div>
   );
-};
-
-export default Container;
+}

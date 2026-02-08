@@ -1,3 +1,7 @@
+import { Image } from "@/components/ui/image";
+import { Text } from "@/components/ui/text";
+import { Span } from "@/components/ui/span";
+
 interface CartItem {
   id: string;
   name: string;
@@ -25,7 +29,7 @@ const CartItemList = ({
           className="flex items-center gap-4 rounded-lg border border-slate-200 p-4"
         >
           {item.image && (
-            <img
+            <Image
               src={item.image}
               alt={item.name}
               className="h-16 w-16 rounded-md object-cover"
@@ -33,7 +37,7 @@ const CartItemList = ({
           )}
           <div className="flex-1">
             <h3 className="font-medium text-slate-900">{item.name}</h3>
-            <p className="text-slate-600">${item.price.toFixed(2)}</p>
+            <Text className="text-slate-600">${item.price.toFixed(2)}</Text>
           </div>
           <div className="flex items-center gap-2">
             <button
@@ -43,7 +47,7 @@ const CartItemList = ({
             >
               -
             </button>
-            <span className="w-8 text-center">{item.quantity}</span>
+            <Span className="w-8 text-center">{item.quantity}</Span>
             <button
               onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
               className="flex h-8 w-8 items-center justify-center rounded-full border border-slate-300 hover:bg-slate-50"

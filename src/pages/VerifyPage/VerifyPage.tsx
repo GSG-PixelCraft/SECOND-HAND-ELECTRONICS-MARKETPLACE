@@ -1,11 +1,22 @@
 import { useNavigate } from "react-router-dom";
 import PageLayout from "@/components/layout/PageLayout";
 import { Button } from "@/components/ui/button";
-import { Shield, CheckCircle2, Mail, Phone } from "lucide-react";
+import { Text } from "@/components/ui/text";
+import { Span } from "@/components/ui/span";
+import {
+  Shield,
+  CheckCircle2,
+  Mail,
+  Phone,
+  Clock,
+  XCircle,
+} from "lucide-react";
 import { ROUTES } from "@/constants/routes";
+import { useAuthStore } from "@/stores/useAuthStore";
 
 export default function VerifyPage() {
   const navigate = useNavigate();
+  const { user, verification } = useAuthStore();
 
   return (
     <PageLayout title="Verify Account" maxWidth="4xl">
@@ -15,10 +26,10 @@ export default function VerifyPage() {
             <Shield className="h-8 w-8 text-primary" />
           </div>
           <h1 className="text-h2 font-semibold">Verify Your Account</h1>
-          <p className="text-body text-muted-foreground">
+          <Text variant="muted">
             Verify your account to unlock all features and build trust with
             other users
-          </p>
+          </Text>
         </div>
 
         {/* Verification Options */}
@@ -35,16 +46,24 @@ export default function VerifyPage() {
                     <h3 className="text-h4 font-semibold">
                       Email Verification
                     </h3>
-                    <p className="text-bodySmall mt-1 text-muted-foreground">
+                    <Text variant="bodySmall" className="mt-1">
                       Verify your email address to secure your account
-                    </p>
+                    </Text>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 className="h-5 w-5 text-success" />
-                    <span className="text-bodySmall font-medium text-success">
-                      Verified
-                    </span>
-                  </div>
+                  {user?.emailVerified ? (
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 className="h-5 w-5 text-success" />
+                      <Span variant="success">Verified</Span>
+                    </div>
+                  ) : (
+                    <Button
+                      intent="primary"
+                      size="sm"
+                      onClick={() => navigate(ROUTES.VERIFY_EMAIL)}
+                    >
+                      Verify
+                    </Button>
+                  )}
                 </div>
               </div>
             </div>
@@ -62,17 +81,13 @@ export default function VerifyPage() {
                     <h3 className="text-h4 font-semibold">
                       Phone Number Verification
                     </h3>
-                    <p className="text-bodySmall mt-1 text-muted-foreground">
+                    <Text variant="bodySmall" className="mt-1">
                       Add a phone number to increase your credibility
-                    </p>
+                    </Text>
                   </div>
-                  <Button
-                    intent="primary"
-                    size="sm"
-                    onClick={() => navigate(ROUTES.OTP_PHONE)}
-                  >
-                    Verify
-                  </Button>
+                  {renderVerificationStatus(verification.phoneStatus, () =>
+                    navigate(ROUTES.VERIFY_PHONE),
+                  )}
                 </div>
               </div>
             </div>
@@ -90,13 +105,13 @@ export default function VerifyPage() {
                     <h3 className="text-h4 font-semibold">
                       Identity Verification
                     </h3>
-                    <p className="text-bodySmall mt-1 text-muted-foreground">
+                    <Text variant="bodySmall" className="mt-1">
                       Submit a government-issued ID to become a verified seller
-                    </p>
+                    </Text>
                   </div>
-                  <Button intent="primary" size="sm">
-                    Start
-                  </Button>
+                  {renderIdentityStatus(verification.identityStatus, () =>
+                    navigate(ROUTES.VERIFY_IDENTITY),
+                  )}
                 </div>
               </div>
             </div>
@@ -111,23 +126,96 @@ export default function VerifyPage() {
           <ul className="text-bodySmall space-y-2 text-muted-foreground">
             <li className="flex items-start gap-2">
               <CheckCircle2 className="mt-0.5 h-5 w-5 flex-shrink-0 text-success" />
-              <span>Increase trust and credibility with buyers</span>
+              <Span>Increase trust and credibility with buyers</Span>
             </li>
             <li className="flex items-start gap-2">
               <CheckCircle2 className="mt-0.5 h-5 w-5 flex-shrink-0 text-success" />
-              <span>Get a verified badge on your profile</span>
+              <Span>Get a verified badge on your profile</Span>
             </li>
             <li className="flex items-start gap-2">
               <CheckCircle2 className="mt-0.5 h-5 w-5 flex-shrink-0 text-success" />
-              <span>Higher visibility in search results</span>
+              <Span>Higher visibility in search results</Span>
             </li>
             <li className="flex items-start gap-2">
               <CheckCircle2 className="mt-0.5 h-5 w-5 flex-shrink-0 text-success" />
-              <span>Access to advanced selling features</span>
+              <Span>Access to advanced selling features</Span>
             </li>
           </ul>
         </div>
       </div>
     </PageLayout>
   );
+}
+
+// Helper function to render verification status for phone and email
+function renderVerificationStatus(
+  status: "not_verified" | "verified",
+  onVerifyClick: () => void,
+) {
+  if (status === "verified") {
+    return (
+      <div className="flex items-center gap-2">
+        <CheckCircle2 className="h-5 w-5 text-success" />
+        <Span variant="success">Verified</Span>
+      </div>
+    );
+  }
+
+  return (
+    <Button intent="primary" size="sm" onClick={onVerifyClick}>
+      Verify
+    </Button>
+  );
+}
+
+// Helper function to render identity verification status
+function renderIdentityStatus(
+  status:
+    | "not_started"
+    | "uploading"
+    | "waiting_approval"
+    | "approved"
+    | "rejected",
+  onStartClick: () => void,
+) {
+  switch (status) {
+    case "approved":
+      return (
+        <div className="flex items-center gap-2">
+          <CheckCircle2 className="h-5 w-5 text-success" />
+          <Span variant="success">Verified</Span>
+        </div>
+      );
+
+    case "waiting_approval":
+      return (
+        <div className="flex items-center gap-2">
+          <Clock className="h-5 w-5 text-warning" />
+          <Span variant="warning">Under Review</Span>
+        </div>
+      );
+
+    case "uploading":
+      return (
+        <div className="flex items-center gap-2">
+          <Clock className="h-5 w-5 text-primary" />
+          <Span variant="primary">Uploading...</Span>
+        </div>
+      );
+
+    case "rejected":
+      return (
+        <div className="flex items-center gap-2">
+          <XCircle className="h-5 w-5 text-error" />
+          <Span variant="error">Rejected</Span>
+        </div>
+      );
+
+    default:
+      return (
+        <Button intent="primary" size="sm" onClick={onStartClick}>
+          Start
+        </Button>
+      );
+  }
 }

@@ -1,221 +1,201 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import * as React from "react";
+import { useState, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import PageLayout from "@/components/layout/PageLayout";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Plus, Upload, X } from "lucide-react";
-import { ROUTES } from "@/constants/routes";
+import { useTranslation } from "react-i18next";
+import { listingSchema } from "@/components/forms/zod-schemas";
+import { type PhotoItem } from "@/components/ui/file-upload";
+import { StepIndicator } from "./components/StepIndicator";
+import { BasicDetailsStep } from "./components/BasicDetailsStep";
+import { MoreDetailsStep } from "./components/MoreDetailsStep";
+import { PhotoTipsDialog } from "./components/PhotoTipsDialog";
+import { LocationDialog } from "./components/LocationDialog";
+import { ReviewDialog } from "./components/ReviewDialog";
+import { ConfirmationDialogs } from "./components/ConfirmationDialogs";
 
-const addListingSchema = z.object({
-  title: z.string().min(5, "Title must be at least 5 characters"),
-  description: z.string().min(20, "Description must be at least 20 characters"),
-  category: z.string().min(1, "Please select a category"),
-  condition: z.string().min(1, "Please select a condition"),
-  price: z.string().min(1, "Price is required"),
-  location: z.string().min(1, "Location is required"),
-});
+type ListingFormData = z.infer<typeof listingSchema>;
+type PhotoItemWithProgress = PhotoItem & { uploadProgress?: number };
+type LocationValue = {
+  country: string;
+  city: string;
+  street: string;
+  lat: number;
+  lng: number;
+};
 
-type AddListingFormData = z.infer<typeof addListingSchema>;
+const FALLBACK_IMAGE = new URL("../../images/Phone.jpg", import.meta.url).href;
 
-export default function AddListingPage() {
-  const navigate = useNavigate();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [images, setImages] = useState<File[]>([]);
+export default function AddListingPage(): React.ReactElement {
+  const { t } = useTranslation();
+  const [currentStep, setCurrentStep] = useState<1 | 2>(1);
+  const [photos, setPhotos] = useState<PhotoItemWithProgress[]>([]);
+  const [photoError, setPhotoError] = useState<string | null>(null);
+  const [tipsOpen, setTipsOpen] = useState(false);
+  const [locationOpen, setLocationOpen] = useState(false);
+  const [locationValue, setLocationValue] = useState<LocationValue>({
+    country: "Palestine",
+    city: "Gaza",
+    street: "",
+    lat: 31.5017,
+    lng: 34.4668,
+  });
+  const [reviewOpen, setReviewOpen] = useState(false);
+  const [leaveOpen, setLeaveOpen] = useState(false);
+  const [reviewSuccessOpen, setReviewSuccessOpen] = useState(false);
+  const [isSending, setIsSending] = useState(false);
 
   const {
     register,
     handleSubmit,
+    trigger,
+    watch,
+    setValue,
     formState: { errors },
-  } = useForm<AddListingFormData>({
-    resolver: zodResolver(addListingSchema),
+  } = useForm<ListingFormData>({
+    resolver: zodResolver(listingSchema),
   });
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    setImages([...images, ...files].slice(0, 5)); // Max 5 images
+  const values = watch();
+  const isBasicDetailsValid =
+    Boolean(values.title?.trim().length) &&
+    Boolean(values.category?.trim().length) &&
+    Boolean(values.condition?.trim().length) &&
+    Number(values.price) > 0 &&
+    photos.length > 0;
+
+  React.useEffect(() => {
+    const formatted = [locationValue.city, locationValue.country]
+      .filter(Boolean)
+      .join(", ");
+    if (formatted) {
+      setValue("location", formatted, { shouldValidate: true });
+    }
+  }, [locationValue.city, locationValue.country, setValue]);
+
+  const onSubmit = async (data: ListingFormData) => {
+    console.log("Listing data:", data);
+    setIsSending(true);
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+    setIsSending(false);
+    setReviewOpen(false);
+    setReviewSuccessOpen(true);
   };
 
-  const removeImage = (index: number) => {
-    setImages(images.filter((_, i) => i !== index));
-  };
+  const steps = useMemo(
+    () => [
+      { id: 1, label: t("addListing.steps.basicDetails") },
+      { id: 2, label: t("addListing.steps.moreDetails") },
+    ],
+    [t],
+  );
 
-  const onSubmit = async (data: AddListingFormData) => {
-    setIsSubmitting(true);
-    try {
-      // TODO: Implement add listing API call with images
-      console.log("Add listing:", data, images);
-      navigate(ROUTES.MY_LISTINGS);
-    } catch (error) {
-      console.error("Add listing error:", error);
-    } finally {
-      setIsSubmitting(false);
+  const handleNextStep = async () => {
+    const valid = await trigger(["title", "category", "condition", "price"]);
+    if (!photos.length) {
+      setPhotoError(t("addListing.photos.errorMissing"));
+    }
+    if (valid && photos.length) {
+      setCurrentStep(2);
     }
   };
 
+  const handleBackStep = () => {
+    setCurrentStep(1);
+  };
+
+  const handleReview = async () => {
+    const valid = await trigger();
+    if (valid) {
+      setReviewOpen(true);
+    }
+  };
+
+  const handleApplyLocation = (next: LocationValue) => {
+    setLocationValue(next);
+    const formatted = [next.city, next.country].filter(Boolean).join(", ");
+    setValue("location", formatted, { shouldValidate: true });
+  };
+
   return (
-    <PageLayout title="Add New Listing" maxWidth="4xl">
-      <div className="space-y-6">
-        <div className="flex items-center gap-3">
-          <Plus className="h-6 w-6 text-primary" />
-          <div>
-            <h1 className="text-h2 font-semibold">Create New Listing</h1>
-            <p className="text-body text-muted-foreground">
-              Add a product to the marketplace
-            </p>
-          </div>
+    <div className="flex min-h-screen flex-col bg-white">
+      {/* Body */}
+      <div className="flex flex-col gap-8 px-24 pb-14 pt-10">
+        {/* Title */}
+        <div className="flex w-full items-center">
+          <h1 className="flex-1 whitespace-pre-wrap font-['Poppins'] text-2xl font-medium leading-normal text-[#212121]">
+            Add Listings
+          </h1>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          {/* Images Upload */}
-          <div className="rounded-lg bg-white p-6 shadow-sm">
-            <h3 className="mb-4 text-h4 font-semibold">Product Images</h3>
-            <div className="grid grid-cols-2 gap-4 md:grid-cols-5">
-              {images.map((image, index) => (
-                <div key={index} className="relative aspect-square">
-                  <img
-                    src={URL.createObjectURL(image)}
-                    alt={`Upload ${index + 1}`}
-                    className="h-full w-full rounded-lg object-cover"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => removeImage(index)}
-                    className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-error text-error-foreground"
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
-                </div>
-              ))}
-              {images.length < 5 && (
-                <label className="flex aspect-square cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-neutral-20 transition-colors hover:bg-neutral-5">
-                  <Upload className="mb-2 h-8 w-8 text-muted-foreground" />
-                  <span className="text-caption text-muted-foreground">
-                    Upload
-                  </span>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    onChange={handleImageUpload}
-                    className="hidden"
-                  />
-                </label>
-              )}
-            </div>
-            <p className="mt-2 text-caption text-muted-foreground">
-              Upload up to 5 images. First image will be the cover.
-            </p>
-          </div>
+        <StepIndicator currentStep={currentStep} steps={steps} />
 
-          {/* Basic Information */}
-          <div className="space-y-4 rounded-lg bg-white p-6 shadow-sm">
-            <h3 className="text-h4 font-semibold">Basic Information</h3>
-
-            <Input
-              label="Title"
-              placeholder="e.g., iPhone 13 Pro Max 256GB"
-              {...register("title")}
-              error={errors.title?.message}
-            />
-
-            <div>
-              <label className="text-bodySmall mb-2 block font-medium">
-                Description
-              </label>
-              <textarea
-                {...register("description")}
-                placeholder="Describe your product in detail..."
-                className="min-h-[120px] w-full rounded-md border border-neutral-20 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+        {/* Inputs container with centered max-width */}
+        <div className="flex w-full flex-col items-center px-[212px]">
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="flex w-full flex-col gap-6"
+          >
+            {currentStep === 1 && (
+              <BasicDetailsStep
+                register={register}
+                setValue={setValue}
+                errors={errors}
+                photos={photos}
+                setPhotos={setPhotos}
+                photoError={photoError}
+                setPhotoError={setPhotoError}
+                onTipsClick={() => setTipsOpen(true)}
+                onNext={handleNextStep}
+                isNextDisabled={!isBasicDetailsValid}
               />
-              {errors.description && (
-                <p className="mt-1 text-caption text-error">
-                  {errors.description.message}
-                </p>
-              )}
-            </div>
+            )}
 
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div>
-                <label className="text-bodySmall mb-2 block font-medium">
-                  Category
-                </label>
-                <select
-                  {...register("category")}
-                  className="w-full rounded-md border border-neutral-20 px-3 py-2"
-                >
-                  <option value="">Select category</option>
-                  <option value="phones">Phones</option>
-                  <option value="laptops">Laptops</option>
-                  <option value="tablets">Tablets</option>
-                  <option value="accessories">Accessories</option>
-                  <option value="audio">Audio</option>
-                  <option value="cameras">Cameras</option>
-                </select>
-                {errors.category && (
-                  <p className="mt-1 text-caption text-error">
-                    {errors.category.message}
-                  </p>
-                )}
-              </div>
-
-              <div>
-                <label className="text-bodySmall mb-2 block font-medium">
-                  Condition
-                </label>
-                <select
-                  {...register("condition")}
-                  className="w-full rounded-md border border-neutral-20 px-3 py-2"
-                >
-                  <option value="">Select condition</option>
-                  <option value="new">New</option>
-                  <option value="like-new">Like New</option>
-                  <option value="good">Good</option>
-                  <option value="fair">Fair</option>
-                </select>
-                {errors.condition && (
-                  <p className="mt-1 text-caption text-error">
-                    {errors.condition.message}
-                  </p>
-                )}
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <Input
-                label="Price"
-                type="number"
-                placeholder="0.00"
-                {...register("price")}
-                error={errors.price?.message}
+            {currentStep === 2 && (
+              <MoreDetailsStep
+                register={register}
+                setValue={setValue}
+                errors={errors}
+                watch={watch}
+                onBack={handleBackStep}
+                onReview={handleReview}
+                onLocationClick={() => setLocationOpen(true)}
               />
-
-              <Input
-                label="Location"
-                placeholder="City, State"
-                {...register("location")}
-                error={errors.location?.message}
-              />
-            </div>
-          </div>
-
-          {/* Actions */}
-          <div className="flex justify-end gap-4">
-            <Button
-              type="button"
-              intent="outline"
-              onClick={() => navigate(ROUTES.MY_LISTINGS)}
-            >
-              Cancel
-            </Button>
-            <Button type="submit" intent="primary" disabled={isSubmitting}>
-              {isSubmitting ? "Creating..." : "Create Listing"}
-            </Button>
-          </div>
-        </form>
+            )}
+          </form>
+        </div>
       </div>
-    </PageLayout>
+
+      <PhotoTipsDialog open={tipsOpen} onOpenChange={setTipsOpen} />
+
+      <LocationDialog
+        open={locationOpen}
+        onOpenChange={setLocationOpen}
+        value={locationValue}
+        onApply={handleApplyLocation}
+      />
+
+      <ReviewDialog
+        open={reviewOpen}
+        onOpenChange={setReviewOpen}
+        values={values}
+        photos={photos}
+        fallbackImage={FALLBACK_IMAGE}
+        locationCoordinates={{
+          lat: locationValue.lat,
+          lng: locationValue.lng,
+        }}
+        onSubmit={onSubmit}
+        handleSubmit={handleSubmit}
+      />
+
+      <ConfirmationDialogs
+        leaveOpen={leaveOpen}
+        setLeaveOpen={setLeaveOpen}
+        reviewSuccessOpen={reviewSuccessOpen}
+        setReviewSuccessOpen={setReviewSuccessOpen}
+        isSending={isSending}
+      />
+    </div>
   );
 }

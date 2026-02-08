@@ -1,7 +1,9 @@
 // Landing page
 import { Link } from "react-router-dom";
-import { ROUTES } from "@/constants/routes";
+import { ROUTES, getProductRoute } from "@/constants/routes";
 import { ChatsParts } from "@/components/chats/ChatsParts";
+import { Button } from "@/components/ui/button";
+import { Text } from "@/components/ui/text";
 
 const HomePage = () => {
   return (
@@ -12,23 +14,37 @@ const HomePage = () => {
             <h1 className="text-3xl font-semibold text-slate-900">
               Welcome to Second-Hand Electronics Marketplace
             </h1>
-            <p className="max-w-xl text-base text-slate-600">
+            <Text variant="muted" className="max-w-xl text-base">
               Buy and sell used electronics safely and easily. Find great deals
               on quality pre-owned devices.
-            </p>
+            </Text>
           </div>
           <div className="flex flex-wrap gap-3">
-            <Link
-              className="rounded-full bg-slate-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
-              to={ROUTES.RECENT_LISTINGS}
-            >
-              Browse Listings
+            <Link to={ROUTES.RECENT_LISTINGS}>
+              <Button intent="primary" size="md">
+                Browse Listings
+              </Button>
             </Link>
-            <Link
-              className="rounded-full border border-slate-200 px-6 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:text-slate-900"
-              to={ROUTES.SIGN_UP}
-            >
-              Sign Up
+            <Link to={ROUTES.SIGN_UP}>
+              <Button intent="outline" size="md">
+                Sign Up
+              </Button>
+            </Link>
+            {/* TEMPORARY DEMO BUTTON */}
+            <Link to={ROUTES.ADD_LISTING}>
+              <Button intent="primary" size="md">
+                🎨 DEMO: Add Listing
+              </Button>
+            </Link>
+            <Link to={`${getProductRoute("p-101")}?demo=1`}>
+              <Button intent="outline" size="md">
+                🎨 DEMO: Product Details
+              </Button>
+            </Link>
+            <Link to={ROUTES.VERIFY}>
+              <Button intent="primary" size="md">
+                ✨ DEMO: Verification
+              </Button>
             </Link>
           </div>
         </div>
@@ -39,21 +55,23 @@ const HomePage = () => {
           <h3 className="text-lg font-semibold text-slate-900">
             Trusted Marketplace
           </h3>
-          <p className="mt-2 text-sm text-slate-600">
+          <Text variant="muted" className="mt-2 text-sm">
             Buy and sell with confidence
-          </p>
+          </Text>
         </div>
         <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
           <h3 className="text-lg font-semibold text-slate-900">
             Fast Shipping
           </h3>
-          <p className="mt-2 text-sm text-slate-600">
+          <Text variant="muted" className="mt-2 text-sm">
             Quick and secure delivery
-          </p>
+          </Text>
         </div>
         <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
           <h3 className="text-lg font-semibold text-slate-900">24/7 Support</h3>
-          <p className="mt-2 text-sm text-slate-600">Always here to help</p>
+          <Text variant="muted" className="mt-2 text-sm">
+            Always here to help
+          </Text>
         </div>
       </section>
 

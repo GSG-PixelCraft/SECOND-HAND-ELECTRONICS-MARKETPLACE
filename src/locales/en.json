@@ -1,37 +1,223 @@
 {
-  "chats": {
-    "title": "Chats",
-    "sectionLabel": "Chats panel",
-    "searchLabel": "Search chats",
-    "searchPlaceholder": "Search ...",
-    "actions": {
-      "more": "More options"
+  "addListing": {
+    "title": "Add Listings",
+    "steps": {
+      "basicDetails": "Basic Details",
+      "moreDetails": "More Details"
     },
+    "categories": {
+      "phones": "Phones",
+      "tablets": "Tablets",
+      "laptops": "Laptops",
+      "pcParts": "PC Parts",
+      "gaming": "Gaming",
+      "audio": "Audio",
+      "accessories": "Accessories"
+    },
+    "conditions": {
+      "new": "New",
+      "likeNew": "Like New",
+      "excellent": "Excellent",
+      "good": "Good",
+      "fair": "Fair"
+    },
+    "brands": {
+      "apple": "Apple",
+      "samsung": "Samsung",
+      "xiaomi": "Xiaomi",
+      "huawei": "Huawei"
+    },
+    "storage": {
+      "64": "64 GB",
+      "128": "128 GB",
+      "256": "256 GB",
+      "512": "512 GB"
+    },
+    "photos": {
+      "label": "Photos",
+      "tips": "Tips",
+      "emptyTitle": "Click to upload or drag and drop",
+      "emptyHint": "JPG, JPEG, PNG less than 5MB",
+      "helper": "Add up to 8 photos. The first photo will be the main photo. Drag and drop photos to change their order.",
+      "errorMissing": "Please upload at least one photo.",
+      "errorSize": "Please upload an image smaller than 5 MB.",
+      "addMore": "Add photo",
+      "main": "Main"
+    },
+    "fields": {
+      "title": {
+        "label": "Title",
+        "placeholder": "iPhone 11 Pro 256GB",
+        "helper": "Describe what you're selling in a few words"
+      },
+      "category": {
+        "label": "Category",
+        "placeholder": "Select category",
+        "helper": "Fields on next step will be customized based on category"
+      },
+      "condition": {
+        "label": "Condition",
+        "placeholder": "Select your item condition"
+      },
+      "price": {
+        "label": "Price",
+        "placeholder": "Enter price (e.g. 250)",
+        "helper": "Set a competitive price",
+        "negotiable": "Price is negotiable"
+      },
+      "brand": {
+        "label": "Brand",
+        "placeholder": "Select brand"
+      },
+      "model": {
+        "label": "Model",
+        "placeholder": "Enter model"
+      },
+      "storage": {
+        "label": "Storage",
+        "placeholder": "Choose storage"
+      },
+      "batteryHealth": {
+        "label": "Battery Health",
+        "placeholder": "Enter battery health (e.g. 85%)"
+      },
+      "description": {
+        "label": "Description",
+        "placeholder": "Mention usage time, defects, accessories included, and reason for selling",
+        "helper": "Describe what you're selling, in detail"
+      },
+      "location": {
+        "label": "Location",
+        "placeholder": "Enter location",
+        "helper": "Use map"
+      },
+      "confirmNotStolen": "I confirm this item is not stolen or prohibited"
+    },
+    "buttons": {
+      "next": "Next",
+      "review": "Review",
+      "publish": "Publish",
+      "continueEditing": "Continue editing",
+      "leave": "Leave",
+      "useThisAddress": "Use this address",
+      "viewListings": "View my Listings",
+      "goHome": "Go Home",
+      "back": "Back"
+    },
+    "tipsModal": {
+      "title": "Tips good photos",
+      "intro": "Here are some tips to help make your ads more appealing by uploading high-quality images.",
+      "items": {
+        "zoom": {
+          "title": "Zoom In",
+          "body": "Get close to the product or move away from it and fill the frame with it to give potential buyers a clear view of the details. Avoid zooming in or cropping the image incorrectly, which can result in a distorted or blurry picture."
+        },
+        "lighting": {
+          "title": "Use Good Lighting",
+          "body": "Good lighting is essential for capturing attractive images. Use natural light whenever possible by shooting near a window or outdoors during the day. If shooting indoors, consider using soft, diffused light sources such as lamps or light boxes to avoid shadows."
+        },
+        "angles": {
+          "title": "Multiple Angles",
+          "body": "Take photos from different angles to give buyers a comprehensive view of the product. Take photos from all angles to highlight any imperfections and provide an accurate description."
+        },
+        "background": {
+          "title": "Background",
+          "body": "Choose a clean, clutter-free background so it doesn't distract from the product. Often, use a plain white or neutral-colored background, which enhances the focus on the product itself."
+        },
+        "blurry": {
+          "title": "Taking Blurry Photos",
+          "body": "Make sure your product is within the lens's range. Use autofocus on your camera or smartphone, or adjust the focus manually if necessary. Blurry, blurry photos can deter potential buyers."
+        }
+      }
+    },
+    "locationModal": {
+      "title": "Location",
+      "country": "Country",
+      "city": "City",
+      "street": "Street",
+      "streetPlaceholder": "Enter street name",
+      "mapHelper": "Or use the map",
+      "mapPlaceholder": "Map preview"
+    },
+    "reviewModal": {
+      "title": "Review",
+      "keyFeatures": "Key features",
+      "description": "Description",
+      "location": "Location",
+      "safetyTips": "Safety tips!",
+      "safetyItems": {
+        "safeLocation": "Never meet in an unsafe location",
+        "noDeposit": "Don't pay inspection fees",
+        "bankDeposit": "Never pay down a deposit in a bank account until you have met the seller and observed the goods",
+        "bringFriend": "If possible, take friends along for viewing"
+      },
+      "seller": {
+        "name": "Eleanor Vance",
+        "stats": "2 Active listing · 10 Sold listing",
+        "lastOnline": "Last online 1 week ago",
+        "response": "Avg. response time: within 1 hour"
+      }
+    },
+    "leaveModal": {
+      "title": "Leave this listing?",
+      "body": "Your changes are saved automatically. You can continue editing this listing later."
+    },
+    "sending": {
+      "title": "We're sending your listing",
+      "body": "This may take a few seconds.."
+    },
+    "reviewSuccess": {
+      "title": "Your listing is under review",
+      "body": "We've received your listing. Our team will review it within the next 12 hours. You'll be notified once it's approved."
+    }
+  },
+  "common": {
+    "close": "Close",
+    "searchPlaceholder": "Search ..."
+  },
+  "favorites": {
+    "pageTitle": "Favorites",
+    "heading": "My Favorites",
+    "subtitle": "Products you've saved for later",
+    "filterLabel": "Filter by Category",
+    "filters": {
+      "all": "All",
+      "phones": "Phones",
+      "laptops": "Laptops",
+      "tablets": "Tablets",
+      "accessories": "Accessories"
+    },
+    "empty": {
+      "title": "No favorites yet",
+      "body": "Tap the heart icon on products to save them here."
+    }
+  },
+  "notifications": {
+    "title": "Notifications",
     "tabs": {
       "all": "All",
-      "unread": "Unread",
-      "buying": "Buying",
-      "selling": "Selling",
-      "archive": "Archive"
+      "listings": "Listings",
+      "chats": "Chats",
+      "general": "General & System"
     },
-    "avatarAlt": "User avatar",
-    "productAlt": "Product thumbnail",
-    "demo": {
-      "ahmadAli": "Ahmad Ali",
-      "ahmedSami": "Ahmed Sami",
-      "omarAli": "Omar Ali",
-      "mohammedSaid": "Mohammed Said",
-      "messageAvailable": "Is it still available?",
-      "messageAvailableLong": "I want to know if it is still available?",
-      "messageMeet": "Where can we meet?",
-      "messageTomorrow": "We can definitely meet tomorrow",
-      "time1h": "1hr",
-      "time28m": "28m",
-      "time1w": "1w",
-      "productCanon": "Canon EOS M50",
-      "productDell": "Dell XPS 15",
-      "productRedmi": "Redmi Note 12",
-      "productIphone": "iPhone 13 Pro Max"
+    "filters": {
+      "all": "All",
+      "unread": "Unread"
+    },
+    "sections": {
+      "today": "Today",
+      "yesterday": "Yesterday"
+    },
+    "actions": {
+      "openMenu": "Open notifications",
+      "moreOptions": "More options",
+      "markAllRead": "Mark all as read",
+      "settings": "Notification settings",
+      "openNotifications": "Open Notifications"
+    },
+    "empty": {
+      "title": "No notifications yet",
+      "body": "You'll see updates about your listings, messages, and account activity here."
     }
   }
 }

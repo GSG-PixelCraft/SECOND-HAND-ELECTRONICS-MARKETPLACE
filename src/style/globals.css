@@ -6,6 +6,9 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  /* border: none;
+  outline: none; */
+  scroll-behavior: smooth;
 }
 
 html {
@@ -67,4 +70,19 @@ a:hover {
 
 ::-webkit-scrollbar-thumb:hover {
   background: hsl(var(--neutral) / 0.7);
+}
+
+/* Notification dropdown scrollbar */
+.notification-scroll::-webkit-scrollbar {
+  width: 10px;
+}
+
+.notification-scroll::-webkit-scrollbar-track {
+  background: #f9fafb;
+  border-radius: 10px;
+}
+
+.notification-scroll::-webkit-scrollbar-thumb {
+  background: #c7c7c7;
+  border-radius: 10px;
 }

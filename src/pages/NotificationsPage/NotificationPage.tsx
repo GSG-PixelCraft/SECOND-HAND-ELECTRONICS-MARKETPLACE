@@ -1,192 +1,125 @@
-import { useState } from "react";
-import PageLayout from "@/components/layout/PageLayout";
-import { NotificationItem } from "./components";
+import { useMemo, useState } from "react";
+import { NotificationItem } from "@/components/notifications/NotificationItem";
+import { NotificationsEmptyState } from "@/components/feedback/emptyState";
 import { cn } from "@/lib/utils";
-
-const tabs = [
-  { id: "all", label: "All", count: 8 },
-  { id: "listings", label: "Listings", count: 2 },
-  { id: "chats", label: "Chats", count: 0 },
-  { id: "general", label: "General & System", count: 0 },
-];
-
-// Mock data grouped by date
-const notificationsByDate = {
-  Today: [
-    {
-      id: "1",
-      type: "message" as const,
-      title: "New Message",
-      message:
-        "Ali Ahmed has sent you a new message about your product iPhone 14 Pro Max.",
-      timestamp: "01:50 pm",
-      read: false,
-      actionLabel: "Open Chat",
-    },
-    {
-      id: "2",
-      type: "listing_update" as const,
-      title: "Listing visibility reduced",
-      message:
-        "This listing hasn't been updated recently and may appear lower in search results.",
-      timestamp: "01:50 pm",
-      read: false,
-      actionLabel: "Edit Listing",
-    },
-    {
-      id: "3",
-      type: "identity" as const,
-      title: "Success Identity verified",
-      message:
-        "Your identity is verified. This helps build trust with other users.",
-      timestamp: "01:50 pm",
-      read: false,
-    },
-    {
-      id: "4",
-      type: "order" as const,
-      title: "Your listing under review",
-      message:
-        "Your list is currently being reviewed by admins you'll be notified once a decision is made.",
-      timestamp: "01:50 pm",
-      read: false,
-    },
-  ],
-  Yesterday: [
-    {
-      id: "5",
-      type: "warning" as const,
-      title: "Your listing rejected",
-      message:
-        "Your listing didn't meet our guidelines. Please review the reason and update it.",
-      timestamp: "01:50 pm",
-      read: true,
-      actionLabel: "View Reason",
-    },
-    {
-      id: "6",
-      type: "listing_update" as const,
-      title: "Listing visibility reduced",
-      message:
-        "This listing hasn't been updated recently and may appear lower in search results.",
-      timestamp: "01:50 pm",
-      read: true,
-      actionLabel: "Edit Listing",
-    },
-  ],
-  "10 December 2025": [
-    {
-      id: "7",
-      type: "identity" as const,
-      title: "Phone verified",
-      message: "Your phone number has been verified successfully.",
-      timestamp: "01:50 pm",
-      read: true,
-    },
-    {
-      id: "8",
-      type: "listing_update" as const,
-      title: "Listing visibility reduced",
-      message:
-        "This listing hasn't been updated recently and may appear lower in search results.",
-      timestamp: "01:50 pm",
-      read: true,
-      actionLabel: "Edit Listing",
-    },
-    {
-      id: "9",
-      type: "deleted" as const,
-      title: "Your listing deleted",
-      message:
-        "Your listing has been deleted successfully. It is no visible to others.",
-      timestamp: "01:50 pm",
-      read: true,
-    },
-  ],
-};
+import { Button } from "@/components/ui/button";
+import { Span } from "@/components/ui/span";
+import {
+  MOCK_NOTIFICATIONS,
+  NOTIFICATION_TABS,
+  filterNotifications,
+  getNotificationTabCounts,
+  groupNotificationsByDate,
+  type NotificationTabId,
+} from "@/components/notifications/notificationTypes";
+import { useTranslation } from "react-i18next";
 
 export function NotificationsPage() {
-  const [activeTab, setActiveTab] = useState("all");
-  const [filterUnread, setFilterUnread] = useState(false);
+  const { t } = useTranslation();
+  const [activeTab, setActiveTab] = useState<NotificationTabId>("all");
+
+  const tabCounts = useMemo(
+    () => getNotificationTabCounts(MOCK_NOTIFICATIONS),
+    [],
+  );
+
+  const filteredNotifications = useMemo(
+    () => filterNotifications(MOCK_NOTIFICATIONS, activeTab, false),
+    [activeTab],
+  );
+
+  const groupedNotifications = useMemo(
+    () => groupNotificationsByDate(filteredNotifications),
+    [filteredNotifications],
+  );
 
   return (
-    <PageLayout title="Notifications">
-      <div className="mx-auto max-w-4xl">
-        {/* Header with Tabs and Filter */}
-        <div className="mb-6 rounded-lg border border-gray-200 bg-white shadow-sm">
-          <div className="flex items-center justify-between border-b border-gray-200 p-4">
-            <h1 className="text-2xl font-bold text-gray-900">Notifications</h1>
-            <button className="text-sm font-medium text-primary hover:underline">
-              Mark all as read
-            </button>
-          </div>
+    <div className="flex w-full flex-col items-start bg-white px-24 pb-14 pt-10">
+      {/* Page Title */}
+      <h1 className="mb-8 w-full font-['Poppins'] text-[24px] font-medium leading-normal text-[#212121]">
+        {t("notifications.title")}
+      </h1>
 
-          {/* Tabs */}
-          <div className="flex gap-2 px-4 pt-3">
-            {tabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={cn(
-                  "rounded-t-lg px-4 py-2 text-sm font-medium transition-colors",
-                  activeTab === tab.id
-                    ? "border-b-2 border-primary bg-primary-10 text-primary"
-                    : "text-gray-600 hover:bg-gray-50",
-                )}
-              >
-                {tab.label}
-                {tab.count > 0 && (
-                  <span
-                    className={cn(
-                      "ml-2 rounded-full px-2 py-0.5 text-xs font-semibold",
-                      activeTab === tab.id
-                        ? "bg-primary text-white"
-                        : "bg-gray-200 text-gray-700",
-                    )}
-                  >
-                    {tab.count}
-                  </span>
-                )}
-              </button>
-            ))}
-          </div>
-
-          {/* Filter Dropdown */}
-          <div className="flex justify-end px-4 pb-3 pt-2">
-            <select
-              value={filterUnread ? "unread" : "all"}
-              onChange={(e) => setFilterUnread(e.target.value === "unread")}
-              className="rounded-md border border-gray-300 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+      {/* Main Content Area */}
+      <div className="flex w-full flex-col gap-6 px-[106px]">
+        {/* Tabs */}
+        <div className="flex items-start justify-center gap-2">
+          {NOTIFICATION_TABS.map((tab) => (
+            <Button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={cn(
+                "flex h-9 items-center justify-center gap-2 rounded-[12px] px-6 py-2 font-['Poppins'] text-[14px] leading-normal transition-colors",
+                activeTab === tab.id
+                  ? "bg-[#2563eb] font-medium text-white"
+                  : "border border-[#e4e4e4] bg-white font-normal text-[#6b7280] hover:bg-gray-50",
+              )}
             >
-              <option value="all">All</option>
-              <option value="unread">Unread</option>
-            </select>
-          </div>
+              {t(tab.labelKey)}
+              {tabCounts[tab.id] > 0 && (
+                <Span
+                  className={cn(
+                    "flex h-4 w-4 items-center justify-center rounded-full font-['Poppins'] text-[10px] font-medium leading-normal",
+                    activeTab === tab.id
+                      ? "bg-white text-[#212121]"
+                      : "bg-[#2563eb] text-white",
+                  )}
+                >
+                  {tabCounts[tab.id]}
+                </Span>
+              )}
+            </Button>
+          ))}
         </div>
 
         {/* Notifications List */}
-        <div className="rounded-lg border border-gray-200 bg-white shadow-sm">
-          {Object.entries(notificationsByDate).map(([date, notifications]) => (
-            <div key={date}>
-              {/* Date Header */}
-              <div className="border-b border-gray-200 bg-gray-50 px-4 py-3">
-                <h2 className="text-sm font-semibold text-gray-700">{date}</h2>
-              </div>
-
-              {/* Notifications for this date */}
-              <div className="divide-y divide-gray-100">
-                {notifications.map((notification) => (
-                  <NotificationItem
-                    key={notification.id}
-                    {...notification}
-                    onAction={() => console.log("Action clicked")}
-                  />
-                ))}
-              </div>
+        <div className="flex w-full flex-col gap-8">
+          {filteredNotifications.length === 0 ? (
+            <div className="px-4 py-10">
+              <NotificationsEmptyState
+                title={t("notifications.empty.title")}
+                description={t("notifications.empty.body")}
+              />
             </div>
-          ))}
+          ) : (
+            Object.entries(groupedNotifications).map(
+              ([date, notifications]) => (
+                <div key={date} className="flex w-full flex-col gap-3">
+                  {/* Date Header with Mark all as read */}
+                  <div className="flex w-full items-center gap-1 px-4">
+                    <h2 className="flex-1 font-['Poppins'] text-[20px] font-medium text-[#3d3d3d]">
+                      {date === "Today"
+                        ? t("notifications.sections.today")
+                        : date === "Yesterday"
+                          ? t("notifications.sections.yesterday")
+                          : date}
+                    </h2>
+                    {date === "Today" && (
+                      <Button
+                        type="button"
+                        className="font-['Poppins'] text-[16px] font-normal leading-normal text-[#2563eb] hover:underline"
+                      >
+                        {t("notifications.actions.markAllRead")}
+                      </Button>
+                    )}
+                  </div>
+
+                  {/* Notifications for this date */}
+                  <div className="flex w-full flex-col">
+                    {notifications.map((notification) => (
+                      <NotificationItem
+                        key={notification.id}
+                        {...notification}
+                        onAction={() => console.log("Action clicked")}
+                      />
+                    ))}
+                  </div>
+                </div>
+              ),
+            )
+          )}
         </div>
       </div>
-    </PageLayout>
+    </div>
   );
 }

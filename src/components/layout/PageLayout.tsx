@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import Container from "./Container";
 import Card from "@/components/ui/Card";
+import { Text } from "@/components/ui/text";
 
 interface PageLayoutProps {
   title?: string;
@@ -25,7 +26,7 @@ const PageLayout = ({
   title,
   subtitle,
   children,
-  maxWidth = "3xl",
+  maxWidth = "6xl",
   className = "",
   showPlaceholder = false,
 }: PageLayoutProps) => {
@@ -38,11 +39,15 @@ const PageLayout = ({
         {title && (
           <div className="space-y-2">
             <h1 className="text-2xl font-semibold text-slate-900">{title}</h1>
-            {subtitle && <p className="text-sm text-slate-600">{subtitle}</p>}
+            {subtitle && (
+              <Text className="text-sm text-slate-600">{subtitle}</Text>
+            )}
           </div>
         )}
         {showPlaceholder && !children ? (
-          <p className="text-sm text-slate-600">Screen setup placeholder.</p>
+          <Text className="text-sm text-slate-600">
+            Screen setup placeholder.
+          </Text>
         ) : (
           children
         )}

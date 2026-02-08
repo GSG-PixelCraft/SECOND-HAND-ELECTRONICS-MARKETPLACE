@@ -93,13 +93,13 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
         </select>
 
         {error ? (
-          <p id={errorId} className="text-caption text-error-foreground">
+          <Text id={errorId} className="text-caption text-error-foreground">
             {error}
-          </p>
+          </Text>
         ) : helperText ? (
-          <p id={helperId} className="text-caption text-muted-foreground">
+          <Text variant="muted" className="text-caption" id={helperId}>
             {helperText}
-          </p>
+          </Text>
         ) : null}
       </div>
     );

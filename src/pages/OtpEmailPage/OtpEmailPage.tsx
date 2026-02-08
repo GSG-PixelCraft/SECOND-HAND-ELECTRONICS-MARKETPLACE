@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Text } from "@/components/ui/text";
 import { ROUTES } from "@/constants/routes";
 import PageLayout from "@/components/layout/PageLayout";
 import { Mail } from "lucide-react";
@@ -84,10 +85,10 @@ export default function OtpEmailPage() {
             <Mail className="h-6 w-6 text-primary" />
           </div>
           <h1 className="text-h2 font-semibold">Verify Your Email</h1>
-          <p className="text-body text-muted-foreground">
+          <Text variant="muted">
             We've sent a 6-digit verification code to your email address. Please
             enter it below.
-          </p>
+          </Text>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -121,24 +122,24 @@ export default function OtpEmailPage() {
 
         <div className="space-y-2 text-center">
           {resendTimer > 0 ? (
-            <p className="text-bodySmall text-muted-foreground">
+            <Text variant="muted" className="text-bodySmall">
               Resend code in {resendTimer}s
-            </p>
+            </Text>
           ) : (
-            <button
+            <Button
               onClick={handleResend}
               className="text-bodySmall text-primary hover:underline"
             >
               Resend Verification Code
-            </button>
+            </Button>
           )}
           <div>
-            <button
+            <Button
               onClick={() => navigate(ROUTES.FORGOT_PASSWORD_EMAIL)}
               className="text-bodySmall text-primary hover:underline"
             >
               Change Email Address
-            </button>
+            </Button>
           </div>
         </div>
       </div>
