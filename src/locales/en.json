@@ -219,5 +219,90 @@
       "title": "No notifications yet",
       "body": "You'll see updates about your listings, messages, and account activity here."
     }
+  },
+  "chat": {
+    "online": "Online",
+    "typing": "Typing",
+    "productFallback": "Product",
+
+    "safety": {
+      "title": "Safety tips!",
+      "tip1": "Never meet in an unsafe location",
+      "tip2": "Don't pay inspection fees",
+      "tip3": "Never pay down a deposit in a bank account until you have met the seller and observed the goods",
+      "tip4": "If possible, take friends along for viewing"
+    },
+
+    "avgResponse": "Avg. response time: within 10 hours",
+
+    "quick": {
+      "isAvailable": "Is it still available?",
+      "sendPhoto": "Can you send another picture?"
+    },
+
+    "input": {
+      "placeholder": "Send message"
+    },
+    "menu": {
+      "search": "Search",
+      "viewListing": "View listing",
+      "mute": "Mute conversation",
+      "archive": "Archive",
+      "report": "Report",
+      "block": "Block",
+      "camera": "Camera",
+      "video": "Video",
+      "gallery": "Gallery",
+      "location": "Location",
+      "document": "Document"
+    },
+    "callRequest": {
+      "title": "Call request",
+      "message": "Do you want to request a voice call with {{name}}?",
+      "hint": "Make sure you have observed the goods within 10 hours..."
+    },
+    "common": {
+      "close": "Close",
+      "cancel": "Cancel",
+      "submitting": "Submitting...",
+      "trying": "Trying..."
+    },
+    "block": {
+      "title": "Are you sure you want to block",
+      "warning": "Once blocked, neither of you will be able to send messages or see each other's listings.",
+      "confirm": "Yes, Block",
+      "action": "Block user"
+    },
+    "blocked": {
+      "title": "You have blocked this user",
+      "description": "You cannot send messages or see their listings.",
+      "unblock": "Unblock"
+    },
+    "report": {
+      "title": "Report Chat",
+      "description": "Help us keep the community safe. Tell us what's wrong with this conversation.",
+      "anonymous": "The other user will not be notified about this report.",
+      "submit": "Submit",
+      "reasons": {
+        "spam-irrelevant": "Spam or irrelevant messages",
+        "harassment-abusive": "Harassment or abusive behavior",
+        "scam-suspicious": "Scam or suspicious activity",
+        "offensive-inappropriate": "Offensive or inappropriate content",
+        "prohibited-items": "Selling prohibited items",
+        "other": "Other reason"
+      },
+      "other": {
+        "placeholder": "My reason..."
+      },
+      "success": {
+        "title": "Report submitted",
+        "message": "Thanks for helping keep our community safe. We'll review this report shortly."
+      },
+      "error": {
+        "title": "Something went wrong",
+        "message": "We couldn't submit your report. Please try again."
+      },
+      "tryAgain": "Try again"
+    }
   }
 }

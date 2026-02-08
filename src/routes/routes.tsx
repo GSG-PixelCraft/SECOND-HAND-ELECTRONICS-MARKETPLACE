@@ -14,6 +14,14 @@ const publicRoutes = [
       return { Component: HomePage };
     },
   },
+  // REMOVE THIS LATER, BECAUSE I CAN'T ACCESS IT FROM PROTECTED ROUTES FOR NOW
+  {
+    path: "/chat",
+    lazy: async () => {
+      const { default: ChatPage } = await import("@/pages/ChatPage/ChatPage");
+      return { Component: ChatPage };
+    },
+  },
   {
     path: "/signin",
     lazy: async () => {
