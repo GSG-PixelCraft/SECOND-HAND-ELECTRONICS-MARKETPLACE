@@ -3,6 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
 import { useAuthStore } from "@/stores/useAuthStore";
 import AuthHeader from "@/components/layout/AuthHeader";
+import { authService } from "@/services/auth.service";
+import type { AxiosError } from "axios";
 
 interface Country {
   name: string;
@@ -48,6 +50,8 @@ const LoginPage = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const [countryCode, setCountryCode] = useState("+970");
   const [countries, setCountries] = useState<Country[]>(COUNTRIES_FALLBACK);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [emailValidation, setEmailValidation] = useState<{
     isValid: boolean;
     isEmail: boolean;
@@ -92,10 +96,16 @@ const LoginPage = () => {
   useEffect(() => {
     const fetchCountries = async () => {
       try {
-        const response = await fetch("https://restcountries.com/v3.1/all");
+        const response = await fetch(
+          "https://restcountries.com/v3.1/all?fields=name,flags,cca2,idd,flag",
+        );
+        if (!response.ok) {
+          throw new Error(`Countries request failed: ${response.status}`);
+        }
         const data = (await response.json()) as Array<{
           name: { common: string };
-          flag: string;
+          flag?: string;
+          flags?: { png?: string; svg?: string; alt?: string };
           cca2: string;
           idd?: { root: string; suffixes?: string[] };
         }>;
@@ -124,17 +134,54 @@ const LoginPage = () => {
     fetchCountries();
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Demo login logic
-    setUser({
-      id: "demo-user",
-      name: "Demo User",
-      email: emailOrPhone,
-      role: "user",
-    });
-    setToken("demo-token");
-    navigate(ROUTES.PROFILE);
+    if (!isFormValid()) return;
+
+    setIsSubmitting(true);
+    setSubmitError(null);
+
+    const cleanValue = emailOrPhone.replace(/\s/g, "");
+    const normalizedCountryCode = countryCode.startsWith("+")
+      ? countryCode
+      : `+${countryCode}`;
+    const payload = isPhoneNumber
+      ? { phoneNumber: `${normalizedCountryCode}${cleanValue}`, password }
+      : { email: emailOrPhone.trim(), password };
+
+    try {
+      const response = await authService.login(payload);
+      const { token, user } = response.data;
+      const safeUser = user ?? {};
+      const displayName =
+        safeUser.fullName ??
+        safeUser.name ??
+        safeUser.email ??
+        safeUser.phoneNumber ??
+        emailOrPhone.trim() ??
+        "User";
+
+      setToken(token);
+      setUser({
+        ...safeUser,
+        id: safeUser.id ?? "unknown",
+        role: safeUser.role ?? "user",
+        name: displayName,
+        emailVerified: safeUser.isEmailVerified ?? safeUser.emailVerified,
+        phoneVerified: safeUser.isPhoneVerified ?? safeUser.phoneVerified,
+        identityVerified:
+          safeUser.isIdentityVerified ?? safeUser.identityVerified,
+      });
+      navigate(ROUTES.PROFILE);
+    } catch (error) {
+      const apiError = error as AxiosError<{ message?: string }>;
+      setSubmitError(
+        apiError.response?.data?.message ??
+          "Login failed. Please check your credentials.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleSocialLogin = (provider: string) => {
@@ -353,16 +400,22 @@ const LoginPage = () => {
             </div>
 
             {/* Sign In Button */}
+            {submitError ? (
+              <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+                {submitError}
+              </p>
+            ) : null}
+
             <button
               type="submit"
-              disabled={!isFormValid()}
+              disabled={!isFormValid() || isSubmitting}
               className={`w-full rounded-md px-4 py-3 text-sm font-medium transition ${
-                isFormValid()
+                isFormValid() && !isSubmitting
                   ? "bg-blue-600 text-white hover:bg-blue-700"
                   : "cursor-not-allowed bg-gray-300 text-gray-500"
               }`}
             >
-              Sign in
+              {isSubmitting ? "Signing in..." : "Sign in"}
             </button>
 
             {/* Divider */}
