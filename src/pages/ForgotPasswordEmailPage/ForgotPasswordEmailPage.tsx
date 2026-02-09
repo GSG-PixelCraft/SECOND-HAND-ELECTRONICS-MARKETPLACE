@@ -1,14 +1,9 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { ROUTES } from "@/constants/routes";
-import PageLayout from "@/components/layout/PageLayout";
-import { Mail } from "lucide-react";
-import { Text } from "@/components/ui/text";
 
 const forgotPasswordEmailSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -23,10 +18,14 @@ export default function ForgotPasswordEmailPage() {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isValid },
+    watch,
   } = useForm<ForgotPasswordEmailFormData>({
     resolver: zodResolver(forgotPasswordEmailSchema),
+    mode: "onChange",
   });
+
+  const emailValue = watch("email");
 
   const onSubmit = async (data: ForgotPasswordEmailFormData) => {
     setIsSubmitting(true);
@@ -43,51 +42,81 @@ export default function ForgotPasswordEmailPage() {
   };
 
   return (
-    <PageLayout title="Forgot Password" maxWidth="md" centerContent>
-      <div className="w-full max-w-md space-y-6">
-        <div className="space-y-2 text-center">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-            <Mail className="h-6 w-6 text-primary" />
-          </div>
-          <h1 className="text-h2 font-semibold">Forgot Password?</h1>
-          <Text variant="muted">
-            Enter your email address and we'll send you a verification code to
-            reset your password.
-          </Text>
-        </div>
+    <div className="min-h-screen bg-white">
+      <div className="flex items-center justify-between px-6 py-5">
+        <button
+          type="button"
+          onClick={() => navigate(-1)}
+          className="text-sm text-gray-700 hover:text-gray-900"
+        >
+          Back
+        </button>
+        <Link
+          to={ROUTES.HOME}
+          className="text-base font-semibold text-blue-600"
+        >
+          Logo
+        </Link>
+        <span className="w-10" aria-hidden="true" />
+      </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div>
-            <Input
-              label="Email Address"
-              type="email"
-              placeholder="Enter your email"
-              {...register("email")}
-              error={errors.email?.message}
-              autoComplete="email"
-            />
-          </div>
+      <div className="flex items-start justify-center px-5 py-10">
+        <div className="w-full max-w-md space-y-6 text-center">
+          <h1 className="text-2xl font-semibold text-gray-900">
+            Forget Password
+          </h1>
+          <p className="text-sm text-gray-400">
+            Enter your email to receive a verification code.
+          </p>
 
-          <Button
-            type="submit"
-            className="w-full"
-            disabled={isSubmitting}
-            intent="primary"
-            size="lg"
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <div className="text-left">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Email <span className="text-red-500">*</span>
+              </label>
+              <input
+                id="email"
+                type="email"
+                placeholder="Enter your email"
+                autoComplete="email"
+                className={`mt-1 block w-full rounded-md border px-3 py-2.5 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-1 ${
+                  errors.email
+                    ? "border-red-500 focus:border-red-500 focus:ring-red-500"
+                    : "border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                }`}
+                {...register("email")}
+              />
+              {errors.email ? (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.email.message}
+                </p>
+              ) : null}
+            </div>
+
+            <button
+              type="submit"
+              disabled={!isValid || !emailValue || isSubmitting}
+              className={`w-full rounded-md px-4 py-3 text-sm font-medium transition ${
+                isValid && emailValue && !isSubmitting
+                  ? "bg-blue-600 text-white hover:bg-blue-700"
+                  : "cursor-not-allowed bg-gray-200 text-gray-400"
+              }`}
+            >
+              {isSubmitting ? "Sending..." : "Send Code"}
+            </button>
+          </form>
+
+          <Link
+            to={ROUTES.FORGOT_PASSWORD_PHONE}
+            className="text-xs text-gray-600 hover:underline"
           >
-            {isSubmitting ? "Sending..." : "Send Verification Code"}
-          </Button>
-        </form>
-
-        <div className="text-center">
-          <button
-            onClick={() => navigate(ROUTES.SIGN_IN)}
-            className="text-bodySmall text-primary hover:underline"
-          >
-            Back to Sign In
-          </button>
+            Reset Password via Phone Number
+          </Link>
         </div>
       </div>
-    </PageLayout>
+    </div>
   );
 }
