@@ -3,7 +3,10 @@ import { Link, useNavigate } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
 import { useAuthStore } from "@/stores/useAuthStore";
 import AuthHeader from "@/components/layout/AuthHeader";
+import { authService } from "@/services/auth.service";
+import type { AxiosError } from "axios";
 
+// TODO: update feilds rules and validation based on backend requirements
 interface Country {
   name: string;
   flag: string;
@@ -50,6 +53,8 @@ const RegisterPage = () => {
   const [agreeToTerms, setAgreeToTerms] = useState(false);
   const [countryCode, setCountryCode] = useState("+970");
   const [countries, setCountries] = useState<Country[]>(COUNTRIES_FALLBACK);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [emailValidation, setEmailValidation] = useState<{
     isValid: boolean;
     isTouched: boolean;
@@ -80,7 +85,10 @@ const RegisterPage = () => {
     setPhoneNumber(value);
     if (value.trim().length > 0) {
       const cleanValue = value.replace(/\s/g, "");
-      const isValidPhone = /^\d+$/.test(cleanValue) && cleanValue.length === 10;
+      const isValidPhone =
+        /^\d+$/.test(cleanValue) &&
+        cleanValue.length >= 7 &&
+        cleanValue.length <= 15;
       setPhoneValidation({
         isValid: isValidPhone,
         isTouched: true,
@@ -101,12 +109,20 @@ const RegisterPage = () => {
   };
 
   useEffect(() => {
+    const controller = new AbortController();
     const fetchCountries = async () => {
       try {
-        const response = await fetch("https://restcountries.com/v3.1/all");
+        const response = await fetch(
+          "https://restcountries.com/v3.1/all?fields=name,flags,cca2,idd,flag",
+          { signal: controller.signal },
+        );
+        if (!response.ok) {
+          throw new Error(`Countries request failed: ${response.status}`);
+        }
         const data = (await response.json()) as Array<{
           name: { common: string };
-          flag: string;
+          flag?: string;
+          flags?: { png?: string; svg?: string; alt?: string };
           cca2: string;
           idd?: { root: string; suffixes?: string[] };
         }>;
@@ -127,24 +143,67 @@ const RegisterPage = () => {
           setCountries(countryList);
         }
       } catch (error) {
+        if (error instanceof DOMException && error.name === "AbortError") {
+          return;
+        }
         console.error("Failed to fetch countries, using fallback:", error);
       }
     };
 
     fetchCountries();
+    return () => controller.abort();
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Demo registration logic
-    setUser({
-      id: "demo-user",
-      name: fullName,
-      email: email,
-      role: "user",
-    });
-    setToken("demo-token");
-    navigate(ROUTES.PROFILE);
+    if (!isFormValid()) return;
+
+    setIsSubmitting(true);
+    setSubmitError(null);
+
+    const cleanValue = phoneNumber.replace(/\s/g, "");
+    const normalizedCountryCode = countryCode.startsWith("+")
+      ? countryCode
+      : `+${countryCode}`;
+
+    try {
+      const response = await authService.register({
+        fullName: fullName.trim(),
+        email: email.trim(),
+        phoneNumber: `${normalizedCountryCode}${cleanValue}`,
+        password,
+      });
+      const { token, user } = response.data;
+      const safeUser = user ?? {};
+      const displayName =
+        safeUser.fullName ??
+        safeUser.name ??
+        safeUser.email ??
+        safeUser.phoneNumber ??
+        fullName.trim() ??
+        "User";
+
+      setToken(token);
+      setUser({
+        ...safeUser,
+        id: safeUser.id ?? "unknown",
+        role: safeUser.role ?? "user",
+        name: displayName,
+        emailVerified: safeUser.isEmailVerified ?? safeUser.emailVerified,
+        phoneVerified: safeUser.isPhoneVerified ?? safeUser.phoneVerified,
+        identityVerified:
+          safeUser.isIdentityVerified ?? safeUser.identityVerified,
+      });
+      navigate(ROUTES.PROFILE);
+    } catch (error) {
+      const apiError = error as AxiosError<{ message?: string }>;
+      setSubmitError(
+        apiError.response?.data?.message ??
+          "Registration failed. Please try again.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleSocialLogin = (provider: string) => {
@@ -409,16 +468,22 @@ const RegisterPage = () => {
             </div>
 
             {/* Register Button */}
+            {submitError ? (
+              <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+                {submitError}
+              </p>
+            ) : null}
+
             <button
               type="submit"
-              disabled={!isFormValid()}
+              disabled={!isFormValid() || isSubmitting}
               className={`w-full rounded-md px-4 py-2.5 text-sm font-semibold text-white transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
-                isFormValid()
+                isFormValid() && !isSubmitting
                   ? "bg-blue-600 hover:bg-blue-700"
                   : "cursor-not-allowed bg-gray-300"
               }`}
             >
-              Register
+              {isSubmitting ? "Signing up..." : "Register"}
             </button>
 
             {/* Divider */}
