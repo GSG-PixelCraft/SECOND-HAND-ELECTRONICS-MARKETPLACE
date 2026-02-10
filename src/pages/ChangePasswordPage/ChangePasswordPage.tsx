@@ -54,8 +54,8 @@ export default function ChangePasswordPage() {
   };
 
   return (
-    <PageLayout title="Change Password" maxWidth="md" centerContent>
-      <div className="w-full max-w-md space-y-6">
+    <PageLayout title="Change Password" maxWidth="md">
+      <div className="mx-auto w-full max-w-md space-y-6">
         <div className="space-y-2 text-center">
           <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
             <Lock className="h-6 w-6 text-primary" />
@@ -94,18 +94,18 @@ export default function ChangePasswordPage() {
               Password must contain:
             </Text>
             <ul className="list-inside list-disc space-y-1 text-caption">
-              <Text variant="muted" className="text-caption" as="li">
-                At least 8 characters
-              </Text>
-              <Text variant="muted" className="text-caption" as="li">
-                One uppercase letter
-              </Text>
-              <Text variant="muted" className="text-caption" as="li">
-                One lowercase letter
-              </Text>
-              <Text variant="muted" className="text-caption" as="li">
-                One number
-              </Text>
+              <li className="text-caption">
+                <Text variant="muted">At least 8 characters</Text>
+              </li>
+              <li className="text-caption">
+                <Text variant="muted">One uppercase letter</Text>
+              </li>
+              <li className="text-caption">
+                <Text variant="muted">One lowercase letter</Text>
+              </li>
+              <li className="text-caption">
+                <Text variant="muted">One number</Text>
+              </li>
             </ul>
           </div>
 
