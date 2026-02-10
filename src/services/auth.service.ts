@@ -37,6 +37,14 @@ export interface ApiResponse<T> {
   data: T;
 }
 
+export type VerificationOtpType = "email_verification" | "phone_verification";
+
+export interface VerificationCodeRequest {
+  otpType: VerificationOtpType;
+  email?: string;
+  phoneNumber?: string;
+}
+
 // ============================================================================
 // API Functions
 // ============================================================================
@@ -62,6 +70,11 @@ export const authService = {
 
   updateProfile: (data: Partial<User>): Promise<ApiResponse<User>> =>
     api.put<ApiResponse<User>>("/auth/profile", data),
+
+  sendVerificationCode: (
+    payload: VerificationCodeRequest,
+  ): Promise<ApiResponse<string>> =>
+    api.post<ApiResponse<string>>(API_ENDPOINTS.AUTH.VERIFICATION, payload),
 };
 
 // ============================================================================

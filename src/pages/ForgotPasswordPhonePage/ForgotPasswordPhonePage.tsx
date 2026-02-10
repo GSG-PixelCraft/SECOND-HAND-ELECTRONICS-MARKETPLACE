@@ -4,6 +4,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { ROUTES } from "@/constants/routes";
+import { authService } from "@/services/auth.service";
+import type { AxiosError } from "axios";
 
 interface Country {
   name: string;
@@ -48,6 +50,7 @@ type ForgotPasswordPhoneFormData = z.infer<typeof forgotPasswordPhoneSchema>;
 export default function ForgotPasswordPhonePage() {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [countryCode, setCountryCode] = useState("+970");
   const [countries, setCountries] = useState<Country[]>(COUNTRIES_FALLBACK);
 
@@ -102,18 +105,26 @@ export default function ForgotPasswordPhonePage() {
 
   const onSubmit = async (data: ForgotPasswordPhoneFormData) => {
     setIsSubmitting(true);
+    setSubmitError(null);
     try {
       const normalizedCountryCode = countryCode.startsWith("+")
         ? countryCode
         : `+${countryCode}`;
       const cleanValue = data.phone.replace(/\s/g, "");
       const fullPhoneNumber = `${normalizedCountryCode}${cleanValue}`;
-      // TODO: Implement forgot password via phone API call
+      await authService.sendVerificationCode({
+        otpType: "phone_verification",
+        phoneNumber: fullPhoneNumber,
+      });
       console.log("Forgot password phone:", fullPhoneNumber);
       // Navigate to OTP screen
       navigate(ROUTES.OTP_PHONE);
     } catch (error) {
-      console.error("Forgot password error:", error);
+      const apiError = error as AxiosError<{ message?: string }>;
+      setSubmitError(
+        apiError.response?.data?.message ??
+          "Failed to send verification code. Please try again.",
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -191,6 +202,12 @@ export default function ForgotPasswordPhonePage() {
                 </p>
               ) : null}
             </div>
+
+            {submitError ? (
+              <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+                {submitError}
+              </p>
+            ) : null}
 
             <button
               type="submit"

@@ -4,6 +4,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { ROUTES } from "@/constants/routes";
+import { authService } from "@/services/auth.service";
+import type { AxiosError } from "axios";
 
 const forgotPasswordEmailSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -14,6 +16,7 @@ type ForgotPasswordEmailFormData = z.infer<typeof forgotPasswordEmailSchema>;
 export default function ForgotPasswordEmailPage() {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const {
     register,
@@ -29,13 +32,20 @@ export default function ForgotPasswordEmailPage() {
 
   const onSubmit = async (data: ForgotPasswordEmailFormData) => {
     setIsSubmitting(true);
+    setSubmitError(null);
     try {
-      // TODO: Implement forgot password API call
-      console.log("Forgot password email:", data);
+      await authService.sendVerificationCode({
+        otpType: "email_verification",
+        email: data.email.trim(),
+      });
       // Navigate to OTP screen
       navigate(ROUTES.OTP_EMAIL);
     } catch (error) {
-      console.error("Forgot password error:", error);
+      const apiError = error as AxiosError<{ message?: string }>;
+      setSubmitError(
+        apiError.response?.data?.message ??
+          "Failed to send verification code. Please try again.",
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -95,6 +105,12 @@ export default function ForgotPasswordEmailPage() {
                 </p>
               ) : null}
             </div>
+
+            {submitError ? (
+              <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+                {submitError}
+              </p>
+            ) : null}
 
             <button
               type="submit"

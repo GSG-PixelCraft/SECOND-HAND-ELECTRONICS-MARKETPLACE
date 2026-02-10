@@ -5,6 +5,7 @@ export const API_ENDPOINTS = {
     LOGOUT: "/auth/logout",
     REFRESH: "/auth/refresh-token",
     ME: "/auth/me",
+    VERIFICATION: "/auth/send-verification-code",
   },
   USERS: {
     LIST: "/users",
