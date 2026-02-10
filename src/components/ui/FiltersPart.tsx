@@ -5,7 +5,8 @@ import {
   type Country,
 } from "./countriesData";
 import { LocationPermissionModal } from "./LocationPermissionModal";
-
+import { Button } from "./button";
+import { Span } from "./span";
 export interface FiltersState {
   categories: string[];
   condition: string[];
@@ -39,17 +40,17 @@ const Badge = ({
   label: string;
   onRemove: () => void;
 }) => (
-  <button
+  <Button
     type="button"
     className="inline-flex cursor-pointer items-center gap-1 rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-800 hover:bg-blue-200"
     onClick={onRemove}
     aria-label={`Remove ${label} filter`}
   >
     {label}{" "}
-    <span className="h-3 w-3 text-blue-600" aria-hidden="true">
+    <Span className="h-3 w-3 text-blue-600" aria-hidden="true">
       ×
-    </span>
-  </button>
+    </Span>
+  </Button>
 );
 
 const Checkbox = ({
@@ -68,13 +69,15 @@ const Checkbox = ({
       onChange={onChange}
       className="h-4 w-4 rounded border-gray-300 text-blue-600"
     />
-    <span className="text-sm text-gray-700">{label}</span>
+    <Span className="text-sm text-gray-700">{label}</Span>
   </label>
 );
 
 const SearchIcon = () => (
   <svg
     className="h-4 w-4 text-gray-500"
+    aria-hidden="true"
+    focusable="false"
     fill="none"
     stroke="currentColor"
     viewBox="0 0 24 24"
@@ -288,13 +291,13 @@ export const FiltersPart = ({
         <div className="border-b border-gray-200 px-6 py-4">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold text-gray-900">Filters</h2>
-            <button
+            <Button
               type="button"
               onClick={reset}
               className="text-sm text-blue-600 hover:text-blue-700"
             >
               Clear all
-            </button>
+            </Button>
           </div>
           {hasFilters && (
             <div className="mt-3 flex flex-wrap gap-2">
@@ -465,7 +468,7 @@ export const FiltersPart = ({
                 ))}
               </select>
             )}
-            <button
+            <Button
               type="button"
               onClick={() => {
                 if (!filters.location.useCurrentLocation)
@@ -481,7 +484,7 @@ export const FiltersPart = ({
               {filters.location.useCurrentLocation
                 ? "✓ Using current location"
                 : "Use my current location"}
-            </button>
+            </Button>
           </div>
         </div>
       </div>

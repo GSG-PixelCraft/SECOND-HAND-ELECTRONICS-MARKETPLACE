@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/Card";
+import { Button } from "@/components/ui/button";
+import { Text } from "@/components/ui/text";
 
 interface DescriptionCardProps {
   description: string;
@@ -14,20 +16,19 @@ export const DescriptionCard = ({ description }: DescriptionCardProps) => {
         <h3 className="text-sm font-semibold text-neutral-foreground">
           Description
         </h3>
-        <p
-          className={`text-sm text-muted-foreground ${
-            !expanded ? "max-h-20 overflow-hidden" : ""
-          }`}
+        <Text
+          variant="muted"
+          className={`text-sm ${!expanded ? "max-h-20 overflow-hidden" : ""}`}
         >
           {description}
-        </p>
-        <button
+        </Text>
+        <Button
           type="button"
           onClick={() => setExpanded((prev) => !prev)}
           className="text-xs font-semibold text-primary"
         >
           {expanded ? "Show less" : "Show more"}
-        </button>
+        </Button>
       </CardContent>
     </Card>
   );

@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { ROUTES } from "@/constants/routes";
 import PageLayout from "@/components/layout/PageLayout";
 import { Mail } from "lucide-react";
+import { Text } from "@/components/ui/text";
 
 const forgotPasswordEmailSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -49,10 +50,10 @@ export default function ForgotPasswordEmailPage() {
             <Mail className="h-6 w-6 text-primary" />
           </div>
           <h1 className="text-h2 font-semibold">Forgot Password?</h1>
-          <p className="text-body text-muted-foreground">
+          <Text variant="muted">
             Enter your email address and we'll send you a verification code to
             reset your password.
-          </p>
+          </Text>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">

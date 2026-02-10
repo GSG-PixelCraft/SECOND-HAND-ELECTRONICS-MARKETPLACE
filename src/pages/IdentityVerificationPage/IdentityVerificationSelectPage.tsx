@@ -5,6 +5,8 @@ import { useNavigate } from "react-router-dom";
 import PageLayout from "@/components/layout/PageLayout";
 import { Button } from "@/components/ui/button";
 import { VerifyIdentityInput } from "@/components/forms";
+import { Span } from "@/components/ui/span";
+import { Text } from "@/components/ui/text";
 import { documentUploadSchema } from "@/components/forms/zod-schemas";
 import { useUploadIdentityDocument } from "@/services";
 import { ROUTES } from "@/constants/routes";
@@ -82,16 +84,16 @@ export const IdentityVerificationSelectPage: React.FC = () => {
                         )}
                       </div>
                     </div>
-                    <span className="text-base text-[#3d3d3d]">
+                    <Span className="text-base text-[#3d3d3d]">
                       {type.label}
-                    </span>
+                    </Span>
                   </button>
                 ))}
               </div>
 
-              <p className="text-sm text-[#828282]">
+              <Text className="text-sm text-[#828282]">
                 Make sure the document is clear, readable, and not blurred.
-              </p>
+              </Text>
             </div>
 
             {/* Upload Fields */}

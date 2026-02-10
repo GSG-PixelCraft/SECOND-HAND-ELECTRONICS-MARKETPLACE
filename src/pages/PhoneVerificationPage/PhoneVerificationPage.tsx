@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import PageLayout from "@/components/layout/PageLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Text } from "@/components/ui/text";
 import { phoneNumberSchema } from "@/components/forms/zod-schemas";
 import { useSendPhoneOTP } from "@/services";
 import { ROUTES } from "@/constants/routes";
@@ -43,9 +44,9 @@ export const PhoneVerificationPage: React.FC = () => {
               <h2 className="text-center text-xl font-medium text-[#101010]">
                 Enter your phone number
               </h2>
-              <p className="text-center text-sm text-[#828282]">
+              <Text variant="caption" className="text-center">
                 {MESSAGES.VERIFICATION.PHONE.DESCRIPTION}
-              </p>
+              </Text>
             </div>
 
             <Input

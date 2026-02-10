@@ -1,22 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "./client";
-
-// ============================================================================
-// Types
-// ============================================================================
-
-export interface CartItem {
-  productId: string;
-  name: string;
-  price: number;
-  quantity: number;
-  image?: string;
-}
-
-export interface Cart {
-  items: CartItem[];
-  total: number;
-}
+import type { CartItem } from "@/types/cart";
 
 // ============================================================================
 // API Functions

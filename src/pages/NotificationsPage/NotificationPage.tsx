@@ -2,6 +2,8 @@ import { useMemo, useState } from "react";
 import { NotificationItem } from "@/components/notifications/NotificationItem";
 import { NotificationsEmptyState } from "@/components/feedback/emptyState";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Span } from "@/components/ui/span";
 import {
   MOCK_NOTIFICATIONS,
   NOTIFICATION_TABS,
@@ -43,7 +45,7 @@ export function NotificationsPage() {
         {/* Tabs */}
         <div className="flex items-start justify-center gap-2">
           {NOTIFICATION_TABS.map((tab) => (
-            <button
+            <Button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={cn(
@@ -55,7 +57,7 @@ export function NotificationsPage() {
             >
               {t(tab.labelKey)}
               {tabCounts[tab.id] > 0 && (
-                <span
+                <Span
                   className={cn(
                     "flex h-4 w-4 items-center justify-center rounded-full font-['Poppins'] text-[10px] font-medium leading-normal",
                     activeTab === tab.id
@@ -64,9 +66,9 @@ export function NotificationsPage() {
                   )}
                 >
                   {tabCounts[tab.id]}
-                </span>
+                </Span>
               )}
-            </button>
+            </Button>
           ))}
         </div>
 
@@ -93,12 +95,12 @@ export function NotificationsPage() {
                           : date}
                     </h2>
                     {date === "Today" && (
-                      <button
+                      <Button
                         type="button"
                         className="font-['Poppins'] text-[16px] font-normal leading-normal text-[#2563eb] hover:underline"
                       >
                         {t("notifications.actions.markAllRead")}
-                      </button>
+                      </Button>
                     )}
                   </div>
 

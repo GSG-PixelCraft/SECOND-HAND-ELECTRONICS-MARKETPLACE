@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import React from "react";
 import { Link } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
+import { Text } from "@/components/ui/text";
 
 interface AppErrorBoundaryProps {
   children: ReactNode;
@@ -39,10 +40,10 @@ export class AppErrorBoundary extends React.Component<
           <h1 className="text-3xl font-semibold text-slate-900">
             Something went wrong
           </h1>
-          <p className="max-w-xl text-base text-slate-600">
+          <Text className="max-w-xl text-base text-slate-600">
             An unexpected error occurred. Please try refreshing the page or
             contact support if the problem persists.
-          </p>
+          </Text>
           <Link
             className="rounded-full bg-slate-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
             to={ROUTES.HOME}
