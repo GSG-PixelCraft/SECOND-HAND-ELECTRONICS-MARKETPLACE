@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Text } from "@/components/ui/text";
 
 export const ChangePassword = () => {
   const [currentPassword, setCurrentPassword] = useState("");
@@ -37,9 +39,9 @@ export const ChangePassword = () => {
       <h2 className="text-lg font-semibold text-neutral-foreground">
         Change Password
       </h2>
-      <p className="mb-6 text-caption text-muted-foreground">
+      <Text variant="muted" className="mb-6 text-caption">
         Create a new password for your account
-      </p>
+      </Text>
 
       <form onSubmit={handleSubmit} className="space-y-5">
         <div className="flex flex-col gap-2">
@@ -54,13 +56,13 @@ export const ChangePassword = () => {
               onChange={(e) => setCurrentPassword(e.target.value)}
               className={`${inputBase} border-neutral-20 focus:border-primary`}
             />
-            <button
+            <Button
               type="button"
               onClick={() => setShowCurrent(!showCurrent)}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
             >
               {showCurrent ? <EyeOff size={18} /> : <Eye size={18} />}
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -80,20 +82,20 @@ export const ChangePassword = () => {
                   : "border-neutral-20 focus:border-primary"
               }`}
             />
-            <button
+            <Button
               type="button"
               onClick={() => setShowNew(!showNew)}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
             >
               {showNew ? <EyeOff size={18} /> : <Eye size={18} />}
-            </button>
+            </Button>
           </div>
 
           {newPasswordInvalid && (
-            <p className="text-caption text-error">
+            <Text variant="error" className="text-caption">
               Password must be at least 8 characters and include letters and
               numbers.
-            </p>
+            </Text>
           )}
         </div>
 
@@ -113,28 +115,28 @@ export const ChangePassword = () => {
                   : "border-neutral-20 focus:border-primary"
               }`}
             />
-            <button
+            <Button
               type="button"
               onClick={() => setShowConfirm(!showConfirm)}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
             >
               {showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
-            </button>
+            </Button>
           </div>
 
           {confirmInvalid && (
-            <p className="text-caption text-error">
+            <Text variant="error" className="text-caption">
               Password confirmation does not match.
-            </p>
+            </Text>
           )}
         </div>
 
-        <button
+        <Button
           type="submit"
           className="mt-4 w-full rounded-md bg-primary py-3 font-semibold text-white transition hover:opacity-90"
         >
           Change password
-        </button>
+        </Button>
       </form>
     </section>
   );

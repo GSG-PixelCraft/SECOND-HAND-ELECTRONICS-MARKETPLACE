@@ -1,3 +1,5 @@
+import { Span } from "@/components/ui/span";
+
 interface ReportLoadingOverlayProps {
   open: boolean;
   message?: string;
@@ -35,7 +37,7 @@ export const ReportLoadingOverlay = ({
             );
           })}
         </svg>
-        <span className="text-[20px] font-normal">{message}</span>
+        <Span className="text-[20px] font-normal">{message}</Span>
       </div>
     </div>
   );

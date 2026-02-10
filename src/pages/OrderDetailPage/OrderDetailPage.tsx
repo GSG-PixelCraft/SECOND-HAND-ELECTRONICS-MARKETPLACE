@@ -1,5 +1,6 @@
 import { Link, useParams } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
+import { Text } from "@/components/ui/text";
 
 const OrderDetailPage = () => {
   const { id } = useParams();
@@ -9,9 +10,9 @@ const OrderDetailPage = () => {
       <h1 className="text-2xl font-semibold text-slate-900">
         Order Details #{id}
       </h1>
-      <p className="text-sm text-slate-600">
+      <Text className="text-sm text-slate-600">
         Track your order status and shipping information
-      </p>
+      </Text>
       <Link
         className="text-sm font-semibold text-slate-500 hover:text-slate-700"
         to={ROUTES.HOME}

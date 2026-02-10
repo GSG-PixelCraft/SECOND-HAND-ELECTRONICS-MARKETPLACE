@@ -1,4 +1,7 @@
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Span } from "@/components/ui/span";
+import { Text } from "@/components/ui/text";
 
 interface ToggleSwitchProps {
   checked: boolean;
@@ -7,19 +10,19 @@ interface ToggleSwitchProps {
 
 const ToggleSwitch = ({ checked, onChange }: ToggleSwitchProps) => {
   return (
-    <button
+    <Button
       type="button"
       onClick={onChange}
       className={`relative h-6 w-11 rounded-full transition-colors ${
         checked ? "bg-primary" : "bg-neutral-20"
       }`}
     >
-      <span
+      <Span
         className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${
           checked ? "left-[1.35rem]" : "left-0.5"
         }`}
       />
-    </button>
+    </Button>
   );
 };
 
@@ -40,9 +43,7 @@ const SettingRow = ({
 }: SettingRowProps) => {
   const content = (
     <div className="flex items-center justify-between px-4 py-4">
-      <span className="text-body font-medium text-neutral-foreground">
-        {label}
-      </span>
+      <Span variant="label">{label}</Span>
       <ToggleSwitch checked={checked} onChange={onToggle} />
     </div>
   );
@@ -96,7 +97,9 @@ export const NotificationSettings = () => {
       />
 
       <div className="mt-6">
-        <p className="mb-2 font-semibold text-neutral-foreground">General</p>
+        <Text className="mb-2 font-semibold text-neutral-foreground">
+          General
+        </Text>
 
         <div className="rounded-md border border-neutral-20">
           <SettingRow
@@ -120,9 +123,9 @@ export const NotificationSettings = () => {
       </div>
 
       <div className="mt-6">
-        <p className="mb-2 font-semibold text-neutral-foreground">
+        <Text className="mb-2 font-semibold text-neutral-foreground">
           My Listings
-        </p>
+        </Text>
 
         <div className="rounded-md border border-neutral-20">
           <SettingRow
@@ -140,9 +143,9 @@ export const NotificationSettings = () => {
       </div>
 
       <div className="mt-6">
-        <p className="mb-2 font-semibold text-neutral-foreground">
+        <Text className="mb-2 font-semibold text-neutral-foreground">
           Messages & Chats
-        </p>
+        </Text>
 
         <div className="rounded-md border border-neutral-20">
           <SettingRow
@@ -160,7 +163,9 @@ export const NotificationSettings = () => {
       </div>
 
       <div className="mt-6">
-        <p className="mb-2 font-semibold text-neutral-foreground">Discovery</p>
+        <Text className="mb-2 font-semibold text-neutral-foreground">
+          Discovery
+        </Text>
 
         <SettingRow
           label="New items near you"
@@ -171,7 +176,9 @@ export const NotificationSettings = () => {
       </div>
 
       <div className="mt-6">
-        <p className="mb-2 font-semibold text-neutral-foreground">System</p>
+        <Text className="mb-2 font-semibold text-neutral-foreground">
+          System
+        </Text>
 
         <SettingRow
           label="Account & identity verification"

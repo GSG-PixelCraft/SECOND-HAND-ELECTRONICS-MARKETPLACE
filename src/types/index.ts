@@ -1,13 +1,20 @@
 export * from "./verification";
+export * from "./product";
+export * from "./cart";
+export * from "./order";
 
 export interface User {
   id: string;
-  name: string;
-  email: string;
-  role: "user" | "admin";
+  role: "buyer" | "seller" | "admin" | "user";
+  name?: string;
+  fullName?: string;
+  email?: string;
   avatar?: string;
   phoneNumber?: string;
   emailVerified?: boolean;
   phoneVerified?: boolean;
   identityVerified?: boolean;
+  isEmailVerified?: boolean;
+  isPhoneVerified?: boolean;
+  isIdentityVerified?: boolean;
 }

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import PageLayout from "@/components/layout/PageLayout";
 import { Button } from "@/components/ui/button";
 import { Alert } from "@/components/ui/alert";
+import { Text } from "@/components/ui/text";
 import { useIdentityStatus } from "@/services";
 import { useAuthStore } from "@/stores";
 import { ROUTES } from "@/constants/routes";
@@ -95,7 +96,9 @@ export const IdentityVerificationStatusPage: React.FC = () => {
             <h2 className="text-2xl font-medium text-[#101010]">
               {content.title}
             </h2>
-            <p className="text-base text-[#828282]">{content.description}</p>
+            <Text className="text-base text-[#828282]">
+              {content.description}
+            </Text>
           </div>
 
           <Alert variant={content.variant} className="w-full text-left">

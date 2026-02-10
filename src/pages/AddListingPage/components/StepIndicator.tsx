@@ -1,5 +1,6 @@
 // src/pages/AddListingPage/components/StepIndicator.tsx
 import * as React from "react";
+import { Text } from "@/components/ui/text";
 
 interface StepIndicatorProps {
   currentStep: number;
@@ -43,14 +44,14 @@ export const StepIndicator: React.FC<StepIndicatorProps> = ({
                     />
                   </svg>
                 ) : (
-                  <p className="font-['Poppins'] text-[14px] font-normal leading-normal text-[#2563eb]">
+                  <Text className="font-['Poppins'] text-[14px] font-normal leading-normal text-[#2563eb]">
                     {step.id}
-                  </p>
+                  </Text>
                 )}
               </div>
-              <p className="text-center font-['Poppins'] text-[20px] font-normal leading-normal text-[#3d3d3d]">
+              <Text className="text-center font-['Poppins'] text-[20px] font-normal leading-normal text-[#3d3d3d]">
                 {step.label}
-              </p>
+              </Text>
             </div>
           </React.Fragment>
         ))}

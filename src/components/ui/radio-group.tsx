@@ -134,15 +134,15 @@ export const RadioGroup = React.forwardRef<HTMLInputElement, RadioGroupProps>(
         </div>
 
         {helperText && !error && (
-          <p id={helperId} className="text-caption text-muted-foreground">
+          <Text variant="muted" className="text-caption" id={helperId}>
             {helperText}
-          </p>
+          </Text>
         )}
 
         {error && (
-          <p id={errorId} className="text-caption text-error">
+          <Text variant="error" className="text-caption" id={errorId}>
             {error}
-          </p>
+          </Text>
         )}
       </div>
     );

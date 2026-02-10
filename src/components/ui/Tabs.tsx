@@ -1,3 +1,6 @@
+import { Button } from "./button";
+import { Span } from "./span";
+
 export type TabValue =
   | "all"
   | "pending"
@@ -31,7 +34,7 @@ export function Tabs({ value, onChange }: TabsProps) {
 
           return (
             <li key={tab.value} role="presentation">
-              <button
+              <Button
                 type="button"
                 role="tab"
                 aria-selected={isActive}
@@ -45,9 +48,9 @@ export function Tabs({ value, onChange }: TabsProps) {
                 {tab.label}
 
                 {isActive && (
-                  <span className="absolute -bottom-px left-0 right-0 h-0.5 bg-primary" />
+                  <Span className="absolute -bottom-px left-0 right-0 h-0.5 bg-primary" />
                 )}
-              </button>
+              </Button>
             </li>
           );
         })}

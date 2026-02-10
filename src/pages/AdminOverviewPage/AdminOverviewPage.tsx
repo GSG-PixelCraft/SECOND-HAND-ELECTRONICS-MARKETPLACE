@@ -1,26 +1,30 @@
+import { Text } from "@/components/ui/text";
+
 const AdminOverviewPage = () => {
   return (
     <div className="grid gap-4 md:grid-cols-3">
       <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-5">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
+        <Text className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
           Statistics
-        </p>
-        <p className="mt-2 text-2xl font-semibold text-slate-900">42</p>
-        <p className="text-sm text-slate-600">Active Listings</p>
+        </Text>
+        <Text className="mt-2 text-2xl font-semibold text-slate-900">42</Text>
+        <Text className="text-sm text-slate-600">Active Listings</Text>
       </div>
       <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-5">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
+        <Text className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
           Users
-        </p>
-        <p className="mt-2 text-2xl font-semibold text-slate-900">128</p>
-        <p className="text-sm text-slate-600">Registered Users</p>
+        </Text>
+        <Text className="mt-2 text-2xl font-semibold text-slate-900">128</Text>
+        <Text className="text-sm text-slate-600">Registered Users</Text>
       </div>
       <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-5">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
+        <Text className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
           Revenue
-        </p>
-        <p className="mt-2 text-2xl font-semibold text-slate-900">$1,234</p>
-        <p className="text-sm text-slate-600">Monthly Revenue</p>
+        </Text>
+        <Text className="mt-2 text-2xl font-semibold text-slate-900">
+          $1,234
+        </Text>
+        <Text className="text-sm text-slate-600">Monthly Revenue</Text>
       </div>
     </div>
   );
