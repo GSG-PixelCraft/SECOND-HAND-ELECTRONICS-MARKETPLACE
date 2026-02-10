@@ -40,9 +40,27 @@ export interface ApiResponse<T> {
 export type VerificationOtpType = "email_verification" | "phone_verification";
 
 export interface VerificationCodeRequest {
-  otpType: VerificationOtpType;
   email?: string;
   phoneNumber?: string;
+}
+
+export interface VerifyCodeRequest {
+  code: string;
+  type: "password_reset" | VerificationOtpType;
+  email?: string;
+  phoneNumber?: string;
+}
+
+export interface VerifyCodeResponse {
+  message: string;
+  email?: string;
+  phoneNumber?: string;
+  token?: string;
+}
+
+export interface ResetPasswordRequest {
+  newPassword: string;
+  confirmPassword: string;
 }
 
 // ============================================================================
@@ -75,6 +93,30 @@ export const authService = {
     payload: VerificationCodeRequest,
   ): Promise<ApiResponse<string>> =>
     api.post<ApiResponse<string>>(API_ENDPOINTS.AUTH.VERIFICATION, payload),
+
+  verifyCode: (
+    payload: VerifyCodeRequest,
+  ): Promise<ApiResponse<VerifyCodeResponse>> =>
+    api.post<ApiResponse<VerifyCodeResponse>>(
+      API_ENDPOINTS.AUTH.VERIFY_CODE,
+      payload,
+    ),
+
+  resetPassword: (
+    payload: ResetPasswordRequest,
+    token?: string | null,
+  ): Promise<ApiResponse<{ message: string }>> =>
+    api.post<ApiResponse<{ message: string }>>(
+      API_ENDPOINTS.AUTH.RESET_PASSWORD,
+      payload,
+      token
+        ? {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        : undefined,
+    ),
 };
 
 // ============================================================================

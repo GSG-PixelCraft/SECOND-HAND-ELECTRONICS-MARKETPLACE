@@ -34,12 +34,12 @@ export default function ForgotPasswordEmailPage() {
     setIsSubmitting(true);
     setSubmitError(null);
     try {
+      const normalizedEmail = data.email.trim();
       await authService.sendVerificationCode({
-        otpType: "email_verification",
-        email: data.email.trim(),
+        email: normalizedEmail,
       });
       // Navigate to OTP screen
-      navigate(ROUTES.OTP_EMAIL);
+      navigate(ROUTES.OTP_EMAIL, { state: { email: normalizedEmail } });
     } catch (error) {
       const apiError = error as AxiosError<{ message?: string }>;
       setSubmitError(

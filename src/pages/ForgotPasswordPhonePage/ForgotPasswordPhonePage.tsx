@@ -113,12 +113,11 @@ export default function ForgotPasswordPhonePage() {
       const cleanValue = data.phone.replace(/\s/g, "");
       const fullPhoneNumber = `${normalizedCountryCode}${cleanValue}`;
       await authService.sendVerificationCode({
-        otpType: "phone_verification",
         phoneNumber: fullPhoneNumber,
       });
       console.log("Forgot password phone:", fullPhoneNumber);
       // Navigate to OTP screen
-      navigate(ROUTES.OTP_PHONE);
+      navigate(ROUTES.OTP_PHONE, { state: { phoneNumber: fullPhoneNumber } });
     } catch (error) {
       const apiError = error as AxiosError<{ message?: string }>;
       setSubmitError(

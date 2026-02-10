@@ -9,6 +9,8 @@ import { ROUTES } from "@/constants/routes";
 import PageLayout from "@/components/layout/PageLayout";
 import { Lock } from "lucide-react";
 import { Text } from "@/components/ui/text";
+import { authService } from "@/services/auth.service";
+import type { AxiosError } from "axios";
 
 const changePasswordSchema = z
   .object({
@@ -30,6 +32,7 @@ type ChangePasswordFormData = z.infer<typeof changePasswordSchema>;
 export default function ChangePasswordPage() {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const {
     register,
@@ -41,13 +44,27 @@ export default function ChangePasswordPage() {
 
   const onSubmit = async (data: ChangePasswordFormData) => {
     setIsSubmitting(true);
+    setSubmitError(null);
     try {
-      // TODO: Implement change password API call
-      console.log("Change password:", data);
+      const resetToken = sessionStorage.getItem("reset_token");
+      await authService.resetPassword(
+        {
+          newPassword: data.newPassword,
+          confirmPassword: data.confirmPassword,
+        },
+        resetToken,
+      );
+      if (resetToken) {
+        sessionStorage.removeItem("reset_token");
+      }
       // Navigate to sign in page
       navigate(ROUTES.SIGN_IN);
     } catch (error) {
-      console.error("Change password error:", error);
+      const apiError = error as AxiosError<{ message?: string }>;
+      setSubmitError(
+        apiError.response?.data?.message ??
+          "Failed to update password. Please try again.",
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -108,6 +125,12 @@ export default function ChangePasswordPage() {
               </li>
             </ul>
           </div>
+
+          {submitError ? (
+            <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+              {submitError}
+            </p>
+          ) : null}
 
           <Button
             type="submit"

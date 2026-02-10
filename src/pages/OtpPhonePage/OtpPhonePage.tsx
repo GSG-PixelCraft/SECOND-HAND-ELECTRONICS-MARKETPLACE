@@ -1,13 +1,20 @@
 import { useState, useRef, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
+import { authService } from "@/services/auth.service";
+import type { AxiosError } from "axios";
 
 export default function OtpPhonePage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [otp, setOtp] = useState<string[]>(["", "", "", ""]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [resendTimer, setResendTimer] = useState(60);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+
+  const phoneNumber = (location.state as { phoneNumber?: string } | null)
+    ?.phoneNumber;
 
   useEffect(() => {
     if (resendTimer > 0) {
@@ -54,13 +61,30 @@ export default function OtpPhonePage() {
     }
 
     setIsSubmitting(true);
+    setSubmitError(null);
     try {
-      // TODO: Implement OTP verification API call
-      console.log("OTP verification:", otpCode);
+      if (!phoneNumber) {
+        setSubmitError("Please go back and enter your phone number again.");
+        setIsSubmitting(false);
+        return;
+      }
+      const response = await authService.verifyCode({
+        type: "phone_verification",
+        phoneNumber,
+        code: otpCode,
+      });
+      const resetToken = response.data.token;
+      if (resetToken) {
+        sessionStorage.setItem("reset_token", resetToken);
+      }
       // Navigate to change password screen
-      navigate(ROUTES.CHANGE_PASSWORD);
+      navigate(ROUTES.CHANGE_PASSWORD, { state: { phoneNumber } });
     } catch (error) {
-      console.error("OTP verification error:", error);
+      const apiError = error as AxiosError<{ message?: string }>;
+      setSubmitError(
+        apiError.response?.data?.message ??
+          "Verification failed. Please try again.",
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -131,6 +155,12 @@ export default function OtpPhonePage() {
               {isSubmitting ? "Verifying..." : "Verify"}
             </button>
           </form>
+
+          {submitError ? (
+            <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+              {submitError}
+            </p>
+          ) : null}
 
           <div className="space-y-2 text-center text-xs text-gray-500">
             <div className="mb-4 flex items-center justify-center gap-1">

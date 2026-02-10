@@ -74,6 +74,14 @@ const publicSimpleRoutes = [
     },
   },
   {
+    path: "/change-password",
+    lazy: async () => {
+      const { default: ChangePasswordPage } =
+        await import("@/pages/ChangePasswordPage/ChangePasswordPage");
+      return { Component: ChangePasswordPage };
+    },
+  },
+  {
     path: "/search",
     lazy: async () => {
       const { default: SearchPage } =
@@ -114,14 +122,6 @@ const protectedRoutes = [
       const { default: ProfilePage } =
         await import("@/pages/ProfilePage/ProfilePage");
       return { Component: ProfilePage };
-    },
-  },
-  {
-    path: "/change-password",
-    lazy: async () => {
-      const { default: ChangePasswordPage } =
-        await import("@/pages/ChangePasswordPage/ChangePasswordPage");
-      return { Component: ChangePasswordPage };
     },
   },
   {
