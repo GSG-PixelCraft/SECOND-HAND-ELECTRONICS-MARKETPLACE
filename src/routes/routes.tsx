@@ -262,6 +262,54 @@ export const router = createBrowserRouter([
     },
   },
   {
+    path: "/admin/verifications",
+    errorElement: <UnexpectedErrorPage />,
+    lazy: async () => {
+      const [
+        { default: AdminVerificationQueuePage },
+        { AdminDashboardLayout },
+        { AdminGuard },
+      ] = await Promise.all([
+        import("@/pages/AdminVerificationQueuePage/AdminVerificationQueuePage"),
+        import("@/components/layout/AdminDashboardLayout"),
+        import("@/routes/access-control"),
+      ]);
+      return {
+        Component: () => (
+          <AdminGuard>
+            <AdminDashboardLayout>
+              <AdminVerificationQueuePage />
+            </AdminDashboardLayout>
+          </AdminGuard>
+        ),
+      };
+    },
+  },
+  {
+    path: "/admin/verifications/:id",
+    errorElement: <UnexpectedErrorPage />,
+    lazy: async () => {
+      const [
+        { default: AdminVerificationReviewPage },
+        { AdminDashboardLayout },
+        { AdminGuard },
+      ] = await Promise.all([
+        import("@/pages/AdminVerificationReviewPage/AdminVerificationReviewPage"),
+        import("@/components/layout/AdminDashboardLayout"),
+        import("@/routes/access-control"),
+      ]);
+      return {
+        Component: () => (
+          <AdminGuard>
+            <AdminDashboardLayout>
+              <AdminVerificationReviewPage />
+            </AdminDashboardLayout>
+          </AdminGuard>
+        ),
+      };
+    },
+  },
+  {
     path: "/403",
     lazy: async () => {
       const { default: AccessDeniedPage } =

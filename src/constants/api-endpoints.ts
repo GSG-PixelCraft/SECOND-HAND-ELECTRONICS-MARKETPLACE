@@ -72,5 +72,11 @@ export const API_ENDPOINTS = {
       BULK_REJECT: "/admin/listings/bulk/reject",
       BULK_DELETE: "/admin/listings/bulk/delete",
     },
+    VERIFICATIONS: {
+      LIST: "/admin/verifications",
+      BY_ID: (id: string) => `/admin/verifications/${id}`,
+      APPROVE: (id: string) => `/admin/verifications/${id}/approve`,
+      REJECT: (id: string) => `/admin/verifications/${id}/reject`,
+    },
   },
 } as const;

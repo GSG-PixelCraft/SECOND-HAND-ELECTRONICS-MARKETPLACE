@@ -145,6 +145,61 @@ export interface PaginatedListingsResponse {
   limit: number;
 }
 
+// Verification Management types
+
+export type VerificationDocumentType =
+  | "National ID"
+  | "Passport"
+  | "Driver License";
+
+export type AdminVerificationStatus = "pending" | "approved" | "rejected";
+
+export interface VerificationSubmission {
+  id: string;
+  userId: string;
+  userName: string;
+  userAvatar?: string;
+  documentType: VerificationDocumentType;
+  submittedDate: string;
+  status: AdminVerificationStatus;
+  frontImage: string;
+  backImage?: string;
+  selfieImage?: string;
+  rejectionReasons?: string[];
+  additionalNotes?: string;
+  reviewedAt?: string;
+  reviewedBy?: string;
+}
+
+export interface VerificationFilterParams {
+  status?: AdminVerificationStatus | "all";
+  search?: string;
+  page?: number;
+  limit?: number;
+  sortBy?: "submittedDate" | "userName";
+  sortOrder?: "asc" | "desc";
+}
+
+export interface PaginatedVerificationsResponse {
+  items: VerificationSubmission[];
+  total: number;
+  page: number;
+  totalPages: number;
+  limit: number;
+  statusCounts: {
+    all: number;
+    pending: number;
+    approved: number;
+    rejected: number;
+  };
+}
+
+export interface RejectVerificationData {
+  verificationId: string;
+  reasons: string[];
+  additionalNotes?: string;
+}
+
 export interface HideListingData {
   listingId: string;
   reason: HideReason;

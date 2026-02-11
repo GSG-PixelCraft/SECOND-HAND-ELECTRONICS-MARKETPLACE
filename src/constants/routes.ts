@@ -31,6 +31,8 @@ export const ROUTES = {
   FAVORITES: "/favorites",
   NOTIFICATIONS: "/notifications",
   ADMIN_DASHBOARD: "/admin",
+  ADMIN_VERIFICATIONS: "/admin/verifications",
+  ADMIN_VERIFICATION_REVIEW: "/admin/verifications/:id",
   NOT_FOUND: "/404",
   ACCESS_DENIED: "/403",
 } as const;
@@ -40,3 +42,5 @@ export const getProductRoute = (id: string) => `/products/${id}`;
 export const getPublicProfileRoute = (id: string) => `/profile/${id}`;
 export const getMyListingsCategoryRoute = (category: string) =>
   `/my-listings/category/${category}`;
+export const getAdminVerificationReviewRoute = (id: string) =>
+  `/admin/verifications/${id}`;
