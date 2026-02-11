@@ -197,6 +197,7 @@ export const router = createBrowserRouter([
   },
   {
     path: "/admin",
+    errorElement: <UnexpectedErrorPage />,
     lazy: async () => {
       const [{ default: AdminOverviewPage }, { AdminDashboardLayout }] =
         await Promise.all([
@@ -214,6 +215,7 @@ export const router = createBrowserRouter([
   },
   {
     path: "/admin/listings",
+    errorElement: <UnexpectedErrorPage />,
     lazy: async () => {
       const [
         { default: AdminListingsPage },
@@ -237,6 +239,7 @@ export const router = createBrowserRouter([
   },
   {
     path: "/admin/listings/:id",
+    errorElement: <UnexpectedErrorPage />,
     lazy: async () => {
       const [
         { default: AdminListingDetailPage },
