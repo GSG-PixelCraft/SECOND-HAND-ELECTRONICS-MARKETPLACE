@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import {
   MapPin,
   Calendar,
@@ -13,7 +13,6 @@ import {
   Filter,
 } from "lucide-react";
 // import { Header } from "@/components/layout/header";
-import { Fragment } from "react";
 import { AdCard } from "@/components/ui/AdCard";
 import PageLayout from "@/components/layout/PageLayout";
 import { Button } from "@/components/ui/button";

@@ -1,4 +1,4 @@
-import * as React from "react";
+import { forwardRef, useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { Dialog } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -67,7 +67,7 @@ const issueGroups = [
   },
 ];
 
-export const RejectListingModal = React.forwardRef<
+export const RejectListingModal = forwardRef<
   HTMLDialogElement,
   RejectListingModalProps
 >(
@@ -82,16 +82,16 @@ export const RejectListingModal = React.forwardRef<
     },
     ref,
   ) => {
-    const [selectedReason, setSelectedReason] = React.useState<
-      RejectionReason | ""
-    >("");
-    const [expandedGroup, setExpandedGroup] = React.useState<string>(
+    const [selectedReason, setSelectedReason] = useState<RejectionReason | "">(
+      "",
+    );
+    const [expandedGroup, setExpandedGroup] = useState<string>(
       issueGroups[0].id,
     );
-    const [selectedIssues, setSelectedIssues] = React.useState<
+    const [selectedIssues, setSelectedIssues] = useState<
       Record<string, string[]>
     >({});
-    const [comments, setComments] = React.useState<Record<string, string>>({});
+    const [comments, setComments] = useState<Record<string, string>>({});
 
     const totalSelectedIssues = Object.values(selectedIssues).reduce(
       (total, issues) => total + issues.length,

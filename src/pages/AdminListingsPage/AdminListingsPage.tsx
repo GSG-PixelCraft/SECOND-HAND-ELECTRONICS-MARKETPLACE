@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Tabs, type TabValue } from "@/components/ui/Tabs";
 import { EmptyState } from "@/components/feedback/emptyState/EmptyState";
@@ -28,8 +28,8 @@ export default function AdminListingsPage() {
   const initialPage = parseInt(searchParams.get("page") || "1", 10);
   const initialSearch = searchParams.get("search") || "";
 
-  const [activeTab, setActiveTab] = React.useState<TabValue>(initialTab);
-  const [filters, setFilters] = React.useState<ListingFilterParams>({
+  const [activeTab, setActiveTab] = useState<TabValue>(initialTab);
+  const [filters, setFilters] = useState<ListingFilterParams>({
     status: tabToStatus[initialTab],
     page: initialPage,
     limit: 10,

@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { X } from "lucide-react";
 import { Dialog } from "@/components/ui/dialog";
@@ -33,14 +33,14 @@ export function RejectionModal({
   verificationId,
 }: RejectionModalProps) {
   const navigate = useNavigate();
-  const [selectedReasons, setSelectedReasons] = React.useState<string[]>([]);
-  const [additionalNotes, setAdditionalNotes] = React.useState("");
-  const [showAdditionalNotes, setShowAdditionalNotes] = React.useState(false);
+  const [selectedReasons, setSelectedReasons] = useState<string[]>([]);
+  const [additionalNotes, setAdditionalNotes] = useState("");
+  const [showAdditionalNotes, setShowAdditionalNotes] = useState(false);
 
   const rejectMutation = useRejectVerification();
 
   // Reset form when modal closes
-  React.useEffect(() => {
+  useEffect(() => {
     if (!isOpen) {
       setSelectedReasons([]);
       setAdditionalNotes("");

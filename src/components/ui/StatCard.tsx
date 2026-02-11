@@ -1,16 +1,17 @@
-import * as React from "react";
+import { forwardRef } from "react";
+import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { Text } from "@/components/ui/text";
 
 interface StatCardProps {
   title: string;
   value: string | number;
-  icon?: React.ReactNode;
+  icon?: ReactNode;
   iconColor?: "primary" | "secondary" | "warning" | "error";
   className?: string;
 }
 
-const StatCard = React.forwardRef<HTMLDivElement, StatCardProps>(
+const StatCard = forwardRef<HTMLDivElement, StatCardProps>(
   ({ title, value, icon, iconColor = "primary", className }, ref) => {
     const iconColorStyles = {
       primary: "bg-[rgba(37,99,235,0.1)] text-primary",

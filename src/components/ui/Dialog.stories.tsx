@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import * as React from "react";
+import { useState } from "react";
+import type { ComponentProps } from "react";
 import { Dialog } from "./dialog";
 import { Button } from "./button";
 
@@ -18,8 +19,8 @@ const meta: Meta<typeof Dialog> = {
 export default meta;
 type Story = StoryObj<typeof Dialog>;
 
-const DialogWithState = (args: React.ComponentProps<typeof Dialog>) => {
-  const [open, setOpen] = React.useState(false);
+const DialogWithState = (args: ComponentProps<typeof Dialog>) => {
+  const [open, setOpen] = useState(false);
 
   return (
     <div>

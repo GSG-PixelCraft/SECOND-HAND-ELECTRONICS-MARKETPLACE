@@ -1,5 +1,6 @@
 // src/components/ui/file-upload.tsx
-import * as React from "react";
+import { useEffect, useRef } from "react";
+import type { ChangeEvent, DragEvent, FC, ReactElement } from "react";
 import { twMerge } from "tailwind-merge";
 import { Text } from "@/components/ui/text";
 import { Span } from "@/components/ui/span";
@@ -28,7 +29,7 @@ export interface FileUploadProps {
   accept?: string;
 }
 
-export const FileUpload: React.FC<FileUploadProps> = ({
+export const FileUpload: FC<FileUploadProps> = ({
   photos,
   maxPhotos = 8,
   maxPhotoSize = 5 * 1024 * 1024,
@@ -43,10 +44,10 @@ export const FileUpload: React.FC<FileUploadProps> = ({
   tipsLabel,
   onTipsClick,
   accept = "image/*",
-}): React.ReactElement => {
-  const fileInputRef = React.useRef<HTMLInputElement | null>(null);
+}): ReactElement => {
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  const handlePhotoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoChange = (event: ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files ?? []);
 
     if (!files.length) return;
@@ -72,7 +73,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
     event.target.value = "";
   };
 
-  const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
+  const handleDrop = (event: DragEvent<HTMLDivElement>) => {
     event.preventDefault();
     const files = Array.from(event.dataTransfer.files ?? []);
     if (!files.length) return;
@@ -108,7 +109,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
     fileInputRef.current?.click();
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     return () => {
       photos.forEach((photo) => URL.revokeObjectURL(photo.url));
     };

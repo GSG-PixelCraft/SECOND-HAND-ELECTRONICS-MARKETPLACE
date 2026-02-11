@@ -1,4 +1,4 @@
-import * as React from "react";
+import { forwardRef } from "react";
 import { CheckCircle2, MoreVertical } from "lucide-react";
 import { Text } from "@/components/ui/text";
 import { Span } from "@/components/ui/span";
@@ -17,10 +17,7 @@ export interface SellerInfoCardProps {
   avgResponseTime?: string;
 }
 
-export const SellerInfoCard = React.forwardRef<
-  HTMLDivElement,
-  SellerInfoCardProps
->(
+export const SellerInfoCard = forwardRef<HTMLDivElement, SellerInfoCardProps>(
   (
     {
       seller,

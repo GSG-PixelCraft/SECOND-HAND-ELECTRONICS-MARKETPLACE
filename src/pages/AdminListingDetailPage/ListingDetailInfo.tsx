@@ -1,4 +1,4 @@
-import * as React from "react";
+import { forwardRef } from "react";
 import { Text } from "@/components/ui/text";
 import { Span } from "@/components/ui/span";
 import { SoldListingBanner, RemovedListingBanner } from "@/components/admin/ui";
@@ -17,7 +17,7 @@ export interface ListingDetailInfoProps {
   listing: AdminListing;
 }
 
-export const ListingDetailInfo = React.forwardRef<
+export const ListingDetailInfo = forwardRef<
   HTMLDivElement,
   ListingDetailInfoProps
 >(({ listing }, ref) => {

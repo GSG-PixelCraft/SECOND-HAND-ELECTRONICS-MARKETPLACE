@@ -1,5 +1,6 @@
 // src/pages/AddListingPage/components/StepIndicator.tsx
-import * as React from "react";
+import { Fragment } from "react";
+import type { FC, ReactElement } from "react";
 import { Text } from "@/components/ui/text";
 
 interface StepIndicatorProps {
@@ -7,15 +8,15 @@ interface StepIndicatorProps {
   steps: Array<{ id: number; label: string }>;
 }
 
-export const StepIndicator: React.FC<StepIndicatorProps> = ({
+export const StepIndicator: FC<StepIndicatorProps> = ({
   currentStep,
   steps,
-}): React.ReactElement => {
+}): ReactElement => {
   return (
     <div className="flex w-full items-center justify-center">
       <div className="flex items-center gap-4">
         {steps.map((step, index) => (
-          <React.Fragment key={step.id}>
+          <Fragment key={step.id}>
             {index > 0 && (
               <div className="flex h-full shrink-0 items-center justify-center py-3">
                 <div className="h-[2px] w-[157px] rounded-[10px] bg-[#e4e4e4]" />
@@ -53,7 +54,7 @@ export const StepIndicator: React.FC<StepIndicatorProps> = ({
                 {step.label}
               </Text>
             </div>
-          </React.Fragment>
+          </Fragment>
         ))}
       </div>
     </div>

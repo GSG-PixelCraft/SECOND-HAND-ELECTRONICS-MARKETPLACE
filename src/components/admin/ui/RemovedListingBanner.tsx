@@ -1,4 +1,4 @@
-import * as React from "react";
+import { forwardRef } from "react";
 import { Trash2, Calendar, AlertCircle } from "lucide-react";
 import { Text } from "@/components/ui/text";
 import { Span } from "@/components/ui/span";
@@ -10,7 +10,7 @@ export interface RemovedListingBannerProps {
   comment?: string;
 }
 
-export const RemovedListingBanner = React.forwardRef<
+export const RemovedListingBanner = forwardRef<
   HTMLDivElement,
   RemovedListingBannerProps
 >(({ removedAt, removedBy, reason, comment }, ref) => {
@@ -31,7 +31,7 @@ export const RemovedListingBanner = React.forwardRef<
   };
 
   return (
-    <div ref={ref} className="bg-error-5 rounded-xl border border-error-20 p-6">
+    <div ref={ref} className="rounded-xl border border-error-20 bg-error-5 p-6">
       <div className="flex items-start gap-4">
         {/* Icon */}
         <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-error/10">

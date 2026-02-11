@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { useState, type ComponentProps } from "react";
+import { useState } from "react";
+import type { ComponentProps } from "react";
 import { VerifyIdentityInput } from "./VerifyIdentityInput";
 
 const meta: Meta<typeof VerifyIdentityInput> = {

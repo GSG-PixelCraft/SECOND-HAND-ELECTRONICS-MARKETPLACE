@@ -1,5 +1,5 @@
 // src/pages/AddListingPage/components/ConfirmationDialogs.tsx
-import * as React from "react";
+import type { FC, ReactElement } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { Dialog } from "@/components/ui/dialog";
@@ -16,13 +16,13 @@ interface ConfirmationDialogsProps {
   isSending: boolean;
 }
 
-export const ConfirmationDialogs: React.FC<ConfirmationDialogsProps> = ({
+export const ConfirmationDialogs: FC<ConfirmationDialogsProps> = ({
   leaveOpen,
   setLeaveOpen,
   reviewSuccessOpen,
   setReviewSuccessOpen,
   isSending,
-}): React.ReactElement => {
+}): ReactElement => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const warningIcon =

@@ -1,4 +1,5 @@
-import * as React from "react";
+import { forwardRef } from "react";
+import type { MouseEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { Eye } from "lucide-react";
 import { Span } from "@/components/ui/span";
@@ -13,7 +14,7 @@ export interface VerificationsTableProps {
   className?: string;
 }
 
-export const VerificationsTable = React.forwardRef<
+export const VerificationsTable = forwardRef<
   HTMLDivElement,
   VerificationsTableProps
 >(({ verifications, onRowClick, className }, ref) => {
@@ -27,7 +28,7 @@ export const VerificationsTable = React.forwardRef<
     }
   };
 
-  const handleViewClick = (e: React.MouseEvent, verificationId: string) => {
+  const handleViewClick = (e: MouseEvent, verificationId: string) => {
     e.stopPropagation();
     navigate(getAdminVerificationReviewRoute(verificationId));
   };

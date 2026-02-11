@@ -1,5 +1,6 @@
 // src/pages/AddListingPage/components/PhotoTipsDialog.tsx
-import * as React from "react";
+import { useMemo } from "react";
+import type { FC, ReactElement } from "react";
 import { useTranslation } from "react-i18next";
 import { Dialog } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -10,13 +11,13 @@ interface PhotoTipsDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export const PhotoTipsDialog: React.FC<PhotoTipsDialogProps> = ({
+export const PhotoTipsDialog: FC<PhotoTipsDialogProps> = ({
   open,
   onOpenChange,
-}): React.ReactElement => {
+}): ReactElement => {
   const { t } = useTranslation();
 
-  const tips = React.useMemo(
+  const tips = useMemo(
     () => [
       {
         title: t("addListing.tipsModal.items.zoom.title"),

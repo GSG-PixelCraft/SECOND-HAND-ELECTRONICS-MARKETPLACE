@@ -1,4 +1,5 @@
-import * as React from "react";
+import { forwardRef, useEffect, useRef, useState } from "react";
+import type { ChangeEvent } from "react";
 import { Input } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
 import { cn } from "@/lib/utils";
@@ -11,15 +12,15 @@ export interface VerificationsTableFiltersProps {
   className?: string;
 }
 
-export const VerificationsTableFilters = React.forwardRef<
+export const VerificationsTableFilters = forwardRef<
   HTMLDivElement,
   VerificationsTableFiltersProps
 >(({ filters, onFiltersChange, className }, ref) => {
-  const [searchValue, setSearchValue] = React.useState(filters.search || "");
-  const searchTimeoutRef = React.useRef<NodeJS.Timeout | undefined>(undefined);
+  const [searchValue, setSearchValue] = useState(filters.search || "");
+  const searchTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
 
   // Debounced search
-  React.useEffect(() => {
+  useEffect(() => {
     if (searchTimeoutRef.current) {
       clearTimeout(searchTimeoutRef.current);
     }
@@ -38,11 +39,11 @@ export const VerificationsTableFilters = React.forwardRef<
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchValue]);
 
-  const handleStartDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleStartDateChange = (e: ChangeEvent<HTMLInputElement>) => {
     onFiltersChange({ ...filters, startDate: e.target.value, page: 1 });
   };
 
-  const handleEndDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleEndDateChange = (e: ChangeEvent<HTMLInputElement>) => {
     onFiltersChange({ ...filters, endDate: e.target.value, page: 1 });
   };
 

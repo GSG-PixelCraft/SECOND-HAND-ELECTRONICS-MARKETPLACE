@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Search, MapPin, Crosshair, X } from "lucide-react";
 import { Span } from "@/components/ui/span";
 import { Button } from "@/components/ui/button";

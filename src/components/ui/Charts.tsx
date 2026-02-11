@@ -1,4 +1,4 @@
-import * as React from "react";
+import { forwardRef } from "react";
 import {
   LineChart as RechartsLineChart,
   Line,
@@ -33,7 +33,7 @@ interface LineChartProps {
   className?: string;
 }
 
-const LineChart = React.forwardRef<HTMLDivElement, LineChartProps>(
+const LineChart = forwardRef<HTMLDivElement, LineChartProps>(
   ({ data, title, lines, xAxisKey, height = 300, className }, ref) => {
     const colors = [
       "hsl(var(--primary))",
@@ -110,7 +110,7 @@ interface BarChartProps {
   className?: string;
 }
 
-const BarChart = React.forwardRef<HTMLDivElement, BarChartProps>(
+const BarChart = forwardRef<HTMLDivElement, BarChartProps>(
   ({ data, title, bars, xAxisKey, height = 300, className }, ref) => {
     const colors = [
       "hsl(var(--primary))",
@@ -181,7 +181,7 @@ interface PieChartProps {
   colors?: string[];
 }
 
-const PieChart = React.forwardRef<HTMLDivElement, PieChartProps>(
+const PieChart = forwardRef<HTMLDivElement, PieChartProps>(
   (
     {
       data,

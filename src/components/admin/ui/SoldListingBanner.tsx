@@ -1,4 +1,4 @@
-import * as React from "react";
+import { forwardRef } from "react";
 import { CheckCircle2, Calendar } from "lucide-react";
 import { Text } from "@/components/ui/text";
 import { Span } from "@/components/ui/span";
@@ -9,7 +9,7 @@ export interface SoldListingBannerProps {
   price?: number;
 }
 
-export const SoldListingBanner = React.forwardRef<
+export const SoldListingBanner = forwardRef<
   HTMLDivElement,
   SoldListingBannerProps
 >(({ soldAt, soldTo, price }, ref) => {
@@ -25,7 +25,7 @@ export const SoldListingBanner = React.forwardRef<
   return (
     <div
       ref={ref}
-      className="bg-success-5 rounded-xl border border-success-20 p-6"
+      className="rounded-xl border border-success-20 bg-success-5 p-6"
     >
       <div className="flex items-start gap-4">
         {/* Icon */}

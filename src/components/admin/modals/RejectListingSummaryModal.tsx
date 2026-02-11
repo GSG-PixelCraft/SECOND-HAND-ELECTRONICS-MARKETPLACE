@@ -1,4 +1,4 @@
-import * as React from "react";
+import { forwardRef } from "react";
 import { Dialog } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
@@ -27,7 +27,7 @@ const reasonLabels: Record<RejectionReason, string> = {
   other: "Other",
 };
 
-export const RejectListingSummaryModal = React.forwardRef<
+export const RejectListingSummaryModal = forwardRef<
   HTMLDialogElement,
   RejectListingSummaryModalProps
 >(

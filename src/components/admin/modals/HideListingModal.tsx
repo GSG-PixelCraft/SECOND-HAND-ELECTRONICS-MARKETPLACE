@@ -1,4 +1,4 @@
-import * as React from "react";
+import { forwardRef, useState } from "react";
 import { X } from "lucide-react";
 import { Dialog } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -22,14 +22,12 @@ const hideReasons: { value: HideReason; label: string }[] = [
   { value: "other", label: "Other" },
 ];
 
-export const HideListingModal = React.forwardRef<
+export const HideListingModal = forwardRef<
   HTMLDialogElement,
   HideListingModalProps
 >(({ open, onOpenChange, listingName, onConfirm, isLoading = false }, ref) => {
-  const [selectedReason, setSelectedReason] = React.useState<HideReason | "">(
-    "",
-  );
-  const [comment, setComment] = React.useState("");
+  const [selectedReason, setSelectedReason] = useState<HideReason | "">("");
+  const [comment, setComment] = useState("");
 
   const showComment = selectedReason === "other";
   const isValid = selectedReason !== "";

@@ -1,4 +1,5 @@
-import * as React from "react";
+import { forwardRef } from "react";
+import type { HTMLAttributes } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 import { Button } from "./button";
@@ -20,7 +21,7 @@ const paginationVariants = cva("flex items-center justify-between gap-6", {
 
 export interface PaginationProps
   extends
-    React.HTMLAttributes<HTMLDivElement>,
+    HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof paginationVariants> {
   currentPage: number;
   totalPages: number;
@@ -30,7 +31,7 @@ export interface PaginationProps
   onItemsPerPageChange?: (itemsPerPage: number) => void;
 }
 
-export const Pagination = React.forwardRef<HTMLDivElement, PaginationProps>(
+export const Pagination = forwardRef<HTMLDivElement, PaginationProps>(
   (
     {
       currentPage,

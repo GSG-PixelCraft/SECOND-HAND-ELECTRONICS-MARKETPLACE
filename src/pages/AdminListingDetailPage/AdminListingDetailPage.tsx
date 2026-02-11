@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ListingDetailHeader } from "./ListingDetailHeader";
 import { ListingDetailInfo } from "./ListingDetailInfo";
@@ -22,17 +22,16 @@ export default function AdminListingDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
-  const [approveModalOpen, setApproveModalOpen] = React.useState(false);
-  const [rejectModalOpen, setRejectModalOpen] = React.useState(false);
-  const [rejectSummaryModalOpen, setRejectSummaryModalOpen] =
-    React.useState(false);
-  const [rejectData, setRejectData] = React.useState<{
+  const [approveModalOpen, setApproveModalOpen] = useState(false);
+  const [rejectModalOpen, setRejectModalOpen] = useState(false);
+  const [rejectSummaryModalOpen, setRejectSummaryModalOpen] = useState(false);
+  const [rejectData, setRejectData] = useState<{
     reason: RejectionReason;
     selectedIssues: Array<{ group: string; issue: string }>;
     comments: Array<{ group: string; comment: string }>;
   } | null>(null);
-  const [hideModalOpen, setHideModalOpen] = React.useState(false);
-  const [unhideModalOpen, setUnhideModalOpen] = React.useState(false);
+  const [hideModalOpen, setHideModalOpen] = useState(false);
+  const [unhideModalOpen, setUnhideModalOpen] = useState(false);
 
   // Fetch listing details
   const { data: listing, isLoading, error } = useAdminListingDetail(id!);
@@ -157,7 +156,7 @@ export default function AdminListingDetailPage() {
     return (
       <div className="flex h-screen items-center justify-center">
         <div className="text-center">
-          <div className="bg-error-5 mx-auto flex h-16 w-16 items-center justify-center rounded-full">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-error-5">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="32"

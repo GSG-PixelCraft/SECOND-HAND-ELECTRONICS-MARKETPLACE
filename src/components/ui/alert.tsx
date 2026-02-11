@@ -1,4 +1,5 @@
-import * as React from "react";
+import { forwardRef } from "react";
+import type { HTMLAttributes } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 
 const alertVariants = cva(
@@ -31,21 +32,22 @@ const alertVariants = cva(
 type AlertVariantProps = VariantProps<typeof alertVariants>;
 
 export interface AlertProps
-  extends React.HTMLAttributes<HTMLDivElement>, AlertVariantProps {}
+  extends HTMLAttributes<HTMLDivElement>, AlertVariantProps {}
 
-export const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
-  function Alert({ variant, className, children, ...props }, ref) {
-    return (
-      <div
-        ref={ref}
-        role="alert"
-        className={`${alertVariants({ variant })} ${className ?? ""}`}
-        {...props}
-      >
-        {children}
-      </div>
-    );
-  },
-);
+export const Alert = forwardRef<HTMLDivElement, AlertProps>(function Alert(
+  { variant, className, children, ...props },
+  ref,
+) {
+  return (
+    <div
+      ref={ref}
+      role="alert"
+      className={`${alertVariants({ variant })} ${className ?? ""}`}
+      {...props}
+    >
+      {children}
+    </div>
+  );
+});
 
 Alert.displayName = "Alert";

@@ -1,4 +1,4 @@
-import * as React from "react";
+import { forwardRef } from "react";
 import { X } from "lucide-react";
 import { Dialog } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -11,7 +11,7 @@ export interface ApproveListingModalProps {
   isLoading?: boolean;
 }
 
-export const ApproveListingModal = React.forwardRef<
+export const ApproveListingModal = forwardRef<
   HTMLDialogElement,
   ApproveListingModalProps
 >(({ open, onOpenChange, listingName, onConfirm, isLoading = false }, ref) => {

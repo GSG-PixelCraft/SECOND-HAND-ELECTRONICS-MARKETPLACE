@@ -1,8 +1,9 @@
-import * as React from "react";
+import { forwardRef } from "react";
+import type { HTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
 import { Text } from "@/components/ui/text";
 
-export interface ShowPaginationProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface ShowPaginationProps extends HTMLAttributes<HTMLDivElement> {
   currentPage: number;
   totalPages: number;
   pageSize: number;
@@ -13,10 +14,7 @@ export interface ShowPaginationProps extends React.HTMLAttributes<HTMLDivElement
   showPageInfo?: boolean;
 }
 
-export const ShowPagination = React.forwardRef<
-  HTMLDivElement,
-  ShowPaginationProps
->(
+export const ShowPagination = forwardRef<HTMLDivElement, ShowPaginationProps>(
   (
     {
       currentPage,
@@ -32,8 +30,7 @@ export const ShowPagination = React.forwardRef<
     },
     ref,
   ) => {
-    const startItem =
-      totalItems === 0 ? 0 : (currentPage - 1) * pageSize + 1;
+    const startItem = totalItems === 0 ? 0 : (currentPage - 1) * pageSize + 1;
     const endItem =
       totalItems === 0 ? 0 : Math.min(currentPage * pageSize, totalItems);
 

@@ -1,5 +1,6 @@
 // src/pages/AddListingPage/components/ReviewDialog.tsx
-import * as React from "react";
+import { useState } from "react";
+import type { FC, ReactElement } from "react";
 import { useTranslation } from "react-i18next";
 import type { UseFormHandleSubmit } from "react-hook-form";
 import { Dialog } from "@/components/ui/dialog";
@@ -48,7 +49,7 @@ L.Icon.Default.mergeOptions({
   shadowUrl: markerShadow,
 });
 
-export const ReviewDialog: React.FC<ReviewDialogProps> = ({
+export const ReviewDialog: FC<ReviewDialogProps> = ({
   open,
   onOpenChange,
   values,
@@ -57,9 +58,9 @@ export const ReviewDialog: React.FC<ReviewDialogProps> = ({
   locationCoordinates,
   onSubmit,
   handleSubmit,
-}): React.ReactElement => {
+}): ReactElement => {
   const { t } = useTranslation();
-  const [currentSlide, setCurrentSlide] = React.useState(0);
+  const [currentSlide, setCurrentSlide] = useState(0);
 
   const mainImage = photos[currentSlide]?.url ?? fallbackImage;
 

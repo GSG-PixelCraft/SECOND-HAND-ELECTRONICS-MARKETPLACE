@@ -1,4 +1,4 @@
-import * as React from "react";
+import { forwardRef, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { EyeOff, Eye, ChevronLeft, MoreVertical } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -15,15 +15,15 @@ export interface ListingDetailHeaderProps {
   isLoading?: boolean;
 }
 
-export const ListingDetailHeader = React.forwardRef<
+export const ListingDetailHeader = forwardRef<
   HTMLDivElement,
   ListingDetailHeaderProps
 >(({ listing, onApprove, onReject, onHide, onUnhide, isLoading }, ref) => {
   const navigate = useNavigate();
-  const [menuOpen, setMenuOpen] = React.useState(false);
-  const menuRef = React.useRef<HTMLDivElement | null>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement | null>(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!menuOpen) return;
 
     const handleOutsideClick = (event: MouseEvent) => {

@@ -1,4 +1,5 @@
-import * as React from "react";
+import { Fragment, useMemo, useState } from "react";
+import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { ChevronUp, ChevronDown, ChevronsUpDown } from "lucide-react";
 import { Text } from "@/components/ui/text";
@@ -8,7 +9,7 @@ export interface Column<T> {
   key: string;
   header: string;
   sortable?: boolean;
-  render?: (item: T) => React.ReactNode;
+  render?: (item: T) => ReactNode;
   className?: string;
   width?: string;
 }
@@ -40,7 +41,7 @@ function DataTable<T extends Record<string, any>>({
   showSeeAll = false,
   onSeeAll,
 }: DataTableProps<T>) {
-  const [sortConfig, setSortConfig] = React.useState<SortConfig>({
+  const [sortConfig, setSortConfig] = useState<SortConfig>({
     key: "",
     direction: null,
   });
@@ -59,7 +60,7 @@ function DataTable<T extends Record<string, any>>({
     setSortConfig({ key, direction });
   };
 
-  const sortedData = React.useMemo(() => {
+  const sortedData = useMemo(() => {
     if (!sortConfig.direction || !sortConfig.key) {
       return data;
     }
@@ -151,7 +152,7 @@ function DataTable<T extends Record<string, any>>({
               </tr>
             ) : (
               sortedData.map((item, rowIndex) => (
-                <React.Fragment key={rowIndex}>
+                <Fragment key={rowIndex}>
                   <tr
                     className={cn(
                       "h-12 bg-white transition-colors hover:bg-muted/30",
@@ -178,7 +179,7 @@ function DataTable<T extends Record<string, any>>({
                       </td>
                     </tr>
                   )}
-                </React.Fragment>
+                </Fragment>
               ))
             )}
           </tbody>

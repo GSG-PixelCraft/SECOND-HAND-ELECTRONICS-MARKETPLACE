@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   ArrowLeft,
@@ -24,10 +24,10 @@ type ImageTab = "front" | "back" | "selfie";
 export default function AdminVerificationReviewPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [activeImageTab, setActiveImageTab] = React.useState<ImageTab>("front");
-  const [isRejectionModalOpen, setIsRejectionModalOpen] = React.useState(false);
-  const [imageScale, setImageScale] = React.useState(1);
-  const [imageRotation, setImageRotation] = React.useState(0);
+  const [activeImageTab, setActiveImageTab] = useState<ImageTab>("front");
+  const [isRejectionModalOpen, setIsRejectionModalOpen] = useState(false);
+  const [imageScale, setImageScale] = useState(1);
+  const [imageRotation, setImageRotation] = useState(0);
 
   const {
     data: verification,

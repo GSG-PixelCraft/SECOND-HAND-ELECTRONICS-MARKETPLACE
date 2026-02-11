@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { ToggleControlPanel } from "./ToggleControlPanel";
-import { useState, type ComponentProps } from "react";
+import { useState } from "react";
+import type { ComponentProps } from "react";
 
 const meta = {
   title: "Components/Admin/UI/Toggle/ToggleControlPanel",
@@ -15,7 +16,9 @@ type ToggleControlPanelStoryArgs = ComponentProps<typeof ToggleControlPanel>;
 
 const DefaultStory = (args: ToggleControlPanelStoryArgs) => {
   const [enabled, setEnabled] = useState(args.enabled);
-  return <ToggleControlPanel {...args} enabled={enabled} onToggle={setEnabled} />;
+  return (
+    <ToggleControlPanel {...args} enabled={enabled} onToggle={setEnabled} />
+  );
 };
 
 export const Default: Story = {

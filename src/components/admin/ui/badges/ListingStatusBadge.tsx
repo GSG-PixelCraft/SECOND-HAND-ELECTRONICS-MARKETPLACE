@@ -1,4 +1,5 @@
-import * as React from "react";
+import { forwardRef } from "react";
+import type { HTMLAttributes, ReactNode } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { Span } from "@/components/ui/span";
 import { cn } from "@/lib/utils";
@@ -23,7 +24,7 @@ const statusBadgeVariants = cva(
   },
 );
 
-const statusIcons: Record<ListingStatus, React.ReactNode> = {
+const statusIcons: Record<ListingStatus, ReactNode> = {
   pending: (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -136,13 +137,13 @@ const statusLabels: Record<ListingStatus, string> = {
 
 export interface ListingStatusBadgeProps
   extends
-    React.HTMLAttributes<HTMLSpanElement>,
+    HTMLAttributes<HTMLSpanElement>,
     VariantProps<typeof statusBadgeVariants> {
   status: ListingStatus;
   showIcon?: boolean;
 }
 
-export const ListingStatusBadge = React.forwardRef<
+export const ListingStatusBadge = forwardRef<
   HTMLSpanElement,
   ListingStatusBadgeProps
 >(({ status, showIcon = false, className, ...props }, ref) => {

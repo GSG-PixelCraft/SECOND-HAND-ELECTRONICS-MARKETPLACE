@@ -1,5 +1,6 @@
 // src/components/ui/Input.tsx
-import * as React from "react";
+import { forwardRef, useId } from "react";
+import type { InputHTMLAttributes, ReactElement } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { twMerge } from "tailwind-merge";
 
@@ -53,7 +54,7 @@ const inputVariants = cva(
 
 export interface InputProps
   extends
-    Omit<React.InputHTMLAttributes<HTMLInputElement>, "size">,
+    Omit<InputHTMLAttributes<HTMLInputElement>, "size">,
     VariantProps<typeof inputVariants> {
   label?: string;
 
@@ -62,12 +63,12 @@ export interface InputProps
   error?: string;
 }
 
-export const Input = React.forwardRef<HTMLInputElement, InputProps>(
+export const Input = forwardRef<HTMLInputElement, InputProps>(
   (
     { className, intent, size, label, helperText, error, id, ...props },
     ref,
-  ): React.ReactElement => {
-    const inputId = React.useId();
+  ): ReactElement => {
+    const inputId = useId();
 
     const resolvedId = id ?? inputId;
 

@@ -1,4 +1,4 @@
-import * as React from "react";
+import { forwardRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Span } from "@/components/ui/span";
 import { cn } from "@/lib/utils";
@@ -13,7 +13,7 @@ export interface BulkActionsToolbarProps {
   className?: string;
 }
 
-export const BulkActionsToolbar = React.forwardRef<
+export const BulkActionsToolbar = forwardRef<
   HTMLDivElement,
   BulkActionsToolbarProps
 >(

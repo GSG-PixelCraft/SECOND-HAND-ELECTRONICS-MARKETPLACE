@@ -1,4 +1,4 @@
-import * as React from "react";
+import { forwardRef, useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Image } from "@/components/ui/image";
 
@@ -7,13 +7,13 @@ export interface AdminProductGalleryProps {
   title?: string;
 }
 
-export const AdminProductGallery = React.forwardRef<
+export const AdminProductGallery = forwardRef<
   HTMLDivElement,
   AdminProductGalleryProps
 >(({ images, title = "Product" }, ref) => {
-  const [activeIndex, setActiveIndex] = React.useState(0);
+  const [activeIndex, setActiveIndex] = useState(0);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setActiveIndex(0);
   }, [images]);
 

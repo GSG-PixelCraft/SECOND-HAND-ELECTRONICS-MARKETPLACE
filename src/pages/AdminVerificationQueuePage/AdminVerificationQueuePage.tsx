@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Tabs, type TabValue } from "@/components/ui/Tabs";
 import { Text } from "@/components/ui/text";
@@ -32,8 +32,8 @@ export default function AdminVerificationQueuePage() {
   const initialPage = parseInt(searchParams.get("page") || "1", 10);
   const initialSearch = searchParams.get("search") || "";
 
-  const [activeTab, setActiveTab] = React.useState<TabValue>(initialTab);
-  const [filters, setFilters] = React.useState<VerificationFilterParams>({
+  const [activeTab, setActiveTab] = useState<TabValue>(initialTab);
+  const [filters, setFilters] = useState<VerificationFilterParams>({
     status: tabToStatus[initialTab],
     page: initialPage,
     limit: 10,

@@ -1,4 +1,4 @@
-import * as React from "react";
+import { forwardRef } from "react";
 import { AlertTriangle } from "lucide-react";
 import { Dialog } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -12,7 +12,7 @@ export interface UnhideListingModalProps {
   isLoading?: boolean;
 }
 
-export const UnhideListingModal = React.forwardRef<
+export const UnhideListingModal = forwardRef<
   HTMLDialogElement,
   UnhideListingModalProps
 >(({ open, onOpenChange, listingName, onConfirm, isLoading = false }, ref) => {
