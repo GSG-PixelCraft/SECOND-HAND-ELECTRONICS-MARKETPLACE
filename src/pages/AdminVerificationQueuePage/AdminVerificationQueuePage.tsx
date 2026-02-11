@@ -1,13 +1,12 @@
 import * as React from "react";
 import { useSearchParams } from "react-router-dom";
-import { Search } from "lucide-react";
 import { Tabs, type TabValue } from "@/components/ui/Tabs";
-import { Input } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/feedback/emptyState/EmptyState";
 import { ShowPagination } from "@/components/admin";
 import { VerificationsTable } from "./VerificationsTable";
+import { VerificationsTableFilters } from "./VerificationsTableFilters";
 import { useAdminVerifications } from "@/services/admin-verification.service";
 import type {
   VerificationFilterParams,
@@ -34,7 +33,6 @@ export default function AdminVerificationQueuePage() {
   const initialSearch = searchParams.get("search") || "";
 
   const [activeTab, setActiveTab] = React.useState<TabValue>(initialTab);
-  const [searchInput, setSearchInput] = React.useState(initialSearch);
   const [filters, setFilters] = React.useState<VerificationFilterParams>({
     status: tabToStatus[initialTab],
     page: initialPage,
@@ -77,20 +75,31 @@ export default function AdminVerificationQueuePage() {
     });
   };
 
-  // Handle search
-  const handleSearch = () => {
-    setFilters((prev) => ({ ...prev, search: searchInput, page: 1 }));
+  // Handle filter changes
+  const handleFiltersChange = (newFilters: VerificationFilterParams) => {
+    setFilters(newFilters);
     setSearchParams({
       ...Object.fromEntries(searchParams),
-      search: searchInput,
-      page: "1",
+      ...(newFilters.search && { search: newFilters.search }),
+      ...(newFilters.startDate && { startDate: newFilters.startDate }),
+      ...(newFilters.endDate && { endDate: newFilters.endDate }),
+      page: (newFilters.page || 1).toString(),
     });
   };
 
-  const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      handleSearch();
-    }
+  // Handle clear filters
+  const handleClearFilters = () => {
+    setFilters((prev) => ({
+      ...prev,
+      search: "",
+      startDate: undefined,
+      endDate: undefined,
+      page: 1,
+    }));
+    setSearchParams({
+      status: activeTab,
+      page: "1",
+    });
   };
 
   // Tab counts from data
@@ -117,25 +126,13 @@ export default function AdminVerificationQueuePage() {
           />
         </div>
 
-        {/* Search Filter */}
+        {/* Search & Date Filter */}
         <div className="flex items-center justify-between gap-4">
-          <div className="relative w-full max-w-md">
-            <Input
-              type="text"
-              placeholder="Search verifications by title or seller ID"
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              onKeyDown={handleSearchKeyDown}
-              className="w-full pr-10"
-            />
-            <button
-              onClick={handleSearch}
-              className="text-neutral-50 absolute right-3 top-1/2 -translate-y-1/2 transition-colors hover:text-primary"
-              aria-label="Search"
-            >
-              <Search className="h-5 w-5" />
-            </button>
-          </div>
+          <VerificationsTableFilters
+            filters={filters}
+            onFiltersChange={handleFiltersChange}
+            onClearFilters={handleClearFilters}
+          />
         </div>
 
         {/* Table */}

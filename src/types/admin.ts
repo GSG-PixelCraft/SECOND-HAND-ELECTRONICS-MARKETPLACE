@@ -174,6 +174,8 @@ export interface VerificationSubmission {
 export interface VerificationFilterParams {
   status?: AdminVerificationStatus | "all";
   search?: string;
+  startDate?: string;
+  endDate?: string;
   page?: number;
   limit?: number;
   sortBy?: "submittedDate" | "userName";
