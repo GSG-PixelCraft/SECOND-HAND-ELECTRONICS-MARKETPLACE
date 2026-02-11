@@ -49,7 +49,7 @@ export const ListingDetailHeader = React.forwardRef<
           intent="outline"
           onClick={onReject}
           disabled={isLoading}
-          className="border-error/40 px-8 text-error hover:border-error/60 hover:bg-error/5"
+          className="h-11 rounded-xl border border-error bg-white px-8 text-sm font-semibold text-error hover:border-error hover:bg-error/5"
         >
           Reject
         </Button>,
@@ -58,7 +58,7 @@ export const ListingDetailHeader = React.forwardRef<
           intent="primary"
           onClick={onApprove}
           disabled={isLoading}
-          className="border-none bg-primary px-8 shadow-lg shadow-primary/20 hover:bg-primary/90"
+          className="h-11 rounded-xl border-none bg-primary px-8 text-sm font-semibold text-white hover:bg-primary/90"
         >
           Approve
         </Button>,
@@ -138,7 +138,7 @@ export const ListingDetailHeader = React.forwardRef<
       </div>
 
       {/* Right: Action Buttons + More Menu */}
-      <div className="flex shrink-0 items-center gap-3">
+      <div className="flex shrink-0 items-center gap-4">
         {getActionButtons()}
       </div>
     </div>
