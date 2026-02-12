@@ -117,7 +117,7 @@ export default function AdminReportsPage() {
     <div className="p-6">
       <div className="flex flex-col gap-4">
         <h1 className="text-[22px] font-semibold text-[#101010]">
-          Report Management
+          Reports Management
         </h1>
 
         <div className="flex flex-col gap-6 rounded-xl bg-white p-6 shadow-[0px_1px_4px_0px_rgba(0,0,0,0.1)]">
