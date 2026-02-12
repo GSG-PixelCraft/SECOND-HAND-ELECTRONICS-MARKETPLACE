@@ -145,6 +145,42 @@ export interface PaginatedListingsResponse {
   limit: number;
 }
 
+// Categories Management types
+
+export type CategoryIconKey =
+  | "phone"
+  | "tablet"
+  | "laptop"
+  | "pc-parts"
+  | "gaming"
+  | "audio"
+  | "smartwatch"
+  | "camera"
+  | "smart-home"
+  | "tv-monitor";
+
+export interface AdminCategory {
+  id: string;
+  name: string;
+  iconKey: CategoryIconKey;
+  attributesCount: number;
+  isActive: boolean;
+}
+
+export interface CategoryFilterParams {
+  search?: string;
+  page?: number;
+  limit?: number;
+}
+
+export interface PaginatedCategoriesResponse {
+  items: AdminCategory[];
+  total: number;
+  page: number;
+  totalPages: number;
+  limit: number;
+}
+
 // Verification Management types
 
 export type VerificationDocumentType =

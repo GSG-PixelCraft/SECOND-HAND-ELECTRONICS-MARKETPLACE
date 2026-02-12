@@ -4,7 +4,7 @@ import {
   CheckCircle,
   Users,
   Flag,
-  FolderOpen,
+  LayoutGrid,
   Settings,
   LogOut,
   ChevronDown,
@@ -49,8 +49,8 @@ const navigationItems = [
   {
     id: "categories",
     label: "Categories",
-    href: "/admin/categories",
-    icon: <FolderOpen />,
+    href: ROUTES.ADMIN_CATEGORIES,
+    icon: <LayoutGrid />,
   },
   {
     id: "settings",

@@ -5,6 +5,7 @@ export * from "./cart.service";
 export * from "./order.service";
 export * from "./verification.service";
 export * from "./admin.service";
+export * from "./admin-categories.service";
 export * from "./admin-listings.service";
 export * from "./admin-reports.service";
 export * from "./admin-verification.service";

@@ -310,6 +310,30 @@ export const router = createBrowserRouter([
     },
   },
   {
+    path: "/admin/categories",
+    errorElement: <UnexpectedErrorPage />,
+    lazy: async () => {
+      const [
+        { default: AdminCategoriesPage },
+        { AdminDashboardLayout },
+        { AdminGuard },
+      ] = await Promise.all([
+        import("@/pages/AdminCategoriesPage/AdminCategoriesPage"),
+        import("@/components/layout/AdminDashboardLayout"),
+        import("@/routes/access-control"),
+      ]);
+      return {
+        Component: () => (
+          <AdminGuard>
+            <AdminDashboardLayout>
+              <AdminCategoriesPage />
+            </AdminDashboardLayout>
+          </AdminGuard>
+        ),
+      };
+    },
+  },
+  {
     path: "/admin/verifications",
     errorElement: <UnexpectedErrorPage />,
     lazy: async () => {

@@ -37,6 +37,7 @@ export const ROUTES = {
   ADMIN_USER_DETAIL: "/admin/users/:id",
   ADMIN_REPORTS: "/admin/reports",
   ADMIN_REPORT_DETAIL: "/admin/reports/:type/:id",
+  ADMIN_CATEGORIES: "/admin/categories",
   NOT_FOUND: "/404",
   ACCESS_DENIED: "/403",
 } as const;
