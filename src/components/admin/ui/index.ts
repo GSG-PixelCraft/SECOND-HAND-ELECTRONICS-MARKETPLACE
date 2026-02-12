@@ -127,6 +127,9 @@ export type {
   ReportReasonOption,
 } from "./reports/ReportReason";
 
+export { ReportReasonBadge } from "./reports/ReportReasonBadge";
+export type { ReportReasonBadgeProps } from "./reports/ReportReasonBadge";
+
 export { ReportRow } from "./reports/ReportRow";
 export type { ReportRowProps } from "./reports/ReportRow";
 

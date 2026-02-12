@@ -220,3 +220,172 @@ export interface BulkActionPayload {
   reason?: RejectionReason;
   comment?: string;
 }
+
+// Reports Management types
+
+export type ReportType = "listing" | "user" | "chat";
+
+export type ReportStatus = "open" | "under-review" | "resolved" | "dismissed";
+
+export type ReportReason =
+  | "Scam"
+  | "Suspicious behavior"
+  | "Prohibited item"
+  | "Inappropriate content"
+  | "Harassment"
+  | "Impersonation"
+  | "Fake account"
+  | "Suspicious activity"
+  | "Selling prohibited items"
+  | (string & {});
+
+export interface ReportUserSummary {
+  id: string;
+  name: string;
+  avatar?: string;
+  isVerified?: boolean;
+  isFlagged?: boolean;
+  memberSince?: string;
+  location?: string;
+  lastSeen?: string;
+  avgResponseTime?: string;
+  prevReports?: number;
+  totalSales?: number;
+}
+
+export interface ReportEvidence {
+  id: string;
+  label: string;
+  url: string;
+}
+
+export interface ReportChatMessage {
+  id: string;
+  sender: ReportUserSummary;
+  message: string;
+  sentAt: string;
+  time?: string;
+  direction?: "incoming" | "outgoing";
+}
+
+export interface BaseReport {
+  id: string;
+  type: ReportType;
+  reason: ReportReason;
+  status: ReportStatus;
+  submittedAt: string;
+  reporter: ReportUserSummary;
+  description?: string;
+  evidence?: ReportEvidence[];
+}
+
+export interface ListingReport extends BaseReport {
+  type: "listing";
+  listing: {
+    id: string;
+    title: string;
+    image?: string;
+    seller: ReportUserSummary;
+  };
+}
+
+export interface UserReport extends BaseReport {
+  type: "user";
+  reportedUser: ReportUserSummary;
+}
+
+export interface ChatReport extends BaseReport {
+  type: "chat";
+  reportedUser: ReportUserSummary;
+  chatId: string;
+  chatMessages?: ReportChatMessage[];
+}
+
+export type Report = ListingReport | UserReport | ChatReport;
+
+export interface ReportFilterParams {
+  search?: string;
+  dateRange?: "7" | "30" | "90" | "all";
+  page?: number;
+  limit?: number;
+}
+
+export interface PaginatedReportsResponse<T> {
+  items: T[];
+  total: number;
+  page: number;
+  totalPages: number;
+  limit: number;
+}
+
+export type RiskLevel = "High Risk" | "Medium Risk" | "Low Risk";
+
+export type ReportReasonDetail = string;
+
+export interface ReportMetric {
+  label: string;
+  value: string | number;
+  valueTone?: "default" | "success" | "warning" | "danger" | "primary";
+}
+
+export interface TrustIndicator {
+  label: string;
+  status: "verified" | "unverified";
+  date?: string;
+}
+
+export interface RiskIndicator {
+  label: string;
+  count: number;
+}
+
+export interface AccountHistoryItem {
+  label: string;
+  date: string;
+  reason?: string;
+  iconType: "report" | "warning" | "suspension" | "ban";
+}
+
+export interface UserReportDetails extends UserReport {
+  riskLevel?: RiskLevel;
+  reasonTagDetail?: ReportReasonDetail;
+  metrics?: ReportMetric[];
+  trustIndicators?: TrustIndicator[];
+  riskIndicators?: RiskIndicator[];
+  accountHistory?: AccountHistoryItem[];
+}
+
+export interface ChatReportDetails extends ChatReport {
+  riskLevel?: RiskLevel;
+  reasonTagDetail?: ReportReasonDetail;
+  chatContext?: {
+    itemTitle: string;
+    itemImage?: string;
+    timestamp: string;
+  };
+  conversationMetrics?: ReportMetric[];
+  riskIndicators?: RiskIndicator[];
+}
+
+export interface ListingReportDetails extends ListingReport {
+  riskLevel?: RiskLevel;
+  reasonTagDetail?: ReportReasonDetail;
+  reportedUser?: ReportUserSummary;
+  listingDetails?: {
+    price: string | number;
+    currency?: string;
+    negotiable?: boolean;
+    status?: string;
+    category?: string;
+    condition?: string;
+    listedAt?: string;
+    description?: string;
+  };
+  metrics?: ReportMetric[];
+  riskIndicators?: RiskIndicator[];
+}
+
+export type ReportDetail =
+  | UserReportDetails
+  | ChatReportDetails
+  | ListingReportDetails;

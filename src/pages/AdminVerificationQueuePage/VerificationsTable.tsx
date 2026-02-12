@@ -101,7 +101,7 @@ export const VerificationsTable = forwardRef<
           <Span className="text-neutral-90 text-sm font-medium">User</Span>
         </div>
 
-        <div className="flex w-[160px] items-center gap-1 px-4">
+        <div className="flex w-[180px] items-center gap-1 px-4">
           <Span className="text-neutral-90 text-sm font-medium">
             Document Type
           </Span>
@@ -124,7 +124,7 @@ export const VerificationsTable = forwardRef<
           </div>
         </div>
 
-        <div className="flex w-[160px] items-center gap-1 px-4">
+        <div className="flex w-[180px] items-center gap-1 px-4">
           <Span className="text-neutral-90 text-sm font-medium">
             Submitted Date
           </Span>

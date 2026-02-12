@@ -262,6 +262,54 @@ export const router = createBrowserRouter([
     },
   },
   {
+    path: "/admin/reports",
+    errorElement: <UnexpectedErrorPage />,
+    lazy: async () => {
+      const [
+        { default: AdminReportsPage },
+        { AdminDashboardLayout },
+        { AdminGuard },
+      ] = await Promise.all([
+        import("@/pages/AdminReportsPage/AdminReportsPage"),
+        import("@/components/layout/AdminDashboardLayout"),
+        import("@/routes/access-control"),
+      ]);
+      return {
+        Component: () => (
+          <AdminGuard>
+            <AdminDashboardLayout>
+              <AdminReportsPage />
+            </AdminDashboardLayout>
+          </AdminGuard>
+        ),
+      };
+    },
+  },
+  {
+    path: "/admin/reports/:type/:id",
+    errorElement: <UnexpectedErrorPage />,
+    lazy: async () => {
+      const [
+        { default: AdminReportDetailPage },
+        { AdminDashboardLayout },
+        { AdminGuard },
+      ] = await Promise.all([
+        import("@/pages/AdminReportDetailPage/AdminReportDetailPage"),
+        import("@/components/layout/AdminDashboardLayout"),
+        import("@/routes/access-control"),
+      ]);
+      return {
+        Component: () => (
+          <AdminGuard>
+            <AdminDashboardLayout>
+              <AdminReportDetailPage />
+            </AdminDashboardLayout>
+          </AdminGuard>
+        ),
+      };
+    },
+  },
+  {
     path: "/admin/verifications",
     errorElement: <UnexpectedErrorPage />,
     lazy: async () => {
