@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Dialog } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { FullScreenLoading } from "@/components/feedback/loading/full-screen-loading";
 import { useApproveVerification } from "@/services/admin-verification.service";
 
 export interface ApproveVerificationModalProps {
@@ -56,22 +57,6 @@ function SuccessIcon() {
   );
 }
 
-function LoadingOverlay() {
-  return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
-      role="dialog"
-      aria-modal="true"
-      aria-label="Approving verification"
-    >
-      <div className="flex flex-col items-center gap-4">
-        <div className="h-12 w-12 animate-spin rounded-full border-4 border-white/25 border-t-white" />
-        <p className="text-sm font-medium text-white">Waiting...</p>
-      </div>
-    </div>
-  );
-}
-
 export function ApproveVerificationModal({
   isOpen,
   onClose,
@@ -102,7 +87,12 @@ export function ApproveVerificationModal({
 
   return (
     <>
-      {modalState === "loading" && <LoadingOverlay />}
+      {modalState === "loading" && (
+        <FullScreenLoading
+          message="Waiting..."
+          ariaLabel="Approving verification"
+        />
+      )}
 
       <Dialog
         open={showDialog}

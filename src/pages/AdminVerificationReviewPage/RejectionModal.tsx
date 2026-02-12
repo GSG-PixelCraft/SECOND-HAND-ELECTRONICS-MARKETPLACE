@@ -6,6 +6,7 @@ import { Text } from "@/components/ui/text";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
+import { FullScreenLoading } from "@/components/feedback/loading/full-screen-loading";
 import { useRejectVerification } from "@/services/admin-verification.service";
 import { ROUTES } from "@/constants/routes";
 
@@ -28,31 +29,6 @@ const REJECTION_REASONS = [
   "User is not holding the ID",
   "ID is not clearly visible in the selfie",
 ] as const;
-
-/**
- * Loading state overlay - full-screen overlay while rejection is being processed
- */
-function LoadingOverlay() {
-  return (
-    <div
-      className="animate-in fade-in fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm duration-200"
-      role="dialog"
-      aria-modal="true"
-      aria-label="Processing rejection"
-    >
-      <div className="flex flex-col items-center justify-center gap-6">
-        <div
-          className="h-12 w-12 animate-spin rounded-full border-4 border-white/20 border-t-white"
-          role="status"
-          aria-label="Loading"
-        />
-        <Text variant="body" className="text-white">
-          Waiting...
-        </Text>
-      </div>
-    </div>
-  );
-}
 
 /**
  * Error state modal content - displays when rejection fails
@@ -222,7 +198,12 @@ export function RejectionModal({
   return (
     <>
       {/* Full-screen loading overlay */}
-      {modalState === "loading" && <LoadingOverlay />}
+      {modalState === "loading" && (
+        <FullScreenLoading
+          message="Waiting..."
+          ariaLabel="Processing rejection"
+        />
+      )}
 
       {/* Dialog for form, error, and success states */}
       <Dialog

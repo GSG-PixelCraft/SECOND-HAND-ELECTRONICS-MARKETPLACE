@@ -27,7 +27,7 @@ import { Text } from "@/components/ui/text";
 import { Span } from "@/components/ui/span";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
-import { Portal } from "@/components/ui/portal";
+import { FullScreenLoading } from "@/components/feedback/loading/full-screen-loading";
 import { useAdminReportDetail } from "@/services/admin-reports.service";
 import type {
   AccountHistoryItem,
@@ -702,28 +702,6 @@ function ReportActionSuccessDialog({
   );
 }
 
-function FullScreenLoadingOverlay({ open }: { open: boolean }) {
-  useEffect(() => {
-    if (!open) return undefined;
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = previousOverflow;
-    };
-  }, [open]);
-
-  if (!open) return null;
-  return (
-    <Portal>
-      <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/50">
-        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-white">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary/20 border-t-primary" />
-        </div>
-      </div>
-    </Portal>
-  );
-}
-
 function ReportedByCard({
   report,
   onViewProfile,
@@ -1373,16 +1351,7 @@ export default function AdminReportDetailPage() {
   }
 
   if (isLoading) {
-    return (
-      <div className="flex min-h-[400px] items-center justify-center">
-        <div className="text-center">
-          <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-          <Text variant="body" className="text-neutral-50 mt-4 font-medium">
-            Loading report details...
-          </Text>
-        </div>
-      </div>
-    );
+    return <FullScreenLoading message="Loading report details..." />;
   }
 
   if (error || !report) {
@@ -1634,7 +1603,7 @@ export default function AdminReportDetailPage() {
         title="Report Dismissed Successfully"
         description="This report has been marked as resolved. No action was taken."
       />
-      <FullScreenLoadingOverlay open={loadingOpen} />
+      <FullScreenLoading open={loadingOpen} message="Processing action..." />
     </div>
   );
 }

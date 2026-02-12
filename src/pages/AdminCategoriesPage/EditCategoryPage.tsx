@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Text } from "@/components/ui/text";
+import { FullScreenLoading } from "@/components/feedback/loading/full-screen-loading";
 import { ROUTES } from "@/constants/routes";
 import {
   useAdminCategoryDetail,
@@ -23,7 +24,6 @@ import {
   toEditableAttributes,
   type EditableCategoryAttribute,
 } from "./form";
-import { FullScreenLoadingOverlay } from "./FullScreenLoadingOverlay";
 
 const cardClassName = "rounded-2xl border border-neutral-10 bg-white p-6";
 
@@ -158,16 +158,7 @@ export default function EditCategoryPage() {
   }
 
   if (isLoading) {
-    return (
-      <div className="flex min-h-[400px] items-center justify-center p-6">
-        <div className="text-center">
-          <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-          <Text variant="body" className="text-neutral-50 mt-4 font-medium">
-            Loading category details...
-          </Text>
-        </div>
-      </div>
-    );
+    return <FullScreenLoading message="Loading category details..." />;
   }
 
   if (error || !data) {
@@ -325,7 +316,10 @@ export default function EditCategoryPage() {
         }}
       />
 
-      <FullScreenLoadingOverlay open={loadingOpen} />
+      <FullScreenLoading
+        open={loadingOpen}
+        message="Saving category changes..."
+      />
     </>
   );
 }

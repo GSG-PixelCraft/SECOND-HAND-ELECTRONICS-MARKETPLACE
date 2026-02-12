@@ -1,5 +1,5 @@
 import { createBrowserRouter } from "react-router-dom";
-import { AppLoading } from "@/components/feedback/loading/app-loading";
+import { FullScreenLoading } from "@/components/feedback/loading/full-screen-loading";
 import { AppLayout } from "@/components/layout/app-layout";
 import UnexpectedErrorPage from "@/pages/UnexpectedPage/UnexpectedPage";
 
@@ -192,7 +192,7 @@ export const router = createBrowserRouter([
     path: "/",
     element: <AppLayout />,
     errorElement: <UnexpectedErrorPage />,
-    hydrateFallbackElement: <AppLoading />,
+    hydrateFallbackElement: <FullScreenLoading />,
     children: [...publicRoutes, ...publicSimpleRoutes, ...protectedRoutes],
   },
   {

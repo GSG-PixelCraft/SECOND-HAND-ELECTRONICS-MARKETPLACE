@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import { ShowPagination } from "@/components/admin";
+import { FullScreenLoading } from "@/components/feedback/loading/full-screen-loading";
 import {
   getAdminCategoriesAddRoute,
   getAdminCategoryEditRoute,
@@ -17,7 +18,6 @@ import { CategoriesTableFilters } from "./CategoriesTableFilters";
 import { CategoriesTable } from "./CategoriesTable";
 import { DeleteCategoryDialog } from "./DeleteCategoryDialog";
 import { DeleteCategorySuccessDialog } from "./DeleteCategorySuccessDialog";
-import { FullScreenLoadingOverlay } from "./FullScreenLoadingOverlay";
 import { NoCategoriesState } from "./NoCategoriesState";
 
 export default function AdminCategoriesPage() {
@@ -225,7 +225,10 @@ export default function AdminCategoriesPage() {
           open={deleteSuccessOpen}
           onClose={() => setDeleteSuccessOpen(false)}
         />
-        <FullScreenLoadingOverlay open={loadingOverlayOpen} />
+        <FullScreenLoading
+          open={loadingOverlayOpen}
+          message="Deleting category..."
+        />
       </div>
     </div>
   );

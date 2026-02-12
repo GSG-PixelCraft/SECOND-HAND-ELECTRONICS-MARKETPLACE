@@ -3,6 +3,7 @@ import { Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
+import { FullScreenLoading } from "@/components/feedback/loading/full-screen-loading";
 import { ROUTES } from "@/constants/routes";
 import { useCreateAdminCategory } from "@/services/admin-categories.service";
 import {
@@ -16,7 +17,6 @@ import {
   toCategoryPayload,
   type EditableCategoryAttribute,
 } from "./form";
-import { FullScreenLoadingOverlay } from "./FullScreenLoadingOverlay";
 
 const cardClassName = "rounded-2xl border border-neutral-10 bg-white p-6";
 
@@ -237,7 +237,7 @@ export default function AddCategoryPage() {
         }}
       />
 
-      <FullScreenLoadingOverlay open={loadingOpen} />
+      <FullScreenLoading open={loadingOpen} message="Saving category..." />
     </>
   );
 }

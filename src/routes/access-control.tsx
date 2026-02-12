@@ -2,6 +2,7 @@ import { Navigate } from "react-router-dom";
 
 import { useAuthStore } from "@/stores/useAuthStore";
 import { ROUTES } from "@/constants/routes";
+import { FullScreenLoading } from "@/components/feedback/loading/full-screen-loading";
 
 // Admin role guard hook
 export const useAdminGuard = () => {
@@ -24,14 +25,7 @@ export const AdminGuard = ({ children }: { children: React.ReactNode }) => {
   const { isAdmin, isLoading } = useAdminGuard();
 
   if (isLoading) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <div className="text-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-          <p className="mt-4 text-neutral">Checking permissions...</p>
-        </div>
-      </div>
-    );
+    return <FullScreenLoading message="Checking permissions..." />;
   }
 
   if (!isAdmin) {

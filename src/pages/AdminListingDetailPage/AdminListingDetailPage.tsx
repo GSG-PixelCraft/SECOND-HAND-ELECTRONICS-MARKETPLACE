@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { FullScreenLoading } from "@/components/feedback/loading/full-screen-loading";
 import { ListingDetailHeader } from "./ListingDetailHeader";
 import { ListingDetailInfo } from "./ListingDetailInfo";
 import {
@@ -141,14 +142,7 @@ export default function AdminListingDetailPage() {
 
   // Loading State
   if (isLoading) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <div className="text-center">
-          <div className="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-          <p className="mt-4 text-neutral">Loading listing details...</p>
-        </div>
-      </div>
-    );
+    return <FullScreenLoading message="Loading listing details..." />;
   }
 
   // Error State

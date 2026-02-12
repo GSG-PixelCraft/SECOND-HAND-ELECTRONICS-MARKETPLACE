@@ -1,5 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { FullScreenLoading } from "@/components/feedback/loading/full-screen-loading";
 import { UserDetailHeader } from "./UserDetailHeader";
 import { UserProfileCard } from "./UserProfileCard";
 import { VerificationBadges } from "./VerificationBadges";
@@ -20,14 +21,7 @@ export default function AdminUserDetailPage() {
 
   // Loading State
   if (isLoading) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <div className="text-center">
-          <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-          <p className="text-neutral-60 mt-4">Loading user details...</p>
-        </div>
-      </div>
-    );
+    return <FullScreenLoading message="Loading user details..." />;
   }
 
   // Error State

@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/ui/StatusBadge";
+import { FullScreenLoading } from "@/components/feedback/loading/full-screen-loading";
 import { AdminBackButton } from "@/components/admin";
 import { useAdminVerificationDetail } from "@/services/admin-verification.service";
 import { ROUTES } from "@/constants/routes";
@@ -138,14 +139,7 @@ export default function AdminVerificationReviewPage() {
   };
 
   if (isLoading) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <div className="text-center">
-          <div className="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-          <p className="mt-4 text-neutral">Loading verification details...</p>
-        </div>
-      </div>
-    );
+    return <FullScreenLoading message="Loading verification details..." />;
   }
 
   if (error || !verification) {

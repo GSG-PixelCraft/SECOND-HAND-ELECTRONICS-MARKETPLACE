@@ -2,6 +2,7 @@
 import { useAdminDashboard } from "@/services/admin.service";
 import { Text } from "@/components/ui/text";
 import { Button } from "@/components/ui/button";
+import { FullScreenLoading } from "@/components/feedback/loading/full-screen-loading";
 import {
   FileText,
   Flag,
@@ -18,16 +19,7 @@ const AdminOverviewPage = () => {
   const { data, isLoading, error } = useAdminDashboard();
 
   if (isLoading) {
-    return (
-      <div className="flex min-h-[400px] items-center justify-center">
-        <div className="text-center">
-          <div className="mb-4 inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-primary border-r-transparent" />
-          <Text variant="body" className="text-neutral-50">
-            Loading dashboard...
-          </Text>
-        </div>
-      </div>
-    );
+    return <FullScreenLoading message="Loading dashboard..." />;
   }
 
   if (error) {
@@ -540,4 +532,3 @@ const AdminOverviewPage = () => {
 };
 
 export default AdminOverviewPage;
-
