@@ -2,6 +2,7 @@ import { forwardRef, useId } from "react";
 import type { SelectHTMLAttributes } from "react";
 import { twMerge } from "tailwind-merge";
 import { cva, type VariantProps } from "class-variance-authority";
+import { Text } from "./text";
 
 const selectVariants = cva(
   [

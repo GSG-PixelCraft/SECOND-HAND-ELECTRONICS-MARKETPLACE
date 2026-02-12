@@ -341,14 +341,14 @@ export function useRejectVerification(
 
   return useMutation({
     mutationFn: adminVerificationService.rejectVerification,
-    onSuccess: (data, variables, context) => {
+    onSuccess: (data, variables, context, mutationContext) => {
       queryClient.invalidateQueries({
         queryKey: ADMIN_VERIFICATION_KEYS.lists(),
       });
       queryClient.invalidateQueries({
         queryKey: ADMIN_VERIFICATION_KEYS.details(),
       });
-      options?.onSuccess?.(data, variables, context);
+      options?.onSuccess?.(data, variables, context, mutationContext);
     },
     onError: options?.onError,
     onMutate: options?.onMutate,

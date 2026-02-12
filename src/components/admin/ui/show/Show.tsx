@@ -3,7 +3,10 @@ import type { HTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
 import { Text } from "@/components/ui/text";
 
-export interface ShowProps extends HTMLAttributes<HTMLDivElement> {
+export interface ShowProps extends Omit<
+  HTMLAttributes<HTMLDivElement>,
+  "onChange"
+> {
   value: number;
   onChange: (value: number) => void;
   options?: number[];

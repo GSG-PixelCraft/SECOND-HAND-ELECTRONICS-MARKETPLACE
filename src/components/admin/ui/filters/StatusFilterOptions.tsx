@@ -76,7 +76,7 @@ export const StatusFilterOptions = forwardRef<
                 <div className="flex flex-1 items-center gap-3">
                   <Checkbox
                     checked={isSelected}
-                    onCheckedChange={() => handleToggle(option.value)}
+                    onChange={() => handleToggle(option.value)}
                   />
                   <Text variant="body" className="text-neutral-90 font-medium">
                     {option.label}

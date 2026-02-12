@@ -1,6 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { DashboardTableHeader } from "./DashboardTableHeader";
-import { DashboardTableRow, TableCellImage, TableCellText } from "./DashboardTableRow";
+import {
+  DashboardTableRow,
+  TableCellImage,
+  TableCellText,
+} from "./DashboardTableRow";
 
 const meta = {
   title: "Components/Admin/UI/Table/DashboardTable",
@@ -24,7 +28,7 @@ const sampleColumns = [
 
 export const Default: Story = {
   render: () => (
-    <div className="rounded-lg border border-neutral-20 overflow-hidden">
+    <div className="overflow-hidden rounded-lg border border-neutral-20">
       <table className="w-full">
         <thead>
           <DashboardTableHeader columns={sampleColumns} />
@@ -38,16 +42,23 @@ export const Default: Story = {
                   <TableCellImage
                     src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=100&h=100&fit=crop"
                     alt="Headphones"
-                    fallback="Wireless Headphones"
+                    label="Wireless Headphones"
                   />
                 ),
               },
-              { key: "category", content: <TableCellText primary="Electronics" /> },
-              { key: "price", content: <TableCellText primary="$299.99" />, align: "right" },
+              {
+                key: "category",
+                content: <TableCellText primary="Electronics" />,
+              },
+              {
+                key: "price",
+                content: <TableCellText primary="$299.99" />,
+                align: "right",
+              },
               {
                 key: "status",
                 content: (
-                  <span className="inline-flex px-2 py-1 rounded-full text-xs font-semibold bg-success/10 text-success">
+                  <span className="inline-flex rounded-full bg-success/10 px-2 py-1 text-xs font-semibold text-success">
                     Active
                   </span>
                 ),
@@ -56,7 +67,7 @@ export const Default: Story = {
               {
                 key: "actions",
                 content: (
-                  <button className="text-primary hover:text-primary/80 font-medium text-sm">
+                  <button className="text-sm font-medium text-primary hover:text-primary/80">
                     View
                   </button>
                 ),
@@ -69,4 +80,7 @@ export const Default: Story = {
       </table>
     </div>
   ),
+  args: {
+    columns: sampleColumns,
+  },
 };

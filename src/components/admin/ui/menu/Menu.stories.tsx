@@ -26,7 +26,12 @@ type Story = StoryObj<typeof meta>;
 const sampleMenuItems = [
   { id: "dashboard", icon: <LayoutDashboard />, label: "Dashboard" },
   { id: "listings", icon: <Package />, label: "Listings", badge: 12 },
-  { id: "verifications", icon: <CheckCircle />, label: "Verifications", badge: 5 },
+  {
+    id: "verifications",
+    icon: <CheckCircle />,
+    label: "Verifications",
+    badge: 5,
+  },
   { id: "users", icon: <Users />, label: "Users" },
   { id: "reports", icon: <Flag />, label: "Reports", badge: 3 },
   { id: "categories", icon: <FolderOpen />, label: "Categories" },
@@ -50,4 +55,8 @@ const InteractiveMenuStory = () => {
 
 export const Default: Story = {
   render: () => <InteractiveMenuStory />,
+  args: {
+    items: sampleMenuItems,
+    activeItemId: "dashboard",
+  },
 };

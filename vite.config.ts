@@ -8,6 +8,10 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
+      msw: fileURLToPath(new URL("./src/test/mocks/msw.ts", import.meta.url)),
+      "msw/node": fileURLToPath(
+        new URL("./src/test/mocks/msw-node.ts", import.meta.url),
+      ),
     },
   },
   test: {

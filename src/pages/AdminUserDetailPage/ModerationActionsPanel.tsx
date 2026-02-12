@@ -62,9 +62,6 @@ export const ModerationActionsPanel = forwardRef<
     }
   };
 
-  const isDisabled =
-    currentStatus === "banned" || currentStatus === "suspended";
-
   return (
     <>
       <div
@@ -75,34 +72,46 @@ export const ModerationActionsPanel = forwardRef<
           Moderation Actions
         </Text>
 
-        <div className="space-y-3">
-          <Button
-            intent="outline"
-            className="h-11 w-full justify-center rounded-xl border-2 border-[#FDB022] bg-white text-sm font-semibold text-[#FDB022] hover:bg-[#FDB022]/5"
-            onClick={() => setWarnModalOpen(true)}
-            disabled={isDisabled}
-          >
-            Warn User
-          </Button>
+        {/* Show status message for banned or suspended users */}
+        {currentStatus === "banned" ? (
+          <div className="flex h-11 items-center justify-center rounded-xl bg-neutral-10">
+            <Text variant="body" className="text-neutral-60 font-medium">
+              Banned
+            </Text>
+          </div>
+        ) : currentStatus === "suspended" ? (
+          <div className="flex h-11 items-center justify-center rounded-xl bg-neutral-10">
+            <Text variant="body" className="text-neutral-60 font-medium">
+              Suspended
+            </Text>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            <Button
+              intent="outline"
+              className="h-11 w-full justify-center rounded-xl border-2 border-[#FDB022] bg-white text-sm font-semibold text-[#FDB022] hover:bg-[#FDB022]/5"
+              onClick={() => setWarnModalOpen(true)}
+            >
+              Warn User
+            </Button>
 
-          <Button
-            intent="outline"
-            className="h-11 w-full justify-center rounded-xl border-2 border-error bg-white text-sm font-semibold text-error hover:bg-error/5"
-            onClick={() => setSuspendModalOpen(true)}
-            disabled={isDisabled}
-          >
-            Suspend Account
-          </Button>
+            <Button
+              intent="outline"
+              className="h-11 w-full justify-center rounded-xl border-2 border-error bg-white text-sm font-semibold text-error hover:bg-error/5"
+              onClick={() => setSuspendModalOpen(true)}
+            >
+              Suspend Account
+            </Button>
 
-          <Button
-            intent="danger"
-            className="h-11 w-full justify-center rounded-xl border-none bg-error text-sm font-semibold text-white hover:bg-error/90"
-            onClick={() => setBanModalOpen(true)}
-            disabled={currentStatus === "banned"}
-          >
-            Permanent Ban
-          </Button>
-        </div>
+            <Button
+              intent="danger"
+              className="h-11 w-full justify-center rounded-xl border-none bg-error text-sm font-semibold text-white hover:bg-error/90"
+              onClick={() => setBanModalOpen(true)}
+            >
+              Permanent Ban
+            </Button>
+          </div>
+        )}
       </div>
 
       {/* Modals */}

@@ -3,7 +3,10 @@ import type { HTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
 import { Text } from "@/components/ui/text";
 
-export interface ToggleControlPanelProps extends HTMLAttributes<HTMLDivElement> {
+export interface ToggleControlPanelProps extends Omit<
+  HTMLAttributes<HTMLDivElement>,
+  "onToggle"
+> {
   label: string;
   description?: string;
   enabled: boolean;

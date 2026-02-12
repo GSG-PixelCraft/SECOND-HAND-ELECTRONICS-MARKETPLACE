@@ -19,7 +19,9 @@ const InteractiveStory = () => {
   return (
     <div className="space-y-4">
       <Show value={value} onChange={setValue} />
-      <div className="text-sm text-neutral-60">Current value: {value} entries</div>
+      <div className="text-neutral-60 text-sm">
+        Current value: {value} entries
+      </div>
     </div>
   );
 };
@@ -33,4 +35,8 @@ export const Default: Story = {
 
 export const Interactive: Story = {
   render: () => <InteractiveStory />,
+  args: {
+    value: 10,
+    onChange: () => {},
+  },
 };

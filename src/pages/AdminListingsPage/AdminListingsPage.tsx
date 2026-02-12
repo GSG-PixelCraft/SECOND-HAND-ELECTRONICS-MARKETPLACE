@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Tabs, type TabValue } from "@/components/ui/Tabs";
+import { Tabs } from "@/components/ui/Tabs";
 import { EmptyState } from "@/components/feedback/emptyState/EmptyState";
 import { ListingsTableFilters, ShowPagination } from "@/components/admin";
 import { ListingsTable } from "./ListingsTable";
@@ -9,8 +9,17 @@ import type { ListingFilterParams, ListingStatus } from "@/types/admin";
 import { Text } from "@/components/ui/text";
 import { Button } from "@/components/ui/button";
 
+type ListingTabValue =
+  | "all"
+  | "pending"
+  | "active"
+  | "rejected"
+  | "sold"
+  | "archived"
+  | "drafts";
+
 // Map TabValue to ListingStatus
-const tabToStatus: Record<TabValue, ListingStatus | "all"> = {
+const tabToStatus: Record<ListingTabValue, ListingStatus | "all"> = {
   all: "all",
   pending: "pending",
   active: "active",
@@ -24,11 +33,11 @@ export default function AdminListingsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
 
   // Get initial values from URL or defaults
-  const initialTab = (searchParams.get("status") as TabValue) || "all";
+  const initialTab = (searchParams.get("status") as ListingTabValue) || "all";
   const initialPage = parseInt(searchParams.get("page") || "1", 10);
   const initialSearch = searchParams.get("search") || "";
 
-  const [activeTab, setActiveTab] = useState<TabValue>(initialTab);
+  const [activeTab, setActiveTab] = useState<ListingTabValue>(initialTab);
   const [filters, setFilters] = useState<ListingFilterParams>({
     status: tabToStatus[initialTab],
     page: initialPage,
@@ -42,7 +51,7 @@ export default function AdminListingsPage() {
   const { data, isLoading, error } = useAdminListings(filters);
 
   // Update URL when tab changes
-  const handleTabChange = (tab: TabValue) => {
+  const handleTabChange = (tab: ListingTabValue) => {
     setActiveTab(tab);
     const newStatus = tabToStatus[tab];
     setFilters((prev) => ({ ...prev, status: newStatus, page: 1 }));

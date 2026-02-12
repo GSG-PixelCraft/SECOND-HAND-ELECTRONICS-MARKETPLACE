@@ -101,7 +101,11 @@ export default function AdminUserDetailPage() {
             />
 
             {/* Permissions */}
-            <PermissionsPanel userId={user.id} chatAccess={user.chatAccess} />
+            <PermissionsPanel
+              userId={user.id}
+              chatAccess={user.chatAccess}
+              userStatus={user.status}
+            />
           </div>
         </div>
       </div>

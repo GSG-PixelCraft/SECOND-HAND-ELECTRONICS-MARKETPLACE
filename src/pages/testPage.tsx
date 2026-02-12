@@ -1,31 +1,25 @@
 import PhoneImage from "../images/Phone.jpg";
-import AdCardUiVertical from "../components/data-display/card/AdCardComponenet/ui-vertical";
-import AdCardWfVertical from "../components/data-display/card/AdCardComponenet/wf-vertical";
+import { AdCard } from "@/components/ui/AdCard";
 export default function App() {
   return (
     <div className="flex gap-4 p-6">
-      <AdCardUiVertical
+      <AdCard
         title="iPhone 14 Pro Max"
         price="2000 ILS"
         location="Gaza City"
         category="Phones"
         image={PhoneImage}
-        showCategory={true}
-        showLocation={true}
-        showFavorite={true}
-        showImage={true}
-        showCategoryOnImage={true}
-        onFavoriteClick={() => alert("Added to favorites!")}
+        isFavorite={true}
+        onToggleFavorite={() => alert("Added to favorites!")}
       />
-      <AdCardWfVertical
+      <AdCard
         title="iPhone 14 Pro Max"
         price="2000 ILS"
         location="Gaza City"
         category="Phones"
-        showCategory={true}
-        showLocation={true}
-        showFavorite={true}
-        onFavoriteClick={() => alert("Added to favorites!")}
+        image={PhoneImage}
+        downBadge
+        onToggleFavorite={() => alert("Added to favorites!")}
       />
     </div>
   );

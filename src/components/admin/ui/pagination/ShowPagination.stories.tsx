@@ -37,4 +37,12 @@ const InteractiveStory = () => {
 
 export const Default: Story = {
   render: () => <InteractiveStory />,
+  args: {
+    currentPage: 1,
+    totalPages: 1,
+    pageSize: 10,
+    totalItems: 0,
+    onPageChange: () => {},
+    onPageSizeChange: () => {},
+  },
 };

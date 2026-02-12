@@ -3,6 +3,7 @@ import { forwardRef, useId } from "react";
 import type { InputHTMLAttributes, ReactElement } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { twMerge } from "tailwind-merge";
+import { Text } from "./text";
 
 const inputVariants = cva(
   [

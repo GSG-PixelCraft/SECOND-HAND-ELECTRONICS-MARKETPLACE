@@ -3,16 +3,18 @@ import { Text } from "@/components/ui/text";
 import { Span } from "@/components/ui/span";
 import { Switch } from "@/components/ui/switch";
 import { useUpdateChatAccess } from "@/services/admin-users.service";
+import type { UserStatus } from "@/types/user";
 
 export interface PermissionsPanelProps {
   userId: string;
   chatAccess: boolean;
+  userStatus: UserStatus;
 }
 
 export const PermissionsPanel = forwardRef<
   HTMLDivElement,
   PermissionsPanelProps
->(({ userId, chatAccess }, ref) => {
+>(({ userId, chatAccess, userStatus }, ref) => {
   const updateChatAccessMutation = useUpdateChatAccess();
 
   const handleChatAccessToggle = async (checked: boolean) => {
@@ -25,6 +27,12 @@ export const PermissionsPanel = forwardRef<
       console.error("Failed to update chat access:", error);
     }
   };
+
+  // Disable switch for banned or suspended users
+  const isSwitchDisabled =
+    userStatus === "banned" ||
+    userStatus === "suspended" ||
+    updateChatAccessMutation.isPending;
 
   return (
     <div
@@ -45,9 +53,9 @@ export const PermissionsPanel = forwardRef<
           </Span>
         </div>
         <Switch
-          checked={chatAccess}
+          checked={chatAccess && userStatus === "active"}
           onCheckedChange={handleChatAccessToggle}
-          disabled={updateChatAccessMutation.isPending}
+          disabled={isSwitchDisabled}
         />
       </div>
     </div>

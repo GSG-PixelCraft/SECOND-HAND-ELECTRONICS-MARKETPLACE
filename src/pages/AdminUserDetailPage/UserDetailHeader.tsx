@@ -11,7 +11,7 @@ export const UserDetailHeader = forwardRef<HTMLDivElement>((_props, ref) => {
     <div ref={ref} className="mb-6 flex items-center gap-4">
       <Button
         intent="outline"
-        size="icon"
+        size="md"
         onClick={() => navigate("/admin/users")}
         className="h-10 w-10 rounded-full border border-neutral-20"
       >

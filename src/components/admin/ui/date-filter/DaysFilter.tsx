@@ -38,7 +38,10 @@ export interface DaysFilterOption {
   label: string;
 }
 
-export interface DaysFilterProps extends HTMLAttributes<HTMLDivElement> {
+export interface DaysFilterProps extends Omit<
+  HTMLAttributes<HTMLDivElement>,
+  "onChange"
+> {
   options?: DaysFilterOption[];
   value?: string | number;
   onChange?: (value: string | number) => void;

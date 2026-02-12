@@ -7,6 +7,7 @@ import {
 import { LocationPermissionModal } from "./LocationPermissionModal";
 import { Button } from "./button";
 import { Span } from "./span";
+import { Text } from "./text";
 export interface FiltersState {
   categories: string[];
   condition: string[];

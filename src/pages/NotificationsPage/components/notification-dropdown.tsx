@@ -288,5 +288,3 @@ export function NotificationMenu({
     </div>
   );
 }
-
-export type { NotificationMenuProps };

@@ -8,7 +8,10 @@ export interface DateFilterOption {
   label: string;
 }
 
-export interface DateFilterOptionsProps extends HTMLAttributes<HTMLDivElement> {
+export interface DateFilterOptionsProps extends Omit<
+  HTMLAttributes<HTMLDivElement>,
+  "onSelect"
+> {
   selectedValue?: string;
   onSelect?: (value: string) => void;
   options?: DateFilterOption[];

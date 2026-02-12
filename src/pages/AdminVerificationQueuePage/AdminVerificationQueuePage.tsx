@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Tabs, type TabValue } from "@/components/ui/Tabs";
+import { Tabs } from "@/components/ui/Tabs";
 import { Text } from "@/components/ui/text";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/feedback/emptyState/EmptyState";
@@ -13,26 +13,29 @@ import type {
   AdminVerificationStatus,
 } from "@/types/admin";
 
+type VerificationTabValue = "all" | "pending" | "active" | "rejected";
+
 // Map TabValue to AdminVerificationStatus
-const tabToStatus: Record<TabValue, AdminVerificationStatus | "all"> = {
+const tabToStatus: Record<
+  VerificationTabValue,
+  AdminVerificationStatus | "all"
+> = {
   all: "all",
   pending: "pending",
   active: "approved", // Map active to approved
   rejected: "rejected",
-  sold: "pending", // fallback
-  archived: "pending", // fallback
-  drafts: "pending", // fallback
 };
 
 export default function AdminVerificationQueuePage() {
   const [searchParams, setSearchParams] = useSearchParams();
 
   // Get initial values from URL or defaults
-  const initialTab = (searchParams.get("status") as TabValue) || "all";
+  const initialTab =
+    (searchParams.get("status") as VerificationTabValue) || "all";
   const initialPage = parseInt(searchParams.get("page") || "1", 10);
   const initialSearch = searchParams.get("search") || "";
 
-  const [activeTab, setActiveTab] = useState<TabValue>(initialTab);
+  const [activeTab, setActiveTab] = useState<VerificationTabValue>(initialTab);
   const [filters, setFilters] = useState<VerificationFilterParams>({
     status: tabToStatus[initialTab],
     page: initialPage,
@@ -46,7 +49,7 @@ export default function AdminVerificationQueuePage() {
   const { data, isLoading, error } = useAdminVerifications(filters);
 
   // Update URL when tab changes
-  const handleTabChange = (tab: TabValue) => {
+  const handleTabChange = (tab: VerificationTabValue) => {
     setActiveTab(tab);
     const newStatus = tabToStatus[tab];
     setFilters((prev) => ({ ...prev, status: newStatus, page: 1 }));
@@ -103,11 +106,11 @@ export default function AdminVerificationQueuePage() {
   };
 
   // Verification-specific tabs (only 4 tabs as per Figma)
-  const verificationTabs = [
-    { label: "All", value: "all" as const },
-    { label: "Pending", value: "pending" as const },
-    { label: "Active", value: "active" as const },
-    { label: "Rejected", value: "rejected" as const },
+  const verificationTabs: { label: string; value: VerificationTabValue }[] = [
+    { label: "All", value: "all" },
+    { label: "Pending", value: "pending" },
+    { label: "Active", value: "active" },
+    { label: "Rejected", value: "rejected" },
   ];
 
   // Tab counts from data
@@ -124,7 +127,7 @@ export default function AdminVerificationQueuePage() {
       <div className="flex flex-col gap-6 rounded-xl bg-white p-6 shadow-[0px_1px_4px_0px_rgba(0,0,0,0.1)]">
         {/* Tabs Navigation */}
         <div className="border-b border-[#e4e4e4]">
-          <Tabs
+          <Tabs<VerificationTabValue>
             value={activeTab}
             onChange={handleTabChange}
             counts={tabCounts}
