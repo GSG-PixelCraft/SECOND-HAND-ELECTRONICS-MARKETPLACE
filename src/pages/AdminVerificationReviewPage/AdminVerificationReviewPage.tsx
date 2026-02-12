@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
-  ArrowLeft,
   Clock,
   ZoomIn,
   ZoomOut,
@@ -12,6 +11,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/ui/StatusBadge";
+import { AdminBackButton } from "@/components/admin";
 import { useAdminVerificationDetail } from "@/services/admin-verification.service";
 import { ROUTES } from "@/constants/routes";
 import { ApproveVerificationModal, RejectionModal } from ".";
@@ -198,13 +198,7 @@ export default function AdminVerificationReviewPage() {
           {/* Header */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <button
-                onClick={handleBack}
-                className="text-neutral-60 hover:text-neutral-90 flex size-10 items-center justify-center rounded-full border border-neutral-20 bg-white transition-colors hover:bg-neutral-5"
-                aria-label="Go back"
-              >
-                <ArrowLeft className="size-5" />
-              </button>
+              <AdminBackButton onClick={handleBack} aria-label="Go back" />
               <h1 className="text-2xl font-semibold text-neutral-foreground">
                 Verification Review
               </h1>

@@ -8,6 +8,10 @@ export type { MenuProps, MenuItemProps } from "./menu/Menu";
 export { TopHeader } from "./top-header/TopHeader";
 export type { TopHeaderProps } from "./top-header/TopHeader";
 
+// Back Button
+export { AdminBackButton } from "./back-button/AdminBackButton";
+export type { AdminBackButtonProps } from "./back-button/AdminBackButton";
+
 // KPI Card
 export { KpiCard } from "./kpi-card/KpiCard";
 export type { KpiCardProps } from "./kpi-card/KpiCard";
@@ -24,42 +28,56 @@ export type { ShowProps } from "./show/Show";
 export { DashboardTableHeader } from "./table/DashboardTableHeader";
 export type { DashboardTableHeaderProps } from "./table/DashboardTableHeader";
 
-export { DashboardTableRow, TableCellImage, TableCellText } from "./table/DashboardTableRow";
-export type { DashboardTableRowProps, TableCellImageProps, TableCellTextProps } from "./table/DashboardTableRow";
+export {
+  DashboardTableRow,
+  TableCellImage,
+  TableCellText,
+} from "./table/DashboardTableRow";
+export type {
+  DashboardTableRowProps,
+  TableCellImageProps,
+  TableCellTextProps,
+} from "./table/DashboardTableRow";
 
 export {
-    VerificationTableHeader,
-    CountryManagementTableHeader,
-    CurrencyManagementTableHeader,
-    UserManagementHeader,
-    CategoriesTableHeader,
+  VerificationTableHeader,
+  CountryManagementTableHeader,
+  CurrencyManagementTableHeader,
+  UserManagementHeader,
+  CategoriesTableHeader,
 } from "./table/SpecializedTableHeaders";
 
 export {
-    VerificationTableRow,
-    CountryManagementTableRow,
-    CurrencyManagementTableRow,
-    UserManagementRow,
-    CategoriesTableRow,
+  VerificationTableRow,
+  CountryManagementTableRow,
+  CurrencyManagementTableRow,
+  UserManagementRow,
+  CategoriesTableRow,
 } from "./table/SpecializedTableRows";
 
 export type {
-    VerificationTableRowProps,
-    CountryManagementTableRowProps,
-    CurrencyManagementTableRowProps,
-    UserManagementRowProps,
-    CategoriesTableRowProps,
+  VerificationTableRowProps,
+  CountryManagementTableRowProps,
+  CurrencyManagementTableRowProps,
+  UserManagementRowProps,
+  CategoriesTableRowProps,
 } from "./table/SpecializedTableRows";
 
 // Date Filter Components
 export { DaysFilter } from "./date-filter/DaysFilter";
-export type { DaysFilterProps, DaysFilterOption } from "./date-filter/DaysFilter";
+export type {
+  DaysFilterProps,
+  DaysFilterOption,
+} from "./date-filter/DaysFilter";
 
 export { DateFilter } from "./date-filter/DateFilter";
 export type { DateFilterProps } from "./date-filter/DateFilter";
 
 export { DateFilterOptions } from "./date-filter/DateFilterOptions";
-export type { DateFilterOptionsProps, DateFilterOption } from "./date-filter/DateFilterOptions";
+export type {
+  DateFilterOptionsProps,
+  DateFilterOption,
+} from "./date-filter/DateFilterOptions";
 
 export { DateFilterCustomRange } from "./date-filter/DateFilterCustomRange";
 export type { DateFilterCustomRangeProps } from "./date-filter/DateFilterCustomRange";
@@ -76,7 +94,10 @@ export { VerificationCheck } from "./verification/VerificationCheck";
 export type { VerificationCheckProps } from "./verification/VerificationCheck";
 
 export { VerificationImages } from "./verification/VerificationImages";
-export type { VerificationImagesProps, VerificationImage } from "./verification/VerificationImages";
+export type {
+  VerificationImagesProps,
+  VerificationImage,
+} from "./verification/VerificationImages";
 
 // Toggle
 export { ToggleControlPanel } from "./toggle/ToggleControlPanel";
@@ -94,18 +115,27 @@ export { PendingListingHeader } from "./filters/PendingListingHeader";
 export type { PendingListingHeaderProps } from "./filters/PendingListingHeader";
 
 export { StatusFilterOptions } from "./filters/StatusFilterOptions";
-export type { StatusFilterOptionsProps, StatusOption } from "./filters/StatusFilterOptions";
+export type {
+  StatusFilterOptionsProps,
+  StatusOption,
+} from "./filters/StatusFilterOptions";
 
 // Reports
 export { ReportReason } from "./reports/ReportReason";
-export type { ReportReasonProps, ReportReasonOption } from "./reports/ReportReason";
+export type {
+  ReportReasonProps,
+  ReportReasonOption,
+} from "./reports/ReportReason";
 
 export { ReportRow } from "./reports/ReportRow";
 export type { ReportRowProps } from "./reports/ReportRow";
 
 // Attributes
 export { AttributeTypeOptions } from "./attributes/AttributeTypeOptions";
-export type { AttributeTypeOptionsProps, AttributeTypeOption } from "./attributes/AttributeTypeOptions";
+export type {
+  AttributeTypeOptionsProps,
+  AttributeTypeOption,
+} from "./attributes/AttributeTypeOptions";
 
 // Badges
 export { ListingStatusBadge } from "./badges/ListingStatusBadge";

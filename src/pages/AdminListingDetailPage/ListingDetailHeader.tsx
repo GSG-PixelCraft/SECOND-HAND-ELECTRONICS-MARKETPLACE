@@ -1,9 +1,9 @@
 import { forwardRef, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { EyeOff, Eye, ChevronLeft, MoreVertical } from "lucide-react";
+import { EyeOff, Eye, MoreVertical } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Span } from "@/components/ui/span";
-import { ListingStatusBadge } from "@/components/admin";
+import { AdminBackButton, ListingStatusBadge } from "@/components/admin";
 import type { AdminListing, ListingStatus } from "@/types/admin";
 
 export interface ListingDetailHeaderProps {
@@ -118,13 +118,10 @@ export const ListingDetailHeader = forwardRef<
     <div ref={ref} className="flex items-center justify-between gap-4">
       {/* Left: Back Arrow + Title + Status */}
       <div className="flex min-w-0 flex-1 items-center gap-4">
-        <button
+        <AdminBackButton
           onClick={() => navigate("/admin/listings")}
-          className="text-neutral-60 hover:text-neutral-90 shrink-0 transition-colors"
           aria-label="Back to listings"
-        >
-          <ChevronLeft className="size-6" />
-        </button>
+        />
 
         <div className="flex min-w-0 items-center gap-3">
           <Span className="text-neutral-60 shrink-0 text-xl font-medium">
