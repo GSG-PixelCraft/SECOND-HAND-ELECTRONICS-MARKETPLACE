@@ -50,10 +50,13 @@ export const getPublicProfileRoute = (id: string) => `/profile/${id}`;
 export const getMyListingsCategoryRoute = (category: string) =>
   `/my-listings/category/${category}`;
 export const getAdminVerificationReviewRoute = (id: string) =>
-  `/admin/verifications/${id}`;
-export const getAdminUserDetailRoute = (id: string) => `/admin/users/${id}`;
+  `/admin/verifications/${encodeURIComponent(id)}`;
+export const getAdminUserDetailRoute = (id: string) =>
+  `/admin/users/${encodeURIComponent(id)}`;
+export const getAdminListingDetailRoute = (id: string) =>
+  `/admin/listings/${encodeURIComponent(id)}`;
 export const getAdminReportDetailRoute = (type: string, id: string) =>
-  `/admin/reports/${type}/${id}`;
+  `/admin/reports/${encodeURIComponent(type)}/${encodeURIComponent(id)}`;
 export const getAdminCategoriesAddRoute = () => "/admin/categories/add";
 export const getAdminCategoryEditRoute = (id: string) =>
   `/admin/categories/${id}/edit`;

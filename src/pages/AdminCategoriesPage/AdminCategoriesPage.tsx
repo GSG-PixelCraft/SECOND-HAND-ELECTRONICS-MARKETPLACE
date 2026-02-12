@@ -14,11 +14,11 @@ import {
   useToggleAdminCategoryStatus,
 } from "@/services/admin-categories.service";
 import type { AdminCategory, CategoryFilterParams } from "@/types/admin";
-import { CategoriesTableFilters } from "./CategoriesTableFilters";
-import { CategoriesTable } from "./CategoriesTable";
-import { DeleteCategoryDialog } from "./DeleteCategoryDialog";
-import { DeleteCategorySuccessDialog } from "./DeleteCategorySuccessDialog";
-import { NoCategoriesState } from "./NoCategoriesState";
+import { CategoriesTableFilters } from "./components/tables/CategoriesTableFilters";
+import { CategoriesTable } from "./components/tables/CategoriesTable";
+import { DeleteCategoryDialog } from "./components/dialogs/DeleteCategoryDialog";
+import { DeleteCategorySuccessDialog } from "./components/dialogs/DeleteCategorySuccessDialog";
+import { NoCategoriesState } from "./components/states/NoCategoriesState";
 
 export default function AdminCategoriesPage() {
   const navigate = useNavigate();

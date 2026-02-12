@@ -5,6 +5,7 @@ import { Eye } from "lucide-react";
 import { Span } from "@/components/ui/span";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { cn } from "@/lib/utils";
+import { getAdminUserDetailRoute } from "@/constants/routes";
 import type { AdminUser, UserStatus } from "@/types/user";
 
 export interface UsersTableProps {
@@ -21,13 +22,13 @@ export const UsersTable = forwardRef<HTMLDivElement, UsersTableProps>(
       if (onRowClick) {
         onRowClick(user);
       } else {
-        navigate(`/admin/users/${encodeURIComponent(user.id)}`);
+        navigate(getAdminUserDetailRoute(user.id));
       }
     };
 
     const handleViewClick = (e: MouseEvent, userId: string) => {
       e.stopPropagation();
-      navigate(`/admin/users/${encodeURIComponent(userId)}`);
+      navigate(getAdminUserDetailRoute(userId));
     };
 
     const getStatusVariant = (status: UserStatus) => {

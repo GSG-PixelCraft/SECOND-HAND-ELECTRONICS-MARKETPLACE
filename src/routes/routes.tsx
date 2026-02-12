@@ -246,7 +246,7 @@ export const router = createBrowserRouter([
         { AdminDashboardLayout },
         { AdminGuard },
       ] = await Promise.all([
-        import("@/pages/AdminListingDetailPage/AdminListingDetailPage"),
+        import("@/pages/AdminListingsPage/components/detail/AdminListingDetailPage"),
         import("@/components/layout/AdminDashboardLayout"),
         import("@/routes/access-control"),
       ]);
@@ -294,7 +294,7 @@ export const router = createBrowserRouter([
         { AdminDashboardLayout },
         { AdminGuard },
       ] = await Promise.all([
-        import("@/pages/AdminReportDetailPage/AdminReportDetailPage"),
+        import("@/pages/AdminReportsPage/components/detail/AdminReportDetailPage"),
         import("@/components/layout/AdminDashboardLayout"),
         import("@/routes/access-control"),
       ]);
@@ -414,7 +414,7 @@ export const router = createBrowserRouter([
         { AdminDashboardLayout },
         { AdminGuard },
       ] = await Promise.all([
-        import("@/pages/AdminVerificationReviewPage/AdminVerificationReviewPage"),
+        import("@/pages/AdminVerificationQueuePage/components/review/AdminVerificationReviewPage"),
         import("@/components/layout/AdminDashboardLayout"),
         import("@/routes/access-control"),
       ]);
@@ -462,7 +462,7 @@ export const router = createBrowserRouter([
         { AdminDashboardLayout },
         { AdminGuard },
       ] = await Promise.all([
-        import("@/pages/AdminUserDetailPage/AdminUserDetailPage"),
+        import("@/pages/AdminUsersPage/components/detail/AdminUserDetailPage"),
         import("@/components/layout/AdminDashboardLayout"),
         import("@/routes/access-control"),
       ]);

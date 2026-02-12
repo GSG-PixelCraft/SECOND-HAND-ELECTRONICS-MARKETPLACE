@@ -23,7 +23,7 @@ import {
   toCategoryPayload,
   toEditableAttributes,
   type EditableCategoryAttribute,
-} from "./form";
+} from "./components/form";
 
 const cardClassName = "rounded-2xl border border-neutral-10 bg-white p-6";
 

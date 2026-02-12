@@ -6,6 +6,7 @@ import { Span } from "@/components/ui/span";
 import { Image } from "@/components/ui/image";
 import { ListingStatusBadge } from "@/components/admin";
 import { cn } from "@/lib/utils";
+import { getAdminListingDetailRoute } from "@/constants/routes";
 import type { AdminListing, ListingStatus } from "@/types/admin";
 
 export interface ListingsTableProps {
@@ -22,13 +23,13 @@ export const ListingsTable = forwardRef<HTMLDivElement, ListingsTableProps>(
       if (onRowClick) {
         onRowClick(listing);
       } else {
-        navigate(`/admin/listings/${listing.id}`);
+        navigate(getAdminListingDetailRoute(listing.id));
       }
     };
 
     const handleViewClick = (e: MouseEvent, listingId: string) => {
       e.stopPropagation();
-      navigate(`/admin/listings/${listingId}`);
+      navigate(getAdminListingDetailRoute(listingId));
     };
 
     return (

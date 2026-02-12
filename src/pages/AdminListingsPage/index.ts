@@ -1,3 +1,3 @@
 // AdminListingsPage barrel exports
 export { default } from "./AdminListingsPage";
-export { ListingsTable } from "./ListingsTable";
+export { ListingsTable } from "./components/tables/ListingsTable";

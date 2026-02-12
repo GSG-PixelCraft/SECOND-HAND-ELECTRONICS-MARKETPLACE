@@ -3,6 +3,7 @@ import { useAdminDashboard } from "@/services/admin.service";
 import { Text } from "@/components/ui/text";
 import { Button } from "@/components/ui/button";
 import { FullScreenLoading } from "@/components/feedback/loading/full-screen-loading";
+import { getAdminListingDetailRoute } from "@/constants/routes";
 import {
   FileText,
   Flag,
@@ -475,7 +476,9 @@ const AdminOverviewPage = () => {
                   className={`cursor-pointer border-b border-[#e4e4e4] transition-colors hover:bg-[#fcfcfc] ${
                     index === pendingListings.length - 1 ? "border-b-0" : ""
                   }`}
-                  onClick={() => navigate(`/admin/listings/${listing.id}`)}
+                  onClick={() =>
+                    navigate(getAdminListingDetailRoute(listing.id))
+                  }
                 >
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">

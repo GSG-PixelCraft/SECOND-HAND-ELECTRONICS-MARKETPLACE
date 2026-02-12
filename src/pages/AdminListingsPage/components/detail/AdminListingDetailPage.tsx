@@ -19,9 +19,19 @@ import {
 } from "@/components/admin/modals";
 import type { HideReason, RejectionReason } from "@/types/admin";
 
+const decodeRouteParam = (value?: string) => {
+  if (!value) return "";
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+};
+
 export default function AdminListingDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const decodedId = decodeRouteParam(id);
 
   const [approveModalOpen, setApproveModalOpen] = useState(false);
   const [rejectModalOpen, setRejectModalOpen] = useState(false);
@@ -35,7 +45,7 @@ export default function AdminListingDetailPage() {
   const [unhideModalOpen, setUnhideModalOpen] = useState(false);
 
   // Fetch listing details
-  const { data: listing, isLoading, error } = useAdminListingDetail(id!);
+  const { data: listing, isLoading, error } = useAdminListingDetail(decodedId);
 
   // Mutations
   const approveMutation = useApproveListingMutation();

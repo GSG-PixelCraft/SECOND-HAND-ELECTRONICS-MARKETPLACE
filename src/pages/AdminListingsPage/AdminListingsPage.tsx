@@ -4,7 +4,7 @@ import { Tabs } from "@/components/ui/Tabs";
 import { EmptyState } from "@/components/feedback/emptyState/EmptyState";
 import { FullScreenLoading } from "@/components/feedback/loading/full-screen-loading";
 import { ListingsTableFilters, ShowPagination } from "@/components/admin";
-import { ListingsTable } from "./ListingsTable";
+import { ListingsTable } from "./components/tables/ListingsTable";
 import { useAdminListings } from "@/services/admin-listings.service";
 import type { ListingFilterParams, ListingStatus } from "@/types/admin";
 import { Text } from "@/components/ui/text";

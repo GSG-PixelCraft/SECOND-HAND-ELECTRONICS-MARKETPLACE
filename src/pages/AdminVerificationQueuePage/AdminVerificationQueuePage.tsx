@@ -6,8 +6,8 @@ import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/feedback/emptyState/EmptyState";
 import { FullScreenLoading } from "@/components/feedback/loading/full-screen-loading";
 import { ShowPagination } from "@/components/admin";
-import { VerificationsTable } from "./VerificationsTable";
-import { VerificationsTableFilters } from "./VerificationsTableFilters";
+import { VerificationsTable } from "./components/tables/VerificationsTable";
+import { VerificationsTableFilters } from "./components/tables/VerificationsTableFilters";
 import { useAdminVerifications } from "@/services/admin-verification.service";
 import type {
   VerificationFilterParams,

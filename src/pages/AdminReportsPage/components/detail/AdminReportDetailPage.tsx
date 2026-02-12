@@ -45,7 +45,7 @@ import type {
 } from "@/types/admin";
 import { cn } from "@/lib/utils";
 import { getAdminUserDetailRoute } from "@/constants/routes";
-import { WarnUserModal } from "@/pages/AdminUserDetailPage/modals/WarnUserModal";
+import { WarnUserModal } from "@/pages/AdminUsersPage/components/detail/modals/WarnUserModal";
 import { HideListingModal } from "@/components/admin/modals/HideListingModal";
 
 const cardClassName = "rounded-2xl border border-neutral-10 bg-white p-6";
@@ -115,6 +115,15 @@ const getInitials = (name: string) =>
 
 const isValidReportType = (value?: string): value is ReportType =>
   value === "listing" || value === "user" || value === "chat";
+
+const decodeRouteParam = (value?: string) => {
+  if (!value) return "";
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+};
 
 function RiskBadge({ level }: { level: RiskLevel }) {
   return (
@@ -1266,7 +1275,9 @@ function ListingReportDetailLayout({
 export default function AdminReportDetailPage() {
   const { type, id } = useParams<{ type: string; id: string }>();
   const navigate = useNavigate();
-  const reportType = isValidReportType(type) ? type : undefined;
+  const decodedType = decodeRouteParam(type);
+  const decodedId = decodeRouteParam(id);
+  const reportType = isValidReportType(decodedType) ? decodedType : undefined;
   const [warnModalOpen, setWarnModalOpen] = useState(false);
   const [warnSuccessOpen, setWarnSuccessOpen] = useState(false);
   const [suspendConfirmOpen, setSuspendConfirmOpen] = useState(false);
@@ -1291,14 +1302,14 @@ export default function AdminReportDetailPage() {
 
   const { data, isLoading, error } = useAdminReportDetail(
     reportType || "listing",
-    reportType ? id : undefined,
+    reportType && decodedId ? decodedId : undefined,
   );
 
   const report = data as ReportDetail | undefined;
 
   const handleViewProfile = (userId?: string) => {
     if (!userId) return;
-    navigate(getAdminUserDetailRoute(encodeURIComponent(userId)));
+    navigate(getAdminUserDetailRoute(userId));
   };
 
   const headerReason = report?.reason || "";
@@ -1316,7 +1327,7 @@ export default function AdminReportDetailPage() {
     }
   };
 
-  if (!reportType || !id) {
+  if (!reportType || !decodedId) {
     return (
       <div className="flex min-h-[400px] items-center justify-center">
         <div className="rounded-xl border border-error/10 bg-error/5 p-8 text-center">

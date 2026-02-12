@@ -9,7 +9,7 @@ import {
   KeyFeaturesCard,
   DescriptionCard,
   SellerInfoCard,
-} from "./components";
+} from "./cards";
 import { LocationCard } from "@/pages/ProductDetailPage/components/LocationCard";
 import type { AdminListing } from "@/types/admin";
 

@@ -8,6 +8,7 @@ import { StatusBadge } from "@/components/ui/StatusBadge";
 import { EmptyState } from "@/components/feedback/emptyState/EmptyState";
 import { FullScreenLoading } from "@/components/feedback/loading/full-screen-loading";
 import { ShowPagination } from "@/components/admin";
+import { getAdminListingDetailRoute } from "@/constants/routes";
 import { useUserListings } from "@/services/admin-users.service";
 
 type UserProfileTab =
@@ -149,7 +150,7 @@ export const UserListingsSection = forwardRef<
   };
 
   const handleViewListing = (listingId: string) => {
-    navigate(`/admin/listings/${listingId}`);
+    navigate(getAdminListingDetailRoute(listingId));
   };
 
   const getStatusVariant = (status: string) => {

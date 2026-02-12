@@ -4,10 +4,10 @@ import { Tabs } from "@/components/ui/Tabs";
 import { EmptyState } from "@/components/feedback/emptyState/EmptyState";
 import { FullScreenLoading } from "@/components/feedback/loading/full-screen-loading";
 import { ShowPagination } from "@/components/admin";
-import { ReportsTableFilters } from "./ReportsTableFilters";
-import { ListingReportsTable } from "./ListingReportsTable";
-import { UserReportsTable } from "./UserReportsTable";
-import { ChatReportsTable } from "./ChatReportsTable";
+import { ReportsTableFilters } from "./components/filters/ReportsTableFilters";
+import { ListingReportsTable } from "./components/tables/ListingReportsTable";
+import { UserReportsTable } from "./components/tables/UserReportsTable";
+import { ChatReportsTable } from "./components/tables/ChatReportsTable";
 import { useAdminReports } from "@/services/admin-reports.service";
 import type {
   ChatReport,

@@ -22,9 +22,19 @@ import { ApproveVerificationModal, RejectionModal } from ".";
 
 type ImageTab = "front" | "back" | "selfie";
 
+const decodeRouteParam = (value?: string) => {
+  if (!value) return "";
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+};
+
 export default function AdminVerificationReviewPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const decodedId = decodeRouteParam(id);
   const [activeImageTab, setActiveImageTab] = useState<ImageTab>("front");
   const [isRejectionModalOpen, setIsRejectionModalOpen] = useState(false);
   const [isApproveModalOpen, setIsApproveModalOpen] = useState(false);
@@ -35,7 +45,7 @@ export default function AdminVerificationReviewPage() {
     data: verification,
     isLoading,
     error,
-  } = useAdminVerificationDetail(id || "");
+  } = useAdminVerificationDetail(decodedId);
   const rejectMutation = useRejectVerification();
 
   const handleRejectSubmit = async (payload: {
@@ -43,12 +53,12 @@ export default function AdminVerificationReviewPage() {
     additionalNotes?: string;
   }) => {
     if (rejectMutation.isPending) return;
-    if (!id) {
+    if (!decodedId) {
       throw new Error("Verification ID is required");
     }
 
     await rejectMutation.mutateAsync({
-      verificationId: id,
+      verificationId: decodedId,
       reasons: payload.reasons,
       additionalNotes: payload.additionalNotes,
     });
@@ -465,7 +475,7 @@ export default function AdminVerificationReviewPage() {
       <ApproveVerificationModal
         isOpen={isApproveModalOpen}
         onClose={() => setIsApproveModalOpen(false)}
-        verificationId={id || ""}
+        verificationId={decodedId}
       />
       <FullScreenLoading
         open={rejectMutation.isPending}
