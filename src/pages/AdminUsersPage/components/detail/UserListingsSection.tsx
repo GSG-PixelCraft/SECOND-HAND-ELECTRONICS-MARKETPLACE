@@ -1,6 +1,9 @@
 import { forwardRef, useState } from "react";
 import { ArrowUpDown, Eye } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { AdminDateRangePicker } from "@/components/admin/ui/date-filter/AdminDateRangePicker";
+import type { AdminDateRangeValue } from "@/components/admin/ui/date-filter/AdminDateRangePicker";
+import { getPresetRange } from "@/components/admin/ui/date-filter/admin-date-range.utils";
 import { Tabs } from "@/components/ui/Tabs";
 import { Input } from "@/components/ui/input";
 import { Span } from "@/components/ui/span";
@@ -122,7 +125,9 @@ export const UserListingsSection = forwardRef<
   const [activeTab, setActiveTab] = useState<UserProfileTab>("all");
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
-  const [dateRange, setDateRange] = useState("7");
+  const [dateRange, setDateRange] = useState<AdminDateRangeValue>(
+    getPresetRange("last7"),
+  );
 
   const statusMap: Partial<Record<UserProfileTab, string>> = {
     all: "all",
@@ -141,6 +146,12 @@ export const UserListingsSection = forwardRef<
   const { data, isLoading } = useUserListings(userId, {
     status: statusMap[activeTab],
     search: isListingsTab ? search : "",
+    ...(isListingsTab
+      ? {
+          startDate: dateRange.startDate,
+          endDate: dateRange.endDate,
+        }
+      : {}),
     page,
     limit: 10,
   });
@@ -239,49 +250,15 @@ export const UserListingsSection = forwardRef<
           </div>
         </div>
 
-        {/* Date Range */}
-        <div className="relative flex items-center gap-2">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="text-neutral-50"
-          >
-            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-            <path d="M16 2v4M8 2v4M3 10h18" />
-          </svg>
-          <select
+        <div className="flex items-center gap-2">
+          <AdminDateRangePicker
             value={dateRange}
-            onChange={(e) => setDateRange(e.target.value)}
-            className="h-12 min-w-[140px] cursor-pointer appearance-none rounded-xl border border-[#e4e4e4] bg-white px-4 pr-10 text-sm text-[#3d3d3d]"
-          >
-            <option value="7">Last 7 Days</option>
-            <option value="30">Last 30 Days</option>
-            <option value="90">Last 90 Days</option>
-            <option value="all">All Time</option>
-          </select>
-          <div className="pointer-events-none absolute right-4 flex items-center">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="text-neutral-50"
-            >
-              <path d="m6 9 6 6 6-6" />
-            </svg>
-          </div>
+            onChange={(value) => {
+              setDateRange(value);
+              setPage(1);
+            }}
+            triggerClassName="justify-between"
+          />
         </div>
       </div>
 

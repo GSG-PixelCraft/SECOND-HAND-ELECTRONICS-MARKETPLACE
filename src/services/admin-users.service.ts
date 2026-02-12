@@ -126,6 +126,144 @@ const generateMockUserListings = (userId: string) => {
 // In-memory mock data store
 const mockUsers = generateMockUsers();
 
+const addDays = (date: Date, days: number) =>
+  new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate() + days,
+    date.getHours(),
+    date.getMinutes(),
+    date.getSeconds(),
+    date.getMilliseconds(),
+  );
+
+const parseLocalDate = (value?: string | null) => {
+  if (!value) return null;
+  const [yearText, monthText, dayText] = value.split("-");
+  const year = Number.parseInt(yearText, 10);
+  const month = Number.parseInt(monthText, 10);
+  const day = Number.parseInt(dayText, 10);
+
+  if (
+    Number.isNaN(year) ||
+    Number.isNaN(month) ||
+    Number.isNaN(day) ||
+    month < 1 ||
+    month > 12 ||
+    day < 1 ||
+    day > 31
+  ) {
+    return null;
+  }
+
+  const parsed = new Date(year, month - 1, day);
+  if (
+    parsed.getFullYear() !== year ||
+    parsed.getMonth() !== month - 1 ||
+    parsed.getDate() !== day
+  ) {
+    return null;
+  }
+
+  return parsed;
+};
+
+const startOfDay = (date: Date) =>
+  new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0);
+
+const endOfDay = (date: Date) =>
+  new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate(),
+    23,
+    59,
+    59,
+    999,
+  );
+
+const resolveDateBounds = (params: {
+  datePreset?: UserFilterParams["datePreset"];
+  startDate?: string;
+  endDate?: string;
+  dateRange?: UserFilterParams["dateRange"];
+}) => {
+  const todayStart = startOfDay(new Date());
+
+  if (params.datePreset === "all") {
+    return { start: null as Date | null, end: null as Date | null };
+  }
+
+  if (params.datePreset === "today") {
+    return { start: todayStart, end: endOfDay(todayStart) };
+  }
+
+  if (params.datePreset === "yesterday") {
+    const yesterday = addDays(todayStart, -1);
+    return { start: yesterday, end: endOfDay(yesterday) };
+  }
+
+  if (params.datePreset === "last7") {
+    return { start: addDays(todayStart, -6), end: endOfDay(todayStart) };
+  }
+
+  if (params.datePreset === "last30") {
+    return { start: addDays(todayStart, -29), end: endOfDay(todayStart) };
+  }
+
+  const parsedStart = parseLocalDate(params.startDate);
+  const parsedEnd = parseLocalDate(params.endDate);
+
+  if (params.datePreset === "custom" || parsedStart || parsedEnd) {
+    if (
+      parsedStart &&
+      parsedEnd &&
+      parsedStart.getTime() > parsedEnd.getTime()
+    ) {
+      return {
+        start: startOfDay(parsedEnd),
+        end: endOfDay(parsedStart),
+      };
+    }
+
+    return {
+      start: parsedStart ? startOfDay(parsedStart) : null,
+      end: parsedEnd ? endOfDay(parsedEnd) : null,
+    };
+  }
+
+  if (params.dateRange === "all") {
+    return { start: null as Date | null, end: null as Date | null };
+  }
+
+  if (params.dateRange) {
+    const days = Number.parseInt(params.dateRange, 10);
+    if (!Number.isNaN(days) && days > 0) {
+      return {
+        start: addDays(todayStart, -(days - 1)),
+        end: endOfDay(todayStart),
+      };
+    }
+  }
+
+  return { start: null as Date | null, end: null as Date | null };
+};
+
+const isWithinDateBounds = (
+  dateValue: string,
+  bounds: { start: Date | null; end: Date | null },
+) => {
+  if (!bounds.start && !bounds.end) return true;
+
+  const date = new Date(dateValue);
+  if (Number.isNaN(date.getTime())) return false;
+
+  if (bounds.start && date.getTime() < bounds.start.getTime()) return false;
+  if (bounds.end && date.getTime() > bounds.end.getTime()) return false;
+
+  return true;
+};
+
 // Helper function to filter and paginate users
 const filterUsers = (params: UserFilterParams = {}): PaginatedUsersResponse => {
   let filtered = [...mockUsers];
@@ -156,14 +294,15 @@ const filterUsers = (params: UserFilterParams = {}): PaginatedUsersResponse => {
     );
   }
 
-  // Filter by date range
-  if (params.dateRange && params.dateRange !== "all") {
-    const daysAgo = parseInt(params.dateRange);
-    const cutoffDate = new Date(Date.now() - daysAgo * 24 * 60 * 60 * 1000);
-    filtered = filtered.filter(
-      (user) => new Date(user.joinedDate) >= cutoffDate,
-    );
-  }
+  const dateBounds = resolveDateBounds({
+    datePreset: params.datePreset,
+    startDate: params.startDate,
+    endDate: params.endDate,
+    dateRange: params.dateRange,
+  });
+  filtered = filtered.filter((user) =>
+    isWithinDateBounds(user.joinedDate, dateBounds),
+  );
 
   // Calculate stats
   const stats = {
@@ -313,6 +452,10 @@ export const adminUsersService = {
     params?: {
       status?: string;
       search?: string;
+      datePreset?: UserFilterParams["datePreset"];
+      startDate?: string;
+      endDate?: string;
+      dateRange?: UserFilterParams["dateRange"];
       page?: number;
       limit?: number;
     },
@@ -332,6 +475,16 @@ export const adminUsersService = {
         l.title.toLowerCase().includes(searchLower),
       );
     }
+
+    const dateBounds = resolveDateBounds({
+      datePreset: params?.datePreset,
+      startDate: params?.startDate,
+      endDate: params?.endDate,
+      dateRange: params?.dateRange,
+    });
+    listings = listings.filter((listing) =>
+      isWithinDateBounds(listing.submissionDate, dateBounds),
+    );
 
     // Paginate
     const page = params?.page || 1;
@@ -393,7 +546,16 @@ export const useAdminUserDetail = (id: string) => {
 // Query: Get user listings
 export const useUserListings = (
   id: string,
-  params?: { status?: string; search?: string; page?: number; limit?: number },
+  params?: {
+    status?: string;
+    search?: string;
+    datePreset?: UserFilterParams["datePreset"];
+    startDate?: string;
+    endDate?: string;
+    dateRange?: UserFilterParams["dateRange"];
+    page?: number;
+    limit?: number;
+  },
 ) => {
   return useQuery({
     queryKey: [...ADMIN_USERS_KEYS.userListings(id), params],

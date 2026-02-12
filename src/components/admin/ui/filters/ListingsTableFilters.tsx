@@ -1,7 +1,7 @@
 import { forwardRef, useEffect, useRef, useState } from "react";
-import type { ChangeEvent } from "react";
 import { Input } from "@/components/ui/input";
-import { Text } from "@/components/ui/text";
+import { AdminDateRangePicker } from "@/components/admin/ui/date-filter/AdminDateRangePicker";
+import type { AdminDateRangeValue } from "@/components/admin/ui/date-filter/AdminDateRangePicker";
 import { cn } from "@/lib/utils";
 import type { ListingFilterParams } from "@/types/admin";
 
@@ -39,12 +39,22 @@ export const ListingsTableFilters = forwardRef<
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchValue]);
 
-  const handleStartDateChange = (e: ChangeEvent<HTMLInputElement>) => {
-    onFiltersChange({ ...filters, startDate: e.target.value, page: 1 });
+  const currentDateValue: AdminDateRangeValue = {
+    preset:
+      filters.datePreset ||
+      (filters.startDate || filters.endDate ? "custom" : "last7"),
+    startDate: filters.startDate,
+    endDate: filters.endDate,
   };
 
-  const handleEndDateChange = (e: ChangeEvent<HTMLInputElement>) => {
-    onFiltersChange({ ...filters, endDate: e.target.value, page: 1 });
+  const handleDateChange = (value: AdminDateRangeValue) => {
+    onFiltersChange({
+      ...filters,
+      datePreset: value.preset,
+      startDate: value.startDate,
+      endDate: value.endDate,
+      page: 1,
+    });
   };
 
   return (
@@ -85,25 +95,11 @@ export const ListingsTableFilters = forwardRef<
         </div>
       </div>
 
-      {/* Date Range Filter */}
       <div className="flex items-center gap-2">
-        <Text variant="bodySmall" className="text-neutral">
-          From
-        </Text>
-        <Input
-          type="date"
-          value={filters.startDate || ""}
-          onChange={handleStartDateChange}
-          className="h-12 w-auto rounded-xl border-[#e4e4e4]"
-        />
-        <Text variant="bodySmall" className="text-neutral">
-          to
-        </Text>
-        <Input
-          type="date"
-          value={filters.endDate || ""}
-          onChange={handleEndDateChange}
-          className="h-12 w-auto rounded-xl border-[#e4e4e4]"
+        <AdminDateRangePicker
+          value={currentDateValue}
+          onChange={handleDateChange}
+          triggerClassName="justify-between"
         />
       </div>
     </div>

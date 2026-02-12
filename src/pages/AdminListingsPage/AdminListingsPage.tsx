@@ -4,6 +4,10 @@ import { Tabs } from "@/components/ui/Tabs";
 import { EmptyState } from "@/components/feedback/emptyState/EmptyState";
 import { FullScreenLoading } from "@/components/feedback/loading/full-screen-loading";
 import { ListingsTableFilters, ShowPagination } from "@/components/admin";
+import {
+  resolveDateRangeValue,
+  toDateRangeQueryParams,
+} from "@/components/admin/ui/date-filter/admin-date-range.utils";
 import { ListingsTable } from "./components/tables/ListingsTable";
 import { useAdminListings } from "@/services/admin-listings.service";
 import type { ListingFilterParams, ListingStatus } from "@/types/admin";
@@ -37,6 +41,12 @@ export default function AdminListingsPage() {
   const initialTab = (searchParams.get("status") as ListingTabValue) || "all";
   const initialPage = parseInt(searchParams.get("page") || "1", 10);
   const initialSearch = searchParams.get("search") || "";
+  const initialDateValue = resolveDateRangeValue({
+    datePreset: searchParams.get("datePreset"),
+    startDate: searchParams.get("startDate"),
+    endDate: searchParams.get("endDate"),
+    dateRange: searchParams.get("dateRange"),
+  });
 
   const [activeTab, setActiveTab] = useState<ListingTabValue>(initialTab);
   const [filters, setFilters] = useState<ListingFilterParams>({
@@ -44,6 +54,9 @@ export default function AdminListingsPage() {
     page: initialPage,
     limit: 10,
     search: initialSearch,
+    datePreset: initialDateValue.preset,
+    startDate: initialDateValue.startDate,
+    endDate: initialDateValue.endDate,
     sortBy: "createdAt",
     sortOrder: "desc",
   });
@@ -51,59 +64,88 @@ export default function AdminListingsPage() {
   // Fetch listings
   const { data, isLoading, error } = useAdminListings(filters);
 
+  const buildParams = (
+    overrides?: Partial<ListingFilterParams> & { statusTab?: ListingTabValue },
+  ) => {
+    const merged = {
+      statusTab: overrides?.statusTab ?? activeTab,
+      search: overrides?.search ?? filters.search ?? "",
+      page: overrides?.page ?? filters.page ?? 1,
+      datePreset: overrides?.datePreset ?? filters.datePreset,
+      startDate: overrides?.startDate ?? filters.startDate,
+      endDate: overrides?.endDate ?? filters.endDate,
+    };
+
+    const normalizedDateValue = resolveDateRangeValue({
+      datePreset: merged.datePreset || null,
+      startDate: merged.startDate || null,
+      endDate: merged.endDate || null,
+    });
+
+    const params: Record<string, string> = {
+      status: merged.statusTab,
+      page: String(merged.page),
+      ...toDateRangeQueryParams(normalizedDateValue),
+    };
+
+    if (merged.search) {
+      params.search = merged.search;
+    }
+
+    return params;
+  };
+
   // Update URL when tab changes
   const handleTabChange = (tab: ListingTabValue) => {
     setActiveTab(tab);
     const newStatus = tabToStatus[tab];
     setFilters((prev) => ({ ...prev, status: newStatus, page: 1 }));
-    setSearchParams({
-      status: tab,
-      page: "1",
-    });
+    setSearchParams(buildParams({ statusTab: tab, page: 1 }));
   };
 
   // Handle page change
   const handlePageChange = (page: number) => {
     setFilters((prev) => ({ ...prev, page }));
-    setSearchParams({
-      ...Object.fromEntries(searchParams),
-      page: page.toString(),
-    });
+    setSearchParams(buildParams({ page }));
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   // Handle items per page change
   const handleItemsPerPageChange = (itemsPerPage: number) => {
     setFilters((prev) => ({ ...prev, limit: itemsPerPage, page: 1 }));
-    setSearchParams({
-      ...Object.fromEntries(searchParams),
-      page: "1",
-    });
+    setSearchParams(buildParams({ page: 1 }));
   };
 
   // Handle filter changes
   const handleFiltersChange = (newFilters: ListingFilterParams) => {
     setFilters(newFilters);
-    if (newFilters.search !== undefined) {
-      setSearchParams({
-        ...Object.fromEntries(searchParams),
-        search: newFilters.search,
-      });
-    }
+    setSearchParams(buildParams(newFilters));
   };
 
   const handleClearFilters = () => {
+    const defaultDateValue = resolveDateRangeValue({});
+
     setFilters({
       status: filters.status,
       page: 1,
       limit: 10,
+      search: "",
+      datePreset: defaultDateValue.preset,
+      startDate: defaultDateValue.startDate,
+      endDate: defaultDateValue.endDate,
       sortBy: "createdAt",
       sortOrder: "desc",
     });
-    setSearchParams({
-      status: activeTab,
-      page: "1",
-    });
+    setSearchParams(
+      buildParams({
+        statusTab: activeTab,
+        search: "",
+        page: 1,
+        datePreset: defaultDateValue.preset,
+        startDate: defaultDateValue.startDate,
+        endDate: defaultDateValue.endDate,
+      }),
+    );
   };
 
   // Mock counts for tabs

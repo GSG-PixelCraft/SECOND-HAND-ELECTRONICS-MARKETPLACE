@@ -39,6 +39,9 @@ export interface UserDetailInfo extends AdminUser {
 export interface UserFilterParams {
   search?: string;
   status?: UserStatus | "all" | "verified";
+  datePreset?: "today" | "yesterday" | "last7" | "last30" | "custom" | "all";
+  startDate?: string;
+  endDate?: string;
   dateRange?: "7" | "30" | "90" | "all";
   page?: number;
   limit?: number;

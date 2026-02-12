@@ -148,6 +148,128 @@ const mockVerifications: VerificationSubmission[] = [
 // API Functions
 // ============================================================================
 
+const addDays = (date: Date, days: number) =>
+  new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate() + days,
+    date.getHours(),
+    date.getMinutes(),
+    date.getSeconds(),
+    date.getMilliseconds(),
+  );
+
+const parseLocalDate = (value?: string | null) => {
+  if (!value) return null;
+  const [yearText, monthText, dayText] = value.split("-");
+  const year = Number.parseInt(yearText, 10);
+  const month = Number.parseInt(monthText, 10);
+  const day = Number.parseInt(dayText, 10);
+
+  if (
+    Number.isNaN(year) ||
+    Number.isNaN(month) ||
+    Number.isNaN(day) ||
+    month < 1 ||
+    month > 12 ||
+    day < 1 ||
+    day > 31
+  ) {
+    return null;
+  }
+
+  const parsed = new Date(year, month - 1, day);
+  if (
+    parsed.getFullYear() !== year ||
+    parsed.getMonth() !== month - 1 ||
+    parsed.getDate() !== day
+  ) {
+    return null;
+  }
+
+  return parsed;
+};
+
+const startOfDay = (date: Date) =>
+  new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0);
+
+const endOfDay = (date: Date) =>
+  new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate(),
+    23,
+    59,
+    59,
+    999,
+  );
+
+const resolveDateBounds = (params: VerificationFilterParams) => {
+  const todayStart = startOfDay(new Date());
+
+  if (params.datePreset === "all") {
+    return { start: null as Date | null, end: null as Date | null };
+  }
+
+  if (params.datePreset === "today") {
+    return { start: todayStart, end: endOfDay(todayStart) };
+  }
+
+  if (params.datePreset === "yesterday") {
+    const yesterday = addDays(todayStart, -1);
+    return { start: yesterday, end: endOfDay(yesterday) };
+  }
+
+  if (params.datePreset === "last7") {
+    return { start: addDays(todayStart, -6), end: endOfDay(todayStart) };
+  }
+
+  if (params.datePreset === "last30") {
+    return { start: addDays(todayStart, -29), end: endOfDay(todayStart) };
+  }
+
+  const parsedStart = parseLocalDate(params.startDate);
+  const parsedEnd = parseLocalDate(params.endDate);
+
+  if (params.datePreset === "custom" || parsedStart || parsedEnd) {
+    if (
+      parsedStart &&
+      parsedEnd &&
+      parsedStart.getTime() > parsedEnd.getTime()
+    ) {
+      return {
+        start: startOfDay(parsedEnd),
+        end: endOfDay(parsedStart),
+      };
+    }
+
+    return {
+      start: parsedStart ? startOfDay(parsedStart) : null,
+      end: parsedEnd ? endOfDay(parsedEnd) : null,
+    };
+  }
+
+  return { start: null as Date | null, end: null as Date | null };
+};
+
+const isWithinDateBounds = (
+  dateValue: string,
+  bounds: { start: Date | null; end: Date | null },
+) => {
+  if (!bounds.start && !bounds.end) return true;
+
+  const parsedLocalDate = parseLocalDate(dateValue);
+  const date = parsedLocalDate
+    ? startOfDay(parsedLocalDate)
+    : new Date(dateValue);
+  if (Number.isNaN(date.getTime())) return false;
+
+  if (bounds.start && date.getTime() < bounds.start.getTime()) return false;
+  if (bounds.end && date.getTime() > bounds.end.getTime()) return false;
+
+  return true;
+};
+
 export const adminVerificationService = {
   // Get paginated verifications list
   getVerifications: (
@@ -157,6 +279,7 @@ export const adminVerificationService = {
     return new Promise((resolve) => {
       setTimeout(() => {
         const { status = "all", search = "", page = 1, limit = 10 } = params;
+        const dateBounds = resolveDateBounds(params);
 
         // Filter by status
         let filtered = mockVerifications;
@@ -173,6 +296,11 @@ export const adminVerificationService = {
               v.id.includes(searchLower),
           );
         }
+
+        // Filter by date range
+        filtered = filtered.filter((verification) =>
+          isWithinDateBounds(verification.submittedDate, dateBounds),
+        );
 
         // Calculate pagination
         const total = filtered.length;

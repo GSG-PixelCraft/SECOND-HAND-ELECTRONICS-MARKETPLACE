@@ -4,6 +4,10 @@ import { Tabs } from "@/components/ui/Tabs";
 import { EmptyState } from "@/components/feedback/emptyState/EmptyState";
 import { FullScreenLoading } from "@/components/feedback/loading/full-screen-loading";
 import { ShowPagination } from "@/components/admin";
+import {
+  resolveDateRangeValue,
+  toDateRangeQueryParams,
+} from "@/components/admin/ui/date-filter/admin-date-range.utils";
 import { ReportsTableFilters } from "./components/filters/ReportsTableFilters";
 import { ListingReportsTable } from "./components/tables/ListingReportsTable";
 import { UserReportsTable } from "./components/tables/UserReportsTable";
@@ -55,14 +59,20 @@ export default function AdminReportsPage() {
   const initialType = (searchParams.get("type") as ReportType) || "listing";
   const initialPage = parseInt(searchParams.get("page") || "1", 10);
   const initialSearch = searchParams.get("search") || "";
-  const initialDateRange =
-    (searchParams.get("dateRange") as ReportFilterParams["dateRange"]) || "7";
   const initialLimit = parseInt(searchParams.get("limit") || "10", 10);
+  const initialDateValue = resolveDateRangeValue({
+    datePreset: searchParams.get("datePreset"),
+    startDate: searchParams.get("startDate"),
+    endDate: searchParams.get("endDate"),
+    dateRange: searchParams.get("dateRange"),
+  });
 
   const [activeTab, setActiveTab] = useState<ReportType>(initialType);
   const [filters, setFilters] = useState<ReportFilterParams>({
     search: initialSearch,
-    dateRange: initialDateRange,
+    datePreset: initialDateValue.preset,
+    startDate: initialDateValue.startDate,
+    endDate: initialDateValue.endDate,
     page: initialPage,
     limit: initialLimit,
   });
@@ -76,17 +86,25 @@ export default function AdminReportsPage() {
       type: overrides?.type ?? activeTab,
       page: overrides?.page ?? filters.page ?? 1,
       search: overrides?.search ?? filters.search,
-      dateRange: overrides?.dateRange ?? filters.dateRange ?? "7",
+      datePreset: overrides?.datePreset ?? filters.datePreset,
+      startDate: overrides?.startDate ?? filters.startDate,
+      endDate: overrides?.endDate ?? filters.endDate,
       limit: overrides?.limit ?? filters.limit ?? 10,
     };
+
+    const normalizedDateValue = resolveDateRangeValue({
+      datePreset: merged.datePreset || null,
+      startDate: merged.startDate || null,
+      endDate: merged.endDate || null,
+    });
 
     const params: Record<string, string> = {
       type: merged.type,
       page: String(merged.page),
+      ...toDateRangeQueryParams(normalizedDateValue),
     };
 
     if (merged.search) params.search = merged.search;
-    if (merged.dateRange) params.dateRange = merged.dateRange;
     if (merged.limit) params.limit = String(merged.limit);
 
     return params;

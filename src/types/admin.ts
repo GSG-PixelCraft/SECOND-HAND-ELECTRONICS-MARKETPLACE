@@ -126,6 +126,7 @@ export interface AdminListing extends RecentProduct {
 export interface ListingFilterParams {
   search?: string;
   status?: ListingStatus | "all";
+  datePreset?: "today" | "yesterday" | "last7" | "last30" | "custom" | "all";
   category?: string;
   minPrice?: number;
   maxPrice?: number;
@@ -244,6 +245,7 @@ export interface VerificationSubmission {
 export interface VerificationFilterParams {
   status?: AdminVerificationStatus | "all";
   search?: string;
+  datePreset?: "today" | "yesterday" | "last7" | "last30" | "custom" | "all";
   startDate?: string;
   endDate?: string;
   page?: number;
@@ -375,6 +377,9 @@ export type Report = ListingReport | UserReport | ChatReport;
 
 export interface ReportFilterParams {
   search?: string;
+  datePreset?: "today" | "yesterday" | "last7" | "last30" | "custom" | "all";
+  startDate?: string;
+  endDate?: string;
   dateRange?: "7" | "30" | "90" | "all";
   page?: number;
   limit?: number;

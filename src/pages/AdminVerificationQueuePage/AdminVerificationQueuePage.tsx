@@ -6,6 +6,10 @@ import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/feedback/emptyState/EmptyState";
 import { FullScreenLoading } from "@/components/feedback/loading/full-screen-loading";
 import { ShowPagination } from "@/components/admin";
+import {
+  resolveDateRangeValue,
+  toDateRangeQueryParams,
+} from "@/components/admin/ui/date-filter/admin-date-range.utils";
 import { VerificationsTable } from "./components/tables/VerificationsTable";
 import { VerificationsTableFilters } from "./components/tables/VerificationsTableFilters";
 import { useAdminVerifications } from "@/services/admin-verification.service";
@@ -35,6 +39,12 @@ export default function AdminVerificationQueuePage() {
     (searchParams.get("status") as VerificationTabValue) || "all";
   const initialPage = parseInt(searchParams.get("page") || "1", 10);
   const initialSearch = searchParams.get("search") || "";
+  const initialDateValue = resolveDateRangeValue({
+    datePreset: searchParams.get("datePreset"),
+    startDate: searchParams.get("startDate"),
+    endDate: searchParams.get("endDate"),
+    dateRange: searchParams.get("dateRange"),
+  });
 
   const [activeTab, setActiveTab] = useState<VerificationTabValue>(initialTab);
   const [filters, setFilters] = useState<VerificationFilterParams>({
@@ -42,6 +52,9 @@ export default function AdminVerificationQueuePage() {
     page: initialPage,
     limit: 10,
     search: initialSearch,
+    datePreset: initialDateValue.preset,
+    startDate: initialDateValue.startDate,
+    endDate: initialDateValue.endDate,
     sortBy: "submittedDate",
     sortOrder: "desc",
   });
@@ -49,61 +62,88 @@ export default function AdminVerificationQueuePage() {
   // Fetch verifications
   const { data, isLoading, error } = useAdminVerifications(filters);
 
+  const buildParams = (
+    overrides?: Partial<VerificationFilterParams> & {
+      statusTab?: VerificationTabValue;
+    },
+  ) => {
+    const merged = {
+      statusTab: overrides?.statusTab ?? activeTab,
+      page: overrides?.page ?? filters.page ?? 1,
+      search: overrides?.search ?? filters.search ?? "",
+      datePreset: overrides?.datePreset ?? filters.datePreset,
+      startDate: overrides?.startDate ?? filters.startDate,
+      endDate: overrides?.endDate ?? filters.endDate,
+    };
+
+    const normalizedDateValue = resolveDateRangeValue({
+      datePreset: merged.datePreset || null,
+      startDate: merged.startDate || null,
+      endDate: merged.endDate || null,
+    });
+
+    const params: Record<string, string> = {
+      status: merged.statusTab,
+      page: String(merged.page),
+      ...toDateRangeQueryParams(normalizedDateValue),
+    };
+
+    if (merged.search) {
+      params.search = merged.search;
+    }
+
+    return params;
+  };
+
   // Update URL when tab changes
   const handleTabChange = (tab: VerificationTabValue) => {
     setActiveTab(tab);
     const newStatus = tabToStatus[tab];
     setFilters((prev) => ({ ...prev, status: newStatus, page: 1 }));
-    setSearchParams({
-      status: tab,
-      page: "1",
-    });
+    setSearchParams(buildParams({ statusTab: tab, page: 1 }));
   };
 
   // Handle page change
   const handlePageChange = (page: number) => {
     setFilters((prev) => ({ ...prev, page }));
-    setSearchParams({
-      ...Object.fromEntries(searchParams),
-      page: page.toString(),
-    });
+    setSearchParams(buildParams({ page }));
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   // Handle items per page change
   const handleItemsPerPageChange = (itemsPerPage: number) => {
     setFilters((prev) => ({ ...prev, limit: itemsPerPage, page: 1 }));
-    setSearchParams({
-      ...Object.fromEntries(searchParams),
-      page: "1",
-    });
+    setSearchParams(buildParams({ page: 1 }));
   };
 
   // Handle filter changes
   const handleFiltersChange = (newFilters: VerificationFilterParams) => {
     setFilters(newFilters);
-    setSearchParams({
-      ...Object.fromEntries(searchParams),
-      ...(newFilters.search && { search: newFilters.search }),
-      ...(newFilters.startDate && { startDate: newFilters.startDate }),
-      ...(newFilters.endDate && { endDate: newFilters.endDate }),
-      page: (newFilters.page || 1).toString(),
-    });
+    setSearchParams(buildParams(newFilters));
   };
 
   // Handle clear filters
   const handleClearFilters = () => {
+    const defaultDateValue = resolveDateRangeValue({});
+
     setFilters((prev) => ({
       ...prev,
       search: "",
-      startDate: undefined,
-      endDate: undefined,
+      datePreset: defaultDateValue.preset,
+      startDate: defaultDateValue.startDate,
+      endDate: defaultDateValue.endDate,
       page: 1,
     }));
-    setSearchParams({
-      status: activeTab,
-      page: "1",
-    });
+    setSearchParams(
+      buildParams({
+        statusTab: activeTab,
+        search: "",
+        page: 1,
+        datePreset: defaultDateValue.preset,
+        startDate: defaultDateValue.startDate,
+        endDate: defaultDateValue.endDate,
+      }),
+    );
   };
 
   // Verification-specific tabs (only 4 tabs as per Figma)

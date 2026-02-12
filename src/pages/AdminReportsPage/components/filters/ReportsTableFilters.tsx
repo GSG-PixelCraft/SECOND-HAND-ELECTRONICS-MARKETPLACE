@@ -1,5 +1,6 @@
 import { forwardRef, useEffect, useRef, useState } from "react";
-import type { ChangeEvent } from "react";
+import { AdminDateRangePicker } from "@/components/admin/ui/date-filter/AdminDateRangePicker";
+import type { AdminDateRangeValue } from "@/components/admin/ui/date-filter/AdminDateRangePicker";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import type { ReportFilterParams } from "@/types/admin";
@@ -37,10 +38,20 @@ export const ReportsTableFilters = forwardRef<
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchValue]);
 
-  const handleDateRangeChange = (e: ChangeEvent<HTMLSelectElement>) => {
+  const currentDateValue: AdminDateRangeValue = {
+    preset:
+      filters.datePreset ||
+      (filters.startDate || filters.endDate ? "custom" : "last7"),
+    startDate: filters.startDate,
+    endDate: filters.endDate,
+  };
+
+  const handleDateChange = (value: AdminDateRangeValue) => {
     onFiltersChange({
       ...filters,
-      dateRange: e.target.value as ReportFilterParams["dateRange"],
+      datePreset: value.preset,
+      startDate: value.startDate,
+      endDate: value.endDate,
       page: 1,
     });
   };
@@ -84,48 +95,12 @@ export const ReportsTableFilters = forwardRef<
         </div>
       </div>
 
-      <div className="relative flex items-center gap-2">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="20"
-          height="20"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className="text-neutral-50"
-        >
-          <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-          <path d="M16 2v4M8 2v4M3 10h18" />
-        </svg>
-        <select
-          value={filters.dateRange || "7"}
-          onChange={handleDateRangeChange}
-          className="hover:border-neutral-30 h-12 min-w-[140px] cursor-pointer appearance-none rounded-xl border border-[#e4e4e4] bg-white px-4 pr-10 text-sm text-[#3d3d3d] outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20"
-        >
-          <option value="7">Last 7 Days</option>
-          <option value="30">Last 30 Days</option>
-          <option value="90">Last 90 Days</option>
-          <option value="all">All Time</option>
-        </select>
-        <div className="pointer-events-none absolute right-4 flex items-center">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="text-neutral-50"
-          >
-            <path d="m6 9 6 6 6-6" />
-          </svg>
-        </div>
+      <div className="flex items-center gap-2">
+        <AdminDateRangePicker
+          value={currentDateValue}
+          onChange={handleDateChange}
+          triggerClassName="justify-between"
+        />
       </div>
     </div>
   );
