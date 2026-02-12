@@ -74,7 +74,7 @@ export default function AdminUserDetailPage() {
   return (
     <div className="min-h-screen bg-neutral-5 p-6">
       {/* Content Container */}
-      <div className="mx-auto max-w-[1400px]">
+      <div className="mx-auto max-w-[1500px]">
         {/* Header */}
         <UserDetailHeader />
 

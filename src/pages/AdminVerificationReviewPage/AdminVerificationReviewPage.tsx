@@ -194,7 +194,7 @@ export default function AdminVerificationReviewPage() {
     <>
       <div className="p-6">
         {/* Content Container */}
-        <div className="mx-auto max-w-[1400px] space-y-6">
+        <div className="mx-auto max-w-[1500px] space-y-6">
           {/* Header */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">

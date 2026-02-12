@@ -200,7 +200,7 @@ export default function AdminListingDetailPage() {
   return (
     <div className="min-h-screen bg-neutral-5">
       {/* Content Container */}
-      <div className="mx-auto max-w-[1400px] space-y-8 p-6">
+      <div className="mx-auto max-w-[1500px] space-y-8 p-6">
         {/* Header */}
         <ListingDetailHeader
           listing={listing}
