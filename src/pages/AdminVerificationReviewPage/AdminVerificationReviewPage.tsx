@@ -13,7 +13,10 @@ import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { FullScreenLoading } from "@/components/feedback/loading/full-screen-loading";
 import { AdminBackButton } from "@/components/admin";
-import { useAdminVerificationDetail } from "@/services/admin-verification.service";
+import {
+  useAdminVerificationDetail,
+  useRejectVerification,
+} from "@/services/admin-verification.service";
 import { ROUTES } from "@/constants/routes";
 import { ApproveVerificationModal, RejectionModal } from ".";
 
@@ -33,6 +36,24 @@ export default function AdminVerificationReviewPage() {
     isLoading,
     error,
   } = useAdminVerificationDetail(id || "");
+  const rejectMutation = useRejectVerification();
+
+  const handleRejectSubmit = async (payload: {
+    reasons: string[];
+    additionalNotes?: string;
+  }) => {
+    if (rejectMutation.isPending) return;
+    if (!id) {
+      throw new Error("Verification ID is required");
+    }
+
+    await rejectMutation.mutateAsync({
+      verificationId: id,
+      reasons: payload.reasons,
+      additionalNotes: payload.additionalNotes,
+    });
+  };
+
   const handleBack = () => {
     navigate(ROUTES.ADMIN_VERIFICATIONS);
   };
@@ -437,13 +458,19 @@ export default function AdminVerificationReviewPage() {
       <RejectionModal
         isOpen={isRejectionModalOpen}
         onClose={() => setIsRejectionModalOpen(false)}
-        verificationId={id || ""}
+        isSubmitting={rejectMutation.isPending}
+        onSubmit={handleRejectSubmit}
       />
 
       <ApproveVerificationModal
         isOpen={isApproveModalOpen}
         onClose={() => setIsApproveModalOpen(false)}
         verificationId={id || ""}
+      />
+      <FullScreenLoading
+        open={rejectMutation.isPending}
+        message="Rejecting verification request..."
+        ariaLabel="Rejecting verification request"
       />
     </>
   );

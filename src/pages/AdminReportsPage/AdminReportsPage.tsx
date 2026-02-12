@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Tabs } from "@/components/ui/Tabs";
 import { EmptyState } from "@/components/feedback/emptyState/EmptyState";
+import { FullScreenLoading } from "@/components/feedback/loading/full-screen-loading";
 import { ShowPagination } from "@/components/admin";
 import { ReportsTableFilters } from "./ReportsTableFilters";
 import { ListingReportsTable } from "./ListingReportsTable";
@@ -113,6 +114,10 @@ export default function AdminReportsPage() {
     setSearchParams(buildParams({ limit: itemsPerPage, page: 1 }));
   };
 
+  if (isLoading) {
+    return <FullScreenLoading message="Loading reports..." />;
+  }
+
   return (
     <div className="p-6">
       <div className="flex flex-col gap-4">
@@ -138,17 +143,7 @@ export default function AdminReportsPage() {
           </div>
 
           <div className="flex flex-col gap-2">
-            {isLoading ? (
-              <div className="flex flex-col items-center justify-center py-20">
-                <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-                <Text
-                  variant="body"
-                  className="text-neutral-50 mt-4 font-medium"
-                >
-                  Loading reports...
-                </Text>
-              </div>
-            ) : error ? (
+            {error ? (
               <div className="rounded-xl border border-error/10 bg-error/5 p-8 text-center">
                 <Text variant="bodyLg" className="font-semibold text-error">
                   Failed to load reports

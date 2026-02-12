@@ -6,17 +6,19 @@ import { Text } from "@/components/ui/text";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
-import { FullScreenLoading } from "@/components/feedback/loading/full-screen-loading";
-import { useRejectVerification } from "@/services/admin-verification.service";
 import { ROUTES } from "@/constants/routes";
 
 export interface RejectionModalProps {
   isOpen: boolean;
   onClose: () => void;
-  verificationId: string;
+  isSubmitting: boolean;
+  onSubmit: (payload: {
+    reasons: string[];
+    additionalNotes?: string;
+  }) => Promise<void>;
 }
 
-type ModalState = "form" | "loading" | "error" | "success";
+type ModalState = "form" | "error" | "success";
 
 const REJECTION_REASONS = [
   "Name does not match the profile",
@@ -112,25 +114,14 @@ function SuccessModalContent({ onDone }: SuccessModalContentProps) {
 export function RejectionModal({
   isOpen,
   onClose,
-  verificationId,
+  isSubmitting,
+  onSubmit,
 }: RejectionModalProps) {
   const navigate = useNavigate();
   const [modalState, setModalState] = useState<ModalState>("form");
   const [selectedReasons, setSelectedReasons] = useState<string[]>([]);
   const [additionalNotes, setAdditionalNotes] = useState("");
   const [showAdditionalNotes, setShowAdditionalNotes] = useState(false);
-
-  const rejectMutation = useRejectVerification({
-    onMutate: () => {
-      setModalState("loading");
-    },
-    onSuccess: () => {
-      setModalState("success");
-    },
-    onError: () => {
-      setModalState("error");
-    },
-  });
 
   // Reset form when modal closes
   useEffect(() => {
@@ -160,17 +151,19 @@ export function RejectionModal({
   };
 
   const handleConfirmReject = async () => {
-    if (selectedReasons.length === 0) {
+    if (selectedReasons.length === 0 || isSubmitting) {
       return;
     }
 
-    const reasons = [...selectedReasons];
-
-    await rejectMutation.mutateAsync({
-      verificationId,
-      reasons,
-      additionalNotes: showAdditionalNotes ? additionalNotes : undefined,
-    });
+    try {
+      await onSubmit({
+        reasons: [...selectedReasons],
+        additionalNotes: showAdditionalNotes ? additionalNotes : undefined,
+      });
+      setModalState("success");
+    } catch {
+      setModalState("error");
+    }
   };
 
   const handleRetry = () => {
@@ -192,19 +185,11 @@ export function RejectionModal({
   // Determine if dialog can be closed
   const canClose = modalState === "form" || modalState === "error";
 
-  // Show dialog for form, error, and success states only
-  const showDialog = isOpen && modalState !== "loading";
+  // Hide dialog while parent handles submission with full-screen loader
+  const showDialog = isOpen && !isSubmitting;
 
   return (
     <>
-      {/* Full-screen loading overlay */}
-      {modalState === "loading" && (
-        <FullScreenLoading
-          message="Waiting..."
-          ariaLabel="Processing rejection"
-        />
-      )}
-
       {/* Dialog for form, error, and success states */}
       <Dialog
         open={showDialog}
@@ -309,12 +294,10 @@ export function RejectionModal({
                 intent="danger"
                 size="lg"
                 onClick={handleConfirmReject}
-                disabled={
-                  selectedReasons.length === 0 || rejectMutation.isPending
-                }
+                disabled={selectedReasons.length === 0}
                 className="w-full"
               >
-                {rejectMutation.isPending ? "Rejecting..." : "Confirm Reject"}
+                Confirm Reject
               </Button>
               <Text variant="caption" className="text-neutral-50 text-center">
                 The user will be notified with the reason and your comments.

@@ -15,7 +15,6 @@ export interface RejectListingSummaryModalProps {
   comments: Array<{ group: string; comment: string }>;
   onConfirm: () => void;
   onBack: () => void;
-  isLoading?: boolean;
 }
 
 const reasonLabels: Record<RejectionReason, string> = {
@@ -41,14 +40,11 @@ export const RejectListingSummaryModal = forwardRef<
       comments,
       onConfirm,
       onBack,
-      isLoading = false,
     },
     ref,
   ) => {
     const handleClose = () => {
-      if (!isLoading) {
-        onOpenChange(false);
-      }
+      onOpenChange(false);
     };
 
     return (
@@ -75,8 +71,7 @@ export const RejectListingSummaryModal = forwardRef<
             </div>
             <button
               onClick={handleClose}
-              disabled={isLoading}
-              className="text-neutral hover:text-neutral-foreground disabled:opacity-50"
+              className="text-neutral hover:text-neutral-foreground"
               aria-label="Close"
             >
               <svg
@@ -176,17 +171,11 @@ export const RejectListingSummaryModal = forwardRef<
           <div className="space-y-3 pt-2">
             <Button
               onClick={onConfirm}
-              disabled={isLoading}
               className="h-12 w-full border-none bg-error text-white hover:bg-error/90"
             >
-              {isLoading ? "Rejecting..." : "Confirm Rejection"}
+              Confirm Rejection
             </Button>
-            <Button
-              onClick={onBack}
-              disabled={isLoading}
-              intent="outline"
-              className="h-12 w-full"
-            >
+            <Button onClick={onBack} intent="outline" className="h-12 w-full">
               Back to Edit
             </Button>
           </div>

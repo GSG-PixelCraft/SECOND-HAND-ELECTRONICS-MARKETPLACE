@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Tabs } from "@/components/ui/Tabs";
 import { EmptyState } from "@/components/feedback/emptyState/EmptyState";
+import { FullScreenLoading } from "@/components/feedback/loading/full-screen-loading";
 import { ListingsTableFilters, ShowPagination } from "@/components/admin";
 import { ListingsTable } from "./ListingsTable";
 import { useAdminListings } from "@/services/admin-listings.service";
@@ -116,6 +117,10 @@ export default function AdminListingsPage() {
     drafts: 0,
   };
 
+  if (isLoading) {
+    return <FullScreenLoading message="Loading listings..." />;
+  }
+
   return (
     <div className="p-6">
       <div className="flex flex-col gap-4">
@@ -144,17 +149,7 @@ export default function AdminListingsPage() {
 
           {/* Table */}
           <div className="flex flex-col gap-2">
-            {isLoading ? (
-              <div className="flex flex-col items-center justify-center py-20">
-                <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-                <Text
-                  variant="body"
-                  className="text-neutral-50 mt-4 font-medium"
-                >
-                  Loading listings...
-                </Text>
-              </div>
-            ) : error ? (
+            {error ? (
               <div className="rounded-xl border border-error/10 bg-error/5 p-8 text-center">
                 <Text variant="bodyLg" className="font-semibold text-error">
                   Failed to load listings

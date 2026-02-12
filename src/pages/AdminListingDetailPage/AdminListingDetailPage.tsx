@@ -45,6 +45,7 @@ export default function AdminListingDetailPage() {
 
   const handleApprove = async () => {
     if (!listing) return;
+    if (approveMutation.isPending) return;
 
     try {
       await approveMutation.mutateAsync(listing.id);
@@ -57,6 +58,7 @@ export default function AdminListingDetailPage() {
 
   const handleReject = async (reason: RejectionReason, comment: string) => {
     if (!listing) return;
+    if (rejectMutation.isPending) return;
 
     try {
       await rejectMutation.mutateAsync({
@@ -114,6 +116,7 @@ export default function AdminListingDetailPage() {
 
   const handleHide = async (reason: HideReason, comment?: string) => {
     if (!listing) return;
+    if (hideMutation.isPending) return;
 
     try {
       await hideMutation.mutateAsync({
@@ -130,6 +133,7 @@ export default function AdminListingDetailPage() {
 
   const handleUnhide = async () => {
     if (!listing) return;
+    if (unhideMutation.isPending) return;
 
     try {
       await unhideMutation.mutateAsync(listing.id);
@@ -191,6 +195,16 @@ export default function AdminListingDetailPage() {
     hideMutation.isPending ||
     unhideMutation.isPending;
 
+  const listingMutationLoadingMessage = approveMutation.isPending
+    ? "Approving listing..."
+    : rejectMutation.isPending
+      ? "Rejecting listing..."
+      : hideMutation.isPending
+        ? "Hiding listing..."
+        : unhideMutation.isPending
+          ? "Unhiding listing..."
+          : "Processing action...";
+
   return (
     <div className="min-h-screen bg-neutral-5">
       {/* Content Container */}
@@ -213,25 +227,23 @@ export default function AdminListingDetailPage() {
 
       {/* Modals */}
       <ApproveListingModal
-        open={approveModalOpen}
+        open={approveModalOpen && !approveMutation.isPending}
         onOpenChange={setApproveModalOpen}
         listingName={listing.name}
         onConfirm={handleApprove}
-        isLoading={approveMutation.isPending}
       />
 
       <RejectListingModal
-        open={rejectModalOpen}
+        open={rejectModalOpen && !rejectMutation.isPending}
         onOpenChange={setRejectModalOpen}
         listingName={listing.name}
         onConfirm={handleReject}
         onReviewAndSubmit={handleReviewAndSubmit}
-        isLoading={rejectMutation.isPending}
       />
 
       {rejectData && (
         <RejectListingSummaryModal
-          open={rejectSummaryModalOpen}
+          open={rejectSummaryModalOpen && !rejectMutation.isPending}
           onOpenChange={setRejectSummaryModalOpen}
           listingName={listing.name}
           primaryReason={rejectData.reason}
@@ -239,24 +251,25 @@ export default function AdminListingDetailPage() {
           comments={rejectData.comments}
           onConfirm={handleConfirmRejection}
           onBack={handleBackToRejectModal}
-          isLoading={rejectMutation.isPending}
         />
       )}
 
       <HideListingModal
-        open={hideModalOpen}
+        open={hideModalOpen && !hideMutation.isPending}
         onOpenChange={setHideModalOpen}
         listingName={listing.name}
         onConfirm={handleHide}
-        isLoading={hideMutation.isPending}
       />
 
       <UnhideListingModal
-        open={unhideModalOpen}
+        open={unhideModalOpen && !unhideMutation.isPending}
         onOpenChange={setUnhideModalOpen}
         listingName={listing.name}
         onConfirm={handleUnhide}
-        isLoading={unhideMutation.isPending}
+      />
+      <FullScreenLoading
+        open={isAnyMutationLoading}
+        message={listingMutationLoadingMessage}
       />
     </div>
   );

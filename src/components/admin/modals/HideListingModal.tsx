@@ -9,7 +9,6 @@ export interface HideListingModalProps {
   onOpenChange: (open: boolean) => void;
   listingName: string;
   onConfirm: (reason: HideReason, comment?: string) => void;
-  isLoading?: boolean;
 }
 
 const hideReasons: { value: HideReason; label: string }[] = [
@@ -25,7 +24,7 @@ const hideReasons: { value: HideReason; label: string }[] = [
 export const HideListingModal = forwardRef<
   HTMLDialogElement,
   HideListingModalProps
->(({ open, onOpenChange, listingName, onConfirm, isLoading = false }, ref) => {
+>(({ open, onOpenChange, listingName, onConfirm }, ref) => {
   const [selectedReason, setSelectedReason] = useState<HideReason | "">("");
   const [comment, setComment] = useState("");
 
@@ -38,14 +37,12 @@ export const HideListingModal = forwardRef<
   };
 
   const handleClose = () => {
-    if (!isLoading) {
-      onOpenChange(false);
-      // Reset form
-      setTimeout(() => {
-        setSelectedReason("");
-        setComment("");
-      }, 300);
-    }
+    onOpenChange(false);
+    // Reset form
+    setTimeout(() => {
+      setSelectedReason("");
+      setComment("");
+    }, 300);
   };
 
   return (
@@ -63,8 +60,7 @@ export const HideListingModal = forwardRef<
           </h2>
           <button
             onClick={handleClose}
-            disabled={isLoading}
-            className="absolute right-0 top-1/2 flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-md border border-neutral-20 text-neutral hover:text-neutral-foreground disabled:opacity-50"
+            className="absolute right-0 top-1/2 flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-md border border-neutral-20 text-neutral hover:text-neutral-foreground"
             aria-label="Close"
           >
             <X className="h-4 w-4" />
@@ -104,7 +100,6 @@ export const HideListingModal = forwardRef<
                     setSelectedReason(e.target.value as HideReason)
                   }
                   className="sr-only"
-                  disabled={isLoading}
                 />
                 <span>{reason.label}</span>
               </label>
@@ -120,8 +115,7 @@ export const HideListingModal = forwardRef<
               onChange={(e) => setComment(e.target.value.slice(0, 500))}
               placeholder="If there are any other reasons or notes, please add them here and clearly explain what the user should fix."
               rows={4}
-              disabled={isLoading}
-              className="min-h-[96px] w-full resize-none rounded-lg border border-neutral-20 px-3 py-2 text-sm text-neutral-foreground placeholder:text-neutral focus:outline-none focus:ring-2 focus:ring-primary-20 disabled:opacity-50"
+              className="min-h-[96px] w-full resize-none rounded-lg border border-neutral-20 px-3 py-2 text-sm text-neutral-foreground placeholder:text-neutral focus:outline-none focus:ring-2 focus:ring-primary-20"
             />
             <p className="text-right text-xs text-neutral">
               ({comment.length}/500)
@@ -133,10 +127,10 @@ export const HideListingModal = forwardRef<
         <div className="space-y-3">
           <Button
             onClick={handleConfirm}
-            disabled={!isValid || isLoading}
+            disabled={!isValid}
             className="h-12 w-full rounded-lg border-none bg-error text-sm font-medium text-white hover:bg-error/90"
           >
-            {isLoading ? "Hiding..." : "Confirm Hiding"}
+            Confirm Hiding
           </Button>
           <p className="text-center text-xs text-neutral">
             The user will be notified with the reason and your comments.

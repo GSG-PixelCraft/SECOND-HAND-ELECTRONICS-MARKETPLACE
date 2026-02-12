@@ -9,17 +9,14 @@ export interface UnhideListingModalProps {
   onOpenChange: (open: boolean) => void;
   listingName: string;
   onConfirm: () => void;
-  isLoading?: boolean;
 }
 
 export const UnhideListingModal = forwardRef<
   HTMLDialogElement,
   UnhideListingModalProps
->(({ open, onOpenChange, listingName, onConfirm, isLoading = false }, ref) => {
+>(({ open, onOpenChange, listingName, onConfirm }, ref) => {
   const handleClose = () => {
-    if (!isLoading) {
-      onOpenChange(false);
-    }
+    onOpenChange(false);
   };
 
   return (
@@ -34,8 +31,7 @@ export const UnhideListingModal = forwardRef<
           </div>
           <button
             onClick={handleClose}
-            disabled={isLoading}
-            className="text-neutral hover:text-neutral-foreground disabled:opacity-50"
+            className="text-neutral hover:text-neutral-foreground"
             aria-label="Close"
           >
             <svg
@@ -76,15 +72,13 @@ export const UnhideListingModal = forwardRef<
         <div className="space-y-3 pt-2">
           <Button
             onClick={onConfirm}
-            disabled={isLoading}
             className="h-12 w-full border-none bg-error text-white hover:bg-error/90"
           >
-            {isLoading ? "Unhiding..." : "Unhide"}
+            Unhide
           </Button>
           <Button
             intent="outline"
             onClick={handleClose}
-            disabled={isLoading}
             className="h-12 w-full"
           >
             Cancel

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Plus } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -41,8 +41,6 @@ export default function EditCategoryPage() {
   const deleteAttributeMutation = useDeleteAdminCategoryAttribute();
   const { data, isLoading, error } = useAdminCategoryDetail(id);
 
-  const timerRef = useRef<number | null>(null);
-
   const [categoryName, setCategoryName] = useState("");
   const [categoryStatus, setCategoryStatus] = useState(false);
   const [iconUrl, setIconUrl] = useState<string | undefined>(undefined);
@@ -63,28 +61,19 @@ export default function EditCategoryPage() {
 
   useEffect(() => {
     return () => {
-      if (timerRef.current) {
-        window.clearTimeout(timerRef.current);
-      }
       if (iconUrl?.startsWith("blob:")) {
         URL.revokeObjectURL(iconUrl);
       }
     };
   }, [iconUrl]);
 
-  const runWithLoader = (action: () => Promise<void> | void) => {
-    if (timerRef.current) {
-      window.clearTimeout(timerRef.current);
-    }
-
+  const runWithLoader = async (action: () => Promise<void> | void) => {
     setLoadingOpen(true);
-    timerRef.current = window.setTimeout(async () => {
-      try {
-        await action();
-      } finally {
-        setLoadingOpen(false);
-      }
-    }, 800);
+    try {
+      await action();
+    } finally {
+      setLoadingOpen(false);
+    }
   };
 
   const handleDeleteAttributeConfirm = () => {
@@ -96,7 +85,7 @@ export default function EditCategoryPage() {
 
     setAttributeToDeleteIndex(null);
 
-    runWithLoader(async () => {
+    void runWithLoader(async () => {
       if (!isTemporaryAttribute(targetAttribute.id) && id) {
         await deleteAttributeMutation.mutateAsync({
           categoryId: id,
@@ -124,7 +113,7 @@ export default function EditCategoryPage() {
       attributes,
     );
 
-    runWithLoader(async () => {
+    void runWithLoader(async () => {
       await updateCategoryMutation.mutateAsync({ id, payload });
       setSuccessState({
         title: "Category Updated Successfully",

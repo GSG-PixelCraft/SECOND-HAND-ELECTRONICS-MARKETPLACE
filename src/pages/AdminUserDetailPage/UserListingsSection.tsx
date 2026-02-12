@@ -4,9 +4,9 @@ import { useNavigate } from "react-router-dom";
 import { Tabs } from "@/components/ui/Tabs";
 import { Input } from "@/components/ui/input";
 import { Span } from "@/components/ui/span";
-import { Text } from "@/components/ui/text";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { EmptyState } from "@/components/feedback/emptyState/EmptyState";
+import { FullScreenLoading } from "@/components/feedback/loading/full-screen-loading";
 import { ShowPagination } from "@/components/admin";
 import { useUserListings } from "@/services/admin-users.service";
 
@@ -188,6 +188,10 @@ export const UserListingsSection = forwardRef<
     ? "Search by action type, product name, or keyword..."
     : "Search listings by title, category, status...";
 
+  if (isListingsTab && isLoading) {
+    return <FullScreenLoading message="Loading listings..." />;
+  }
+
   return (
     <div
       ref={ref}
@@ -282,14 +286,7 @@ export const UserListingsSection = forwardRef<
 
       {/* Table */}
       {isListingsTab ? (
-        isLoading ? (
-          <div className="flex flex-col items-center justify-center py-20">
-            <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-            <Text variant="body" className="text-neutral-50 mt-4 font-medium">
-              Loading listings...
-            </Text>
-          </div>
-        ) : data && data.listings.length === 0 ? (
+        data && data.listings.length === 0 ? (
           <div className="flex justify-center py-20">
             <EmptyState
               title="No listings found"

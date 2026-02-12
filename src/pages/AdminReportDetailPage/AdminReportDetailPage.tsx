@@ -1288,7 +1288,6 @@ export default function AdminReportDetailPage() {
   const [dismissListingSuccessOpen, setDismissListingSuccessOpen] =
     useState(false);
   const [loadingOpen, setLoadingOpen] = useState(false);
-  const loadingTimerRef = useRef<number | null>(null);
 
   const { data, isLoading, error } = useAdminReportDetail(
     reportType || "listing",
@@ -1308,23 +1307,13 @@ export default function AdminReportDetailPage() {
       ? report.listing.seller.id
       : report?.reportedUser?.id;
 
-  useEffect(() => {
-    return () => {
-      if (loadingTimerRef.current) {
-        window.clearTimeout(loadingTimerRef.current);
-      }
-    };
-  }, []);
-
-  const startLoadingThen = (action: () => void) => {
-    if (loadingTimerRef.current) {
-      window.clearTimeout(loadingTimerRef.current);
-    }
+  const startLoadingThen = async (action: () => void | Promise<void>) => {
     setLoadingOpen(true);
-    loadingTimerRef.current = window.setTimeout(() => {
+    try {
+      await action();
+    } finally {
       setLoadingOpen(false);
-      action();
-    }, 800);
+    }
   };
 
   if (!reportType || !id) {
@@ -1479,7 +1468,7 @@ export default function AdminReportDetailPage() {
         onConfirm={(reason) => {
           console.log("Warn user", targetUserId, reason);
           setWarnModalOpen(false);
-          startLoadingThen(() => setWarnSuccessOpen(true));
+          void startLoadingThen(() => setWarnSuccessOpen(true));
         }}
       />
       <WarnUserSuccessDialog
@@ -1492,7 +1481,7 @@ export default function AdminReportDetailPage() {
         onConfirm={() => {
           console.log("Suspend user", targetUserId);
           setSuspendConfirmOpen(false);
-          startLoadingThen(() => setSuspendSuccessOpen(true));
+          void startLoadingThen(() => setSuspendSuccessOpen(true));
         }}
         title="Suspend user"
         description="Are you sure you want to suspend this user? The user will be temporarily suspended and will not be able to log in or use their account. You can reactivate their account at any time."
@@ -1511,7 +1500,7 @@ export default function AdminReportDetailPage() {
         onConfirm={() => {
           console.log("Ban user", targetUserId);
           setBanConfirmOpen(false);
-          startLoadingThen(() => setBanSuccessOpen(true));
+          void startLoadingThen(() => setBanSuccessOpen(true));
         }}
         title="Ban user"
         description="Are you sure you want to permanently ban this user? The user will be unable to log in or access their account."
@@ -1530,7 +1519,7 @@ export default function AdminReportDetailPage() {
         onConfirm={() => {
           console.log("Dismiss report", report.id);
           setDismissConfirmOpen(false);
-          startLoadingThen(() => setDismissSuccessOpen(true));
+          void startLoadingThen(() => setDismissSuccessOpen(true));
         }}
         title="Dismiss report"
         description="This report will be marked as resolved and no action will be taken."
@@ -1550,7 +1539,7 @@ export default function AdminReportDetailPage() {
         onConfirm={(reason: HideReason, comment?: string) => {
           console.log("Hide listing", report.id, reason, comment);
           setHideListingOpen(false);
-          startLoadingThen(() => setHideListingSuccessOpen(true));
+          void startLoadingThen(() => setHideListingSuccessOpen(true));
         }}
       />
       <ReportActionSuccessDialog
@@ -1566,7 +1555,7 @@ export default function AdminReportDetailPage() {
         onConfirm={(reason, comment) => {
           console.log("Remove listing", report.id, reason, comment);
           setRemoveListingConfirmOpen(false);
-          startLoadingThen(() => setRemoveListingSuccessOpen(true));
+          void startLoadingThen(() => setRemoveListingSuccessOpen(true));
         }}
       />
       <ReportActionSuccessDialog
@@ -1581,7 +1570,7 @@ export default function AdminReportDetailPage() {
         onConfirm={(message) => {
           console.log("Warn seller", targetUserId, message);
           setWarnSellerOpen(false);
-          startLoadingThen(() => setWarnSellerSuccessOpen(true));
+          void startLoadingThen(() => setWarnSellerSuccessOpen(true));
         }}
       />
       <WarnUserSuccessDialog
@@ -1594,7 +1583,7 @@ export default function AdminReportDetailPage() {
         onConfirm={() => {
           console.log("Dismiss listing report", report.id);
           setDismissListingConfirmOpen(false);
-          startLoadingThen(() => setDismissListingSuccessOpen(true));
+          void startLoadingThen(() => setDismissListingSuccessOpen(true));
         }}
       />
       <ReportActionSuccessDialog

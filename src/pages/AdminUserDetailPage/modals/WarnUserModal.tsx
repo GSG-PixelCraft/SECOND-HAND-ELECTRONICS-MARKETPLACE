@@ -7,11 +7,10 @@ export interface WarnUserModalProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: (reason: string) => void;
-  isLoading?: boolean;
 }
 
 export const WarnUserModal = forwardRef<HTMLDivElement, WarnUserModalProps>(
-  ({ isOpen, onClose, onConfirm, isLoading }, ref) => {
+  ({ isOpen, onClose, onConfirm }, ref) => {
     const [reason, setReason] = useState("");
     const MAX_LENGTH = 500;
 
@@ -93,15 +92,14 @@ export const WarnUserModal = forwardRef<HTMLDivElement, WarnUserModalProps>(
               <Button
                 className="h-12 w-full rounded-xl border-none bg-[#EF4444] text-base font-medium text-white hover:bg-[#DC2626]"
                 onClick={handleConfirm}
-                disabled={!reason.trim() || isLoading}
+                disabled={!reason.trim()}
               >
-                {isLoading ? "Sending..." : "Send Warning"}
+                Send Warning
               </Button>
               <Button
                 intent="outline"
                 className="text-neutral-70 h-12 w-full rounded-xl border border-neutral-20 text-base font-medium hover:bg-neutral-10"
                 onClick={onClose}
-                disabled={isLoading}
               >
                 Cancel
               </Button>

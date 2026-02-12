@@ -8,11 +8,10 @@ export interface BanUserModalProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: (reason: string) => void;
-  isLoading?: boolean;
 }
 
 export const BanUserModal = forwardRef<HTMLDivElement, BanUserModalProps>(
-  ({ isOpen, onClose, onConfirm, isLoading }, ref) => {
+  ({ isOpen, onClose, onConfirm }, ref) => {
     const [reason, setReason] = useState("");
 
     // Lock body scroll when modal is open
@@ -80,7 +79,6 @@ export const BanUserModal = forwardRef<HTMLDivElement, BanUserModalProps>(
                 intent="outline"
                 className="h-11 flex-1 rounded-xl"
                 onClick={onClose}
-                disabled={isLoading}
               >
                 Cancel
               </Button>
@@ -88,9 +86,9 @@ export const BanUserModal = forwardRef<HTMLDivElement, BanUserModalProps>(
                 intent="danger"
                 className="h-11 flex-1 rounded-xl border-none bg-error text-white hover:bg-error/90"
                 onClick={handleConfirm}
-                disabled={!reason.trim() || isLoading}
+                disabled={!reason.trim()}
               >
-                {isLoading ? "Banning..." : "Ban User"}
+                Ban User
               </Button>
             </div>
           </div>

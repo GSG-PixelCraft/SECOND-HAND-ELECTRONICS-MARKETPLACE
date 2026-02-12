@@ -1,6 +1,7 @@
 import { forwardRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
+import { FullScreenLoading } from "@/components/feedback/loading/full-screen-loading";
 import {
   useWarnUser,
   useSuspendUser,
@@ -30,6 +31,7 @@ export const ModerationActionsPanel = forwardRef<
   const banMutation = useBanUser();
 
   const handleWarn = async (reason: string) => {
+    if (warnMutation.isPending) return;
     try {
       await warnMutation.mutateAsync({ id: userId, payload: { reason } });
       setWarnModalOpen(false);
@@ -40,6 +42,7 @@ export const ModerationActionsPanel = forwardRef<
   };
 
   const handleSuspend = async (reason: string, duration?: number) => {
+    if (suspendMutation.isPending) return;
     try {
       await suspendMutation.mutateAsync({
         id: userId,
@@ -53,6 +56,7 @@ export const ModerationActionsPanel = forwardRef<
   };
 
   const handleBan = async (reason: string) => {
+    if (banMutation.isPending) return;
     try {
       await banMutation.mutateAsync({ id: userId, payload: { reason } });
       setBanModalOpen(false);
@@ -61,6 +65,19 @@ export const ModerationActionsPanel = forwardRef<
       console.error("Failed to ban user:", error);
     }
   };
+
+  const isAnyModerationLoading =
+    warnMutation.isPending ||
+    suspendMutation.isPending ||
+    banMutation.isPending;
+
+  const moderationLoadingMessage = warnMutation.isPending
+    ? "Sending warning..."
+    : suspendMutation.isPending
+      ? "Suspending account..."
+      : banMutation.isPending
+        ? "Banning user..."
+        : "Processing action...";
 
   return (
     <>
@@ -116,22 +133,23 @@ export const ModerationActionsPanel = forwardRef<
 
       {/* Modals */}
       <WarnUserModal
-        isOpen={warnModalOpen}
+        isOpen={warnModalOpen && !warnMutation.isPending}
         onClose={() => setWarnModalOpen(false)}
         onConfirm={handleWarn}
-        isLoading={warnMutation.isPending}
       />
       <SuspendUserModal
-        isOpen={suspendModalOpen}
+        isOpen={suspendModalOpen && !suspendMutation.isPending}
         onClose={() => setSuspendModalOpen(false)}
         onConfirm={handleSuspend}
-        isLoading={suspendMutation.isPending}
       />
       <BanUserModal
-        isOpen={banModalOpen}
+        isOpen={banModalOpen && !banMutation.isPending}
         onClose={() => setBanModalOpen(false)}
         onConfirm={handleBan}
-        isLoading={banMutation.isPending}
+      />
+      <FullScreenLoading
+        open={isAnyModerationLoading}
+        message={moderationLoadingMessage}
       />
     </>
   );

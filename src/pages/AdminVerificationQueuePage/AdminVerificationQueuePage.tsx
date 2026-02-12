@@ -4,6 +4,7 @@ import { Tabs } from "@/components/ui/Tabs";
 import { Text } from "@/components/ui/text";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/feedback/emptyState/EmptyState";
+import { FullScreenLoading } from "@/components/feedback/loading/full-screen-loading";
 import { ShowPagination } from "@/components/admin";
 import { VerificationsTable } from "./VerificationsTable";
 import { VerificationsTableFilters } from "./VerificationsTableFilters";
@@ -121,6 +122,10 @@ export default function AdminVerificationQueuePage() {
     rejected: data?.statusCounts.rejected || 0,
   };
 
+  if (isLoading) {
+    return <FullScreenLoading message="Loading verifications..." />;
+  }
+
   return (
     <div className="p-6">
       <div className="flex flex-col gap-4">
@@ -150,17 +155,7 @@ export default function AdminVerificationQueuePage() {
 
           {/* Table */}
           <div className="flex flex-col gap-2">
-            {isLoading ? (
-              <div className="flex flex-col items-center justify-center py-20">
-                <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-                <Text
-                  variant="body"
-                  className="text-neutral-50 mt-4 font-medium"
-                >
-                  Loading verifications...
-                </Text>
-              </div>
-            ) : error ? (
+            {error ? (
               <div className="rounded-xl border border-error/10 bg-error/5 p-8 text-center">
                 <Text variant="bodyLg" className="font-semibold text-error">
                   Failed to load verifications

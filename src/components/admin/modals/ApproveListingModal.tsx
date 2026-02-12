@@ -8,17 +8,14 @@ export interface ApproveListingModalProps {
   onOpenChange: (open: boolean) => void;
   listingName: string;
   onConfirm: () => void;
-  isLoading?: boolean;
 }
 
 export const ApproveListingModal = forwardRef<
   HTMLDialogElement,
   ApproveListingModalProps
->(({ open, onOpenChange, listingName, onConfirm, isLoading = false }, ref) => {
+>(({ open, onOpenChange, listingName, onConfirm }, ref) => {
   const handleClose = () => {
-    if (!isLoading) {
-      onOpenChange(false);
-    }
+    onOpenChange(false);
   };
 
   return (
@@ -36,8 +33,7 @@ export const ApproveListingModal = forwardRef<
           </h2>
           <button
             onClick={handleClose}
-            disabled={isLoading}
-            className="absolute right-0 top-1/2 flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-md border border-neutral-20 text-neutral hover:text-neutral-foreground disabled:opacity-50"
+            className="absolute right-0 top-1/2 flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-md border border-neutral-20 text-neutral hover:text-neutral-foreground"
             aria-label="Close"
           >
             <X className="h-4 w-4" />
@@ -83,17 +79,15 @@ export const ApproveListingModal = forwardRef<
           <Button
             intent="outline"
             onClick={handleClose}
-            disabled={isLoading}
             className="h-10 min-w-[120px] rounded-lg text-sm font-medium"
           >
             Cancel
           </Button>
           <Button
             onClick={onConfirm}
-            disabled={isLoading}
             className="h-10 min-w-[160px] rounded-lg border-none bg-success text-sm font-semibold text-white hover:bg-success/90"
           >
-            {isLoading ? "Approving..." : "Approve Listing"}
+            Approve Listing
           </Button>
         </div>
       </div>

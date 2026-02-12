@@ -7,13 +7,12 @@ export interface SuspendUserModalProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: (reason: string, duration?: number) => void;
-  isLoading?: boolean;
 }
 
 export const SuspendUserModal = forwardRef<
   HTMLDivElement,
   SuspendUserModalProps
->(({ isOpen, onClose, onConfirm, isLoading }, ref) => {
+>(({ isOpen, onClose, onConfirm }, ref) => {
   // Lock body scroll when modal is open
   useEffect(() => {
     if (isOpen) {
@@ -68,15 +67,13 @@ export const SuspendUserModal = forwardRef<
             <Button
               className="h-12 w-full rounded-xl border-none bg-[#EF4444] text-base font-medium text-white hover:bg-[#DC2626]"
               onClick={handleConfirm}
-              disabled={isLoading}
             >
-              {isLoading ? "Suspending..." : "Suspend User"}
+              Suspend User
             </Button>
             <Button
               intent="outline"
               className="text-neutral-70 h-12 w-full rounded-xl border border-neutral-20 text-base font-medium hover:bg-neutral-10"
               onClick={onClose}
-              disabled={isLoading}
             >
               Cancel
             </Button>

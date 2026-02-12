@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
@@ -23,7 +23,6 @@ import { NoCategoriesState } from "./NoCategoriesState";
 export default function AdminCategoriesPage() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const timerRef = useRef<number | null>(null);
 
   const initialFilters = useMemo<CategoryFilterParams>(() => {
     const page = Math.max(1, parseInt(searchParams.get("page") || "1", 10));
@@ -41,14 +40,6 @@ export default function AdminCategoriesPage() {
   const { data, isLoading, error } = useAdminCategories(filters);
   const toggleStatusMutation = useToggleAdminCategoryStatus();
   const deleteCategoryMutation = useDeleteAdminCategory();
-
-  useEffect(() => {
-    return () => {
-      if (timerRef.current) {
-        window.clearTimeout(timerRef.current);
-      }
-    };
-  }, []);
 
   const buildParams = (nextFilters: CategoryFilterParams) => {
     const nextPage = nextFilters.page || 1;
@@ -92,37 +83,35 @@ export default function AdminCategoriesPage() {
     }
   };
 
-  const handleDeleteConfirm = () => {
+  const handleDeleteConfirm = async () => {
     if (!categoryToDelete) return;
     const currentDelete = categoryToDelete;
     setCategoryToDelete(null);
     setLoadingOverlayOpen(true);
 
-    if (timerRef.current) {
-      window.clearTimeout(timerRef.current);
-    }
+    try {
+      await deleteCategoryMutation.mutateAsync(currentDelete.id);
 
-    timerRef.current = window.setTimeout(async () => {
-      try {
-        await deleteCategoryMutation.mutateAsync(currentDelete.id);
+      const nextTotal = Math.max((data?.total || 1) - 1, 0);
+      const nextLimit = filters.limit || 10;
+      const nextTotalPages = Math.max(1, Math.ceil(nextTotal / nextLimit));
+      const currentPage = filters.page || 1;
 
-        const nextTotal = Math.max((data?.total || 1) - 1, 0);
-        const nextLimit = filters.limit || 10;
-        const nextTotalPages = Math.max(1, Math.ceil(nextTotal / nextLimit));
-        const currentPage = filters.page || 1;
-
-        if (currentPage > nextTotalPages) {
-          applyFilters({ ...filters, page: nextTotalPages });
-        }
-
-        setDeleteSuccessOpen(true);
-      } catch (mutationError) {
-        console.error("Failed to delete category", mutationError);
-      } finally {
-        setLoadingOverlayOpen(false);
+      if (currentPage > nextTotalPages) {
+        applyFilters({ ...filters, page: nextTotalPages });
       }
-    }, 800);
+
+      setDeleteSuccessOpen(true);
+    } catch (mutationError) {
+      console.error("Failed to delete category", mutationError);
+    } finally {
+      setLoadingOverlayOpen(false);
+    }
   };
+
+  if (isLoading) {
+    return <FullScreenLoading message="Loading categories..." />;
+  }
 
   const hasNoCategories = Boolean(
     data && data.total === 0 && !(filters.search && filters.search.trim()),
@@ -144,14 +133,7 @@ export default function AdminCategoriesPage() {
         </div>
 
         <div className="flex flex-col gap-6 rounded-xl bg-white p-6 shadow-[0px_1px_4px_0px_rgba(0,0,0,0.1)]">
-          {isLoading && !data ? (
-            <div className="flex min-h-[70vh] flex-col items-center justify-center">
-              <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-              <Text variant="body" className="text-neutral-50 mt-4 font-medium">
-                Loading categories...
-              </Text>
-            </div>
-          ) : error ? (
+          {error ? (
             <div className="rounded-xl border border-error/10 bg-error/5 p-8 text-center">
               <Text variant="bodyLg" className="font-semibold text-error">
                 Failed to load categories
