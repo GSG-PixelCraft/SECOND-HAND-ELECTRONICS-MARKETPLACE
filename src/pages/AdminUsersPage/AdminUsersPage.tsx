@@ -116,78 +116,83 @@ export default function AdminUsersPage() {
 
   return (
     <div className="p-6">
-      {/* Main Content Card */}
-      <h1 className="text-[22px] font-semibold text-[#101010]">
-        Users Management
-      </h1>
-      <div className="flex flex-col gap-6 rounded-xl bg-white p-6 shadow-[0px_1px_4px_0px_rgba(0,0,0,0.1)]">
-        {/* Tabs Navigation */}
-        <div className="border-b border-[#e4e4e4]">
-          <Tabs<UserTabValue>
-            value={activeTab}
-            onChange={handleTabChange}
-            counts={tabCounts}
-            tabs={USER_TABS}
-          />
-        </div>
+      <div className="flex flex-col gap-4">
+        <h1 className="text-[22px] font-semibold text-[#101010]">
+          Users Management
+        </h1>
 
-        {/* Search & Date Filter */}
-        <div className="flex items-center justify-between gap-4">
-          <UsersTableFilters
-            filters={filters}
-            onFiltersChange={handleFiltersChange}
-          />
-        </div>
+        <div className="flex flex-col gap-6 rounded-xl bg-white p-6 shadow-[0px_1px_4px_0px_rgba(0,0,0,0.1)]">
+          {/* Tabs Navigation */}
+          <div className="border-b border-[#e4e4e4]">
+            <Tabs<UserTabValue>
+              value={activeTab}
+              onChange={handleTabChange}
+              counts={tabCounts}
+              tabs={USER_TABS}
+            />
+          </div>
 
-        {/* Table */}
-        <div className="flex flex-col gap-2">
-          {isLoading ? (
-            <div className="flex flex-col items-center justify-center py-20">
-              <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-              <Text variant="body" className="text-neutral-50 mt-4 font-medium">
-                Loading users...
-              </Text>
-            </div>
-          ) : error ? (
-            <div className="rounded-xl border border-error/10 bg-error/5 p-8 text-center">
-              <Text variant="bodyLg" className="font-semibold text-error">
-                Failed to load users
-              </Text>
-              <Text variant="caption" className="mt-2 block text-error/70">
-                {error.message ||
-                  "An unexpected error occurred while fetching users."}
-              </Text>
-              <Button
-                intent="outline"
-                size="sm"
-                className="mt-6"
-                onClick={() => window.location.reload()}
-              >
-                Retry Connection
-              </Button>
-            </div>
-          ) : data && data.users.length === 0 ? (
-            <div className="flex justify-center py-20">
-              <EmptyState
-                title="No users found"
-                description="We couldn't find any users matching your current filter criteria."
-              />
-            </div>
-          ) : (
-            <>
-              <UsersTable users={data?.users || []} />
+          {/* Search & Date Filter */}
+          <div className="flex items-center justify-between gap-4">
+            <UsersTableFilters
+              filters={filters}
+              onFiltersChange={handleFiltersChange}
+            />
+          </div>
 
-              {/* Pagination */}
-              <ShowPagination
-                currentPage={data?.pagination.page || 1}
-                totalPages={data?.pagination.totalPages || 1}
-                totalItems={data?.pagination.total || 0}
-                pageSize={data?.pagination.limit || 10}
-                onPageChange={handlePageChange}
-                onPageSizeChange={handleItemsPerPageChange}
-              />
-            </>
-          )}
+          {/* Table */}
+          <div className="flex flex-col gap-2">
+            {isLoading ? (
+              <div className="flex flex-col items-center justify-center py-20">
+                <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+                <Text
+                  variant="body"
+                  className="text-neutral-50 mt-4 font-medium"
+                >
+                  Loading users...
+                </Text>
+              </div>
+            ) : error ? (
+              <div className="rounded-xl border border-error/10 bg-error/5 p-8 text-center">
+                <Text variant="bodyLg" className="font-semibold text-error">
+                  Failed to load users
+                </Text>
+                <Text variant="caption" className="mt-2 block text-error/70">
+                  {error.message ||
+                    "An unexpected error occurred while fetching users."}
+                </Text>
+                <Button
+                  intent="outline"
+                  size="sm"
+                  className="mt-6"
+                  onClick={() => window.location.reload()}
+                >
+                  Retry Connection
+                </Button>
+              </div>
+            ) : data && data.users.length === 0 ? (
+              <div className="flex justify-center py-20">
+                <EmptyState
+                  title="No users found"
+                  description="We couldn't find any users matching your current filter criteria."
+                />
+              </div>
+            ) : (
+              <>
+                <UsersTable users={data?.users || []} />
+
+                {/* Pagination */}
+                <ShowPagination
+                  currentPage={data?.pagination.page || 1}
+                  totalPages={data?.pagination.totalPages || 1}
+                  totalItems={data?.pagination.total || 0}
+                  pageSize={data?.pagination.limit || 10}
+                  onPageChange={handlePageChange}
+                  onPageSizeChange={handleItemsPerPageChange}
+                />
+              </>
+            )}
+          </div>
         </div>
       </div>
     </div>

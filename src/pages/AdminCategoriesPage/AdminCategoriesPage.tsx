@@ -125,10 +125,10 @@ export default function AdminCategoriesPage() {
 
   return (
     <div className="p-6">
-      <div className="mx-auto max-w-[1500px]">
-        <div className="mb-6 flex items-center justify-between gap-4">
+      <div className="flex flex-col gap-4">
+        <div className="flex items-center justify-between">
           <h1 className="text-[22px] font-semibold text-[#101010]">
-            Categories
+            Categories Management
           </h1>
           <Button
             onClick={handleAddCategory}
@@ -138,83 +138,90 @@ export default function AdminCategoriesPage() {
           </Button>
         </div>
 
-        {isLoading && !data ? (
-          <div className="flex min-h-[70vh] flex-col items-center justify-center">
-            <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-            <Text variant="body" className="text-neutral-50 mt-4 font-medium">
-              Loading categories...
-            </Text>
-          </div>
-        ) : error ? (
-          <div className="rounded-xl border border-error/10 bg-error/5 p-8 text-center">
-            <Text variant="bodyLg" className="font-semibold text-error">
-              Failed to load categories
-            </Text>
-            <Text variant="caption" className="mt-2 block text-error/70">
-              {error.message ||
-                "An unexpected error occurred while fetching categories."}
-            </Text>
-            <Button
-              intent="outline"
-              size="sm"
-              className="mt-6"
-              onClick={() => window.location.reload()}
-            >
-              Retry Connection
-            </Button>
-          </div>
-        ) : hasNoCategories ? (
-          <NoCategoriesState onAddCategory={handleAddCategory} />
-        ) : (
-          <div className="rounded-xl bg-white p-6 shadow-[0px_1px_4px_0px_rgba(0,0,0,0.1)]">
-            <CategoriesTableFilters
-              filters={filters}
-              onFiltersChange={(nextFilters) => applyFilters(nextFilters)}
-            />
-
-            <div className="mt-6">
-              {(data?.items.length || 0) > 0 ? (
-                <>
-                  <CategoriesTable
-                    categories={data?.items || []}
-                    onToggleStatus={handleToggleStatus}
-                    onEdit={handleEditCategory}
-                    onDelete={setCategoryToDelete}
-                    statusUpdating={toggleStatusMutation.isPending}
-                  />
-                  <ShowPagination
-                    currentPage={data?.page || 1}
-                    totalPages={data?.totalPages || 1}
-                    totalItems={data?.total || 0}
-                    pageSize={data?.limit || 10}
-                    onPageChange={(page) => applyFilters({ ...filters, page })}
-                    onPageSizeChange={(limit) =>
-                      applyFilters({ ...filters, page: 1, limit })
-                    }
-                  />
-                </>
-              ) : (
-                <div className="flex h-[320px] items-center justify-center rounded-xl border border-dashed border-neutral-20">
-                  <Text variant="body" className="text-neutral-50 font-medium">
-                    No categories match your search.
-                  </Text>
-                </div>
-              )}
+        <div className="flex flex-col gap-6 rounded-xl bg-white p-6 shadow-[0px_1px_4px_0px_rgba(0,0,0,0.1)]">
+          {isLoading && !data ? (
+            <div className="flex min-h-[70vh] flex-col items-center justify-center">
+              <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+              <Text variant="body" className="text-neutral-50 mt-4 font-medium">
+                Loading categories...
+              </Text>
             </div>
-          </div>
-        )}
-      </div>
+          ) : error ? (
+            <div className="rounded-xl border border-error/10 bg-error/5 p-8 text-center">
+              <Text variant="bodyLg" className="font-semibold text-error">
+                Failed to load categories
+              </Text>
+              <Text variant="caption" className="mt-2 block text-error/70">
+                {error.message ||
+                  "An unexpected error occurred while fetching categories."}
+              </Text>
+              <Button
+                intent="outline"
+                size="sm"
+                className="mt-6"
+                onClick={() => window.location.reload()}
+              >
+                Retry Connection
+              </Button>
+            </div>
+          ) : hasNoCategories ? (
+            <NoCategoriesState onAddCategory={handleAddCategory} />
+          ) : (
+            <div className="flex flex-col gap-6">
+              <CategoriesTableFilters
+                filters={filters}
+                onFiltersChange={(nextFilters) => applyFilters(nextFilters)}
+              />
 
-      <DeleteCategoryDialog
-        open={Boolean(categoryToDelete)}
-        onClose={() => setCategoryToDelete(null)}
-        onConfirm={handleDeleteConfirm}
-      />
-      <DeleteCategorySuccessDialog
-        open={deleteSuccessOpen}
-        onClose={() => setDeleteSuccessOpen(false)}
-      />
-      <FullScreenLoadingOverlay open={loadingOverlayOpen} />
+              <div className="flex flex-col gap-2">
+                {(data?.items.length || 0) > 0 ? (
+                  <>
+                    <CategoriesTable
+                      categories={data?.items || []}
+                      onToggleStatus={handleToggleStatus}
+                      onEdit={handleEditCategory}
+                      onDelete={setCategoryToDelete}
+                      statusUpdating={toggleStatusMutation.isPending}
+                    />
+                    <ShowPagination
+                      currentPage={data?.page || 1}
+                      totalPages={data?.totalPages || 1}
+                      totalItems={data?.total || 0}
+                      pageSize={data?.limit || 10}
+                      onPageChange={(page) =>
+                        applyFilters({ ...filters, page })
+                      }
+                      onPageSizeChange={(limit) =>
+                        applyFilters({ ...filters, page: 1, limit })
+                      }
+                    />
+                  </>
+                ) : (
+                  <div className="flex h-[320px] items-center justify-center rounded-xl border border-dashed border-neutral-20">
+                    <Text
+                      variant="body"
+                      className="text-neutral-50 font-medium"
+                    >
+                      No categories match your search.
+                    </Text>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+
+        <DeleteCategoryDialog
+          open={Boolean(categoryToDelete)}
+          onClose={() => setCategoryToDelete(null)}
+          onConfirm={handleDeleteConfirm}
+        />
+        <DeleteCategorySuccessDialog
+          open={deleteSuccessOpen}
+          onClose={() => setDeleteSuccessOpen(false)}
+        />
+        <FullScreenLoadingOverlay open={loadingOverlayOpen} />
+      </div>
     </div>
   );
 }
