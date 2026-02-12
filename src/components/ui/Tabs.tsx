@@ -7,13 +7,16 @@ export type TabValue =
   | "rejected"
   | "sold"
   | "archived"
-  | "drafts";
+  | "drafts"
+  | "verified"
+  | "suspended"
+  | "banned";
 
-export interface TabsProps {
-  value: TabValue;
-  onChange: (value: TabValue) => void;
-  counts?: Partial<Record<TabValue, number>>;
-  tabs?: { label: string; value: TabValue }[]; // Optional custom tabs
+export interface TabsProps<T extends string = TabValue> {
+  value: T;
+  onChange: (value: T) => void;
+  counts?: Partial<Record<T, number>>;
+  tabs?: { label: string; value: T }[]; // Optional custom tabs
 }
 
 const DEFAULT_TABS: { label: string; value: TabValue }[] = [
@@ -26,8 +29,13 @@ const DEFAULT_TABS: { label: string; value: TabValue }[] = [
   { label: "Removed", value: "drafts" },
 ];
 
-export function Tabs({ value, onChange, counts, tabs }: TabsProps) {
-  const tabsToRender = tabs || DEFAULT_TABS;
+export function Tabs<T extends string = TabValue>({
+  value,
+  onChange,
+  counts,
+  tabs,
+}: TabsProps<T>) {
+  const tabsToRender = (tabs || DEFAULT_TABS) as { label: string; value: T }[];
 
   return (
     <div className="flex gap-3">

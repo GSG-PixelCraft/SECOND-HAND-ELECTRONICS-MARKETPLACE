@@ -78,5 +78,15 @@ export const API_ENDPOINTS = {
       APPROVE: (id: string) => `/admin/verifications/${id}/approve`,
       REJECT: (id: string) => `/admin/verifications/${id}/reject`,
     },
+    USERS: {
+      LIST: "/admin/users",
+      BY_ID: (id: string) => `/admin/users/${id}`,
+      WARN: (id: string) => `/admin/users/${id}/warn`,
+      SUSPEND: (id: string) => `/admin/users/${id}/suspend`,
+      BAN: (id: string) => `/admin/users/${id}/ban`,
+      UNBAN: (id: string) => `/admin/users/${id}/unban`,
+      UPDATE_CHAT_ACCESS: (id: string) => `/admin/users/${id}/chat-access`,
+      USER_LISTINGS: (id: string) => `/admin/users/${id}/listings`,
+    },
   },
 } as const;

@@ -310,6 +310,54 @@ export const router = createBrowserRouter([
     },
   },
   {
+    path: "/admin/users",
+    errorElement: <UnexpectedErrorPage />,
+    lazy: async () => {
+      const [
+        { default: AdminUsersPage },
+        { AdminDashboardLayout },
+        { AdminGuard },
+      ] = await Promise.all([
+        import("@/pages/AdminUsersPage/AdminUsersPage"),
+        import("@/components/layout/AdminDashboardLayout"),
+        import("@/routes/access-control"),
+      ]);
+      return {
+        Component: () => (
+          <AdminGuard>
+            <AdminDashboardLayout>
+              <AdminUsersPage />
+            </AdminDashboardLayout>
+          </AdminGuard>
+        ),
+      };
+    },
+  },
+  {
+    path: "/admin/users/:id",
+    errorElement: <UnexpectedErrorPage />,
+    lazy: async () => {
+      const [
+        { default: AdminUserDetailPage },
+        { AdminDashboardLayout },
+        { AdminGuard },
+      ] = await Promise.all([
+        import("@/pages/AdminUserDetailPage/AdminUserDetailPage"),
+        import("@/components/layout/AdminDashboardLayout"),
+        import("@/routes/access-control"),
+      ]);
+      return {
+        Component: () => (
+          <AdminGuard>
+            <AdminDashboardLayout>
+              <AdminUserDetailPage />
+            </AdminDashboardLayout>
+          </AdminGuard>
+        ),
+      };
+    },
+  },
+  {
     path: "/403",
     lazy: async () => {
       const { default: AccessDeniedPage } =
