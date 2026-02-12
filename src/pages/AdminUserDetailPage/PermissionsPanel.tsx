@@ -1,6 +1,5 @@
 import { forwardRef } from "react";
 import { Text } from "@/components/ui/text";
-import { Span } from "@/components/ui/span";
 import { Switch } from "@/components/ui/switch";
 import { useUpdateChatAccess } from "@/services/admin-users.service";
 import type { UserStatus } from "@/types/user";
@@ -48,9 +47,6 @@ export const PermissionsPanel = forwardRef<
           <Text variant="body" className="text-neutral-90 font-medium">
             Chat Access
           </Text>
-          <Span className="text-neutral-50 text-sm">
-            Allow user to send and receive messages
-          </Span>
         </div>
         <Switch
           checked={chatAccess && userStatus === "active"}
