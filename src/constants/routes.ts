@@ -38,6 +38,8 @@ export const ROUTES = {
   ADMIN_REPORTS: "/admin/reports",
   ADMIN_REPORT_DETAIL: "/admin/reports/:type/:id",
   ADMIN_CATEGORIES: "/admin/categories",
+  ADMIN_CATEGORIES_ADD: "/admin/categories/add",
+  ADMIN_CATEGORY_EDIT: "/admin/categories/:id/edit",
   NOT_FOUND: "/404",
   ACCESS_DENIED: "/403",
 } as const;
@@ -52,3 +54,6 @@ export const getAdminVerificationReviewRoute = (id: string) =>
 export const getAdminUserDetailRoute = (id: string) => `/admin/users/${id}`;
 export const getAdminReportDetailRoute = (type: string, id: string) =>
   `/admin/reports/${type}/${id}`;
+export const getAdminCategoriesAddRoute = () => "/admin/categories/add";
+export const getAdminCategoryEditRoute = (id: string) =>
+  `/admin/categories/${id}/edit`;

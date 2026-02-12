@@ -334,6 +334,54 @@ export const router = createBrowserRouter([
     },
   },
   {
+    path: "/admin/categories/add",
+    errorElement: <UnexpectedErrorPage />,
+    lazy: async () => {
+      const [
+        { default: AddCategoryPage },
+        { AdminDashboardLayout },
+        { AdminGuard },
+      ] = await Promise.all([
+        import("@/pages/AdminCategoriesPage/AddCategoryPage"),
+        import("@/components/layout/AdminDashboardLayout"),
+        import("@/routes/access-control"),
+      ]);
+      return {
+        Component: () => (
+          <AdminGuard>
+            <AdminDashboardLayout>
+              <AddCategoryPage />
+            </AdminDashboardLayout>
+          </AdminGuard>
+        ),
+      };
+    },
+  },
+  {
+    path: "/admin/categories/:id/edit",
+    errorElement: <UnexpectedErrorPage />,
+    lazy: async () => {
+      const [
+        { default: EditCategoryPage },
+        { AdminDashboardLayout },
+        { AdminGuard },
+      ] = await Promise.all([
+        import("@/pages/AdminCategoriesPage/EditCategoryPage"),
+        import("@/components/layout/AdminDashboardLayout"),
+        import("@/routes/access-control"),
+      ]);
+      return {
+        Component: () => (
+          <AdminGuard>
+            <AdminDashboardLayout>
+              <EditCategoryPage />
+            </AdminDashboardLayout>
+          </AdminGuard>
+        ),
+      };
+    },
+  },
+  {
     path: "/admin/verifications",
     errorElement: <UnexpectedErrorPage />,
     lazy: async () => {

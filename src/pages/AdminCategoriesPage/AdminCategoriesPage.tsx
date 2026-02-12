@@ -1,8 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import { ShowPagination } from "@/components/admin";
+import {
+  getAdminCategoriesAddRoute,
+  getAdminCategoryEditRoute,
+} from "@/constants/routes";
 import {
   useAdminCategories,
   useDeleteAdminCategory,
@@ -17,6 +21,7 @@ import { FullScreenLoadingOverlay } from "./FullScreenLoadingOverlay";
 import { NoCategoriesState } from "./NoCategoriesState";
 
 export default function AdminCategoriesPage() {
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const timerRef = useRef<number | null>(null);
 
@@ -66,11 +71,11 @@ export default function AdminCategoriesPage() {
   };
 
   const handleAddCategory = () => {
-    console.log("Add Category clicked");
+    navigate(getAdminCategoriesAddRoute());
   };
 
   const handleEditCategory = (category: AdminCategory) => {
-    console.log("Edit Category clicked", category.id);
+    navigate(getAdminCategoryEditRoute(category.id));
   };
 
   const handleToggleStatus = async (
@@ -128,7 +133,7 @@ export default function AdminCategoriesPage() {
       <div className="flex flex-col gap-4">
         <div className="flex items-center justify-between">
           <h1 className="text-[22px] font-semibold text-[#101010]">
-            Categories Management
+            Categories
           </h1>
           <Button
             onClick={handleAddCategory}

@@ -167,6 +167,40 @@ export interface AdminCategory {
   isActive: boolean;
 }
 
+export type CategoryAttributeType =
+  | "select_dropdown"
+  | "text_input"
+  | "number_input"
+  | "checkboxes"
+  | "toggle"
+  | "date_picker"
+  | "textarea";
+
+export interface CategoryAttribute {
+  id: string;
+  name: string;
+  type: CategoryAttributeType;
+  isActive: boolean;
+  options?: string[];
+  toggleOption1?: string;
+  toggleOption2?: string;
+}
+
+export interface AdminCategoryDetail extends AdminCategory {
+  iconUrl?: string;
+  categoryStatus: boolean;
+  attributes: CategoryAttribute[];
+}
+
+export interface CreateCategoryPayload {
+  name: string;
+  iconUrl?: string;
+  categoryStatus: boolean;
+  attributes: CategoryAttribute[];
+}
+
+export type UpdateCategoryPayload = CreateCategoryPayload;
+
 export interface CategoryFilterParams {
   search?: string;
   page?: number;
