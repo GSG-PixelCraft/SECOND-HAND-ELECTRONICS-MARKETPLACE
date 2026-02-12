@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Tabs } from "@/components/ui/Tabs";
 import { EmptyState } from "@/components/feedback/emptyState/EmptyState";
@@ -64,36 +64,41 @@ export default function AdminListingsPage() {
   // Fetch listings
   const { data, isLoading, error } = useAdminListings(filters);
 
-  const buildParams = (
-    overrides?: Partial<ListingFilterParams> & { statusTab?: ListingTabValue },
-  ) => {
-    const merged = {
-      statusTab: overrides?.statusTab ?? activeTab,
-      search: overrides?.search ?? filters.search ?? "",
-      page: overrides?.page ?? filters.page ?? 1,
-      datePreset: overrides?.datePreset ?? filters.datePreset,
-      startDate: overrides?.startDate ?? filters.startDate,
-      endDate: overrides?.endDate ?? filters.endDate,
-    };
+  const buildParams = useCallback(
+    (
+      overrides?: Partial<ListingFilterParams> & {
+        statusTab?: ListingTabValue;
+      },
+    ) => {
+      const merged = {
+        statusTab: overrides?.statusTab ?? activeTab,
+        search: overrides?.search ?? filters.search ?? "",
+        page: overrides?.page ?? filters.page ?? 1,
+        datePreset: overrides?.datePreset ?? filters.datePreset,
+        startDate: overrides?.startDate ?? filters.startDate,
+        endDate: overrides?.endDate ?? filters.endDate,
+      };
 
-    const normalizedDateValue = resolveDateRangeValue({
-      datePreset: merged.datePreset || null,
-      startDate: merged.startDate || null,
-      endDate: merged.endDate || null,
-    });
+      const normalizedDateValue = resolveDateRangeValue({
+        datePreset: merged.datePreset || null,
+        startDate: merged.startDate || null,
+        endDate: merged.endDate || null,
+      });
 
-    const params: Record<string, string> = {
-      status: merged.statusTab,
-      page: String(merged.page),
-      ...toDateRangeQueryParams(normalizedDateValue),
-    };
+      const params: Record<string, string> = {
+        status: merged.statusTab,
+        page: String(merged.page),
+        ...toDateRangeQueryParams(normalizedDateValue),
+      };
 
-    if (merged.search) {
-      params.search = merged.search;
-    }
+      if (merged.search) {
+        params.search = merged.search;
+      }
 
-    return params;
-  };
+      return params;
+    },
+    [activeTab, filters],
+  );
 
   // Update URL when tab changes
   const handleTabChange = (tab: ListingTabValue) => {
@@ -117,10 +122,13 @@ export default function AdminListingsPage() {
   };
 
   // Handle filter changes
-  const handleFiltersChange = (newFilters: ListingFilterParams) => {
-    setFilters(newFilters);
-    setSearchParams(buildParams(newFilters));
-  };
+  const handleFiltersChange = useCallback(
+    (newFilters: ListingFilterParams) => {
+      setFilters(newFilters);
+      setSearchParams(buildParams(newFilters));
+    },
+    [buildParams, setSearchParams],
+  );
 
   const handleClearFilters = () => {
     const defaultDateValue = resolveDateRangeValue({});

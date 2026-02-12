@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Tabs } from "@/components/ui/Tabs";
 import { Text } from "@/components/ui/text";
@@ -62,38 +62,41 @@ export default function AdminVerificationQueuePage() {
   // Fetch verifications
   const { data, isLoading, error } = useAdminVerifications(filters);
 
-  const buildParams = (
-    overrides?: Partial<VerificationFilterParams> & {
-      statusTab?: VerificationTabValue;
+  const buildParams = useCallback(
+    (
+      overrides?: Partial<VerificationFilterParams> & {
+        statusTab?: VerificationTabValue;
+      },
+    ) => {
+      const merged = {
+        statusTab: overrides?.statusTab ?? activeTab,
+        page: overrides?.page ?? filters.page ?? 1,
+        search: overrides?.search ?? filters.search ?? "",
+        datePreset: overrides?.datePreset ?? filters.datePreset,
+        startDate: overrides?.startDate ?? filters.startDate,
+        endDate: overrides?.endDate ?? filters.endDate,
+      };
+
+      const normalizedDateValue = resolveDateRangeValue({
+        datePreset: merged.datePreset || null,
+        startDate: merged.startDate || null,
+        endDate: merged.endDate || null,
+      });
+
+      const params: Record<string, string> = {
+        status: merged.statusTab,
+        page: String(merged.page),
+        ...toDateRangeQueryParams(normalizedDateValue),
+      };
+
+      if (merged.search) {
+        params.search = merged.search;
+      }
+
+      return params;
     },
-  ) => {
-    const merged = {
-      statusTab: overrides?.statusTab ?? activeTab,
-      page: overrides?.page ?? filters.page ?? 1,
-      search: overrides?.search ?? filters.search ?? "",
-      datePreset: overrides?.datePreset ?? filters.datePreset,
-      startDate: overrides?.startDate ?? filters.startDate,
-      endDate: overrides?.endDate ?? filters.endDate,
-    };
-
-    const normalizedDateValue = resolveDateRangeValue({
-      datePreset: merged.datePreset || null,
-      startDate: merged.startDate || null,
-      endDate: merged.endDate || null,
-    });
-
-    const params: Record<string, string> = {
-      status: merged.statusTab,
-      page: String(merged.page),
-      ...toDateRangeQueryParams(normalizedDateValue),
-    };
-
-    if (merged.search) {
-      params.search = merged.search;
-    }
-
-    return params;
-  };
+    [activeTab, filters],
+  );
 
   // Update URL when tab changes
   const handleTabChange = (tab: VerificationTabValue) => {
@@ -117,10 +120,13 @@ export default function AdminVerificationQueuePage() {
   };
 
   // Handle filter changes
-  const handleFiltersChange = (newFilters: VerificationFilterParams) => {
-    setFilters(newFilters);
-    setSearchParams(buildParams(newFilters));
-  };
+  const handleFiltersChange = useCallback(
+    (newFilters: VerificationFilterParams) => {
+      setFilters(newFilters);
+      setSearchParams(buildParams(newFilters));
+    },
+    [buildParams, setSearchParams],
+  );
 
   // Handle clear filters
   const handleClearFilters = () => {

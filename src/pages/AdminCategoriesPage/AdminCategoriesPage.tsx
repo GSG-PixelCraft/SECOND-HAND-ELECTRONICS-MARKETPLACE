@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useCallback } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
@@ -41,7 +41,7 @@ export default function AdminCategoriesPage() {
   const toggleStatusMutation = useToggleAdminCategoryStatus();
   const deleteCategoryMutation = useDeleteAdminCategory();
 
-  const buildParams = (nextFilters: CategoryFilterParams) => {
+  const buildParams = useCallback((nextFilters: CategoryFilterParams) => {
     const nextPage = nextFilters.page || 1;
     const nextLimit = nextFilters.limit || 10;
     const params: Record<string, string> = {
@@ -54,12 +54,15 @@ export default function AdminCategoriesPage() {
     }
 
     return params;
-  };
+  }, []);
 
-  const applyFilters = (nextFilters: CategoryFilterParams) => {
-    setFilters(nextFilters);
-    setSearchParams(buildParams(nextFilters));
-  };
+  const applyFilters = useCallback(
+    (nextFilters: CategoryFilterParams) => {
+      setFilters(nextFilters);
+      setSearchParams(buildParams(nextFilters));
+    },
+    [buildParams, setSearchParams],
+  );
 
   const handleAddCategory = () => {
     navigate(getAdminCategoriesAddRoute());
@@ -157,7 +160,7 @@ export default function AdminCategoriesPage() {
             <div className="flex flex-col gap-6">
               <CategoriesTableFilters
                 filters={filters}
-                onFiltersChange={(nextFilters) => applyFilters(nextFilters)}
+                onFiltersChange={applyFilters}
               />
 
               <div className="flex flex-col gap-2">

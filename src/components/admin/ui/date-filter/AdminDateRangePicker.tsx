@@ -54,22 +54,83 @@ export function AdminDateRangePicker({
   triggerClassName,
   ...props
 }: AdminDateRangePickerProps) {
-  const fallbackValue = getPresetRange("last7");
-  const normalizedValue = normalizeDateRangeValue(value || fallbackValue);
+  const valuePreset = value?.preset;
+  const valueStartDate = value?.startDate;
+  const valueEndDate = value?.endDate;
+
+  const normalizedValue = useMemo<AdminDateRangeValue>(() => {
+    if (!valuePreset && !valueStartDate && !valueEndDate) {
+      return getPresetRange("last7");
+    }
+
+    if (!valuePreset) {
+      return normalizeDateRangeValue({
+        preset: "custom",
+        startDate: valueStartDate,
+        endDate: valueEndDate,
+      });
+    }
+
+    return normalizeDateRangeValue({
+      preset: valuePreset,
+      startDate: valueStartDate,
+      endDate: valueEndDate,
+    });
+  }, [valuePreset, valueStartDate, valueEndDate]);
+
+  const normalizedPreset = normalizedValue.preset;
+  const normalizedStartDate = normalizedValue.startDate;
+  const normalizedEndDate = normalizedValue.endDate;
+  const initialMonth = useMemo(
+    () =>
+      getInitialMonth({
+        preset: normalizedPreset,
+        startDate: normalizedStartDate,
+        endDate: normalizedEndDate,
+      }),
+    [normalizedPreset, normalizedStartDate, normalizedEndDate],
+  );
 
   const [isOpen, setIsOpen] = useState(false);
   const [draftValue, setDraftValue] =
     useState<AdminDateRangeValue>(normalizedValue);
-  const [visibleMonth, setVisibleMonth] = useState<Date>(
-    getInitialMonth(normalizedValue),
-  );
+  const [visibleMonth, setVisibleMonth] = useState<Date>(initialMonth);
   const rootRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (isOpen) return;
-    setDraftValue(normalizedValue);
-    setVisibleMonth(getInitialMonth(normalizedValue));
-  }, [isOpen, normalizedValue]);
+
+    setDraftValue((current) => {
+      if (
+        current.preset === normalizedPreset &&
+        current.startDate === normalizedStartDate &&
+        current.endDate === normalizedEndDate
+      ) {
+        return current;
+      }
+      return {
+        preset: normalizedPreset,
+        startDate: normalizedStartDate,
+        endDate: normalizedEndDate,
+      };
+    });
+
+    setVisibleMonth((current) => {
+      if (
+        current.getFullYear() === initialMonth.getFullYear() &&
+        current.getMonth() === initialMonth.getMonth()
+      ) {
+        return current;
+      }
+      return initialMonth;
+    });
+  }, [
+    isOpen,
+    initialMonth,
+    normalizedEndDate,
+    normalizedPreset,
+    normalizedStartDate,
+  ]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -105,7 +166,7 @@ export function AdminDateRangePicker({
   const openPicker = () => {
     if (disabled) return;
     setDraftValue(normalizedValue);
-    setVisibleMonth(getInitialMonth(normalizedValue));
+    setVisibleMonth(initialMonth);
     setIsOpen(true);
   };
 
@@ -174,7 +235,7 @@ export function AdminDateRangePicker({
 
   const handleCancel = () => {
     setDraftValue(normalizedValue);
-    setVisibleMonth(getInitialMonth(normalizedValue));
+    setVisibleMonth(initialMonth);
     setIsOpen(false);
   };
 

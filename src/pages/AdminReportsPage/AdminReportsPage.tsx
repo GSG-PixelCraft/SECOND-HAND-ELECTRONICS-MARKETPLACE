@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Tabs } from "@/components/ui/Tabs";
 import { EmptyState } from "@/components/feedback/emptyState/EmptyState";
@@ -79,36 +79,37 @@ export default function AdminReportsPage() {
 
   const { data, isLoading, error } = useAdminReports(activeTab, filters);
 
-  const buildParams = (
-    overrides?: Partial<ReportFilterParams> & { type?: ReportType },
-  ) => {
-    const merged = {
-      type: overrides?.type ?? activeTab,
-      page: overrides?.page ?? filters.page ?? 1,
-      search: overrides?.search ?? filters.search,
-      datePreset: overrides?.datePreset ?? filters.datePreset,
-      startDate: overrides?.startDate ?? filters.startDate,
-      endDate: overrides?.endDate ?? filters.endDate,
-      limit: overrides?.limit ?? filters.limit ?? 10,
-    };
+  const buildParams = useCallback(
+    (overrides?: Partial<ReportFilterParams> & { type?: ReportType }) => {
+      const merged = {
+        type: overrides?.type ?? activeTab,
+        page: overrides?.page ?? filters.page ?? 1,
+        search: overrides?.search ?? filters.search,
+        datePreset: overrides?.datePreset ?? filters.datePreset,
+        startDate: overrides?.startDate ?? filters.startDate,
+        endDate: overrides?.endDate ?? filters.endDate,
+        limit: overrides?.limit ?? filters.limit ?? 10,
+      };
 
-    const normalizedDateValue = resolveDateRangeValue({
-      datePreset: merged.datePreset || null,
-      startDate: merged.startDate || null,
-      endDate: merged.endDate || null,
-    });
+      const normalizedDateValue = resolveDateRangeValue({
+        datePreset: merged.datePreset || null,
+        startDate: merged.startDate || null,
+        endDate: merged.endDate || null,
+      });
 
-    const params: Record<string, string> = {
-      type: merged.type,
-      page: String(merged.page),
-      ...toDateRangeQueryParams(normalizedDateValue),
-    };
+      const params: Record<string, string> = {
+        type: merged.type,
+        page: String(merged.page),
+        ...toDateRangeQueryParams(normalizedDateValue),
+      };
 
-    if (merged.search) params.search = merged.search;
-    if (merged.limit) params.limit = String(merged.limit);
+      if (merged.search) params.search = merged.search;
+      if (merged.limit) params.limit = String(merged.limit);
 
-    return params;
-  };
+      return params;
+    },
+    [activeTab, filters],
+  );
 
   const handleTabChange = (tab: ReportType) => {
     setActiveTab(tab);
@@ -116,10 +117,13 @@ export default function AdminReportsPage() {
     setSearchParams(buildParams({ type: tab, page: 1 }));
   };
 
-  const handleFiltersChange = (newFilters: ReportFilterParams) => {
-    setFilters(newFilters);
-    setSearchParams(buildParams(newFilters));
-  };
+  const handleFiltersChange = useCallback(
+    (newFilters: ReportFilterParams) => {
+      setFilters(newFilters);
+      setSearchParams(buildParams(newFilters));
+    },
+    [buildParams, setSearchParams],
+  );
 
   const handlePageChange = (page: number) => {
     setFilters((prev) => ({ ...prev, page }));
