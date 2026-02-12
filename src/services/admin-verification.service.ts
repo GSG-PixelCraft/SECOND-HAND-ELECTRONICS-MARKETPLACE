@@ -1,4 +1,9 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  type UseMutationOptions,
+} from "@tanstack/react-query";
 // import { api } from "./client";
 // import { API_ENDPOINTS } from "@/constants/api-endpoints";
 import type {
@@ -321,18 +326,32 @@ export function useApproveVerification() {
   });
 }
 
-export function useRejectVerification() {
+export function useRejectVerification(
+  options?: Omit<
+    UseMutationOptions<
+      { success: boolean },
+      Error,
+      RejectVerificationData,
+      unknown
+    >,
+    "mutationFn"
+  >,
+) {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: adminVerificationService.rejectVerification,
-    onSuccess: () => {
+    onSuccess: (data, variables, context) => {
       queryClient.invalidateQueries({
         queryKey: ADMIN_VERIFICATION_KEYS.lists(),
       });
       queryClient.invalidateQueries({
         queryKey: ADMIN_VERIFICATION_KEYS.details(),
       });
+      options?.onSuccess?.(data, variables, context);
     },
+    onError: options?.onError,
+    onMutate: options?.onMutate,
+    onSettled: options?.onSettled,
   });
 }

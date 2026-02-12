@@ -13,9 +13,10 @@ export interface TabsProps {
   value: TabValue;
   onChange: (value: TabValue) => void;
   counts?: Partial<Record<TabValue, number>>;
+  tabs?: { label: string; value: TabValue }[]; // Optional custom tabs
 }
 
-const TABS: { label: string; value: TabValue }[] = [
+const DEFAULT_TABS: { label: string; value: TabValue }[] = [
   { label: "All", value: "all" },
   { label: "Pending", value: "pending" },
   { label: "Active", value: "active" },
@@ -25,10 +26,12 @@ const TABS: { label: string; value: TabValue }[] = [
   { label: "Removed", value: "drafts" },
 ];
 
-export function Tabs({ value, onChange, counts }: TabsProps) {
+export function Tabs({ value, onChange, counts, tabs }: TabsProps) {
+  const tabsToRender = tabs || DEFAULT_TABS;
+
   return (
     <div className="flex gap-3">
-      {TABS.map((tab) => {
+      {tabsToRender.map((tab) => {
         const isActive = value === tab.value;
         const count = counts?.[tab.value];
 

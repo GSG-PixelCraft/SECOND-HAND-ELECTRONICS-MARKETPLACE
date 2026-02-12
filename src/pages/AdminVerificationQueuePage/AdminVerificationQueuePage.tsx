@@ -102,15 +102,20 @@ export default function AdminVerificationQueuePage() {
     });
   };
 
+  // Verification-specific tabs (only 4 tabs as per Figma)
+  const verificationTabs = [
+    { label: "All", value: "all" as const },
+    { label: "Pending", value: "pending" as const },
+    { label: "Active", value: "active" as const },
+    { label: "Rejected", value: "rejected" as const },
+  ];
+
   // Tab counts from data
   const tabCounts = {
     all: data?.statusCounts.all || 0,
     pending: data?.statusCounts.pending || 0,
     active: data?.statusCounts.approved || 0,
     rejected: data?.statusCounts.rejected || 0,
-    sold: 0,
-    archived: 0,
-    drafts: 0,
   };
 
   return (
@@ -123,6 +128,7 @@ export default function AdminVerificationQueuePage() {
             value={activeTab}
             onChange={handleTabChange}
             counts={tabCounts}
+            tabs={verificationTabs}
           />
         </div>
 

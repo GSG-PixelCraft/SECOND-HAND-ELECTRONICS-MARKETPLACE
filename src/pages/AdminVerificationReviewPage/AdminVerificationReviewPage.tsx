@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   ArrowLeft,
+  Clock,
   ZoomIn,
   ZoomOut,
   RotateCw,
@@ -9,15 +10,11 @@ import {
   Download,
   Maximize2,
 } from "lucide-react";
-import { Text } from "@/components/ui/text";
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/ui/StatusBadge";
-import {
-  useAdminVerificationDetail,
-  useApproveVerification,
-} from "@/services/admin-verification.service";
+import { useAdminVerificationDetail } from "@/services/admin-verification.service";
 import { ROUTES } from "@/constants/routes";
-import { RejectionModal } from ".";
+import { ApproveVerificationModal, RejectionModal } from ".";
 
 type ImageTab = "front" | "back" | "selfie";
 
@@ -26,6 +23,7 @@ export default function AdminVerificationReviewPage() {
   const navigate = useNavigate();
   const [activeImageTab, setActiveImageTab] = useState<ImageTab>("front");
   const [isRejectionModalOpen, setIsRejectionModalOpen] = useState(false);
+  const [isApproveModalOpen, setIsApproveModalOpen] = useState(false);
   const [imageScale, setImageScale] = useState(1);
   const [imageRotation, setImageRotation] = useState(0);
 
@@ -34,21 +32,12 @@ export default function AdminVerificationReviewPage() {
     isLoading,
     error,
   } = useAdminVerificationDetail(id || "");
-  const approveMutation = useApproveVerification();
-
   const handleBack = () => {
     navigate(ROUTES.ADMIN_VERIFICATIONS);
   };
 
   const handleApprove = async () => {
-    if (!id) return;
-
-    try {
-      await approveMutation.mutateAsync(id);
-      navigate(ROUTES.ADMIN_VERIFICATIONS);
-    } catch (error) {
-      console.error("Failed to approve verification:", error);
-    }
+    setIsApproveModalOpen(true);
   };
 
   const handleReject = () => {
@@ -109,11 +98,14 @@ export default function AdminVerificationReviewPage() {
   const formatDate = (dateString: string) => {
     try {
       const date = new Date(dateString);
-      return date.toLocaleDateString("en-GB", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-      });
+      if (Number.isNaN(date.getTime())) return dateString;
+      return date
+        .toLocaleDateString("en-GB", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        })
+        .replaceAll("/", "-");
     } catch {
       return dateString;
     }
@@ -198,13 +190,11 @@ export default function AdminVerificationReviewPage() {
 
   const currentImage = getCurrentImage();
 
-  const isAnyMutationLoading = approveMutation.isPending;
-
   return (
     <>
-      <div className="min-h-screen bg-neutral-5">
+      <div className="p-6">
         {/* Content Container */}
-        <div className="mx-auto max-w-[1400px] space-y-8 p-6">
+        <div className="mx-auto max-w-[1400px] space-y-6">
           {/* Header */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -226,7 +216,6 @@ export default function AdminVerificationReviewPage() {
                   <Button
                     intent="outline"
                     onClick={handleReject}
-                    disabled={isAnyMutationLoading}
                     className="h-11 rounded-xl border border-error bg-white px-8 text-sm font-semibold text-error hover:border-error hover:bg-error/5"
                   >
                     Reject
@@ -234,240 +223,223 @@ export default function AdminVerificationReviewPage() {
                   <Button
                     intent="primary"
                     onClick={handleApprove}
-                    disabled={isAnyMutationLoading}
                     className="h-11 rounded-xl border-none bg-primary px-8 text-sm font-semibold text-white hover:bg-primary/90"
                   >
-                    {approveMutation.isPending ? "Approving..." : "Approve"}
+                    Approve
                   </Button>
                 </>
               )}
             </div>
           </div>
 
-          {/* Content Card */}
-          <div className="rounded-xl bg-white p-6 shadow-sm">
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-              {/* Image Preview Section */}
-              <div className="lg:col-span-2">
-                <div className="flex flex-col gap-4">
-                  {/* Image Tabs */}
-                  <div className="flex gap-3 border-b border-[#e4e4e4]">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
+            {/* Image Preview Section */}
+            <div className="rounded-2xl border border-[#EAECF0] bg-white shadow-[0px_3px_10px_rgba(16,24,40,0.08)]">
+              {/* Image Tabs */}
+              <div className="rounded-t-2xl bg-[#F7F9FC] px-6 pt-4">
+                <div className="flex items-center gap-10 border-b border-[#E4E7EC] text-sm font-medium">
+                  <button
+                    onClick={() => handleImageTabChange("front")}
+                    className={`border-b-2 pb-3 transition-colors ${
+                      activeImageTab === "front"
+                        ? "border-[#2563EB] text-[#2563EB]"
+                        : "border-transparent text-[#98A2B3] hover:text-[#475467]"
+                    }`}
+                  >
+                    Front
+                  </button>
+                  {verification.backImage && (
                     <button
-                      onClick={() => handleImageTabChange("front")}
-                      className={`border-b-2 px-4 pb-2 text-base transition-colors ${
-                        activeImageTab === "front"
-                          ? "border-[#2563eb] font-medium text-[#2563eb]"
-                          : "border-transparent text-[#828282] hover:text-[#3d3d3d]"
+                      onClick={() => handleImageTabChange("back")}
+                      className={`border-b-2 pb-3 transition-colors ${
+                        activeImageTab === "back"
+                          ? "border-[#2563EB] text-[#2563EB]"
+                          : "border-transparent text-[#98A2B3] hover:text-[#475467]"
                       }`}
                     >
-                      Front
+                      Back
                     </button>
-                    {verification.backImage && (
-                      <button
-                        onClick={() => handleImageTabChange("back")}
-                        className={`border-b-2 px-4 pb-2 text-base transition-colors ${
-                          activeImageTab === "back"
-                            ? "border-[#2563eb] font-medium text-[#2563eb]"
-                            : "border-transparent text-[#828282] hover:text-[#3d3d3d]"
-                        }`}
-                      >
-                        Back
-                      </button>
-                    )}
-                    {verification.selfieImage && (
-                      <button
-                        onClick={() => handleImageTabChange("selfie")}
-                        className={`border-b-2 px-4 pb-2 text-base transition-colors ${
-                          activeImageTab === "selfie"
-                            ? "border-[#2563eb] font-medium text-[#2563eb]"
-                            : "border-transparent text-[#828282] hover:text-[#3d3d3d]"
-                        }`}
-                      >
-                        Selfie
-                      </button>
-                    )}
-                  </div>
+                  )}
+                  {verification.selfieImage && (
+                    <button
+                      onClick={() => handleImageTabChange("selfie")}
+                      className={`border-b-2 pb-3 transition-colors ${
+                        activeImageTab === "selfie"
+                          ? "border-[#2563EB] text-[#2563EB]"
+                          : "border-transparent text-[#98A2B3] hover:text-[#475467]"
+                      }`}
+                    >
+                      Selfie
+                    </button>
+                  )}
+                </div>
+              </div>
 
-                  {/* Image Viewer */}
-                  <div className="relative flex min-h-[500px] items-center justify-center overflow-hidden rounded-xl bg-[#f5f5f5] p-6">
+              {/* Image Viewer */}
+              <div className="space-y-4 p-6">
+                <div className="rounded-2xl bg-[#F4F6FA] p-5">
+                  <div className="flex min-h-[360px] items-center justify-center overflow-hidden rounded-2xl bg-white p-4 shadow-[0px_10px_22px_rgba(15,23,42,0.12)]">
                     {currentImage ? (
                       <img
                         src={currentImage}
                         alt={`${activeImageTab} view`}
-                        className="max-h-[500px] max-w-full object-contain transition-transform duration-200"
+                        className="max-h-[320px] max-w-full object-contain transition-transform duration-200"
                         style={{
                           transform: `scale(${imageScale}) rotate(${imageRotation}deg)`,
                         }}
                       />
                     ) : (
-                      <Text variant="body" className="text-neutral-50">
+                      <p className="text-sm text-[#98A2B3]">
                         No image available
-                      </Text>
+                      </p>
                     )}
+                  </div>
+                </div>
 
-                    {/* Image Controls */}
-                    {currentImage && (
-                      <div className="absolute bottom-6 left-1/2 flex -translate-x-1/2 items-center gap-2 rounded-lg bg-white/90 p-2 shadow-lg backdrop-blur-sm">
-                        <button
-                          onClick={handleZoomOut}
-                          className="text-neutral-70 flex h-8 w-8 items-center justify-center rounded transition-colors hover:bg-neutral-10 hover:text-primary"
-                          aria-label="Zoom out"
-                        >
-                          <ZoomOut className="h-4 w-4" />
-                        </button>
-                        <button
-                          onClick={handleZoomIn}
-                          className="text-neutral-70 flex h-8 w-8 items-center justify-center rounded transition-colors hover:bg-neutral-10 hover:text-primary"
-                          aria-label="Zoom in"
-                        >
-                          <ZoomIn className="h-4 w-4" />
-                        </button>
-                        <div className="h-6 w-px bg-neutral-20" />
-                        <button
-                          onClick={handleRotateLeft}
-                          className="text-neutral-70 flex h-8 w-8 items-center justify-center rounded transition-colors hover:bg-neutral-10 hover:text-primary"
-                          aria-label="Rotate left"
-                        >
-                          <RotateCcw className="h-4 w-4" />
-                        </button>
-                        <button
-                          onClick={handleRotateRight}
-                          className="text-neutral-70 flex h-8 w-8 items-center justify-center rounded transition-colors hover:bg-neutral-10 hover:text-primary"
-                          aria-label="Rotate right"
-                        >
-                          <RotateCw className="h-4 w-4" />
-                        </button>
-                        <div className="h-6 w-px bg-neutral-20" />
-                        <button
-                          onClick={handleDownload}
-                          className="text-neutral-70 flex h-8 w-8 items-center justify-center rounded transition-colors hover:bg-neutral-10 hover:text-primary"
-                          aria-label="Download"
-                        >
-                          <Download className="h-4 w-4" />
-                        </button>
-                        <button
-                          onClick={handleFullscreen}
-                          className="text-neutral-70 flex h-8 w-8 items-center justify-center rounded transition-colors hover:bg-neutral-10 hover:text-primary"
-                          aria-label="Fullscreen"
-                        >
-                          <Maximize2 className="h-4 w-4" />
-                        </button>
-                      </div>
-                    )}
+                {/* Image Controls */}
+                {currentImage && (
+                  <div className="flex items-center justify-center">
+                    <div className="flex items-center gap-3 rounded-xl border border-[#E4E7EC] bg-white px-3 py-2 shadow-[0px_2px_6px_rgba(16,24,40,0.08)]">
+                      <button
+                        onClick={handleZoomOut}
+                        className="flex size-9 items-center justify-center rounded-lg text-[#667085] transition-colors hover:bg-[#F2F4F7] hover:text-primary"
+                        aria-label="Zoom out"
+                      >
+                        <ZoomOut className="h-4 w-4" />
+                      </button>
+                      <button
+                        onClick={handleZoomIn}
+                        className="flex size-9 items-center justify-center rounded-lg text-[#667085] transition-colors hover:bg-[#F2F4F7] hover:text-primary"
+                        aria-label="Zoom in"
+                      >
+                        <ZoomIn className="h-4 w-4" />
+                      </button>
+                      <div className="h-6 w-px bg-[#EAECF0]" />
+                      <button
+                        onClick={handleRotateLeft}
+                        className="flex size-9 items-center justify-center rounded-lg text-[#667085] transition-colors hover:bg-[#F2F4F7] hover:text-primary"
+                        aria-label="Rotate left"
+                      >
+                        <RotateCcw className="h-4 w-4" />
+                      </button>
+                      <button
+                        onClick={handleRotateRight}
+                        className="flex size-9 items-center justify-center rounded-lg text-[#667085] transition-colors hover:bg-[#F2F4F7] hover:text-primary"
+                        aria-label="Rotate right"
+                      >
+                        <RotateCw className="h-4 w-4" />
+                      </button>
+                      <div className="h-6 w-px bg-[#EAECF0]" />
+                      <button
+                        onClick={handleDownload}
+                        className="flex size-9 items-center justify-center rounded-lg text-[#667085] transition-colors hover:bg-[#F2F4F7] hover:text-primary"
+                        aria-label="Download"
+                      >
+                        <Download className="h-4 w-4" />
+                      </button>
+                      <button
+                        onClick={handleFullscreen}
+                        className="flex size-9 items-center justify-center rounded-lg text-[#667085] transition-colors hover:bg-[#F2F4F7] hover:text-primary"
+                        aria-label="Fullscreen"
+                      >
+                        <Maximize2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* User Info Section */}
+            <div className="flex flex-col gap-4">
+              <div className="rounded-2xl border border-[#EAECF0] bg-white p-4 shadow-[0px_3px_10px_rgba(16,24,40,0.06)]">
+                <div className="flex items-center gap-3">
+                  {verification.userAvatar ? (
+                    <img
+                      src={verification.userAvatar}
+                      alt={verification.userName}
+                      className="h-11 w-11 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-11 w-11 items-center justify-center rounded-full bg-primary/10 text-base font-semibold text-primary">
+                      {verification.userName.charAt(0)}
+                    </div>
+                  )}
+                  <div className="flex flex-1 items-center justify-between gap-3">
+                    <p className="text-sm font-semibold text-[#111827]">
+                      {verification.userName}
+                    </p>
+                    <button
+                      className="text-sm font-medium text-primary hover:underline"
+                      onClick={() => {
+                        // TODO: Navigate to user profile
+                        console.log("View profile:", verification.userId);
+                      }}
+                    >
+                      View Profile
+                    </button>
                   </div>
                 </div>
               </div>
 
-              {/* User Info Section */}
-              <div className="lg:col-span-1">
-                <div className="flex flex-col gap-4 rounded-xl border border-neutral-20 bg-white p-6">
-                  {/* User Avatar and Name */}
-                  <div className="flex items-center gap-4">
-                    {verification.userAvatar ? (
-                      <img
-                        src={verification.userAvatar}
-                        alt={verification.userName}
-                        className="h-12 w-12 rounded-full object-cover"
-                      />
-                    ) : (
-                      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-lg font-medium text-primary">
-                        {verification.userName.charAt(0)}
-                      </div>
-                    )}
-                    <div className="flex flex-col gap-1">
-                      <Text
-                        variant="bodyLg"
-                        className="text-neutral-90 font-semibold"
-                      >
-                        {verification.userName}
-                      </Text>
-                      <button
-                        className="text-left text-sm text-primary hover:underline"
-                        onClick={() => {
-                          // TODO: Navigate to user profile
-                          console.log("View profile:", verification.userId);
-                        }}
-                      >
-                        View Profile
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="h-px bg-neutral-20" />
-
-                  {/* Document Type */}
-                  <div className="flex flex-col gap-2">
-                    <Text variant="caption" className="text-neutral-50">
-                      Document Type
-                    </Text>
-                    <Text
-                      variant="body"
-                      className="text-neutral-90 font-medium"
-                    >
-                      {verification.documentType}
-                    </Text>
-                  </div>
-
-                  {/* Status */}
-                  <div className="flex flex-col gap-2">
-                    <Text variant="caption" className="text-neutral-50">
-                      Status
-                    </Text>
+              <div className="rounded-2xl border border-[#EAECF0] bg-white p-4 shadow-[0px_3px_10px_rgba(16,24,40,0.06)]">
+                <div className="flex flex-col gap-3">
+                  <p className="text-sm font-semibold text-[#111827]">
+                    {verification.documentType}
+                  </p>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-[#667085]">Status</span>
                     <StatusBadge
                       variant={getStatusVariant(verification.status)}
+                      className="rounded-full px-3 py-1 text-[11px] font-semibold"
                     >
                       {getStatusLabel(verification.status)}
                     </StatusBadge>
                   </div>
-
-                  {/* Submitted Date */}
-                  <div className="flex flex-col gap-2">
-                    <Text variant="caption" className="text-neutral-50">
-                      Submitted Date
-                    </Text>
-                    <Text variant="body" className="text-neutral-70">
+                  <div className="flex items-center gap-2 text-xs text-[#667085]">
+                    <Clock className="h-4 w-4" />
+                    <span>
                       Submitted on {formatDate(verification.submittedDate)}
-                    </Text>
+                    </span>
                   </div>
-
-                  {/* Rejection Reasons (if rejected) */}
-                  {verification.status === "rejected" &&
-                    verification.rejectionReasons && (
-                      <>
-                        <div className="h-px bg-neutral-20" />
-                        <div className="flex flex-col gap-2">
-                          <Text variant="caption" className="text-neutral-50">
-                            Rejection Reasons
-                          </Text>
-                          <ul className="flex flex-col gap-1">
-                            {verification.rejectionReasons.map(
-                              (reason, index) => (
-                                <li key={index} className="text-sm text-error">
-                                  • {reason}
-                                </li>
-                              ),
-                            )}
-                          </ul>
-                        </div>
-                      </>
-                    )}
-
-                  {/* Additional Notes (if any) */}
-                  {verification.additionalNotes && (
-                    <>
-                      <div className="h-px bg-neutral-20" />
-                      <div className="flex flex-col gap-2">
-                        <Text variant="caption" className="text-neutral-50">
-                          Additional Notes
-                        </Text>
-                        <Text variant="body" className="text-neutral-70">
-                          {verification.additionalNotes}
-                        </Text>
-                      </div>
-                    </>
-                  )}
                 </div>
               </div>
+
+              {verification.status === "rejected" && (
+                <div className="rounded-2xl border border-[#F9C5C5] bg-[#FDECEC] p-4 shadow-[0px_3px_10px_rgba(16,24,40,0.04)]">
+                  <p className="text-sm font-semibold text-[#F04438]">
+                    Rejection Reasons:
+                  </p>
+                  {verification.rejectionReasons?.length ? (
+                    <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-[#344054]">
+                      {verification.rejectionReasons.map((reason, index) => (
+                        <li key={index}>{reason}</li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="mt-2 text-sm text-[#667085]">
+                      No rejection reasons provided.
+                    </p>
+                  )}
+                  {verification.additionalNotes && (
+                    <div className="mt-4 space-y-1">
+                      <p className="text-sm font-semibold text-[#111827]">
+                        Additional Notes:
+                      </p>
+                      <p className="text-sm text-[#667085]">
+                        {verification.additionalNotes}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {verification.reviewedAt && (
+                <p className="text-right text-xs text-[#98A2B3]">
+                  Manual review was performed on{" "}
+                  {formatDate(verification.reviewedAt)}
+                </p>
+              )}
             </div>
           </div>
         </div>
@@ -477,6 +449,12 @@ export default function AdminVerificationReviewPage() {
       <RejectionModal
         isOpen={isRejectionModalOpen}
         onClose={() => setIsRejectionModalOpen(false)}
+        verificationId={id || ""}
+      />
+
+      <ApproveVerificationModal
+        isOpen={isApproveModalOpen}
+        onClose={() => setIsApproveModalOpen(false)}
         verificationId={id || ""}
       />
     </>

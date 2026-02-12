@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { X } from "lucide-react";
+import { X, AlertTriangle, ShieldCheck } from "lucide-react";
 import { Dialog } from "@/components/ui/dialog";
 import { Text } from "@/components/ui/text";
 import { Button } from "@/components/ui/button";
@@ -15,6 +15,8 @@ export interface RejectionModalProps {
   verificationId: string;
 }
 
+type ModalState = "form" | "loading" | "error" | "success";
+
 const REJECTION_REASONS = [
   "Name does not match the profile",
   "ID document is expired",
@@ -27,21 +29,137 @@ const REJECTION_REASONS = [
   "ID is not clearly visible in the selfie",
 ] as const;
 
+/**
+ * Loading state overlay - full-screen overlay while rejection is being processed
+ */
+function LoadingOverlay() {
+  return (
+    <div
+      className="animate-in fade-in fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm duration-200"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Processing rejection"
+    >
+      <div className="flex flex-col items-center justify-center gap-6">
+        <div
+          className="h-12 w-12 animate-spin rounded-full border-4 border-white/20 border-t-white"
+          role="status"
+          aria-label="Loading"
+        />
+        <Text variant="body" className="text-white">
+          Waiting...
+        </Text>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Error state modal content - displays when rejection fails
+ */
+interface ErrorModalContentProps {
+  onRetry: () => void;
+  onCancel: () => void;
+}
+
+function ErrorModalContent({ onRetry, onCancel }: ErrorModalContentProps) {
+  return (
+    <div className="animate-in fade-in zoom-in-95 flex flex-col items-center gap-6 py-6 duration-200">
+      {/* Warning Icon */}
+      <div className="flex h-16 w-16 items-center justify-center rounded-full bg-warning/10">
+        <AlertTriangle className="h-8 w-8 text-warning" strokeWidth={2} />
+      </div>
+
+      {/* Title */}
+      <div className="flex flex-col items-center gap-2 text-center">
+        <Text variant="bodyLg" className="text-neutral-90 font-semibold">
+          Something went wrong
+        </Text>
+        <Text variant="body" className="text-neutral-60 max-w-sm">
+          We couldn't complete the verification Rejection due to a system issue.
+          Please try again.
+        </Text>
+      </div>
+
+      {/* Action Buttons */}
+      <div className="flex w-full flex-col gap-3">
+        <Button intent="primary" size="lg" onClick={onRetry} className="w-full">
+          Try again
+        </Button>
+        <Button
+          intent="outline"
+          size="lg"
+          onClick={onCancel}
+          className="w-full"
+        >
+          Cancel
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Success state modal content - displays when rejection is successful
+ */
+interface SuccessModalContentProps {
+  onDone: () => void;
+}
+
+function SuccessModalContent({ onDone }: SuccessModalContentProps) {
+  return (
+    <div className="animate-in fade-in zoom-in-95 flex flex-col items-center gap-6 py-6 duration-200">
+      {/* Success Icon */}
+      <div className="flex h-16 w-16 items-center justify-center rounded-full bg-success/10">
+        <ShieldCheck className="h-8 w-8 text-success" strokeWidth={2} />
+      </div>
+
+      {/* Title */}
+      <div className="flex flex-col items-center gap-2 text-center">
+        <Text variant="bodyLg" className="text-neutral-90 font-semibold">
+          Verification Request Rejected
+        </Text>
+        <Text variant="body" className="text-neutral-60 max-w-md">
+          The verification request has been rejected based on the selected
+          reasons. The user has been notified accordingly.
+        </Text>
+      </div>
+
+      {/* Action Button */}
+      <Button intent="primary" size="lg" onClick={onDone} className="w-full">
+        Done
+      </Button>
+    </div>
+  );
+}
+
 export function RejectionModal({
   isOpen,
   onClose,
   verificationId,
 }: RejectionModalProps) {
   const navigate = useNavigate();
+  const [modalState, setModalState] = useState<ModalState>("form");
   const [selectedReasons, setSelectedReasons] = useState<string[]>([]);
   const [additionalNotes, setAdditionalNotes] = useState("");
   const [showAdditionalNotes, setShowAdditionalNotes] = useState(false);
 
-  const rejectMutation = useRejectVerification();
+  const rejectMutation = useRejectVerification({
+    onMutate: () => {
+      setModalState("loading");
+    },
+    onSuccess: () => {
+      setModalState("success");
+    },
+    onError: () => {
+      setModalState("error");
+    },
+  });
 
   // Reset form when modal closes
   useEffect(() => {
     if (!isOpen) {
+      setModalState("form");
       setSelectedReasons([]);
       setAdditionalNotes("");
       setShowAdditionalNotes(false);
@@ -71,131 +189,170 @@ export function RejectionModal({
     }
 
     const reasons = [...selectedReasons];
-    if (showAdditionalNotes && additionalNotes.trim()) {
-      // Additional notes will be sent separately
-    }
 
-    try {
-      await rejectMutation.mutateAsync({
-        verificationId,
-        reasons,
-        additionalNotes: showAdditionalNotes ? additionalNotes : undefined,
-      });
-      onClose();
-      navigate(ROUTES.ADMIN_VERIFICATIONS);
-    } catch (error) {
-      console.error("Failed to reject verification:", error);
-    }
+    await rejectMutation.mutateAsync({
+      verificationId,
+      reasons,
+      additionalNotes: showAdditionalNotes ? additionalNotes : undefined,
+    });
+  };
+
+  const handleRetry = () => {
+    handleConfirmReject();
+  };
+
+  const handleReturnToForm = () => {
+    setModalState("form");
+  };
+
+  const handleSuccess = () => {
+    onClose();
+    navigate(ROUTES.ADMIN_VERIFICATIONS);
   };
 
   const characterCount = additionalNotes.length;
   const maxCharacters = 500;
 
+  // Determine if dialog can be closed
+  const canClose = modalState === "form" || modalState === "error";
+
+  // Show dialog for form, error, and success states only
+  const showDialog = isOpen && modalState !== "loading";
+
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()} size="md">
-      <div className="flex flex-col gap-4">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <Text
-            variant="bodyLg"
-            className="text-neutral-90 text-xl font-semibold"
-          >
-            Rejected Verification
-          </Text>
-          <button
-            onClick={onClose}
-            className="text-neutral-50 hover:text-neutral-90 flex h-8 w-8 items-center justify-center rounded-lg transition-colors hover:bg-neutral-10"
-            aria-label="Close"
-          >
-            <X className="h-5 w-5" />
-          </button>
-        </div>
+    <>
+      {/* Full-screen loading overlay */}
+      {modalState === "loading" && <LoadingOverlay />}
 
-        {/* Content */}
-        <div className="flex flex-col gap-4">
-          {/* Title */}
-          <div className="flex flex-col gap-1">
-            <Text variant="bodyLg" className="text-neutral-90 font-medium">
-              Reason for Rejection <span className="text-error">*</span>
-            </Text>
-          </div>
-
-          {/* Rejection Reasons Checkboxes */}
-          <div className="flex max-h-[300px] flex-col gap-3 overflow-y-auto pr-2">
-            {REJECTION_REASONS.map((reason) => (
-              <label
-                key={reason}
-                className="group flex cursor-pointer items-start gap-3"
-              >
-                <Checkbox
-                  checked={selectedReasons.includes(reason)}
-                  onChange={() => handleReasonToggle(reason)}
-                  className="mt-0.5"
-                />
-                <Text
-                  variant="body"
-                  className="text-neutral-70 group-hover:text-neutral-90 flex-1 transition-colors"
-                >
-                  {reason}
-                </Text>
-              </label>
-            ))}
-
-            {/* Additional Notes Checkbox */}
-            <label className="group flex cursor-pointer items-start gap-3">
-              <Checkbox
-                checked={showAdditionalNotes}
-                onChange={handleAdditionalNotesToggle}
-                className="mt-0.5"
-              />
+      {/* Dialog for form, error, and success states */}
+      <Dialog
+        open={showDialog}
+        onOpenChange={(open) => {
+          if (!open && canClose) {
+            onClose();
+          }
+        }}
+        size={modalState === "form" ? "md" : "sm"}
+      >
+        {modalState === "form" && (
+          <div className="flex flex-col gap-4">
+            {/* Header */}
+            <div className="flex items-center justify-between">
               <Text
-                variant="body"
-                className="text-neutral-70 group-hover:text-neutral-90 flex-1 transition-colors"
+                variant="bodyLg"
+                className="text-neutral-90 text-xl font-semibold"
               >
-                Additional notes
+                Rejected Verification
               </Text>
-            </label>
-          </div>
+              <button
+                onClick={onClose}
+                className="text-neutral-50 hover:text-neutral-90 flex h-8 w-8 items-center justify-center rounded-lg transition-colors hover:bg-neutral-10"
+                aria-label="Close"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
 
-          {/* Additional Notes Textarea */}
-          {showAdditionalNotes && (
-            <div className="flex flex-col gap-2">
-              <Textarea
-                value={additionalNotes}
-                onChange={(e) => {
-                  if (e.target.value.length <= maxCharacters) {
-                    setAdditionalNotes(e.target.value);
-                  }
-                }}
-                placeholder="Please retake the selfie with your full face clearly visible."
-                rows={4}
-                className="resize-none"
-              />
-              <div className="flex justify-end">
-                <Text variant="caption" className="text-neutral-50">
-                  ({characterCount}/{maxCharacters})
+            {/* Content */}
+            <div className="flex flex-col gap-4">
+              {/* Title */}
+              <div className="flex flex-col gap-1">
+                <Text variant="bodyLg" className="text-neutral-90 font-medium">
+                  Reason for Rejection <span className="text-error">*</span>
                 </Text>
               </div>
-            </div>
-          )}
-        </div>
 
-        {/* Footer */}
-        <div className="flex flex-col gap-3">
-          <Button
-            intent="danger"
-            size="lg"
-            onClick={handleConfirmReject}
-            disabled={selectedReasons.length === 0 || rejectMutation.isPending}
-            className="w-full"
-          >
-            {rejectMutation.isPending ? "Rejecting..." : "Confirm Reject"}
-          </Button>
-          <Text variant="caption" className="text-neutral-50 text-center">
-            The user will be notified with the reason and your comments.
-          </Text>
-        </div>
-      </div>
-    </Dialog>
+              {/* Rejection Reasons Checkboxes */}
+              <div className="flex max-h-[300px] flex-col gap-3 overflow-y-auto pr-2">
+                {REJECTION_REASONS.map((reason) => (
+                  <label
+                    key={reason}
+                    className="group flex cursor-pointer items-start gap-3"
+                  >
+                    <Checkbox
+                      checked={selectedReasons.includes(reason)}
+                      onChange={() => handleReasonToggle(reason)}
+                      className="mt-0.5"
+                    />
+                    <Text
+                      variant="body"
+                      className="text-neutral-70 group-hover:text-neutral-90 flex-1 transition-colors"
+                    >
+                      {reason}
+                    </Text>
+                  </label>
+                ))}
+
+                {/* Additional Notes Checkbox */}
+                <label className="group flex cursor-pointer items-start gap-3">
+                  <Checkbox
+                    checked={showAdditionalNotes}
+                    onChange={handleAdditionalNotesToggle}
+                    className="mt-0.5"
+                  />
+                  <Text
+                    variant="body"
+                    className="text-neutral-70 group-hover:text-neutral-90 flex-1 transition-colors"
+                  >
+                    Additional notes
+                  </Text>
+                </label>
+              </div>
+
+              {/* Additional Notes Textarea */}
+              {showAdditionalNotes && (
+                <div className="flex flex-col gap-2">
+                  <Textarea
+                    value={additionalNotes}
+                    onChange={(e) => {
+                      if (e.target.value.length <= maxCharacters) {
+                        setAdditionalNotes(e.target.value);
+                      }
+                    }}
+                    placeholder="Please retake the selfie with your full face clearly visible."
+                    rows={4}
+                    className="resize-none"
+                  />
+                  <div className="flex justify-end">
+                    <Text variant="caption" className="text-neutral-50">
+                      ({characterCount}/{maxCharacters})
+                    </Text>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Footer */}
+            <div className="flex flex-col gap-3">
+              <Button
+                intent="danger"
+                size="lg"
+                onClick={handleConfirmReject}
+                disabled={
+                  selectedReasons.length === 0 || rejectMutation.isPending
+                }
+                className="w-full"
+              >
+                {rejectMutation.isPending ? "Rejecting..." : "Confirm Reject"}
+              </Button>
+              <Text variant="caption" className="text-neutral-50 text-center">
+                The user will be notified with the reason and your comments.
+              </Text>
+            </div>
+          </div>
+        )}
+
+        {modalState === "error" && (
+          <ErrorModalContent
+            onRetry={handleRetry}
+            onCancel={handleReturnToForm}
+          />
+        )}
+
+        {modalState === "success" && (
+          <SuccessModalContent onDone={handleSuccess} />
+        )}
+      </Dialog>
+    </>
   );
 }
