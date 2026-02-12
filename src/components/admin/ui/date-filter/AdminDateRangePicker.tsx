@@ -129,8 +129,8 @@ export function AdminDateRangePicker({
   const handleDateClick = (date: Date) => {
     const selectedDate = formatDateInput(date);
     setDraftValue((current) => {
-      const customValue =
-        current.preset === "custom" ? current : ({ preset: "custom" } as const);
+      const customValue: AdminDateRangeValue =
+        current.preset === "custom" ? current : { preset: "custom" };
 
       if (
         !customValue.startDate ||
