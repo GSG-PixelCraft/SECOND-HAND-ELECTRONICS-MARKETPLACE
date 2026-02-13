@@ -1,5 +1,5 @@
-import type { ReactNode } from "react";
 import React from "react";
+import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
 import { Text } from "@/components/ui/text";
@@ -37,9 +37,9 @@ export class AppErrorBoundary extends React.Component<
           <div className="rounded-full bg-red-100 px-4 py-2 text-sm font-semibold text-red-600">
             Unexpected Error
           </div>
-          <h1 className="text-3xl font-semibold text-slate-900">
+          <Text className="text-3xl font-semibold text-slate-900">
             Something went wrong
-          </h1>
+          </Text>
           <Text className="max-w-xl text-base text-slate-600">
             An unexpected error occurred. Please try refreshing the page or
             contact support if the problem persists.

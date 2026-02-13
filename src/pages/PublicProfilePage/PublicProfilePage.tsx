@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import {
   MapPin,
   Calendar,
@@ -13,15 +13,13 @@ import {
   Filter,
 } from "lucide-react";
 // import { Header } from "@/components/layout/header";
-import { Footer } from "@/components/layout/footer";
-import { Fragment } from "react";
 import { AdCard } from "@/components/ui/AdCard";
 import PageLayout from "@/components/layout/PageLayout";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import { Span } from "@/components/ui/span";
 
-export const PublicProfilePage = () => {
+export default function PublicProfilePage() {
   const [sort] = useState("Newest");
 
   // dummy listings until API arrives
@@ -145,7 +143,6 @@ export const PublicProfilePage = () => {
           </section>
         </div>
       </PageLayout>
-      <Footer></Footer>
     </Fragment>
   );
-};
+}

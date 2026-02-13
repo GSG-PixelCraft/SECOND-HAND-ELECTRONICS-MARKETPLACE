@@ -1,6 +1,6 @@
 // src/pages/AddListingPage/components/LocationDialog.tsx
-import * as React from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import type { FC, ReactElement } from "react";
 import { Dialog } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
@@ -94,12 +94,12 @@ const MapEvents = ({
   return null;
 };
 
-export const LocationDialog: React.FC<LocationDialogProps> = ({
+export const LocationDialog: FC<LocationDialogProps> = ({
   open,
   onOpenChange,
   value,
   onApply,
-}): React.ReactElement => {
+}): ReactElement => {
   const [draft, setDraft] = useState<LocationValue>(value);
   const [lastUpdateSource, setLastUpdateSource] = useState<
     "map" | "form" | null

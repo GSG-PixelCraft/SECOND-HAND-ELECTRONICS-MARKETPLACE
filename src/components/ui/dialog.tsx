@@ -1,10 +1,15 @@
-import * as React from "react";
+import { forwardRef, useCallback, useEffect, useMemo, useRef } from "react";
+import type {
+  DialogHTMLAttributes,
+  MutableRefObject,
+  Ref,
+  RefCallback,
+  SyntheticEvent,
+} from "react";
 import { cva, type VariantProps } from "class-variance-authority";
-import { clsx } from "clsx";
+import { cn } from "@/lib/utils";
 
-function mergeRefs<T>(
-  ...refs: Array<React.Ref<T> | undefined>
-): React.RefCallback<T> {
+function mergeRefs<T>(...refs: Array<Ref<T> | undefined>): RefCallback<T> {
   return (value) => {
     refs.forEach((ref) => {
       if (!ref) return;
@@ -12,7 +17,7 @@ function mergeRefs<T>(
       if (typeof ref === "function") {
         ref(value);
       } else {
-        (ref as React.MutableRefObject<T | null>).current = value;
+        (ref as MutableRefObject<T | null>).current = value;
       }
     });
   };
@@ -48,13 +53,13 @@ const dialogVariants = cva(
 
 type DialogVariantProps = VariantProps<typeof dialogVariants>;
 
-export interface DialogProps extends React.DialogHTMLAttributes<HTMLDialogElement> {
+export interface DialogProps extends DialogHTMLAttributes<HTMLDialogElement> {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   size?: DialogVariantProps["size"];
 }
 
-export const Dialog = React.forwardRef<HTMLDialogElement, DialogProps>(
+export const Dialog = forwardRef<HTMLDialogElement, DialogProps>(
   function Dialog(
     {
       open,
@@ -68,11 +73,11 @@ export const Dialog = React.forwardRef<HTMLDialogElement, DialogProps>(
     },
     ref,
   ) {
-    const dialogRef = React.useRef<HTMLDialogElement | null>(null);
+    const dialogRef = useRef<HTMLDialogElement | null>(null);
     // Prevents double onOpenChange(false) when cancel triggers close
-    const ignoreNextCloseRef = React.useRef(false);
+    const ignoreNextCloseRef = useRef(false);
 
-    React.useEffect(() => {
+    useEffect(() => {
       if (open === undefined || !dialogRef.current) return;
 
       const dialog = dialogRef.current;
@@ -98,8 +103,8 @@ export const Dialog = React.forwardRef<HTMLDialogElement, DialogProps>(
       };
     }, [open]);
 
-    const handleClose = React.useCallback(
-      (event: React.SyntheticEvent<HTMLDialogElement>) => {
+    const handleClose = useCallback(
+      (event: SyntheticEvent<HTMLDialogElement>) => {
         if (ignoreNextCloseRef.current) {
           ignoreNextCloseRef.current = false;
           onClose?.(event);
@@ -111,8 +116,8 @@ export const Dialog = React.forwardRef<HTMLDialogElement, DialogProps>(
       [onOpenChange, onClose],
     );
 
-    const handleCancel = React.useCallback(
-      (event: React.SyntheticEvent<HTMLDialogElement>) => {
+    const handleCancel = useCallback(
+      (event: SyntheticEvent<HTMLDialogElement>) => {
         onCancel?.(event);
         if (event.defaultPrevented) return;
         ignoreNextCloseRef.current = true;
@@ -121,12 +126,12 @@ export const Dialog = React.forwardRef<HTMLDialogElement, DialogProps>(
       [onOpenChange, onCancel],
     );
 
-    const combinedRef = React.useMemo(() => mergeRefs(dialogRef, ref), [ref]);
+    const combinedRef = useMemo(() => mergeRefs(dialogRef, ref), [ref]);
 
     return (
       <dialog
         ref={combinedRef}
-        className={clsx(dialogVariants({ size }), className)}
+        className={cn(dialogVariants({ size }), className)}
         onClose={handleClose}
         onCancel={handleCancel}
         {...props}

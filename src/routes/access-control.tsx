@@ -1,3 +1,43 @@
+import { Navigate } from "react-router-dom";
+
+import { useAuthStore } from "@/stores/useAuthStore";
+import { ROUTES } from "@/constants/routes";
+import { FullScreenLoading } from "@/components/feedback/loading/full-screen-loading";
+
+// Admin role guard hook
+export const useAdminGuard = () => {
+  const user = useAuthStore((state) => state.user);
+
+  // TODO: Remove this temporary bypass when auth is fully implemented
+  // For now, allow access for testing the admin UI
+  const isAdmin = true; // Temporarily disabled: user?.role === "admin"
+  const isLoading = false; // In a real app, this might check auth status
+
+  return {
+    isAdmin,
+    isLoading,
+    user,
+  };
+};
+
+// Admin guard component
+export const AdminGuard = ({ children }: { children: React.ReactNode }) => {
+  const { isAdmin, isLoading } = useAdminGuard();
+
+  if (isLoading) {
+    return <FullScreenLoading message="Checking permissions..." />;
+  }
+
+  if (!isAdmin) {
+    return <Navigate to={ROUTES.ACCESS_DENIED} replace />;
+  }
+
+  return <>{children}</>;
+};
+
+// Legacy commented out code preserved below for reference
+// ============================================================================
+
 // ! Do not use it
 
 // Permissions and roles

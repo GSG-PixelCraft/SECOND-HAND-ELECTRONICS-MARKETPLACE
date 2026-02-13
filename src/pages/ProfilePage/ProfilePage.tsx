@@ -1,6 +1,5 @@
-import * as React from "react";
+import { Fragment, useState } from "react";
 import PageLayout from "@/components/layout/PageLayout";
-import { Fragment } from "react";
 import ProfileDetails from "./ProfileDetails";
 import { NotificationSettings } from "./NotificationSettings";
 import { LanguageSettings } from "./LanguageSettings";
@@ -18,7 +17,7 @@ type Section =
   | "logout";
 
 const ProfilePage = () => {
-  const [activeSection, setActiveSection] = React.useState<Section>("profile");
+  const [activeSection, setActiveSection] = useState<Section>("profile");
 
   return (
     <Fragment>

@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useState } from "react";
 import { Camera } from "lucide-react";
 import { countries } from "countries-list";
 import { Button } from "@/components/ui/button";
@@ -25,10 +25,10 @@ export const EditProfileForm = ({
   onCancel,
   onSubmit,
 }: EditProfileFormProps) => {
-  const [fullName, setFullName] = React.useState("Eleanor Vance");
-  const [email, setEmail] = React.useState("eleanor@example.com");
-  const [phone, setPhone] = React.useState("+970 599 000 000");
-  const [country, setCountry] = React.useState("Palestine");
+  const [fullName, setFullName] = useState("Eleanor Vance");
+  const [email, setEmail] = useState("eleanor@example.com");
+  const [phone, setPhone] = useState("+970 599 000 000");
+  const [country, setCountry] = useState("Palestine");
 
   return (
     <div className="rounded-xl border border-neutral-20 bg-white p-6">

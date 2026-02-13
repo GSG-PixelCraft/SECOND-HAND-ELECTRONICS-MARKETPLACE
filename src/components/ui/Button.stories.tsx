@@ -2,13 +2,13 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { Button } from "./button";
 
 const meta: Meta<typeof Button> = {
-  title: "UI/Button",
+  title: "Components/UI/Button",
   component: Button,
   tags: ["autodocs"],
   argTypes: {
     intent: {
       control: "select",
-      options: ["primary", "secondary", "outline", "danger"],
+      options: ["primary", "outline", "danger"],
     },
     size: {
       control: "select",
@@ -36,13 +36,6 @@ export const Primary: Story = {
   args: {
     intent: "primary",
     children: "Primary Button",
-  },
-};
-
-export const Secondary: Story = {
-  args: {
-    intent: "secondary",
-    children: "Secondary Button",
   },
 };
 

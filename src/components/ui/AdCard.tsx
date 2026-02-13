@@ -32,6 +32,11 @@ export function AdCard({
           src={image}
           alt={title}
           className="h-[221px] w-full rounded-t-lg object-cover"
+          onError={(e) => {
+            const target = e.currentTarget as HTMLImageElement;
+            target.src =
+              "https://www.youngurbanproject.com/wp-content/uploads/2025/03/Product-Marketing.jpg";
+          }}
         />
 
         {category && !downBadge && (

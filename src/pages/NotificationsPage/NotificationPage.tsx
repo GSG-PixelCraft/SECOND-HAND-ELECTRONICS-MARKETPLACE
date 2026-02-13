@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { NotificationItem } from "@/components/notifications/NotificationItem";
+import { NotificationItem } from "./components";
 import { NotificationsEmptyState } from "@/components/feedback/emptyState";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -11,7 +11,7 @@ import {
   getNotificationTabCounts,
   groupNotificationsByDate,
   type NotificationTabId,
-} from "@/components/notifications/notificationTypes";
+} from "./components";
 import { useTranslation } from "react-i18next";
 
 export function NotificationsPage() {

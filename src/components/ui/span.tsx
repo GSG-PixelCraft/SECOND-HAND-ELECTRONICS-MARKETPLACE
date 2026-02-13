@@ -1,4 +1,5 @@
-import * as React from "react";
+import { forwardRef } from "react";
+import type { HTMLAttributes } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
@@ -30,9 +31,9 @@ const spanVariants = cva("", {
 type SpanVariantProps = VariantProps<typeof spanVariants>;
 
 export interface SpanProps
-  extends React.HTMLAttributes<HTMLSpanElement>, SpanVariantProps {}
+  extends HTMLAttributes<HTMLSpanElement>, SpanVariantProps {}
 
-export const Span = React.forwardRef<HTMLSpanElement, SpanProps>(function Span(
+export const Span = forwardRef<HTMLSpanElement, SpanProps>(function Span(
   { className, variant, ...props },
   ref,
 ) {

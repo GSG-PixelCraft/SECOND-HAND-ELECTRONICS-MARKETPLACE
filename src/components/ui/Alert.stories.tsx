@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { Alert } from "./alert";
 
 const meta: Meta<typeof Alert> = {
-  title: "UI/Alert",
+  title: "Components/UI/Alert",
   component: Alert,
   args: {
     children: "Something went wrong. Please try again.",

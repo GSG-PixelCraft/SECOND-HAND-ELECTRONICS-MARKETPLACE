@@ -13,9 +13,9 @@ import { ListingSection } from "./components/ListingSection";
 import { ListingStatusCard } from "./components/ListingStatusCard";
 import { ReportListingDialog } from "./components/ReportListingDialog";
 import { ReportSuccessDialog } from "./components/ReportSuccessDialog";
-import { ReportLoadingOverlay } from "./components/ReportLoadingOverlay";
 import { Button } from "@/components/ui/button";
 import { Span } from "@/components/ui/span";
+import { FullScreenLoading } from "@/components/feedback/loading/full-screen-loading";
 
 type OwnerStatus = "pending" | "rejected" | null;
 
@@ -338,7 +338,7 @@ const ProductDetailPage = () => {
         onClose={() => setReportStep("idle")}
         onSubmit={() => setReportStep("loading")}
       />
-      <ReportLoadingOverlay open={reportStep === "loading"} />
+      <FullScreenLoading open={reportStep === "loading"} message="Waiting..." />
       <ReportSuccessDialog
         open={reportStep === "success"}
         onClose={() => setReportStep("idle")}

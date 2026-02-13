@@ -1,6 +1,6 @@
 // src/pages/AddListingPage/components/MoreDetailsStep.tsx
-import * as React from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import type { FC, ReactElement } from "react";
 import { useTranslation } from "react-i18next";
 import type {
   UseFormRegister,
@@ -52,14 +52,14 @@ const STORAGE_OPTIONS = [
   { value: "512", labelKey: "addListing.storage.512" },
 ];
 
-export const MoreDetailsStep: React.FC<MoreDetailsStepProps> = ({
+export const MoreDetailsStep: FC<MoreDetailsStepProps> = ({
   register,
   setValue,
   errors,
   watch,
   onReview,
   onLocationClick,
-}): React.ReactElement => {
+}): ReactElement => {
   const { t } = useTranslation();
   const descriptionValue = watch("description") ?? "";
   const locationValue = watch("location") ?? "";
@@ -81,23 +81,23 @@ export const MoreDetailsStep: React.FC<MoreDetailsStepProps> = ({
       )
     : t("addListing.fields.storage.placeholder");
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (watchedBrand && watchedBrand !== selectedBrand) {
       setSelectedBrand(watchedBrand);
     }
-  }, [watchedBrand]);
+  }, [watchedBrand, selectedBrand]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (watchedStorage && watchedStorage !== selectedStorage) {
       setSelectedStorage(watchedStorage);
     }
-  }, [watchedStorage]);
+  }, [watchedStorage, selectedStorage]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setValue("brand", selectedBrand, { shouldValidate: true });
   }, [selectedBrand, setValue]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setValue("storage", selectedStorage, { shouldValidate: true });
   }, [selectedStorage, setValue]);
 
