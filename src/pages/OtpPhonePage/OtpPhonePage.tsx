@@ -98,50 +98,37 @@ export default function OtpPhonePage() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="flex items-center justify-between px-6 py-5">
-        <button
-          type="button"
-          onClick={() => navigate(-1)}
-          className="text-sm text-gray-700 hover:text-gray-900"
-        >
-          Back
-        </button>
-        <Link
-          to={ROUTES.HOME}
-          className="text-base font-semibold text-blue-600"
-        >
-          Logo
-        </Link>
-        <span className="w-10" aria-hidden="true" />
-      </div>
-
-      <div className="flex items-start justify-center px-5 py-10">
-        <div className="w-full max-w-md space-y-6 text-center">
-          <h1 className="text-2xl font-semibold text-gray-900">Verify Code</h1>
-          <p className="text-sm text-gray-400">
-            Enter the 4-digit code we sent to your phone.
+    <PageLayout title="Verify Phone" maxWidth="md">
+      <div className="w-full max-w-md space-y-6">
+        <div className="space-y-2 text-center">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+            <Phone className="h-6 w-6 text-primary" />
+          </div>
+          <h1 className="text-h2 font-semibold">Verify Your Phone</h1>
+          <p className="text-body text-muted-foreground">
+            We've sent a 6-digit verification code to your phone number. Please
+            enter it below.
           </p>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="flex justify-center gap-3">
-              {otp.map((digit, index) => (
-                <input
-                  key={index}
-                  ref={(el) => {
-                    inputRefs.current[index] = el;
-                  }}
-                  type="text"
-                  inputMode="numeric"
-                  maxLength={1}
-                  value={digit}
-                  onChange={(e) => handleChange(index, e.target.value)}
-                  onKeyDown={(e) => handleKeyDown(index, e)}
-                  onPaste={handlePaste}
-                  className="h-10 w-10 rounded-md border border-gray-200 text-center text-base font-semibold text-gray-800 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                />
-              ))}
-            </div>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="flex justify-center gap-2">
+            {otp.map((digit, index) => (
+              <input
+                key={index}
+                ref={(el) => {
+                  inputRefs.current[index] = el;
+                }}
+                type="text"
+                inputMode="numeric"
+                maxLength={1}
+                value={digit}
+                onChange={(e) => handleChange(index, e.target.value)}
+                onKeyDown={(e) => handleKeyDown(index, e)}
+                onPaste={handlePaste}
+                className="h-12 w-12 rounded-md border border-neutral-20 text-center text-h3 font-semibold focus:border-transparent focus:outline-none focus:ring-2 focus:ring-primary"
+              />
+            ))}
+          </div>
 
             <button
               type="submit"
