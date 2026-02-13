@@ -1,11 +1,6 @@
 // Landing page
 import { Link } from "react-router-dom";
-import {
-  ROUTES,
-  getProductRoute,
-  getPublicProfileRoute,
-} from "@/constants/routes";
-import { ChatsParts } from "@/pages/ChatPage/components";
+import { ROUTES } from "@/constants/routes";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 
@@ -24,50 +19,14 @@ const HomePage = () => {
             </Text>
           </div>
           <div className="flex flex-wrap gap-3">
+            <Link to={ROUTES.PRODUCTS}>
+              <Button intent="primary" size="md">
+                Browse Products
+              </Button>
+            </Link>
             <Link to={ROUTES.RECENT_LISTINGS}>
-              <Button intent="primary" size="md">
-                Browse Listings
-              </Button>
-            </Link>
-            <Link to={ROUTES.SIGN_UP}>
               <Button intent="outline" size="md">
-                Sign Up
-              </Button>
-            </Link>
-            {/* TEMPORARY DEMO BUTTON */}
-            <Link to={ROUTES.PROFILE}>
-              <Button intent="primary" size="md">
-                DEMO: Profile
-              </Button>
-            </Link>
-            <Link to={getPublicProfileRoute("u-101")}>
-              <Button intent="outline" size="md">
-                DEMO: Public Profile
-              </Button>
-            </Link>
-            <Link to={ROUTES.SETTINGS}>
-              <Button intent="primary" size="md">
-                DEMO: Settings
-              </Button>
-            </Link>
-            <Link to={ROUTES.ADD_LISTING}>
-              <Button intent="primary" size="md">
-                🎨 DEMO: Add Listing
-              </Button>
-            </Link>
-            <Link to={getProductRoute("p-101")}>
-              <Button intent="outline" size="md">
-                🎨 DEMO: Product Details
-              </Button>
-            </Link>
-            <Link to={ROUTES.VERIFY}>
-              <Button intent="primary" size="md">
-                ✨ DEMO: Verification
-              </Button>
-            </Link>
-            <Link to={ROUTES.ADMIN_DASHBOARD}>
-              <Button intent="outline" size="md">
-                🔑 DEMO: Admin Dashboard
+                Recent Listings
               </Button>
             </Link>
           </div>
@@ -98,23 +57,6 @@ const HomePage = () => {
           <Text variant="muted" className="mt-2 text-sm">
             Always here to help
           </Text>
-        </div>
-      </section>
-
-      <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-        <div className="mb-4 flex items-center justify-between">
-          <Text className="text-xl font-semibold text-slate-900">
-            Chats Demo
-          </Text>
-          <Link
-            to={ROUTES.CHAT}
-            className="text-sm font-medium text-slate-600 transition hover:text-slate-900"
-          >
-            Open Chat
-          </Link>
-        </div>
-        <div className="flex justify-center">
-          <ChatsParts aria-label="Chats demo" />
         </div>
       </section>
     </div>
