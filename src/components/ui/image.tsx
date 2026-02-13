@@ -1,8 +1,5 @@
-import {
-  forwardRef,
-  type ImgHTMLAttributes,
-  type ReactEventHandler,
-} from "react";
+import { forwardRef } from "react";
+import type { ImgHTMLAttributes, ReactEventHandler } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";

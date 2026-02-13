@@ -9,7 +9,7 @@ export default [
   ...tseslint.configs.recommended,
   prettierConfig,
   {
-    ignores: ["**/*.cjs"],
+    ignores: ["**/*.cjs", "dist/**", "node_modules/**", "build/**"],
   },
   {
     files: ["**/*.{ts,tsx}"],

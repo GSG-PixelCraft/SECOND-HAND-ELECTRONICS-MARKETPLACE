@@ -12,6 +12,8 @@ export interface ListingOptionsProps {
   onAction?: (action: string) => void;
 }
 
+import { Button } from "@/components/ui/button";
+
 const OPTIONS_MAP: Record<ListingStatus, string[]> = {
   active: ["Edit", "Share", "Mark as Sold", "Archive", "Delete"],
   product: ["Edit", "Mark as Sold", "Archive", "Delete"],
@@ -35,14 +37,15 @@ export function ListingOptions({ status, onAction }: ListingOptionsProps) {
 
         return (
           <li key={option} role="none">
-            <button
-              type="button"
+            <Button
               role="menuitem"
               onClick={() => onAction?.(option)}
-              className={`flex w-full items-center px-4 py-2 text-left text-body transition-colors ${isDelete ? "text-error hover:bg-error-10" : "hover:bg-neutral-5"} `}
+              className={`flex w-full items-center px-4 py-2 text-left text-body transition-colors ${
+                isDelete ? "text-error hover:bg-error-10" : "hover:bg-neutral-5"
+              } `}
             >
               {option}
-            </button>
+            </Button>
 
             {index !== options.length - 1 && (
               <div className="mx-4 h-px bg-neutral-10" />

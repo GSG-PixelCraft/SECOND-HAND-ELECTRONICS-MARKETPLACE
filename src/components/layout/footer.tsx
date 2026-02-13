@@ -8,7 +8,7 @@ export const Footer = () => {
       <div className="mx-auto max-w-[1440px] px-6 py-10 lg:px-24">
         {/* Top Section: Logo and Description */}
         <div className="flex flex-col items-center gap-8 text-center">
-          <h2 className="text-4xl font-bold tracking-tight">Logo</h2>
+          <Text className="text-4xl font-bold tracking-tight">Logo</Text>
           <Text className="max-w-[700px] text-sm leading-relaxed text-white/90">
             We are a trusted marketplace for buying and selling used
             electronics. Our platform connects buyers and sellers in a safe,

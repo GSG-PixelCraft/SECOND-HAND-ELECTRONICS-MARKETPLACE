@@ -7,6 +7,7 @@ import {
 import { LocationPermissionModal } from "./LocationPermissionModal";
 import { Button } from "./button";
 import { Span } from "./span";
+import { Text } from "./text";
 export interface FiltersState {
   categories: string[];
   condition: string[];
@@ -288,7 +289,7 @@ export const FiltersPart = ({
       <div className="w-full max-w-sm rounded-lg border border-gray-200 bg-white shadow-sm">
         <div className="border-b border-gray-200 px-6 py-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-gray-900">Filters</h2>
+            <Text className="text-lg font-semibold text-gray-900">Filters</Text>
             <Button
               type="button"
               onClick={reset}

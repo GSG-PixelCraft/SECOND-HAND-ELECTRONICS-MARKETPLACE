@@ -1,8 +1,8 @@
-import * as React from "react";
+import type { HTMLAttributes } from "react";
 import { Button } from "./button";
 import { Span } from "./span";
 
-export interface SearchSuggestionsProps extends React.HTMLAttributes<HTMLUListElement> {
+export interface SearchSuggestionsProps extends HTMLAttributes<HTMLUListElement> {
   suggestions: string[];
   onSuggestionSelect?: (value: string) => void;
 }

@@ -3,7 +3,7 @@
    ========================= */
 :root {
   /* Typography - Font Family */
-  --font-family-base: "AG", sans-serif;
+  --font-family-base: "Poppins", sans-serif;
 
   /* Typography - Font Sizes */
   --font-size-h1: 4rem;
@@ -44,7 +44,8 @@
 
   /* Colors - Light Theme */
   --background: 0 0% 100%;
-  --foreground: 222 40% 9.8%;
+  --foreground: 0 0% 13%;
+  --text-body: 0 0% 24%;
 
   --primary: 221 83% 53%;
   --primary-foreground: 0 0% 100%;
@@ -67,7 +68,7 @@
   --error: 0 84% 60%;
   --error-foreground: 0 0% 100%;
 
-  --border: 215 27.9% 90%;
+  --border: 0 0% 89%;
 
   /* Spacing */
   --spacing-xs: 0.25rem;

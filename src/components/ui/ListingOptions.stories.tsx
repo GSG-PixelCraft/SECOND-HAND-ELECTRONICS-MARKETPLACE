@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { ListingOptions } from "./ListingOptions";
 
 const meta: Meta<typeof ListingOptions> = {
-  title: "UI/ListingOptions",
+  title: "Components/UI/ListingOptions",
   component: ListingOptions,
   argTypes: {
     onAction: { action: "onAction" },

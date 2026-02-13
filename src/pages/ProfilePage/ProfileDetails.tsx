@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useState } from "react";
 import {
   MapPin,
   Calendar,
@@ -14,7 +14,7 @@ import { Text } from "@/components/ui/text";
 import { Span } from "@/components/ui/span";
 
 export default function ProfileDetails() {
-  const [isEditing, setIsEditing] = React.useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
   const handleVerify = (label: string) => {
     console.log("Verify clicked:", label);

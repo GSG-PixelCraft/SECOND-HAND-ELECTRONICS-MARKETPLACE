@@ -1,4 +1,5 @@
-import * as React from "react";
+import { forwardRef } from "react";
+import type { ElementType, HTMLAttributes } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
@@ -15,6 +16,9 @@ const textVariants = cva("", {
       bodySmall: "text-bodySmall text-neutral-foreground",
       caption: "text-caption text-neutral-foreground",
       label: "text-label text-neutral-foreground",
+      h3: "text-h3 text-neutral-foreground",
+      displaySm: "text-h4 text-neutral-foreground",
+      primary: "text-body text-primary",
       muted: "text-body text-muted-foreground",
       error: "text-caption text-error",
       success: "text-caption text-success",
@@ -28,18 +32,21 @@ const textVariants = cva("", {
 type TextVariantProps = VariantProps<typeof textVariants>;
 
 export interface TextProps
-  extends React.HTMLAttributes<HTMLParagraphElement>, TextVariantProps {}
+  extends HTMLAttributes<HTMLElement>, TextVariantProps {
+  as?: ElementType;
+}
 
-export const Text = React.forwardRef<HTMLParagraphElement, TextProps>(
-  function Text({ className, variant, ...props }, ref) {
-    return (
-      <p
-        ref={ref}
-        className={cn(textVariants({ variant }), className)}
-        {...props}
-      />
-    );
-  },
-);
+export const Text = forwardRef<HTMLElement, TextProps>(function Text(
+  { className, variant, as: Component = "p", ...props },
+  ref,
+) {
+  return (
+    <Component
+      ref={ref}
+      className={cn(textVariants({ variant }), className)}
+      {...props}
+    />
+  );
+});
 
 Text.displayName = "Text";

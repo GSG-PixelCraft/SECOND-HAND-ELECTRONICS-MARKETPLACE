@@ -1,6 +1,12 @@
 // src/pages/AddListingPage/components/BasicDetailsStep.tsx
-import * as React from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import type {
+  ChangeEvent,
+  Dispatch,
+  FC,
+  ReactElement,
+  SetStateAction,
+} from "react";
 import type {
   UseFormRegister,
   FieldErrors,
@@ -36,7 +42,7 @@ interface BasicDetailsStepProps {
   setValue: UseFormSetValue<ListingFormData>;
   errors: FieldErrors<ListingFormData>;
   photos: PhotoItemWithProgress[];
-  setPhotos: React.Dispatch<React.SetStateAction<PhotoItemWithProgress[]>>;
+  setPhotos: Dispatch<SetStateAction<PhotoItemWithProgress[]>>;
   photoError: string | null;
   setPhotoError: (error: string | null) => void;
   onTipsClick: () => void;
@@ -62,7 +68,7 @@ const CONDITIONS = [
   { value: "fair", label: "Fair" },
 ];
 
-export const BasicDetailsStep: React.FC<BasicDetailsStepProps> = ({
+export const BasicDetailsStep: FC<BasicDetailsStepProps> = ({
   register,
   setValue,
   photos,
@@ -71,16 +77,16 @@ export const BasicDetailsStep: React.FC<BasicDetailsStepProps> = ({
   onTipsClick,
   onNext,
   isNextDisabled,
-}): React.ReactElement => {
+}): ReactElement => {
   const [categoryOpen, setCategoryOpen] = useState(false);
   const [conditionOpen, setConditionOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("Phones");
   const [selectedCondition, setSelectedCondition] = useState("Like New");
-  React.useEffect(() => {
+  useEffect(() => {
     setValue("category", selectedCategory, { shouldValidate: true });
   }, [selectedCategory, setValue]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setValue("condition", selectedCondition, { shouldValidate: true });
   }, [selectedCondition, setValue]);
   const [draggingPhotoId, setDraggingPhotoId] = useState<string | null>(null);
@@ -109,7 +115,7 @@ export const BasicDetailsStep: React.FC<BasicDetailsStepProps> = ({
     }, 100);
   };
 
-  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoUpload = (e: ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;
 

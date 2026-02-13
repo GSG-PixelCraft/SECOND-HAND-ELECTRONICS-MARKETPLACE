@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { ChatsParts } from "@/components/chats/ChatsParts";
+import { ChatsParts } from "./components";
 import ChatRightPanel from "./components/ChatRightPanel";
 
 export default function ChatPage() {

@@ -1,32 +1,38 @@
 // src/components/forms/form-components.tsx
-import * as React from "react";
+import type {
+  FC,
+  HTMLAttributes,
+  LabelHTMLAttributes,
+  ReactElement,
+  ReactNode,
+} from "react";
 import { twMerge } from "tailwind-merge";
 import { Text } from "@/components/ui/text";
 
 export interface FormFieldProps {
-  children: React.ReactNode;
+  children: ReactNode;
   className?: string;
 }
 
-export const FormField: React.FC<FormFieldProps> = ({
+export const FormField: FC<FormFieldProps> = ({
   children,
   className,
-}): React.ReactElement => {
+}): ReactElement => {
   return (
     <div className={twMerge("flex flex-col gap-2", className)}>{children}</div>
   );
 };
 
-export interface FormLabelProps extends React.LabelHTMLAttributes<HTMLLabelElement> {
+export interface FormLabelProps extends LabelHTMLAttributes<HTMLLabelElement> {
   required?: boolean;
 }
 
-export const FormLabel: React.FC<FormLabelProps> = ({
+export const FormLabel: FC<FormLabelProps> = ({
   children,
   required,
   className,
   ...props
-}): React.ReactElement => {
+}): ReactElement => {
   return (
     <label
       className={twMerge("text-label text-neutral-foreground", className)}
@@ -38,15 +44,15 @@ export const FormLabel: React.FC<FormLabelProps> = ({
   );
 };
 
-export interface FormHelperTextProps extends React.HTMLAttributes<HTMLParagraphElement> {
+export interface FormHelperTextProps extends HTMLAttributes<HTMLParagraphElement> {
   id?: string;
 }
 
-export const FormHelperText: React.FC<FormHelperTextProps> = ({
+export const FormHelperText: FC<FormHelperTextProps> = ({
   children,
   className,
   ...props
-}): React.ReactElement => {
+}): ReactElement => {
   return (
     <Text
       variant="muted"
@@ -58,15 +64,15 @@ export const FormHelperText: React.FC<FormHelperTextProps> = ({
   );
 };
 
-export interface FormErrorProps extends React.HTMLAttributes<HTMLParagraphElement> {
+export interface FormErrorProps extends HTMLAttributes<HTMLParagraphElement> {
   id?: string;
 }
 
-export const FormError: React.FC<FormErrorProps> = ({
+export const FormError: FC<FormErrorProps> = ({
   children,
   className,
   ...props
-}): React.ReactElement => {
+}): ReactElement => {
   if (!children) return <></>;
 
   return (
@@ -80,15 +86,15 @@ export const FormError: React.FC<FormErrorProps> = ({
   );
 };
 
-export interface FormDescriptionProps extends React.HTMLAttributes<HTMLParagraphElement> {
+export interface FormDescriptionProps extends HTMLAttributes<HTMLParagraphElement> {
   id?: string;
 }
 
-export const FormDescription: React.FC<FormDescriptionProps> = ({
+export const FormDescription: FC<FormDescriptionProps> = ({
   children,
   className,
   ...props
-}): React.ReactElement => {
+}): ReactElement => {
   return (
     <Text
       variant="muted"

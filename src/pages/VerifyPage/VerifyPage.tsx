@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { ROUTES } from "@/constants/routes";
 import { useAuthStore } from "@/stores/useAuthStore";
+import type { ContactVerificationStatus, VerificationStatus } from "@/types";
 
 export default function VerifyPage() {
   const navigate = useNavigate();
@@ -85,7 +86,7 @@ export default function VerifyPage() {
                       Add a phone number to increase your credibility
                     </Text>
                   </div>
-                  {renderVerificationStatus(verification.phoneStatus, () =>
+                  {renderVerificationStatus(verification.phone.status, () =>
                     navigate(ROUTES.VERIFY_PHONE),
                   )}
                 </div>
@@ -109,7 +110,7 @@ export default function VerifyPage() {
                       Submit a government-issued ID to become a verified seller
                     </Text>
                   </div>
-                  {renderIdentityStatus(verification.identityStatus, () =>
+                  {renderIdentityStatus(verification.identity.status, () =>
                     navigate(ROUTES.VERIFY_IDENTITY),
                   )}
                 </div>
@@ -149,7 +150,7 @@ export default function VerifyPage() {
 
 // Helper function to render verification status for phone and email
 function renderVerificationStatus(
-  status: "not_verified" | "verified",
+  status: ContactVerificationStatus,
   onVerifyClick: () => void,
 ) {
   if (status === "verified") {
@@ -157,6 +158,15 @@ function renderVerificationStatus(
       <div className="flex items-center gap-2">
         <CheckCircle2 className="h-5 w-5 text-success" />
         <Span variant="success">Verified</Span>
+      </div>
+    );
+  }
+
+  if (status === "pending") {
+    return (
+      <div className="flex items-center gap-2">
+        <Clock className="h-5 w-5 text-warning" />
+        <Span variant="warning">Pending</Span>
       </div>
     );
   }
@@ -170,12 +180,7 @@ function renderVerificationStatus(
 
 // Helper function to render identity verification status
 function renderIdentityStatus(
-  status:
-    | "not_started"
-    | "uploading"
-    | "waiting_approval"
-    | "approved"
-    | "rejected",
+  status: VerificationStatus,
   onStartClick: () => void,
 ) {
   switch (status) {
@@ -187,7 +192,8 @@ function renderIdentityStatus(
         </div>
       );
 
-    case "waiting_approval":
+    case "pending":
+    case "waiting":
       return (
         <div className="flex items-center gap-2">
           <Clock className="h-5 w-5 text-warning" />

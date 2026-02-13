@@ -1,4 +1,5 @@
-import * as React from "react";
+import { forwardRef } from "react";
+import type { ButtonHTMLAttributes } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
@@ -75,6 +76,18 @@ const buttonVariants = cva(
           "focus:ring-offset-2",
           "focus:ring-error-20",
         ],
+        ghost: [
+          "inline-flex",
+          "items-center",
+          "justify-center",
+          "rounded-md",
+          "font-medium",
+          "transition-colors",
+          "bg-transparent",
+          "text-neutral-foreground",
+          "hover:bg-neutral-5",
+          "focus:outline-none",
+        ],
       },
       size: {
         sm: "px-3 py-1.5 ",
@@ -94,7 +107,7 @@ const buttonVariants = cva(
 type ButtonVariantProps = VariantProps<typeof buttonVariants>;
 
 export interface ButtonProps extends Omit<
-  React.ButtonHTMLAttributes<HTMLButtonElement>,
+  ButtonHTMLAttributes<HTMLButtonElement>,
   "size"
 > {
   intent?: ButtonVariantProps["intent"];
@@ -102,7 +115,7 @@ export interface ButtonProps extends Omit<
   fullWidth?: ButtonVariantProps["fullWidth"];
 }
 
-export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   function Button(
     { type = "button", className, intent, size, fullWidth, children, ...props },
     ref,

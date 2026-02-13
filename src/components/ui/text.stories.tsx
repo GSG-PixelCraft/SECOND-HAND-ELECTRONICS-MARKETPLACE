@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { Text } from "./text";
 
 const meta: Meta<typeof Text> = {
-  title: "UI/Text",
+  title: "Components/UI/Text",
   component: Text,
   tags: ["autodocs"],
   argTypes: {
@@ -17,7 +17,6 @@ const meta: Meta<typeof Text> = {
         "label",
         "muted",
         "error",
-        "success",
       ],
       description: "Semantic variant controlling typography and color",
       table: {
@@ -91,13 +90,6 @@ export const Error: Story = {
   },
 };
 
-export const Success: Story = {
-  args: {
-    variant: "success",
-    children: "This is success text for positive feedback.",
-  },
-};
-
 export const WithClassName: Story = {
   args: {
     variant: "body",
@@ -137,9 +129,6 @@ export const AllVariants: Story = {
       </div>
       <div>
         <Text variant="error">Error - Validation error messages</Text>
-      </div>
-      <div>
-        <Text variant="success">Success - Positive feedback messages</Text>
       </div>
     </div>
   ),

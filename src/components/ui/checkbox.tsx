@@ -1,5 +1,6 @@
 // src/components/ui/checkbox.tsx
-import * as React from "react";
+import { forwardRef, useId } from "react";
+import type { InputHTMLAttributes, ReactElement } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { twMerge } from "tailwind-merge";
 import { Span } from "./span";
@@ -50,19 +51,19 @@ const checkboxVariants = cva(
 
 export interface CheckboxProps
   extends
-    Omit<React.InputHTMLAttributes<HTMLInputElement>, "size" | "type">,
+    Omit<InputHTMLAttributes<HTMLInputElement>, "size" | "type">,
     VariantProps<typeof checkboxVariants> {
   label?: string;
   helperText?: string;
   error?: string;
 }
 
-export const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
+export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
   (
     { className, intent, size, label, helperText, error, id, ...props },
     ref,
-  ): React.ReactElement => {
-    const checkboxId = React.useId();
+  ): ReactElement => {
+    const checkboxId = useId();
     const resolvedId = id ?? checkboxId;
 
     const helperId = helperText ? `${resolvedId}-help` : undefined;
