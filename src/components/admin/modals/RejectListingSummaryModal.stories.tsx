@@ -26,11 +26,20 @@ const Example = () => {
         listingName="iPhone 13 Pro"
         primaryReason="poor_quality_images"
         selectedIssues={[
-          { group: "Photos & Visual Accuracy.", issue: "Images are blurry or low quality." },
-          { group: "Listing Information Accuracy", issue: "Missing required listing details." },
+          {
+            group: "Photos & Visual Accuracy.",
+            issue: "Images are blurry or low quality.",
+          },
+          {
+            group: "Listing Information Accuracy",
+            issue: "Missing required listing details.",
+          },
         ]}
         comments={[
-          { group: "Photos & Visual Accuracy.", comment: "Please upload clear photos in good lighting." },
+          {
+            group: "Photos & Visual Accuracy.",
+            comment: "Please upload clear photos in good lighting.",
+          },
         ]}
         onConfirm={() => console.log("Rejection confirmed")}
         onBack={() => setOpen(false)}

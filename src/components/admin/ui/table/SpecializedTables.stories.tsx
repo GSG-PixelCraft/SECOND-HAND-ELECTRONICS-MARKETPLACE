@@ -16,7 +16,7 @@ type Story = StoryObj;
 
 export const VerificationTable: Story = {
   render: () => (
-    <div className="rounded-lg border border-neutral-20 overflow-hidden">
+    <div className="overflow-hidden rounded-lg border border-neutral-20">
       <table className="w-full">
         <thead>
           <VerificationTableHeader />
@@ -39,7 +39,7 @@ export const VerificationTable: Story = {
 
 export const CountryTable: Story = {
   render: () => (
-    <div className="rounded-lg border border-neutral-20 overflow-hidden">
+    <div className="overflow-hidden rounded-lg border border-neutral-20">
       <table className="w-full">
         <thead>
           <CountryManagementTableHeader />

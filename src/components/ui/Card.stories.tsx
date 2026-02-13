@@ -28,7 +28,7 @@ export const Default: Story = {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <p className="text-sm text-neutral-60">
+        <p className="text-neutral-60 text-sm">
           This card mirrors the structure used in production layouts.
         </p>
       </CardContent>

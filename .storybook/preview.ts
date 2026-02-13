@@ -12,7 +12,7 @@ const preview: Preview = {
       React.createElement(
         QueryProvider,
         null,
-        React.createElement(MemoryRouter, null, React.createElement(Story))
+        React.createElement(MemoryRouter, null, React.createElement(Story)),
       ),
   ],
   parameters: {

@@ -100,7 +100,7 @@ const publicSimpleRoutes = [
   {
     path: "/profile/:id",
     lazy: async () => {
-      const { PublicProfilePage } =
+      const { default: PublicProfilePage } =
         await import("@/pages/PublicProfilePage/PublicProfilePage");
       return { Component: PublicProfilePage };
     },

@@ -15,6 +15,7 @@ export const Default: Story = {
     removedAt: "2026-01-20T14:45:00Z",
     removedBy: "Admin Team",
     reason: "policy_violation",
-    comment: "This listing violates marketplace guidelines. Please update and resubmit.",
+    comment:
+      "This listing violates marketplace guidelines. Please update and resubmit.",
   },
 };

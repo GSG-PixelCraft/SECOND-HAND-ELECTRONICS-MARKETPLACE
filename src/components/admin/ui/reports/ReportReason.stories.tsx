@@ -13,7 +13,13 @@ type Story = StoryObj<typeof meta>;
 
 const SelectStory = () => {
   const [selected, setSelected] = useState("");
-  return <ReportReason selectedValue={selected} onSelect={setSelected} mode="select" />;
+  return (
+    <ReportReason
+      selectedValue={selected}
+      onSelect={setSelected}
+      mode="select"
+    />
+  );
 };
 
 export const Select: Story = {
