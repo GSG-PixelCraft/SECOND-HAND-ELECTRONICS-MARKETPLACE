@@ -14,6 +14,16 @@ export default defineConfig({
       ),
     },
   },
+  server: {
+    proxy: {
+      "/api": {
+        target: "https://gsg-project-group-6.onrender.com",
+        changeOrigin: true,
+        secure: true,
+        rewrite: (path) => path.replace(/^\/api/, ""),
+      },
+    },
+  },
   test: {
     environment: "jsdom",
   },
