@@ -178,18 +178,6 @@ export const Header = () => {
       navigate(`${ROUTES.SEARCH}?q=${encodeURIComponent(searchQuery)}`);
   };
 
-  const handleDemoLogin = () => {
-    setUser({
-      id: "demo-user",
-      name: "Demo User",
-      email: "demo@marketplace.dev",
-      role: "user",
-    });
-    setToken("demo-token");
-    navigate(ROUTES.PROFILE);
-    setMobileMenuOpen(false);
-  };
-
   return (
     <header className="sticky top-0 z-40 border-b border-gray-200 bg-white">
       <div className="border-b border-gray-100">
@@ -246,7 +234,9 @@ export const Header = () => {
               </Button>
               <Button
                 onClick={() =>
-                  isAuthenticated ? navigate(ROUTES.PROFILE) : handleDemoLogin()
+                  isAuthenticated
+                    ? navigate(ROUTES.PROFILE)
+                    : navigate(ROUTES.SIGN_IN)
                 }
                 className="rounded-lg p-1 transition hover:bg-gray-100"
               >
@@ -258,7 +248,9 @@ export const Header = () => {
               <NotificationMenu />
               <Button
                 onClick={() =>
-                  isAuthenticated ? navigate(ROUTES.PROFILE) : handleDemoLogin()
+                  isAuthenticated
+                    ? navigate(ROUTES.PROFILE)
+                    : navigate(ROUTES.SIGN_IN)
                 }
                 className="rounded-lg p-1 transition hover:bg-gray-100"
               >
@@ -334,20 +326,12 @@ export const Header = () => {
                   Logout
                 </Button>
               ) : (
-                <div className="flex items-center gap-2">
-                  <NavLink
-                    to={ROUTES.SIGN_IN}
-                    className="px-4 py-2 text-sm font-medium text-gray-700 transition hover:text-gray-900"
-                  >
-                    Login
-                  </NavLink>
-                  <Button
-                    className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800"
-                    onClick={handleDemoLogin}
-                  >
-                    Demo Login
-                  </Button>
-                </div>
+                <NavLink
+                  to={ROUTES.SIGN_IN}
+                  className="px-4 py-2 text-sm font-medium text-gray-700 transition hover:text-gray-900"
+                >
+                  Login
+                </NavLink>
               )}
             </div>
           </div>
@@ -415,12 +399,6 @@ export const Header = () => {
                   >
                     Login
                   </NavLink>
-                  <Button
-                    className="w-full rounded-lg bg-slate-900 px-3 py-2 text-sm font-medium text-white transition hover:bg-slate-800"
-                    onClick={handleDemoLogin}
-                  >
-                    Demo Login
-                  </Button>
                 </>
               )}
             </div>
