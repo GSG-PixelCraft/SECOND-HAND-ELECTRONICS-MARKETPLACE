@@ -158,7 +158,7 @@ const categories = [
 
 export const Header = () => {
   const navigate = useNavigate();
-  const { user, token, setUser, setToken, logout } = useAuthStore();
+  const { user, token, logout } = useAuthStore();
   const isAuthenticated = Boolean(user && token);
   const [searchQuery, setSearchQuery] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -173,18 +173,6 @@ export const Header = () => {
     e.preventDefault();
     if (searchQuery.trim())
       navigate(`${ROUTES.SEARCH}?q=${encodeURIComponent(searchQuery)}`);
-  };
-
-  const handleDemoLogin = () => {
-    setUser({
-      id: "demo-user",
-      name: "Demo User",
-      email: "demo@marketplace.dev",
-      role: "user",
-    });
-    setToken("demo-token");
-    navigate(ROUTES.PROFILE);
-    setMobileMenuOpen(false);
   };
 
   return (
@@ -243,7 +231,9 @@ export const Header = () => {
               </button>
               <button
                 onClick={() =>
-                  isAuthenticated ? navigate(ROUTES.PROFILE) : handleDemoLogin()
+                  isAuthenticated
+                    ? navigate(ROUTES.PROFILE)
+                    : navigate(ROUTES.SIGN_IN)
                 }
                 className="rounded-lg p-1 transition hover:bg-gray-100"
               >
@@ -255,7 +245,9 @@ export const Header = () => {
               <NotificationMenu />
               <button
                 onClick={() =>
-                  isAuthenticated ? navigate(ROUTES.PROFILE) : handleDemoLogin()
+                  isAuthenticated
+                    ? navigate(ROUTES.PROFILE)
+                    : navigate(ROUTES.SIGN_IN)
                 }
                 className="rounded-lg p-1 transition hover:bg-gray-100"
               >
@@ -338,12 +330,6 @@ export const Header = () => {
                   >
                     Login
                   </NavLink>
-                  <button
-                    className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800"
-                    onClick={handleDemoLogin}
-                  >
-                    Demo Login
-                  </button>
                 </div>
               )}
             </div>
@@ -412,12 +398,6 @@ export const Header = () => {
                   >
                     Login
                   </NavLink>
-                  <button
-                    className="w-full rounded-lg bg-slate-900 px-3 py-2 text-sm font-medium text-white transition hover:bg-slate-800"
-                    onClick={handleDemoLogin}
-                  >
-                    Demo Login
-                  </button>
                 </>
               )}
             </div>

@@ -1,4 +1,8 @@
 import { create } from "zustand";
+import {
+  setVerification as persistVerification,
+  removeVerification,
+} from "@/lib/storage";
 
 import type { User, VerificationState } from "../types";
 
@@ -38,8 +42,8 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ token });
   },
   setVerification: (verification: Partial<VerificationState>) => {
-    set((state) => ({
-      verification: {
+    set((state) => {
+      const nextVerification = {
         ...state.verification,
         ...verification,
         identity: {
@@ -54,10 +58,13 @@ export const useAuthStore = create<AuthState>((set) => ({
           ...state.verification.email,
           ...(verification.email || {}),
         },
-      },
-    }));
+      };
+      persistVerification(nextVerification);
+      return { verification: nextVerification };
+    });
   },
   logout: () => {
+    removeVerification();
     set({ user: null, token: null, verification: initialVerificationState });
   },
 }));
