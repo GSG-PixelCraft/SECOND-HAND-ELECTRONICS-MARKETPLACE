@@ -15,8 +15,28 @@ import type {
 
 export const verificationService = {
   // Get overall verification status
-  getStatus: (): Promise<VerificationStatusResponse> =>
-    api.get<VerificationStatusResponse>(API_ENDPOINTS.VERIFICATION.STATUS),
+  getStatus: async (): Promise<VerificationStatusResponse> => {
+    try {
+      return await api.get<VerificationStatusResponse>(
+        API_ENDPOINTS.VERIFICATION.STATUS,
+      );
+    } catch {
+      return {
+        identity: {
+          status: "not_started",
+          type: null,
+        },
+        phone: {
+          status: "not_verified",
+          phoneNumber: null,
+        },
+        email: {
+          status: "not_verified",
+          email: null,
+        },
+      };
+    }
+  },
 
   // Identity verification
   uploadIdentityDocument: (
@@ -46,16 +66,20 @@ export const verificationService = {
     ),
 
   // Phone verification
-  sendPhoneOTP: (data: OTPRequest): Promise<{ success: boolean }> =>
-    api.post<{ success: boolean }>(
-      API_ENDPOINTS.VERIFICATION.PHONE.SEND_OTP,
-      data,
-    ),
+  sendPhoneOTP: (data?: Partial<OTPRequest>): Promise<{ success: boolean }> =>
+    api.post<{ success: boolean }>(API_ENDPOINTS.VERIFICATION.PHONE.SEND_OTP, {
+      otpType: "phone_verification",
+      ...data,
+    }),
 
   verifyPhoneOTP: (data: OTPVerification): Promise<{ success: boolean }> =>
     api.post<{ success: boolean }>(
       API_ENDPOINTS.VERIFICATION.PHONE.VERIFY_OTP,
-      data,
+      {
+        code: data.code,
+        phoneNumber: data.phoneNumber,
+        type: "phone_verification",
+      },
     ),
 
   changePhone: (phoneNumber: string): Promise<{ success: boolean }> =>
@@ -78,16 +102,20 @@ export const verificationService = {
     ),
 
   // Email verification
-  sendEmailOTP: (data: OTPRequest): Promise<{ success: boolean }> =>
-    api.post<{ success: boolean }>(
-      API_ENDPOINTS.VERIFICATION.EMAIL.SEND_OTP,
-      data,
-    ),
+  sendEmailOTP: (data?: Partial<OTPRequest>): Promise<{ success: boolean }> =>
+    api.post<{ success: boolean }>(API_ENDPOINTS.VERIFICATION.EMAIL.SEND_OTP, {
+      otpType: "email_verification",
+      ...data,
+    }),
 
   verifyEmailOTP: (data: OTPVerification): Promise<{ success: boolean }> =>
     api.post<{ success: boolean }>(
       API_ENDPOINTS.VERIFICATION.EMAIL.VERIFY_OTP,
-      data,
+      {
+        code: data.code,
+        email: data.email,
+        type: "email_verification",
+      },
     ),
 };
 
