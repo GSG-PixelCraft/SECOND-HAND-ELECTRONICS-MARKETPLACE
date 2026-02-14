@@ -14,7 +14,7 @@ import { useAuthStore } from "@/stores/useAuthStore";
 
 export default function VerifyPage() {
   const navigate = useNavigate();
-  const { user, verification } = useAuthStore();
+  const { verification } = useAuthStore();
 
   return (
     <PageLayout title="Verify Account" maxWidth="4xl">
@@ -48,7 +48,7 @@ export default function VerifyPage() {
                       Verify your email address to secure your account
                     </p>
                   </div>
-                  {user?.emailVerified ? (
+                  {verification.email.status === "verified" ? (
                     <div className="flex items-center gap-2">
                       <CheckCircle2 className="h-5 w-5 text-success" />
                       <span className="text-bodySmall font-medium text-success">
@@ -85,7 +85,7 @@ export default function VerifyPage() {
                       Add a phone number to increase your credibility
                     </p>
                   </div>
-                  {renderVerificationStatus(verification.phoneStatus, () =>
+                  {renderVerificationStatus(verification.phone.status, () =>
                     navigate(ROUTES.VERIFY_PHONE),
                   )}
                 </div>
@@ -109,7 +109,7 @@ export default function VerifyPage() {
                       Submit a government-issued ID to become a verified seller
                     </p>
                   </div>
-                  {renderIdentityStatus(verification.identityStatus, () =>
+                  {renderIdentityStatus(verification.identity.status, () =>
                     navigate(ROUTES.VERIFY_IDENTITY),
                   )}
                 </div>
@@ -149,7 +149,7 @@ export default function VerifyPage() {
 
 // Helper function to render verification status for phone and email
 function renderVerificationStatus(
-  status: "not_verified" | "verified",
+  status: "not_verified" | "verified" | "pending",
   onVerifyClick: () => void,
 ) {
   if (status === "verified") {
@@ -175,7 +175,8 @@ function renderIdentityStatus(
   status:
     | "not_started"
     | "uploading"
-    | "waiting_approval"
+    | "waiting"
+    | "pending"
     | "approved"
     | "rejected",
   onStartClick: () => void,
@@ -191,7 +192,8 @@ function renderIdentityStatus(
         </div>
       );
 
-    case "waiting_approval":
+    case "waiting":
+    case "pending":
       return (
         <div className="flex items-center gap-2">
           <Clock className="h-5 w-5 text-warning" />

@@ -1,7 +1,6 @@
 import * as React from "react";
 import PageLayout from "@/components/layout/PageLayout";
 // import { Header } from "@/components/layout/header";
-import { Footer } from "@/components/layout/footer";
 import { Fragment } from "react";
 import ProfileDetails from "./ProfileDetails";
 import { NotificationSettings } from "./NotificationSettings";
@@ -86,7 +85,6 @@ const ProfilePage = () => {
           </div>
         </div>
       </PageLayout>
-      <Footer></Footer>
     </Fragment>
   );
 };
