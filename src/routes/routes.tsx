@@ -114,6 +114,14 @@ const publicSimpleRoutes = [
       return { Component: PublicProfilePage };
     },
   },
+  {
+    path: "/blocked-users",
+    lazy: async () => {
+      const { default: BlockedUsersPage } =
+        await import("@/pages/BlockedUsersPage/BlockedUsersPage");
+      return { Component: BlockedUsersPage };
+    },
+  },
 ];
 
 const protectedRoutes = [

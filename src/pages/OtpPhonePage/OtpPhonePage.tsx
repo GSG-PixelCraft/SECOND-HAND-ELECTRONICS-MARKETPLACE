@@ -3,6 +3,8 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
 import { authService } from "@/services/auth.service";
 import type { AxiosError } from "axios";
+import PageLayout from "@/components/layout/PageLayout";
+import { Phone } from "lucide-react";
 
 export default function OtpPhonePage() {
   const navigate = useNavigate();
@@ -110,25 +112,25 @@ export default function OtpPhonePage() {
             enter it below.
           </p>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="flex justify-center gap-2">
-            {otp.map((digit, index) => (
-              <input
-                key={index}
-                ref={(el) => {
-                  inputRefs.current[index] = el;
-                }}
-                type="text"
-                inputMode="numeric"
-                maxLength={1}
-                value={digit}
-                onChange={(e) => handleChange(index, e.target.value)}
-                onKeyDown={(e) => handleKeyDown(index, e)}
-                onPaste={handlePaste}
-                className="h-12 w-12 rounded-md border border-neutral-20 text-center text-h3 font-semibold focus:border-transparent focus:outline-none focus:ring-2 focus:ring-primary"
-              />
-            ))}
-          </div>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="flex justify-center gap-2">
+              {otp.map((digit, index) => (
+                <input
+                  key={index}
+                  ref={(el) => {
+                    inputRefs.current[index] = el;
+                  }}
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={1}
+                  value={digit}
+                  onChange={(e) => handleChange(index, e.target.value)}
+                  onKeyDown={(e) => handleKeyDown(index, e)}
+                  onPaste={handlePaste}
+                  className="h-12 w-12 rounded-md border border-neutral-20 text-center text-h3 font-semibold focus:border-transparent focus:outline-none focus:ring-2 focus:ring-primary"
+                />
+              ))}
+            </div>
 
             <button
               type="submit"
@@ -170,6 +172,6 @@ export default function OtpPhonePage() {
           </div>
         </div>
       </div>
-    </div>
+    </PageLayout>
   );
 }
