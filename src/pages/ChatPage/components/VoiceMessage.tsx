@@ -46,6 +46,7 @@ export default function VoiceMessage({ audioUrl }: Props) {
   return (
     <div className="flex items-center gap-3 rounded-xl bg-gray-100 p-3">
       <button
+        type="button"
         onClick={togglePlay}
         className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-white"
       >
