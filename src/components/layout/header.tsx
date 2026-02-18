@@ -161,7 +161,7 @@ const categories = [
 
 export const Header = () => {
   const navigate = useNavigate();
-  const { user, token, setUser, setToken, logout } = useAuthStore();
+  const { user, token, logout } = useAuthStore();
   const isAuthenticated = Boolean(user && token);
   const [searchQuery, setSearchQuery] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -326,12 +326,14 @@ export const Header = () => {
                   Logout
                 </Button>
               ) : (
-                <NavLink
-                  to={ROUTES.SIGN_IN}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 transition hover:text-gray-900"
-                >
-                  Login
-                </NavLink>
+                <div className="flex items-center gap-2">
+                  <NavLink
+                    to={ROUTES.SIGN_IN}
+                    className="px-4 py-2 text-sm font-medium text-gray-700 transition hover:text-gray-900"
+                  >
+                    Login
+                  </NavLink>
+                </div>
               )}
             </div>
           </div>

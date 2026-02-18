@@ -14,3 +14,12 @@ export const getUser = () => {
 export const setUser = (user: unknown) =>
   localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(user));
 export const removeUser = () => localStorage.removeItem(STORAGE_KEYS.USER);
+
+export const getVerification = () => {
+  const verification = localStorage.getItem(STORAGE_KEYS.VERIFICATION);
+  return verification ? JSON.parse(verification) : null;
+};
+export const setVerification = (verification: unknown) =>
+  localStorage.setItem(STORAGE_KEYS.VERIFICATION, JSON.stringify(verification));
+export const removeVerification = () =>
+  localStorage.removeItem(STORAGE_KEYS.VERIFICATION);

@@ -42,14 +42,6 @@ const publicRoutes = [
 
 const publicSimpleRoutes = [
   {
-    path: "/test-identity-verification",
-    lazy: async () => {
-      const { default: IdentityVerificationSelectPage } =
-        await import("@/pages/IdentityVerificationPage/IdentityVerificationSelectPage");
-      return { Component: IdentityVerificationSelectPage };
-    },
-  },
-  {
     path: "/forgot-password/email",
     lazy: async () => {
       const { default: ForgotPasswordEmailPage } =
@@ -125,6 +117,38 @@ const protectedRoutes = [
       return { Component: ProfilePage };
     },
   },
+  {
+    path: "/verify",
+    lazy: async () => {
+      const { default: VerifyPage } =
+        await import("@/pages/VerifyPage/VerifyPage");
+      return { Component: VerifyPage };
+    },
+  },
+  {
+    path: "/verify/phone",
+    lazy: async () => {
+      const { PhoneVerificationPage } =
+        await import("@/pages/PhoneVerificationPage/PhoneVerificationPage");
+      return { Component: PhoneVerificationPage };
+    },
+  },
+  {
+    path: "/verify/phone/otp",
+    lazy: async () => {
+      const { PhoneVerificationOTPPage } =
+        await import("@/pages/PhoneVerificationPage/PhoneVerificationOTPPage");
+      return { Component: PhoneVerificationOTPPage };
+    },
+  },
+  {
+    path: "/verify/email",
+    lazy: async () => {
+      const { EmailVerificationPage } =
+        await import("@/pages/EmailVerificationPage/EmailVerificationPage");
+      return { Component: EmailVerificationPage };
+    },
+  },
 
   {
     path: "/verify/identity",
@@ -132,6 +156,14 @@ const protectedRoutes = [
       const { default: IdentityVerificationSelectPage } =
         await import("@/pages/IdentityVerificationPage/IdentityVerificationSelectPage");
       return { Component: IdentityVerificationSelectPage };
+    },
+  },
+  {
+    path: "/verify/identity/status",
+    lazy: async () => {
+      const { IdentityVerificationStatusPage } =
+        await import("@/pages/IdentityVerificationPage");
+      return { Component: IdentityVerificationStatusPage };
     },
   },
 
