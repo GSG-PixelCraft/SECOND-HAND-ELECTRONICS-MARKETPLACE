@@ -1,4 +1,5 @@
-import * as React from "react";
+import { forwardRef } from "react";
+import type { TextareaHTMLAttributes } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 
 const textareaVariants = cva(
@@ -52,12 +53,12 @@ const textareaVariants = cva(
 
 export interface TextareaProps
   extends
-    React.TextareaHTMLAttributes<HTMLTextAreaElement>,
+    TextareaHTMLAttributes<HTMLTextAreaElement>,
     VariantProps<typeof textareaVariants> {
   className?: string;
 }
 
-export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
+export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
   function Textarea({ className, intent, size, ...props }, ref) {
     const ariaInvalid =
       props["aria-invalid"] ?? (intent === "error" ? true : undefined);

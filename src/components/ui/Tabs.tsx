@@ -1,3 +1,5 @@
+import { Span } from "./span";
+
 export type TabValue =
   | "all"
   | "pending"
@@ -5,53 +7,77 @@ export type TabValue =
   | "rejected"
   | "sold"
   | "archived"
-  | "drafts";
+  | "drafts"
+  | "verified"
+  | "suspended"
+  | "banned";
 
-export interface TabsProps {
-  value: TabValue;
-  onChange: (value: TabValue) => void;
+export interface TabsProps<T extends string = TabValue> {
+  value: T;
+  onChange: (value: T) => void;
+  counts?: Partial<Record<T, number>>;
+  tabs?: { label: string; value: T }[]; // Optional custom tabs
 }
 
-const TABS: { label: string; value: TabValue }[] = [
+const DEFAULT_TABS: { label: string; value: TabValue }[] = [
   { label: "All", value: "all" },
   { label: "Pending", value: "pending" },
   { label: "Active", value: "active" },
   { label: "Rejected", value: "rejected" },
   { label: "Sold", value: "sold" },
-  { label: "Archived", value: "archived" },
-  { label: "Drafts", value: "drafts" },
+  { label: "Hidden", value: "archived" },
+  { label: "Removed", value: "drafts" },
 ];
 
-export function Tabs({ value, onChange }: TabsProps) {
+export function Tabs<T extends string = TabValue>({
+  value,
+  onChange,
+  counts,
+  tabs,
+}: TabsProps<T>) {
+  const tabsToRender = (tabs || DEFAULT_TABS) as { label: string; value: T }[];
+
   return (
-    <div className="border-b border-neutral-20 bg-primary-5">
-      <ul className="flex justify-between" role="tablist">
-        {TABS.map((tab) => {
-          const isActive = value === tab.value;
+    <div className="flex gap-3">
+      {tabsToRender.map((tab) => {
+        const isActive = value === tab.value;
+        const count = counts?.[tab.value];
 
-          return (
-            <li key={tab.value} role="presentation">
-              <button
-                type="button"
-                role="tab"
-                aria-selected={isActive}
-                onClick={() => onChange(tab.value)}
-                className={`relative pb-3 text-body transition-colors ${
+        return (
+          <button
+            key={tab.value}
+            type="button"
+            role="tab"
+            aria-selected={isActive}
+            onClick={() => onChange(tab.value)}
+            className={`flex items-center gap-2 border-b-2 px-3 pb-2 text-base transition-colors ${
+              isActive
+                ? "border-[#2563eb] text-[#2563eb]"
+                : "border-transparent text-[#828282] hover:text-[#3d3d3d]"
+            }`}
+          >
+            <Span
+              variant="body"
+              className={
+                isActive ? "font-medium text-[#2563eb]" : "text-[#828282]"
+              }
+            >
+              {tab.label}
+            </Span>
+            {count !== undefined && count > 0 && (
+              <Span
+                className={`rounded-xl px-2 py-0.5 text-xs ${
                   isActive
-                    ? "text-primary"
-                    : "text-muted-foreground hover:text-neutral-foreground"
-                } `}
+                    ? "bg-[rgba(37,99,235,0.2)] text-[#2563eb]"
+                    : "bg-[rgba(107,114,128,0.2)] text-[#6b7280]"
+                }`}
               >
-                {tab.label}
-
-                {isActive && (
-                  <span className="absolute -bottom-px left-0 right-0 h-0.5 bg-primary" />
-                )}
-              </button>
-            </li>
-          );
-        })}
-      </ul>
+                {count}
+              </Span>
+            )}
+          </button>
+        );
+      })}
     </div>
   );
 }

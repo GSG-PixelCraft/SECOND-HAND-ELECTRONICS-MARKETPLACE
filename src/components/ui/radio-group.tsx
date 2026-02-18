@@ -1,7 +1,9 @@
 // src/components/ui/radio-group.tsx
-import * as React from "react";
+import { forwardRef, useId } from "react";
+import type { InputHTMLAttributes, ReactElement } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { twMerge } from "tailwind-merge";
+import { Text } from "./text";
 
 const radioVariants = cva(
   [
@@ -54,7 +56,7 @@ export interface RadioOption {
 
 export interface RadioGroupProps
   extends
-    Omit<React.InputHTMLAttributes<HTMLInputElement>, "size" | "type">,
+    Omit<InputHTMLAttributes<HTMLInputElement>, "size" | "type">,
     VariantProps<typeof radioVariants> {
   options: RadioOption[];
   label?: string;
@@ -64,7 +66,7 @@ export interface RadioGroupProps
   name: string;
 }
 
-export const RadioGroup = React.forwardRef<HTMLInputElement, RadioGroupProps>(
+export const RadioGroup = forwardRef<HTMLInputElement, RadioGroupProps>(
   (
     {
       className,
@@ -80,8 +82,8 @@ export const RadioGroup = React.forwardRef<HTMLInputElement, RadioGroupProps>(
       ...props
     },
     ref,
-  ): React.ReactElement => {
-    const groupId = React.useId();
+  ): ReactElement => {
+    const groupId = useId();
     const resolvedId = id ?? groupId;
 
     const helperId = helperText ? `${resolvedId}-help` : undefined;
@@ -134,15 +136,15 @@ export const RadioGroup = React.forwardRef<HTMLInputElement, RadioGroupProps>(
         </div>
 
         {helperText && !error && (
-          <p id={helperId} className="text-caption text-muted-foreground">
+          <Text variant="muted" className="text-caption" id={helperId}>
             {helperText}
-          </p>
+          </Text>
         )}
 
         {error && (
-          <p id={errorId} className="text-caption text-error">
+          <Text variant="error" className="text-caption" id={errorId}>
             {error}
-          </p>
+          </Text>
         )}
       </div>
     );

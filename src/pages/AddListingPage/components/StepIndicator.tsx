@@ -1,20 +1,22 @@
 // src/pages/AddListingPage/components/StepIndicator.tsx
-import * as React from "react";
+import { Fragment } from "react";
+import type { FC, ReactElement } from "react";
+import { Text } from "@/components/ui/text";
 
 interface StepIndicatorProps {
   currentStep: number;
   steps: Array<{ id: number; label: string }>;
 }
 
-export const StepIndicator: React.FC<StepIndicatorProps> = ({
+export const StepIndicator: FC<StepIndicatorProps> = ({
   currentStep,
   steps,
-}): React.ReactElement => {
+}): ReactElement => {
   return (
     <div className="flex w-full items-center justify-center">
       <div className="flex items-center gap-4">
         {steps.map((step, index) => (
-          <React.Fragment key={step.id}>
+          <Fragment key={step.id}>
             {index > 0 && (
               <div className="flex h-full shrink-0 items-center justify-center py-3">
                 <div className="h-[2px] w-[157px] rounded-[10px] bg-[#e4e4e4]" />
@@ -43,16 +45,16 @@ export const StepIndicator: React.FC<StepIndicatorProps> = ({
                     />
                   </svg>
                 ) : (
-                  <p className="font-['Poppins'] text-[14px] font-normal leading-normal text-[#2563eb]">
+                  <Text className="font-['Poppins'] text-[14px] font-normal leading-normal text-[#2563eb]">
                     {step.id}
-                  </p>
+                  </Text>
                 )}
               </div>
-              <p className="text-center font-['Poppins'] text-[20px] font-normal leading-normal text-[#3d3d3d]">
+              <Text className="text-center font-['Poppins'] text-[20px] font-normal leading-normal text-[#3d3d3d]">
                 {step.label}
-              </p>
+              </Text>
             </div>
-          </React.Fragment>
+          </Fragment>
         ))}
       </div>
     </div>

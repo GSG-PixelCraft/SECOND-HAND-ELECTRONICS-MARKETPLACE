@@ -5,6 +5,9 @@ import {
   type LocationCountry,
 } from "@/services/location.service";
 import { LocationPermissionModal } from "./LocationPermissionModal";
+import { Button } from "./button";
+import { Span } from "./span";
+import { Text } from "./text";
 export interface FiltersState {
   categories: string[];
   condition: string[];
@@ -15,11 +18,13 @@ export interface FiltersState {
   sellerType: string[];
   location: { country: string; city: string; useCurrentLocation: boolean };
 }
+
 export interface FiltersPartProps {
   className?: string;
   onSearch?: (query: string) => void;
   onFilterChange?: (filters: FiltersState) => void;
 }
+
 const categories = ["Phones", "Tablets", "Laptops", "PC Parts"];
 const conditions = ["New", "Like New", "Good", "Fair", "Poor"];
 const brands = ["Apple", "Samsung", "Google", "Dell", "HP", "Lenovo"];
@@ -413,7 +418,6 @@ export const FiltersPart = ({
               ))}
             </div>
           )}
-
           <div className="space-y-2">
             <h3 className="text-sm font-semibold text-gray-900">Seller type</h3>
             {sellerTypes.map((s) => (
@@ -465,7 +469,7 @@ export const FiltersPart = ({
                 ))}
               </select>
             )}
-            <button
+            <Button
               type="button"
               onClick={() => {
                 if (!filters.location.useCurrentLocation)

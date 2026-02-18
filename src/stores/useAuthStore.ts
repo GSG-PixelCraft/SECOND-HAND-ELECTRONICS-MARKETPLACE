@@ -4,6 +4,14 @@ import {
   removeVerification,
 } from "@/lib/storage";
 
+import {
+  getToken,
+  getUser,
+  removeToken,
+  removeUser,
+  setToken,
+  setUser,
+} from "@/lib/storage";
 import type { User, VerificationState } from "../types";
 
 interface AuthState {
@@ -32,14 +40,24 @@ const initialVerificationState: VerificationState = {
 };
 
 export const useAuthStore = create<AuthState>((set) => ({
-  user: null,
-  token: null,
+  user: (getUser() as User | null) ?? null,
+  token: getToken(),
   verification: initialVerificationState,
   setUser: (user: User | null) => {
     set({ user });
+    if (user) {
+      setUser(user);
+    } else {
+      removeUser();
+    }
   },
   setToken: (token: string | null) => {
     set({ token });
+    if (token) {
+      setToken(token);
+    } else {
+      removeToken();
+    }
   },
   setVerification: (verification: Partial<VerificationState>) => {
     set((state) => {

@@ -1,6 +1,8 @@
-import * as React from "react";
+import type { HTMLAttributes } from "react";
+import { Button } from "./button";
+import { Span } from "./span";
 
-export interface SearchSuggestionsProps extends React.HTMLAttributes<HTMLUListElement> {
+export interface SearchSuggestionsProps extends HTMLAttributes<HTMLUListElement> {
   suggestions: string[];
   onSuggestionSelect?: (value: string) => void;
 }
@@ -20,16 +22,16 @@ export function SearchSuggestions({
     >
       {suggestions.map((suggestion, index) => (
         <li key={`${suggestion}-${index}`}>
-          <button
+          <Button
             type="button"
             className="flex w-full items-center justify-between px-3 py-2 text-body hover:bg-neutral-5"
             onClick={() => onSuggestionSelect?.(suggestion)}
           >
-            <span>{suggestion}</span>
-            <span className="text-muted-foreground" aria-hidden="true">
+            <Span>{suggestion}</Span>
+            <Span variant="muted" aria-hidden="true">
               →
-            </span>
-          </button>
+            </Span>
+          </Button>
         </li>
       ))}
     </ul>

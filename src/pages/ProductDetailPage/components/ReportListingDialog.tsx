@@ -2,6 +2,8 @@ import { useMemo, useRef, useState } from "react";
 import { X } from "lucide-react";
 import { Dialog } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { Text } from "@/components/ui/text";
+import { Span } from "@/components/ui/span";
 
 const REPORT_REASONS = [
   "Scam or misleading information",
@@ -65,19 +67,19 @@ export const ReportListingDialog = ({
           <h2 className="text-lg font-semibold text-neutral-foreground">
             Report Listing
           </h2>
-          <p className="text-sm text-muted-foreground">
+          <Text variant="muted" className="text-sm">
             Help us keep the marketplace safe. Please select the reason that
             best describes the issue with this listing.
-          </p>
+          </Text>
         </div>
-        <button
+        <Button
           type="button"
           onClick={handleClose}
           className="flex h-8 w-8 items-center justify-center rounded-full border border-neutral-10 text-neutral-foreground"
           aria-label="Close report dialog"
         >
           <X className="h-4 w-4" />
-        </button>
+        </Button>
       </div>
 
       <div className="mt-6 space-y-4">
@@ -86,7 +88,7 @@ export const ReportListingDialog = ({
             key={reason}
             className="flex cursor-pointer items-center gap-3 text-sm text-neutral-foreground"
           >
-            <span
+            <Span
               className={`flex h-4 w-4 items-center justify-center rounded-full border ${
                 selectedReason === reason
                   ? "border-primary"
@@ -94,9 +96,9 @@ export const ReportListingDialog = ({
               }`}
             >
               {selectedReason === reason && (
-                <span className="h-2 w-2 rounded-full bg-primary" />
+                <Span className="h-2 w-2 rounded-full bg-primary" />
               )}
-            </span>
+            </Span>
             <input
               type="radio"
               name="report-reason"
@@ -118,9 +120,9 @@ export const ReportListingDialog = ({
               maxLength={500}
               className="min-h-[120px] w-full resize-none rounded-xl border border-neutral-10 bg-white px-4 py-3 text-sm text-neutral-foreground shadow-sm focus:border-primary focus:outline-none"
             />
-            <div className="text-right text-xs text-muted-foreground">
+            <Text variant="muted" className="text-right text-xs">
               ({details.length}/500)
-            </div>
+            </Text>
           </div>
         )}
       </div>
@@ -129,9 +131,9 @@ export const ReportListingDialog = ({
         <Button fullWidth onClick={handleSubmit} disabled={isSubmitDisabled}>
           Submit
         </Button>
-        <p className="text-center text-xs text-muted-foreground">
+        <Text variant="muted" className="text-center text-xs">
           The other user will not be notified about this report.
-        </p>
+        </Text>
       </div>
     </Dialog>
   );

@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { Button } from "./button";
+import { Span } from "@/components/ui/span";
 
 interface SearchCategoryProps {
   onSearch?: (searchTerm: string) => void;
@@ -74,7 +76,7 @@ export default function SearchCategory({
       {/* Category Pills */}
       <div className="flex flex-wrap justify-center gap-3">
         {categories.map((category) => (
-          <button
+          <Button
             key={category.id}
             onClick={() => handleCategoryClick(category.id)}
             className={`inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-medium transition-all duration-200 ${
@@ -83,9 +85,9 @@ export default function SearchCategory({
                 : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-sm"
             }`}
           >
-            <span className="text-base">{category.icon}</span>
+            <Span className="text-base">{category.icon}</Span>
             <span>{category.name}</span>
-          </button>
+          </Button>
         ))}
       </div>
     </div>

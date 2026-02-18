@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
+import { Text } from "@/components/ui/text";
 
 const OrdersPage = () => {
   const demoOrders = ["o-1001", "o-1002"];
@@ -8,7 +9,9 @@ const OrdersPage = () => {
     <div className="mx-auto flex w-full max-w-4xl flex-col gap-6">
       <header className="space-y-2">
         <h1 className="text-2xl font-semibold text-slate-900">My Orders</h1>
-        <p className="text-sm text-slate-600">Track your purchase history</p>
+        <Text className="text-sm text-slate-600">
+          Track your purchase history
+        </Text>
       </header>
 
       <div className="space-y-4">
@@ -20,7 +23,7 @@ const OrdersPage = () => {
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="font-medium text-slate-900">Order #{orderId}</h3>
-                <p className="text-sm text-slate-600">Status: Shipped</p>
+                <Text className="text-sm text-slate-600">Status: Shipped</Text>
               </div>
               <Link
                 to={`${ROUTES.HOME}/${orderId}`}

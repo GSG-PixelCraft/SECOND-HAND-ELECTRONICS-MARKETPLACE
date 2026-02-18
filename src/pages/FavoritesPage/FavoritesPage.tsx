@@ -3,6 +3,7 @@ import PageLayout from "@/components/layout/PageLayout";
 import { Heart, Filter } from "lucide-react";
 import { FavoritesEmptyState } from "@/components/feedback/emptyState";
 import { useTranslation } from "react-i18next";
+import { Text } from "@/components/ui/text";
 
 export default function FavoritesPage() {
   const { t } = useTranslation();
@@ -29,9 +30,7 @@ export default function FavoritesPage() {
           <Heart className="h-6 w-6 text-primary" />
           <div>
             <h1 className="text-h2 font-semibold">{t("favorites.heading")}</h1>
-            <p className="text-body text-muted-foreground">
-              {t("favorites.subtitle")}
-            </p>
+            <Text variant="muted">{t("favorites.subtitle")}</Text>
           </div>
         </div>
 

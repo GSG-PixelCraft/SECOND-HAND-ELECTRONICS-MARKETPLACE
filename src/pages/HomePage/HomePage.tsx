@@ -1,7 +1,8 @@
 // Landing page
 import { Link } from "react-router-dom";
-import { ROUTES, getProductRoute } from "@/constants/routes";
-import { ChatsParts } from "@/components/chats/ChatsParts";
+import { ROUTES } from "@/constants/routes";
+import { Button } from "@/components/ui/button";
+import { Text } from "@/components/ui/text";
 
 const HomePage = () => {
   return (
@@ -9,39 +10,24 @@ const HomePage = () => {
       <section className="rounded-3xl bg-white px-8 py-10 shadow-sm">
         <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
           <div className="space-y-4">
-            <h1 className="text-3xl font-semibold text-slate-900">
+            <Text className="text-3xl font-semibold text-slate-900">
               Welcome to Second-Hand Electronics Marketplace
-            </h1>
-            <p className="max-w-xl text-base text-slate-600">
+            </Text>
+            <Text variant="muted" className="max-w-xl text-base">
               Buy and sell used electronics safely and easily. Find great deals
               on quality pre-owned devices.
-            </p>
+            </Text>
           </div>
           <div className="flex flex-wrap gap-3">
-            <Link
-              className="rounded-full bg-slate-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
-              to={ROUTES.RECENT_LISTINGS}
-            >
-              Browse Listings
+            <Link to={ROUTES.PRODUCTS}>
+              <Button intent="primary" size="md">
+                Browse Products
+              </Button>
             </Link>
-            <Link
-              className="rounded-full border border-slate-200 px-6 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:text-slate-900"
-              to={ROUTES.SIGN_UP}
-            >
-              Sign Up
-            </Link>
-            {/* TEMPORARY DEMO BUTTON */}
-            <Link
-              className="rounded-full bg-primary px-6 py-3 text-sm font-semibold text-white ring-2 ring-primary ring-offset-2 transition hover:bg-primary/90"
-              to={ROUTES.ADD_LISTING}
-            >
-              🎨 DEMO: Add Listing
-            </Link>
-            <Link
-              className="rounded-full border border-primary px-6 py-3 text-sm font-semibold text-primary transition hover:bg-primary/10"
-              to={`${getProductRoute("p-101")}?demo=1`}
-            >
-              🎨 DEMO: Product Details
+            <Link to={ROUTES.RECENT_LISTINGS}>
+              <Button intent="outline" size="md">
+                Recent Listings
+              </Button>
             </Link>
           </div>
         </div>
@@ -49,39 +35,28 @@ const HomePage = () => {
 
       <section className="grid gap-6 md:grid-cols-3">
         <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h3 className="text-lg font-semibold text-slate-900">
+          <Text className="text-lg font-semibold text-slate-900">
             Trusted Marketplace
-          </h3>
-          <p className="mt-2 text-sm text-slate-600">
+          </Text>
+          <Text variant="muted" className="mt-2 text-sm">
             Buy and sell with confidence
-          </p>
+          </Text>
         </div>
         <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h3 className="text-lg font-semibold text-slate-900">
+          <Text className="text-lg font-semibold text-slate-900">
             Fast Shipping
-          </h3>
-          <p className="mt-2 text-sm text-slate-600">
+          </Text>
+          <Text variant="muted" className="mt-2 text-sm">
             Quick and secure delivery
-          </p>
+          </Text>
         </div>
         <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h3 className="text-lg font-semibold text-slate-900">24/7 Support</h3>
-          <p className="mt-2 text-sm text-slate-600">Always here to help</p>
-        </div>
-      </section>
-
-      <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-slate-900">Chats Demo</h2>
-          <Link
-            to={ROUTES.CHAT}
-            className="text-sm font-medium text-slate-600 transition hover:text-slate-900"
-          >
-            Open Chat
-          </Link>
-        </div>
-        <div className="flex justify-center">
-          <ChatsParts aria-label="Chats demo" />
+          <Text className="text-lg font-semibold text-slate-900">
+            24/7 Support
+          </Text>
+          <Text variant="muted" className="mt-2 text-sm">
+            Always here to help
+          </Text>
         </div>
       </section>
     </div>

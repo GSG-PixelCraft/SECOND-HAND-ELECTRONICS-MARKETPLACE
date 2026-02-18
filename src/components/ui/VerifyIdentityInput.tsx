@@ -5,6 +5,8 @@ import {
   type FieldValues,
   type Path,
 } from "react-hook-form";
+import { Text } from "@/components/ui/text";
+import { Image } from "@/components/ui/image";
 
 type UploadStatus = "idle" | "uploading" | "success" | "error";
 
@@ -73,12 +75,12 @@ export default function UploadBox<T extends FieldValues>({
 
         return (
           <div className="w-full">
-            <p className="mb-2 text-start font-normal">{title}</p>
+            <Text className="mb-2 text-start font-normal">{title}</Text>
 
             {preview ? (
               <div className="border-border flex flex-col gap-2 rounded-xl border border-dashed p-4">
                 <div className="flex items-start space-x-3">
-                  <img
+                  <Image
                     src={preview}
                     alt="preview"
                     className="h-14 w-14 rounded object-cover"
@@ -86,10 +88,12 @@ export default function UploadBox<T extends FieldValues>({
                   <div className="flex-1 space-y-1 text-start">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm font-medium">{fileInfo?.name}</p>
-                        <p className="text-xs text-muted-foreground">
+                        <Text className="text-sm font-medium">
+                          {fileInfo?.name}
+                        </Text>
+                        <Text variant="muted" className="text-xs">
                           {fileInfo?.size}
-                        </p>
+                        </Text>
                       </div>
                       <button
                         type="button"
@@ -112,7 +116,9 @@ export default function UploadBox<T extends FieldValues>({
                           style={{ width: `${progress}%` }}
                         />
                       </div>
-                      <p className="flex justify-end text-xs">{progress}%</p>
+                      <Text className="flex justify-end text-xs">
+                        {progress}%
+                      </Text>
                     </div>
                   </div>
                 </div>
@@ -130,16 +136,19 @@ export default function UploadBox<T extends FieldValues>({
                   }
                 }}
               >
-                <p className="mx-auto flex h-9 w-9 items-center justify-center rounded border-2 text-lg font-normal text-muted-foreground">
+                <Text
+                  variant="muted"
+                  className="mx-auto flex h-9 w-9 items-center justify-center rounded border-2 text-lg font-normal"
+                >
                   +
-                </p>
+                </Text>
                 <div className="pt-6">
-                  <p className="text-sm font-normal text-muted-foreground">
+                  <Text variant="muted" className="text-sm font-normal">
                     Click to upload or drag and drop
-                  </p>
-                  <p className="text-sm font-normal text-muted-foreground">
+                  </Text>
+                  <Text variant="muted" className="text-sm font-normal">
                     JPG, JPEG, PNG less than 5MB
-                  </p>
+                  </Text>
                 </div>
 
                 <input

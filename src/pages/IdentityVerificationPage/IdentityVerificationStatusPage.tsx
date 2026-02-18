@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import PageLayout from "@/components/layout/PageLayout";
 import { Button } from "@/components/ui/button";
 import { Alert } from "@/components/ui/alert";
+import { Text } from "@/components/ui/text";
+import { FullScreenLoading } from "@/components/feedback/loading/full-screen-loading";
 import { useIdentityStatus } from "@/services";
 import { useAuthStore } from "@/stores";
 import { ROUTES } from "@/constants/routes";
@@ -27,13 +29,7 @@ export const IdentityVerificationStatusPage: React.FC = () => {
   }, [status, setVerification]);
 
   if (isLoading) {
-    return (
-      <PageLayout title="Verification Status">
-        <div className="flex min-h-[400px] items-center justify-center">
-          <div className="h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-slate-900" />
-        </div>
-      </PageLayout>
-    );
+    return <FullScreenLoading message="Loading verification status..." />;
   }
 
   const getStatusContent = () => {
@@ -95,7 +91,9 @@ export const IdentityVerificationStatusPage: React.FC = () => {
             <h2 className="text-2xl font-medium text-[#101010]">
               {content.title}
             </h2>
-            <p className="text-base text-[#828282]">{content.description}</p>
+            <Text className="text-base text-[#828282]">
+              {content.description}
+            </Text>
           </div>
 
           <Alert variant={content.variant} className="w-full text-left">

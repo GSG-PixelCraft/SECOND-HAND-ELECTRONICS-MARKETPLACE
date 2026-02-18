@@ -1,5 +1,5 @@
-import * as React from "react";
-import { useState, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
+import type { ReactElement } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -26,7 +26,7 @@ type LocationValue = {
 
 const FALLBACK_IMAGE = new URL("../../images/Phone.jpg", import.meta.url).href;
 
-export default function AddListingPage(): React.ReactElement {
+export default function AddListingPage(): ReactElement {
   const { t } = useTranslation();
   const [currentStep, setCurrentStep] = useState<1 | 2>(1);
   const [photos, setPhotos] = useState<PhotoItemWithProgress[]>([]);
@@ -64,7 +64,7 @@ export default function AddListingPage(): React.ReactElement {
     Number(values.price) > 0 &&
     photos.length > 0;
 
-  React.useEffect(() => {
+  useEffect(() => {
     const formatted = [locationValue.city, locationValue.country]
       .filter(Boolean)
       .join(", ");

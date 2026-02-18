@@ -1,8 +1,11 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
 import { useAuthStore } from "@/stores/useAuthStore";
-import { NotificationMenu } from "@/components/notifications/notificationMenu";
-import { useState, useEffect } from "react";
+import { NotificationMenu } from "@/pages/NotificationsPage/components";
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Text } from "@/components/ui/text";
+import { Span } from "@/components/ui/span";
 
 const SearchIcon = () => (
   <svg
@@ -180,12 +183,12 @@ export const Header = () => {
       <div className="border-b border-gray-100">
         <div className="mx-auto max-w-[1400px] px-4 py-3 sm:px-6 sm:py-4">
           <div className="flex items-center justify-between gap-3 sm:gap-6">
-            <button
+            <Button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="rounded-lg p-2 hover:bg-gray-100 lg:hidden"
             >
               <MenuIcon />
-            </button>
+            </Button>
             <NavLink
               to={ROUTES.HOME}
               className="inline-block rounded-lg bg-gray-100 px-3 py-1.5 text-base font-bold text-blue-600 sm:px-6 sm:py-2.5 sm:text-xl"
@@ -213,23 +216,23 @@ export const Header = () => {
             </form>
 
             <div className="hidden items-center gap-3 sm:gap-4 lg:flex">
-              <button className="flex items-center gap-2 text-sm text-gray-700 hover:text-gray-900">
+              <Button className="flex items-center gap-2 text-sm text-gray-700 hover:text-gray-900">
                 <LocationIcon />
-                <span className="hidden font-medium xl:inline">Palestine</span>
+                <Span className="hidden font-medium xl:inline">Palestine</Span>
                 <ChevronDownIcon />
-              </button>
-              <button className="flex items-center gap-2 text-sm text-gray-700 hover:text-gray-900">
+              </Button>
+              <Button className="flex items-center gap-2 text-sm text-gray-700 hover:text-gray-900">
                 <GlobeIcon />
-                <span className="hidden font-medium xl:inline">English</span>
+                <Span className="hidden font-medium xl:inline">English</Span>
                 <ChevronDownIcon />
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={() => navigate(ROUTES.MY_LISTINGS)}
                 className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-blue-700 sm:px-8 sm:py-2.5"
               >
                 Add listing
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={() =>
                   isAuthenticated
                     ? navigate(ROUTES.PROFILE)
@@ -238,12 +241,12 @@ export const Header = () => {
                 className="rounded-lg p-1 transition hover:bg-gray-100"
               >
                 <UserIcon />
-              </button>
+              </Button>
             </div>
 
             <div className="flex items-center gap-2 lg:hidden">
               <NotificationMenu />
-              <button
+              <Button
                 onClick={() =>
                   isAuthenticated
                     ? navigate(ROUTES.PROFILE)
@@ -252,7 +255,7 @@ export const Header = () => {
                 className="rounded-lg p-1 transition hover:bg-gray-100"
               >
                 <UserIcon />
-              </button>
+              </Button>
             </div>
           </div>
 
@@ -277,10 +280,10 @@ export const Header = () => {
         <div className="mx-auto max-w-[1400px] px-6 py-3.5">
           <div className="flex items-center justify-between gap-4">
             <nav className="flex items-center gap-6 overflow-x-auto">
-              <button className="flex items-center gap-2 whitespace-nowrap text-sm font-medium text-gray-600 hover:text-gray-900">
+              <Button className="flex items-center gap-2 whitespace-nowrap text-sm font-medium text-gray-600 hover:text-gray-900">
                 <MenuIcon />
-                <span>All Categories</span>
-              </button>
+                <Span>All Categories</Span>
+              </Button>
               {categories.map((cat) => (
                 <NavLink
                   key={cat}
@@ -306,22 +309,22 @@ export const Header = () => {
 
             <div className="flex items-center gap-3">
               <NotificationMenu />
-              <button className="rounded-lg p-1.5 transition hover:bg-gray-100">
+              <Button className="rounded-lg p-1.5 transition hover:bg-gray-100">
                 <ChatIcon />
-              </button>
-              <button className="rounded-lg p-1.5 transition hover:bg-gray-100">
+              </Button>
+              <Button className="rounded-lg p-1.5 transition hover:bg-gray-100">
                 <HeartIcon />
-              </button>
-              <button className="rounded-lg p-1.5 transition hover:bg-gray-100">
+              </Button>
+              <Button className="rounded-lg p-1.5 transition hover:bg-gray-100">
                 <ListIcon />
-              </button>
+              </Button>
               {isAuthenticated ? (
-                <button
+                <Button
                   className="px-4 py-2 text-sm font-medium text-gray-700 transition hover:text-gray-900"
                   onClick={logout}
                 >
                   Logout
-                </button>
+                </Button>
               ) : (
                 <div className="flex items-center gap-2">
                   <NavLink
@@ -341,9 +344,9 @@ export const Header = () => {
         <div className="border-t border-gray-200 bg-white lg:hidden">
           <div className="space-y-3 px-4 py-3">
             <div className="space-y-1">
-              <p className="px-3 py-2 text-xs font-semibold uppercase text-gray-500">
+              <Text className="px-3 py-2 text-xs font-semibold uppercase text-gray-500">
                 Categories
-              </p>
+              </Text>
               {["All", ...categories].map((cat) => (
                 <NavLink
                   key={cat}
@@ -360,9 +363,9 @@ export const Header = () => {
               ))}
             </div>
             <div className="space-y-1 border-t border-gray-200 pt-2">
-              <p className="px-3 py-2 text-xs font-semibold uppercase text-gray-500">
+              <Text className="px-3 py-2 text-xs font-semibold uppercase text-gray-500">
                 Pages
-              </p>
+              </Text>
               <NavLink
                 to={ROUTES.MY_LISTINGS}
                 className="block rounded-lg px-3 py-2 text-sm text-gray-700 hover:bg-gray-100"
@@ -380,7 +383,7 @@ export const Header = () => {
             </div>
             <div className="space-y-2 border-t border-gray-200 pt-2">
               {isAuthenticated ? (
-                <button
+                <Button
                   className="w-full rounded-lg px-3 py-2 text-left text-sm font-medium text-gray-700 hover:bg-gray-100"
                   onClick={() => {
                     logout();
@@ -388,7 +391,7 @@ export const Header = () => {
                   }}
                 >
                   Logout
-                </button>
+                </Button>
               ) : (
                 <>
                   <NavLink

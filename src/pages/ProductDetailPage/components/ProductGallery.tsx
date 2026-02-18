@@ -7,6 +7,8 @@ import {
   Share2,
   Trash2,
 } from "lucide-react";
+import { Image } from "@/components/ui/image";
+import { Button } from "@/components/ui/button";
 
 interface OwnerActions {
   onEdit?: () => void;
@@ -51,14 +53,14 @@ export const ProductGallery = ({
 
   return (
     <div className="relative overflow-hidden rounded-3xl border border-neutral-10 bg-white">
-      <img
+      <Image
         src={activeImage}
         alt={title}
         className="h-[360px] w-full object-cover sm:h-[420px] lg:h-[460px]"
       />
 
       <div className="absolute left-4 top-1/2 flex -translate-y-1/2 items-center justify-center">
-        <button
+        <Button
           type="button"
           onClick={handlePrev}
           disabled={!hasMultipleImages}
@@ -66,11 +68,11 @@ export const ProductGallery = ({
           aria-label="Previous image"
         >
           <ChevronLeft className="h-5 w-5" />
-        </button>
+        </Button>
       </div>
 
       <div className="absolute right-4 top-1/2 flex -translate-y-1/2 items-center justify-center">
-        <button
+        <Button
           type="button"
           onClick={handleNext}
           disabled={!hasMultipleImages}
@@ -78,12 +80,12 @@ export const ProductGallery = ({
           aria-label="Next image"
         >
           <ChevronRight className="h-5 w-5" />
-        </button>
+        </Button>
       </div>
 
       <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 items-center gap-2">
         {images.map((_, index) => (
-          <button
+          <Button
             type="button"
             key={`indicator-${index}`}
             onClick={() => setActiveIndex(index)}
@@ -98,41 +100,41 @@ export const ProductGallery = ({
       <div className="absolute right-4 top-4 flex items-center gap-2">
         {hasOwnerActions ? (
           <>
-            <button
+            <Button
               type="button"
               onClick={ownerActions?.onEdit}
               className="flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-neutral-foreground shadow transition hover:bg-white"
               aria-label="Edit listing"
             >
               <Pencil className="h-4 w-4" />
-            </button>
-            <button
+            </Button>
+            <Button
               type="button"
               onClick={ownerActions?.onDelete}
               className="flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-error shadow transition hover:bg-white"
               aria-label="Delete listing"
             >
               <Trash2 className="h-4 w-4" />
-            </button>
+            </Button>
           </>
         ) : (
           <>
-            <button
+            <Button
               type="button"
               onClick={onShare}
               className="flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-neutral-foreground shadow transition hover:bg-white"
               aria-label="Share listing"
             >
               <Share2 className="h-4 w-4" />
-            </button>
-            <button
+            </Button>
+            <Button
               type="button"
               onClick={onToggleFavorite}
               className="flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-error shadow transition hover:bg-white"
               aria-label="Favorite listing"
             >
               <Heart className={`h-4 w-4 ${isFavorite ? "fill-error" : ""}`} />
-            </button>
+            </Button>
           </>
         )}
       </div>

@@ -11,6 +11,7 @@ export const ROUTES = {
   RECENT_LISTINGS: "/recent-listings",
   PUBLIC_PROFILE: "/profile/:id",
   PROFILE: "/profile",
+  SETTINGS: "/settings",
   VERIFY: "/verify",
   VERIFY_IDENTITY: "/verify/identity",
   VERIFY_IDENTITY_UPLOAD: "/verify/identity/upload",
@@ -30,6 +31,15 @@ export const ROUTES = {
   FAVORITES: "/favorites",
   NOTIFICATIONS: "/notifications",
   ADMIN_DASHBOARD: "/admin",
+  ADMIN_VERIFICATIONS: "/admin/verifications",
+  ADMIN_VERIFICATION_REVIEW: "/admin/verifications/:id",
+  ADMIN_USERS: "/admin/users",
+  ADMIN_USER_DETAIL: "/admin/users/:id",
+  ADMIN_REPORTS: "/admin/reports",
+  ADMIN_REPORT_DETAIL: "/admin/reports/:type/:id",
+  ADMIN_CATEGORIES: "/admin/categories",
+  ADMIN_CATEGORIES_ADD: "/admin/categories/add",
+  ADMIN_CATEGORY_EDIT: "/admin/categories/:id/edit",
   NOT_FOUND: "/404",
   ACCESS_DENIED: "/403",
 } as const;
@@ -39,3 +49,14 @@ export const getProductRoute = (id: string) => `/products/${id}`;
 export const getPublicProfileRoute = (id: string) => `/profile/${id}`;
 export const getMyListingsCategoryRoute = (category: string) =>
   `/my-listings/category/${category}`;
+export const getAdminVerificationReviewRoute = (id: string) =>
+  `/admin/verifications/${encodeURIComponent(id)}`;
+export const getAdminUserDetailRoute = (id: string) =>
+  `/admin/users/${encodeURIComponent(id)}`;
+export const getAdminListingDetailRoute = (id: string) =>
+  `/admin/listings/${encodeURIComponent(id)}`;
+export const getAdminReportDetailRoute = (type: string, id: string) =>
+  `/admin/reports/${encodeURIComponent(type)}/${encodeURIComponent(id)}`;
+export const getAdminCategoriesAddRoute = () => "/admin/categories/add";
+export const getAdminCategoryEditRoute = (id: string) =>
+  `/admin/categories/${id}/edit`;

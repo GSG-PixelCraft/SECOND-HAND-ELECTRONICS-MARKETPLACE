@@ -1,6 +1,8 @@
 import React, { useRef } from "react";
 import { Upload, FileImage, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Text } from "@/components/ui/text";
+import { Span } from "@/components/ui/span";
 
 interface VerifyIdentityInputProps {
   label: string;
@@ -39,11 +41,13 @@ export const VerifyIdentityInput: React.FC<VerifyIdentityInputProps> = ({
 
   return (
     <div className="space-y-2">
-      <label className="text-bodySmall text-neutral-80 font-medium">
+      <Span variant="label" className="text-bodySmall font-medium">
         {label}
-      </label>
+      </Span>
       {helperText && (
-        <p className="text-caption text-muted-foreground">{helperText}</p>
+        <Text variant="muted" className="text-caption">
+          {helperText}
+        </Text>
       )}
 
       <div
@@ -68,9 +72,9 @@ export const VerifyIdentityInput: React.FC<VerifyIdentityInputProps> = ({
           <div className="flex w-full items-center justify-between gap-3">
             <div className="flex items-center gap-2">
               <FileImage className="h-5 w-5 text-primary" />
-              <span className="text-bodySmall truncate font-medium">
+              <Span className="text-bodySmall truncate font-medium">
                 {value.name}
-              </span>
+              </Span>
             </div>
             <button
               type="button"
@@ -87,17 +91,21 @@ export const VerifyIdentityInput: React.FC<VerifyIdentityInputProps> = ({
           <div className="flex flex-col items-center gap-2 text-center">
             <Upload className="text-neutral-40 h-8 w-8" />
             <div className="text-bodySmall">
-              <span className="font-medium text-primary">Click to upload</span>
-              <span className="text-muted-foreground"> or drag and drop</span>
+              <Span className="font-medium text-primary">Click to upload</Span>
+              <Span variant="muted"> or drag and drop</Span>
             </div>
-            <p className="text-caption text-muted-foreground">
+            <Text variant="muted" className="text-caption">
               PNG, JPG up to 10MB
-            </p>
+            </Text>
           </div>
         )}
       </div>
 
-      {error && <p className="text-caption text-error">{error}</p>}
+      {error && (
+        <Text variant="error" className="text-caption">
+          {error}
+        </Text>
+      )}
     </div>
   );
 };

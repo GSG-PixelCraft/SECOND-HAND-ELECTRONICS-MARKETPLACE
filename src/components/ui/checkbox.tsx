@@ -1,7 +1,10 @@
 // src/components/ui/checkbox.tsx
-import * as React from "react";
+import { forwardRef, useId } from "react";
+import type { InputHTMLAttributes, ReactElement } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { twMerge } from "tailwind-merge";
+import { Span } from "./span";
+import { Text } from "./text";
 
 const checkboxVariants = cva(
   [
@@ -48,19 +51,19 @@ const checkboxVariants = cva(
 
 export interface CheckboxProps
   extends
-    Omit<React.InputHTMLAttributes<HTMLInputElement>, "size" | "type">,
+    Omit<InputHTMLAttributes<HTMLInputElement>, "size" | "type">,
     VariantProps<typeof checkboxVariants> {
   label?: string;
   helperText?: string;
   error?: string;
 }
 
-export const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
+export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
   (
     { className, intent, size, label, helperText, error, id, ...props },
     ref,
-  ): React.ReactElement => {
-    const checkboxId = React.useId();
+  ): ReactElement => {
+    const checkboxId = useId();
     const resolvedId = id ?? checkboxId;
 
     const helperId = helperText ? `${resolvedId}-help` : undefined;
@@ -85,25 +88,22 @@ export const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
             {...props}
           />
           {label && (
-            <label
-              htmlFor={resolvedId}
-              className="cursor-pointer text-caption text-neutral-foreground"
-            >
-              {label}
+            <label htmlFor={resolvedId} className="cursor-pointer">
+              <Span variant="caption">{label}</Span>
             </label>
           )}
         </div>
 
         {helperText && !error && (
-          <p id={helperId} className="text-caption text-muted-foreground">
+          <Text variant="muted" className="text-caption" id={helperId}>
             {helperText}
-          </p>
+          </Text>
         )}
 
         {error && (
-          <p id={errorId} className="text-caption text-error">
+          <Text variant="error" className="text-caption" id={errorId}>
             {error}
-          </p>
+          </Text>
         )}
       </div>
     );

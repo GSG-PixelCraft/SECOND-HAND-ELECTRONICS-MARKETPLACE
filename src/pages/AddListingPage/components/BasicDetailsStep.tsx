@@ -1,6 +1,12 @@
 // src/pages/AddListingPage/components/BasicDetailsStep.tsx
-import * as React from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import type {
+  ChangeEvent,
+  Dispatch,
+  FC,
+  ReactElement,
+  SetStateAction,
+} from "react";
 import type {
   UseFormRegister,
   FieldErrors,
@@ -8,6 +14,9 @@ import type {
 } from "react-hook-form";
 import { Info, Plus, X } from "lucide-react";
 import { type PhotoItem } from "@/components/ui/file-upload";
+import { Button } from "@/components/ui/button";
+import { Text } from "@/components/ui/text";
+import { Image } from "@/components/ui/image";
 
 interface PhotoItemWithProgress extends PhotoItem {
   uploadProgress?: number;
@@ -33,7 +42,7 @@ interface BasicDetailsStepProps {
   setValue: UseFormSetValue<ListingFormData>;
   errors: FieldErrors<ListingFormData>;
   photos: PhotoItemWithProgress[];
-  setPhotos: React.Dispatch<React.SetStateAction<PhotoItemWithProgress[]>>;
+  setPhotos: Dispatch<SetStateAction<PhotoItemWithProgress[]>>;
   photoError: string | null;
   setPhotoError: (error: string | null) => void;
   onTipsClick: () => void;
@@ -59,7 +68,7 @@ const CONDITIONS = [
   { value: "fair", label: "Fair" },
 ];
 
-export const BasicDetailsStep: React.FC<BasicDetailsStepProps> = ({
+export const BasicDetailsStep: FC<BasicDetailsStepProps> = ({
   register,
   setValue,
   photos,
@@ -68,16 +77,16 @@ export const BasicDetailsStep: React.FC<BasicDetailsStepProps> = ({
   onTipsClick,
   onNext,
   isNextDisabled,
-}): React.ReactElement => {
+}): ReactElement => {
   const [categoryOpen, setCategoryOpen] = useState(false);
   const [conditionOpen, setConditionOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("Phones");
   const [selectedCondition, setSelectedCondition] = useState("Like New");
-  React.useEffect(() => {
+  useEffect(() => {
     setValue("category", selectedCategory, { shouldValidate: true });
   }, [selectedCategory, setValue]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setValue("condition", selectedCondition, { shouldValidate: true });
   }, [selectedCondition, setValue]);
   const [draggingPhotoId, setDraggingPhotoId] = useState<string | null>(null);
@@ -106,7 +115,7 @@ export const BasicDetailsStep: React.FC<BasicDetailsStepProps> = ({
     }, 100);
   };
 
-  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoUpload = (e: ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;
 
@@ -154,13 +163,13 @@ export const BasicDetailsStep: React.FC<BasicDetailsStepProps> = ({
       <div className="flex w-full flex-col gap-2">
         <div className="flex w-full items-center gap-2">
           <div className="flex flex-1 items-center gap-2">
-            <p className="font-['Poppins'] text-base leading-normal text-[#101010]">
+            <Text className="font-['Poppins'] text-base leading-normal text-[#101010]">
               Photos
-            </p>
+            </Text>
             <div className="flex flex-col items-center justify-center text-center leading-[0]">
-              <p className="font-['Poppins'] text-sm leading-normal text-[#ef4444]">
+              <Text className="font-['Poppins'] text-sm leading-normal text-[#ef4444]">
                 *
-              </p>
+              </Text>
             </div>
           </div>
           <div
@@ -168,9 +177,9 @@ export const BasicDetailsStep: React.FC<BasicDetailsStepProps> = ({
             onClick={onTipsClick}
           >
             <Info className="size-4 text-[#828282]" />
-            <p className="text-right font-['Poppins'] text-base leading-normal text-[#828282]">
+            <Text className="text-right font-['Poppins'] text-base leading-normal text-[#828282]">
               Tips
-            </p>
+            </Text>
           </div>
         </div>
         <div className="flex w-full flex-col gap-2">
@@ -228,7 +237,7 @@ export const BasicDetailsStep: React.FC<BasicDetailsStepProps> = ({
                   setDragOverPhotoId(null);
                 }}
               >
-                <img
+                <Image
                   src={photo.url}
                   alt={`Photo ${index + 1}`}
                   className="size-full rounded-[10px] object-cover"
@@ -269,14 +278,14 @@ export const BasicDetailsStep: React.FC<BasicDetailsStepProps> = ({
                             />
                           </svg>
                         </div>
-                        <p className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-center font-['Poppins'] text-xs leading-normal text-white">
+                        <Text className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-center font-['Poppins'] text-xs leading-normal text-white">
                           {photo.uploadProgress}%
-                        </p>
+                        </Text>
                       </div>
                     </div>
                   )}
                 {/* Delete button */}
-                <button
+                <Button
                   type="button"
                   onClick={() => handleRemovePhoto(photo.id)}
                   className="absolute left-2 top-2 z-10"
@@ -284,35 +293,35 @@ export const BasicDetailsStep: React.FC<BasicDetailsStepProps> = ({
                   <div className="flex size-6 items-center justify-center rounded-[6px] bg-white">
                     <X className="size-4 text-[#525252]" />
                   </div>
-                </button>
+                </Button>
                 {/* Main badge */}
                 {index === 0 && (
                   <div className="absolute bottom-2 left-2 flex items-center justify-center rounded-[8px] bg-[#2563eb] px-3 py-1">
-                    <p className="font-['Poppins'] text-sm leading-normal text-white">
+                    <Text className="font-['Poppins'] text-sm leading-normal text-white">
                       Main
-                    </p>
+                    </Text>
                   </div>
                 )}
               </div>
             ))}
           </div>
-          <p className="w-full whitespace-pre-wrap font-['Poppins'] text-sm leading-normal text-[#828282]">
+          <Text className="w-full whitespace-pre-wrap font-['Poppins'] text-sm leading-normal text-[#828282]">
             Add up to 6 photos.{"\n"}The first photo will be the main photo.
             Drag and drop photos to different positions to change their order
-          </p>
+          </Text>
         </div>
       </div>
 
       {/* Title */}
       <div className="flex w-full flex-col gap-2">
         <div className="flex w-full items-center gap-2">
-          <p className="font-['Poppins'] text-base leading-normal text-[#212121]">
+          <Text className="font-['Poppins'] text-base leading-normal text-[#212121]">
             Title
-          </p>
+          </Text>
           <div className="flex flex-col items-center justify-center text-center leading-[0]">
-            <p className="font-['Poppins'] text-sm leading-normal text-[#ef4444]">
+            <Text className="font-['Poppins'] text-sm leading-normal text-[#ef4444]">
               *
-            </p>
+            </Text>
           </div>
         </div>
         <div className="flex w-full flex-col gap-1">
@@ -325,37 +334,37 @@ export const BasicDetailsStep: React.FC<BasicDetailsStepProps> = ({
               {...register("title")}
             />
           </div>
-          <p className="w-full whitespace-pre-wrap font-['Poppins'] text-sm leading-normal text-[#828282]">
+          <Text className="w-full whitespace-pre-wrap font-['Poppins'] text-sm leading-normal text-[#828282]">
             Describe what you're selling in a few words
-          </p>
+          </Text>
         </div>
       </div>
 
       {/* Category */}
       <div className="relative flex w-full flex-col gap-2">
         <div className="flex w-full items-center gap-2">
-          <p className="font-['Poppins'] text-base leading-normal text-[#212121]">
+          <Text className="font-['Poppins'] text-base leading-normal text-[#212121]">
             Category
-          </p>
+          </Text>
           <div className="flex flex-col items-center justify-center text-center leading-[0]">
-            <p className="font-['Poppins'] text-sm leading-normal text-[#ef4444]">
+            <Text className="font-['Poppins'] text-sm leading-normal text-[#ef4444]">
               *
-            </p>
+            </Text>
           </div>
         </div>
         <div className="flex w-full flex-col gap-1">
-          <button
+          <Button
             type="button"
             onClick={() => setCategoryOpen(!categoryOpen)}
             className="flex w-full items-center gap-2.5 rounded-[10px] border border-solid border-[#e4e4e4] bg-white p-4 text-left"
           >
-            <p
+            <Text
               className={`flex-1 whitespace-pre-wrap font-['Poppins'] text-base leading-normal ${
                 selectedCategory ? "text-[#3d3d3d]" : "text-[#c7c7c7]"
               }`}
             >
               {selectedCategory || "Select category"}
-            </p>
+            </Text>
             <svg
               className="size-6 shrink-0"
               viewBox="0 0 24 24"
@@ -370,7 +379,7 @@ export const BasicDetailsStep: React.FC<BasicDetailsStepProps> = ({
                 strokeLinejoin="round"
               />
             </svg>
-          </button>
+          </Button>
 
           {/* Category Dropdown - appears below the input */}
           {categoryOpen && (
@@ -409,7 +418,7 @@ export const BasicDetailsStep: React.FC<BasicDetailsStepProps> = ({
                 {/* Options */}
                 <div className="flex flex-col gap-3 overflow-y-auto">
                   {CATEGORIES.map((category) => (
-                    <button
+                    <Button
                       key={category.value}
                       type="button"
                       onClick={() => {
@@ -422,7 +431,7 @@ export const BasicDetailsStep: React.FC<BasicDetailsStepProps> = ({
                           : "border-[#e4e4e4] bg-white"
                       }`}
                     >
-                      <p
+                      <Text
                         className={`flex-1 whitespace-pre-wrap text-left font-['Poppins'] text-base leading-normal ${
                           category.value === "phones"
                             ? "text-[#3d3d3d]"
@@ -430,7 +439,7 @@ export const BasicDetailsStep: React.FC<BasicDetailsStepProps> = ({
                         }`}
                       >
                         {category.label}
-                      </p>
+                      </Text>
                       <div className="relative size-6 overflow-clip">
                         {category.value === "phones" ? (
                           <svg
@@ -467,7 +476,7 @@ export const BasicDetailsStep: React.FC<BasicDetailsStepProps> = ({
                           </svg>
                         )}
                       </div>
-                    </button>
+                    </Button>
                   ))}
                 </div>
               </div>
@@ -479,37 +488,37 @@ export const BasicDetailsStep: React.FC<BasicDetailsStepProps> = ({
             </div>
           )}
 
-          <p className="font-['Poppins'] text-sm leading-normal text-[#828282]">
+          <Text className="font-['Poppins'] text-sm leading-normal text-[#828282]">
             Fields on next step will be customized based on category
-          </p>
+          </Text>
         </div>
       </div>
 
       {/* Condition */}
       <div className="relative flex w-full flex-col gap-2">
         <div className="flex w-full items-center gap-2">
-          <p className="font-['Poppins'] text-base leading-normal text-[#212121]">
+          <Text className="font-['Poppins'] text-base leading-normal text-[#212121]">
             Condition
-          </p>
+          </Text>
           <div className="flex flex-col items-center justify-center text-center leading-[0]">
-            <p className="font-['Poppins'] text-sm leading-normal text-[#ef4444]">
+            <Text className="font-['Poppins'] text-sm leading-normal text-[#ef4444]">
               *
-            </p>
+            </Text>
           </div>
         </div>
         <div className="flex w-full flex-col gap-1">
-          <button
+          <Button
             type="button"
             onClick={() => setConditionOpen(!conditionOpen)}
             className="flex w-full items-center gap-2.5 rounded-[10px] border border-solid border-[#e4e4e4] bg-white p-4 text-left"
           >
-            <p
+            <Text
               className={`flex-1 whitespace-pre-wrap font-['Poppins'] text-base leading-normal ${
                 selectedCondition ? "text-[#3d3d3d]" : "text-[#c7c7c7]"
               }`}
             >
               {selectedCondition || "Select your item condition"}
-            </p>
+            </Text>
             <svg
               className="size-6 shrink-0"
               viewBox="0 0 24 24"
@@ -524,7 +533,7 @@ export const BasicDetailsStep: React.FC<BasicDetailsStepProps> = ({
                 strokeLinejoin="round"
               />
             </svg>
-          </button>
+          </Button>
 
           {/* Condition Dropdown - appears below the input (no search) */}
           {conditionOpen && (
@@ -532,7 +541,7 @@ export const BasicDetailsStep: React.FC<BasicDetailsStepProps> = ({
               <div className="flex flex-1 flex-col gap-3">
                 {/* Options */}
                 {CONDITIONS.map((condition) => (
-                  <button
+                  <Button
                     key={condition.value}
                     type="button"
                     onClick={() => {
@@ -545,7 +554,7 @@ export const BasicDetailsStep: React.FC<BasicDetailsStepProps> = ({
                         : "border-[#e4e4e4] bg-white"
                     }`}
                   >
-                    <p
+                    <Text
                       className={`flex-1 whitespace-pre-wrap text-left font-['Poppins'] text-base leading-normal ${
                         selectedCondition === condition.label
                           ? "text-[#3d3d3d]"
@@ -553,7 +562,7 @@ export const BasicDetailsStep: React.FC<BasicDetailsStepProps> = ({
                       }`}
                     >
                       {condition.label}
-                    </p>
+                    </Text>
                     <div className="relative size-6 overflow-clip">
                       {selectedCondition === condition.label ? (
                         <svg
@@ -590,7 +599,7 @@ export const BasicDetailsStep: React.FC<BasicDetailsStepProps> = ({
                         </svg>
                       )}
                     </div>
-                  </button>
+                  </Button>
                 ))}
               </div>
 
@@ -608,13 +617,13 @@ export const BasicDetailsStep: React.FC<BasicDetailsStepProps> = ({
       {/* Price */}
       <div className="flex w-full flex-col gap-2">
         <div className="flex w-full items-center gap-2">
-          <p className="font-['Poppins'] text-base leading-normal text-[#212121]">
+          <Text className="font-['Poppins'] text-base leading-normal text-[#212121]">
             Price
-          </p>
+          </Text>
           <div className="flex flex-col items-center justify-center text-center leading-[0]">
-            <p className="font-['Poppins'] text-sm leading-normal text-[#ef4444]">
+            <Text className="font-['Poppins'] text-sm leading-normal text-[#ef4444]">
               *
-            </p>
+            </Text>
           </div>
         </div>
         <div className="flex w-full flex-col gap-1">
@@ -626,13 +635,13 @@ export const BasicDetailsStep: React.FC<BasicDetailsStepProps> = ({
               className="flex-1 whitespace-pre-wrap font-['Poppins'] text-base leading-normal text-[#3d3d3d] outline-none placeholder:text-[#c7c7c7]"
               {...register("price", { valueAsNumber: true })}
             />
-            <p className="text-right font-['Poppins'] text-base leading-normal text-[#c7c7c7]">
+            <Text className="text-right font-['Poppins'] text-base leading-normal text-[#c7c7c7]">
               ILS
-            </p>
+            </Text>
           </div>
-          <p className="font-['Poppins'] text-sm leading-normal text-[#828282]">
+          <Text className="font-['Poppins'] text-sm leading-normal text-[#828282]">
             Set a competitive price
-          </p>
+          </Text>
         </div>
       </div>
 
@@ -669,7 +678,7 @@ export const BasicDetailsStep: React.FC<BasicDetailsStepProps> = ({
       </div>
 
       {/* Next Button */}
-      <button
+      <Button
         type="button"
         onClick={onNext}
         disabled={isNextDisabled}
@@ -678,15 +687,15 @@ export const BasicDetailsStep: React.FC<BasicDetailsStepProps> = ({
         }`}
       >
         <div className="flex flex-col items-center justify-center text-center leading-[0]">
-          <p
+          <Text
             className={`font-['Poppins'] text-base font-medium leading-normal ${
               isNextDisabled ? "text-[#c7c7c7]" : "text-white"
             }`}
           >
             Next
-          </p>
+          </Text>
         </div>
-      </button>
+      </Button>
     </div>
   );
 };

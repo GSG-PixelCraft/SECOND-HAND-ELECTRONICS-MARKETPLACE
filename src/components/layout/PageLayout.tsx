@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import Container from "./Container";
 import Card from "@/components/ui/Card";
+import { Text } from "@/components/ui/text";
 
 interface PageLayoutProps {
   title?: string;
@@ -19,6 +20,7 @@ interface PageLayoutProps {
     | "7xl";
   className?: string;
   showPlaceholder?: boolean;
+  centerContent?: boolean;
 }
 
 const PageLayout = ({
@@ -28,21 +30,28 @@ const PageLayout = ({
   maxWidth = "6xl",
   className = "",
   showPlaceholder = false,
+  centerContent = false,
 }: PageLayoutProps) => {
   return (
     <Container
       maxWidth={maxWidth}
-      className={`flex flex-col gap-4 ${className}`}
+      className={`flex flex-col gap-4 ${centerContent ? "items-center" : ""} ${className}`}
     >
-      <Card>
+      <Card className={centerContent ? "items-center text-center" : ""}>
         {title && (
           <div className="space-y-2">
-            <h1 className="text-2xl font-semibold text-slate-900">{title}</h1>
-            {subtitle && <p className="text-sm text-slate-600">{subtitle}</p>}
+            <Text className="text-2xl font-semibold text-slate-900">
+              {title}
+            </Text>
+            {subtitle && (
+              <Text className="text-sm text-slate-600">{subtitle}</Text>
+            )}
           </div>
         )}
         {showPlaceholder && !children ? (
-          <p className="text-sm text-slate-600">Screen setup placeholder.</p>
+          <Text className="text-sm text-slate-600">
+            Screen setup placeholder.
+          </Text>
         ) : (
           children
         )}

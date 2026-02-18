@@ -1,6 +1,8 @@
-import * as React from "react";
+import { forwardRef, useId } from "react";
+import type { SelectHTMLAttributes } from "react";
 import { twMerge } from "tailwind-merge";
 import { cva, type VariantProps } from "class-variance-authority";
+import { Text } from "./text";
 
 const selectVariants = cva(
   [
@@ -53,7 +55,7 @@ const selectVariants = cva(
 type SelectVariantProps = VariantProps<typeof selectVariants>;
 
 export interface SelectProps extends Omit<
-  React.SelectHTMLAttributes<HTMLSelectElement>,
+  SelectHTMLAttributes<HTMLSelectElement>,
   "size"
 > {
   intent?: SelectVariantProps["intent"];
@@ -62,12 +64,12 @@ export interface SelectProps extends Omit<
   error?: string;
 }
 
-export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
+export const Select = forwardRef<HTMLSelectElement, SelectProps>(
   function Select(
     { intent, size, helperText, error, id, className, children, ...props },
     ref,
   ) {
-    const autoId = React.useId();
+    const autoId = useId();
     const resolvedId = id ?? autoId;
     const helperId = helperText ? `${resolvedId}-help` : undefined;
     const errorId = error ? `${resolvedId}-error` : undefined;
@@ -93,13 +95,13 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
         </select>
 
         {error ? (
-          <p id={errorId} className="text-caption text-error-foreground">
+          <Text id={errorId} className="text-caption text-error-foreground">
             {error}
-          </p>
+          </Text>
         ) : helperText ? (
-          <p id={helperId} className="text-caption text-muted-foreground">
+          <Text variant="muted" className="text-caption" id={helperId}>
             {helperText}
-          </p>
+          </Text>
         ) : null}
       </div>
     );

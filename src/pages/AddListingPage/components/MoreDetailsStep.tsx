@@ -1,6 +1,6 @@
 // src/pages/AddListingPage/components/MoreDetailsStep.tsx
-import * as React from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import type { FC, ReactElement } from "react";
 import { useTranslation } from "react-i18next";
 import type {
   UseFormRegister,
@@ -8,6 +8,8 @@ import type {
   UseFormWatch,
   UseFormSetValue,
 } from "react-hook-form";
+import { Button } from "@/components/ui/button";
+import { Text } from "@/components/ui/text";
 
 interface ListingFormData {
   title: string;
@@ -50,14 +52,14 @@ const STORAGE_OPTIONS = [
   { value: "512", labelKey: "addListing.storage.512" },
 ];
 
-export const MoreDetailsStep: React.FC<MoreDetailsStepProps> = ({
+export const MoreDetailsStep: FC<MoreDetailsStepProps> = ({
   register,
   setValue,
   errors,
   watch,
   onReview,
   onLocationClick,
-}): React.ReactElement => {
+}): ReactElement => {
   const { t } = useTranslation();
   const descriptionValue = watch("description") ?? "";
   const locationValue = watch("location") ?? "";
@@ -79,23 +81,23 @@ export const MoreDetailsStep: React.FC<MoreDetailsStepProps> = ({
       )
     : t("addListing.fields.storage.placeholder");
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (watchedBrand && watchedBrand !== selectedBrand) {
       setSelectedBrand(watchedBrand);
     }
-  }, [watchedBrand]);
+  }, [watchedBrand, selectedBrand]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (watchedStorage && watchedStorage !== selectedStorage) {
       setSelectedStorage(watchedStorage);
     }
-  }, [watchedStorage]);
+  }, [watchedStorage, selectedStorage]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setValue("brand", selectedBrand, { shouldValidate: true });
   }, [selectedBrand, setValue]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setValue("storage", selectedStorage, { shouldValidate: true });
   }, [selectedStorage, setValue]);
 
@@ -104,24 +106,24 @@ export const MoreDetailsStep: React.FC<MoreDetailsStepProps> = ({
       {/* Brand */}
       <div className="flex w-full flex-col gap-2">
         <div className="flex items-center gap-2">
-          <p className="font-['Poppins'] text-base leading-normal text-[#3d3d3d]">
+          <Text className="font-['Poppins'] text-base leading-normal text-[#3d3d3d]">
             Brand
-          </p>
+          </Text>
           <div className="flex flex-col items-center justify-center text-center leading-[0]">
-            <p className="font-['Poppins'] text-sm leading-normal text-[#ef4444]">
+            <Text className="font-['Poppins'] text-sm leading-normal text-[#ef4444]">
               *
-            </p>
+            </Text>
           </div>
         </div>
         <div className="flex w-full flex-col gap-1">
-          <button
+          <Button
             type="button"
             onClick={() => setBrandOpen(!brandOpen)}
             className="flex w-full items-center gap-2.5 rounded-[10px] border border-solid border-[#e4e4e4] bg-white p-4 text-left"
           >
-            <p className="flex-1 whitespace-pre-wrap font-['Poppins'] text-base leading-normal text-[#3d3d3d]">
+            <Text className="flex-1 whitespace-pre-wrap font-['Poppins'] text-base leading-normal text-[#3d3d3d]">
               {selectedBrandLabel}
-            </p>
+            </Text>
             <svg
               className="size-6 shrink-0"
               viewBox="0 0 24 24"
@@ -136,12 +138,12 @@ export const MoreDetailsStep: React.FC<MoreDetailsStepProps> = ({
                 strokeLinejoin="round"
               />
             </svg>
-          </button>
+          </Button>
           {brandOpen && (
             <div className="relative z-10 flex w-full gap-2.5 overflow-clip rounded-xl border border-solid border-[#e4e4e4] bg-white p-4 pr-6">
               <div className="flex flex-1 flex-col gap-3">
                 {BRANDS.filter((brand) => brand.value).map((brand) => (
-                  <button
+                  <Button
                     key={brand.value}
                     type="button"
                     onClick={() => {
@@ -154,7 +156,7 @@ export const MoreDetailsStep: React.FC<MoreDetailsStepProps> = ({
                         : "border-[#e4e4e4] bg-white"
                     }`}
                   >
-                    <p
+                    <Text
                       className={`flex-1 whitespace-pre-wrap text-left font-['Poppins'] text-base leading-normal ${
                         selectedBrand === brand.value
                           ? "text-[#3d3d3d]"
@@ -162,7 +164,7 @@ export const MoreDetailsStep: React.FC<MoreDetailsStepProps> = ({
                       }`}
                     >
                       {t(brand.labelKey)}
-                    </p>
+                    </Text>
                     <div className="relative size-6 overflow-clip">
                       {selectedBrand === brand.value ? (
                         <svg
@@ -199,7 +201,7 @@ export const MoreDetailsStep: React.FC<MoreDetailsStepProps> = ({
                         </svg>
                       )}
                     </div>
-                  </button>
+                  </Button>
                 ))}
               </div>
             </div>
@@ -207,22 +209,22 @@ export const MoreDetailsStep: React.FC<MoreDetailsStepProps> = ({
           <input type="hidden" value={selectedBrand} {...register("brand")} />
         </div>
         {errors.brand?.message && (
-          <p className="font-['Poppins'] text-sm leading-normal text-[#ef4444]">
+          <Text className="font-['Poppins'] text-sm leading-normal text-[#ef4444]">
             {errors.brand.message}
-          </p>
+          </Text>
         )}
       </div>
 
       {/* Model */}
       <div className="flex w-full flex-col gap-2">
         <div className="flex items-center gap-2">
-          <p className="font-['Poppins'] text-base leading-normal text-[#3d3d3d]">
+          <Text className="font-['Poppins'] text-base leading-normal text-[#3d3d3d]">
             Model
-          </p>
+          </Text>
           <div className="flex flex-col items-center justify-center text-center leading-[0]">
-            <p className="font-['Poppins'] text-sm leading-normal text-[#ef4444]">
+            <Text className="font-['Poppins'] text-sm leading-normal text-[#ef4444]">
               *
-            </p>
+            </Text>
           </div>
         </div>
         <div className="flex w-full items-center gap-2.5 rounded-[10px] border border-solid border-[#e4e4e4] bg-white p-4">
@@ -234,33 +236,33 @@ export const MoreDetailsStep: React.FC<MoreDetailsStepProps> = ({
           />
         </div>
         {errors.model?.message && (
-          <p className="font-['Poppins'] text-sm leading-normal text-[#ef4444]">
+          <Text className="font-['Poppins'] text-sm leading-normal text-[#ef4444]">
             {errors.model.message}
-          </p>
+          </Text>
         )}
       </div>
 
       {/* Storage */}
       <div className="flex w-full flex-col gap-2">
         <div className="flex items-center gap-2">
-          <p className="font-['Poppins'] text-base leading-normal text-[#3d3d3d]">
+          <Text className="font-['Poppins'] text-base leading-normal text-[#3d3d3d]">
             Storage
-          </p>
+          </Text>
           <div className="flex flex-col items-center justify-center text-center leading-[0]">
-            <p className="font-['Poppins'] text-sm leading-normal text-[#ef4444]">
+            <Text className="font-['Poppins'] text-sm leading-normal text-[#ef4444]">
               *
-            </p>
+            </Text>
           </div>
         </div>
         <div className="flex w-full flex-col gap-1">
-          <button
+          <Button
             type="button"
             onClick={() => setStorageOpen(!storageOpen)}
             className="flex w-full items-center gap-2.5 rounded-[10px] border border-solid border-[#e4e4e4] bg-white p-4 text-left"
           >
-            <p className="flex-1 whitespace-pre-wrap font-['Poppins'] text-base leading-normal text-[#3d3d3d]">
+            <Text className="flex-1 whitespace-pre-wrap font-['Poppins'] text-base leading-normal text-[#3d3d3d]">
               {selectedStorageLabel}
-            </p>
+            </Text>
             <svg
               className="size-6 shrink-0"
               viewBox="0 0 24 24"
@@ -275,7 +277,7 @@ export const MoreDetailsStep: React.FC<MoreDetailsStepProps> = ({
                 strokeLinejoin="round"
               />
             </svg>
-          </button>
+          </Button>
           {storageOpen && (
             <div className="relative z-10 flex w-full gap-2.5 overflow-clip rounded-xl border border-solid border-[#e4e4e4] bg-white p-4 pr-6">
               <div className="flex flex-1 flex-col gap-3">
@@ -283,7 +285,7 @@ export const MoreDetailsStep: React.FC<MoreDetailsStepProps> = ({
                   (storage) => {
                     const label = t(storage.labelKey);
                     return (
-                      <button
+                      <Button
                         key={storage.value}
                         type="button"
                         onClick={() => {
@@ -296,7 +298,7 @@ export const MoreDetailsStep: React.FC<MoreDetailsStepProps> = ({
                             : "border-[#e4e4e4] bg-white"
                         }`}
                       >
-                        <p
+                        <Text
                           className={`flex-1 whitespace-pre-wrap text-left font-['Poppins'] text-base leading-normal ${
                             selectedStorage === storage.value
                               ? "text-[#3d3d3d]"
@@ -304,7 +306,7 @@ export const MoreDetailsStep: React.FC<MoreDetailsStepProps> = ({
                           }`}
                         >
                           {label}
-                        </p>
+                        </Text>
                         <div className="relative size-6 overflow-clip">
                           {selectedStorage === storage.value ? (
                             <svg
@@ -341,7 +343,7 @@ export const MoreDetailsStep: React.FC<MoreDetailsStepProps> = ({
                             </svg>
                           )}
                         </div>
-                      </button>
+                      </Button>
                     );
                   },
                 )}
@@ -355,9 +357,9 @@ export const MoreDetailsStep: React.FC<MoreDetailsStepProps> = ({
           />
         </div>
         {errors.storage?.message && (
-          <p className="font-['Poppins'] text-sm leading-normal text-[#ef4444]">
+          <Text className="font-['Poppins'] text-sm leading-normal text-[#ef4444]">
             {errors.storage.message}
-          </p>
+          </Text>
         )}
       </div>
 
@@ -402,16 +404,16 @@ export const MoreDetailsStep: React.FC<MoreDetailsStepProps> = ({
       {/* Location */}
       <div className="flex w-full flex-col gap-2">
         <div className="flex items-center gap-2">
-          <p className="font-['Poppins'] text-base leading-normal text-[#3d3d3d]">
+          <Text className="font-['Poppins'] text-base leading-normal text-[#3d3d3d]">
             Location
-          </p>
+          </Text>
           <div className="flex flex-col items-center justify-center text-center leading-[0]">
-            <p className="font-['Poppins'] text-sm leading-normal text-[#ef4444]">
+            <Text className="font-['Poppins'] text-sm leading-normal text-[#ef4444]">
               *
-            </p>
+            </Text>
           </div>
         </div>
-        <button
+        <Button
           type="button"
           onClick={onLocationClick}
           className="flex w-full items-center gap-2.5 rounded-[10px] border border-solid border-[#e4e4e4] bg-white p-4 text-left"
@@ -438,11 +440,11 @@ export const MoreDetailsStep: React.FC<MoreDetailsStepProps> = ({
               strokeLinejoin="round"
             />
           </svg>
-        </button>
+        </Button>
         {errors.location?.message && (
-          <p className="font-['Poppins'] text-sm leading-normal text-[#ef4444]">
+          <Text className="font-['Poppins'] text-sm leading-normal text-[#ef4444]">
             {errors.location.message}
-          </p>
+          </Text>
         )}
       </div>
 
@@ -470,36 +472,36 @@ export const MoreDetailsStep: React.FC<MoreDetailsStepProps> = ({
           </svg>
         </div>
         <div className="flex items-center gap-1">
-          <p className="font-['Poppins'] text-lg leading-normal text-[#212121]">
+          <Text className="font-['Poppins'] text-lg leading-normal text-[#212121]">
             I confirm this item is not stolen or prohibited
-          </p>
+          </Text>
           <div className="flex flex-col items-center justify-center text-center leading-[0]">
-            <p className="font-['Poppins'] text-sm leading-normal text-[#ef4444]">
+            <Text className="font-['Poppins'] text-sm leading-normal text-[#ef4444]">
               *
-            </p>
+            </Text>
           </div>
         </div>
       </div>
 
       {/* Actions */}
       <div className="flex flex-wrap items-center justify-center gap-6">
-        <button
+        <Button
           type="button"
           onClick={onReview}
           className="flex h-14 w-[358px] items-center justify-center rounded-xl border border-[#2563eb] bg-white px-[119px] py-4"
         >
-          <p className="font-['Poppins'] text-base font-medium leading-normal text-[#2563eb]">
+          <Text className="font-['Poppins'] text-base font-medium leading-normal text-[#2563eb]">
             Review
-          </p>
-        </button>
-        <button
+          </Text>
+        </Button>
+        <Button
           type="submit"
           className="flex h-14 w-[358px] items-center justify-center rounded-xl bg-[#2563eb] px-[119px] py-4"
         >
-          <p className="font-['Poppins'] text-base font-medium leading-normal text-white">
+          <Text className="font-['Poppins'] text-base font-medium leading-normal text-white">
             Publish
-          </p>
-        </button>
+          </Text>
+        </Button>
       </div>
     </div>
   );

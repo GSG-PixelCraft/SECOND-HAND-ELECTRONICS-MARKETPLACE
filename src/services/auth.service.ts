@@ -1,21 +1,25 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { api } from "./client";
-import { setToken, removeToken } from "@/lib/storage";
+import { removeToken, setToken, removeUser, setUser } from "@/lib/storage";
 import { API_ENDPOINTS } from "@/constants/api-endpoints";
 import { ROUTES } from "@/constants/routes";
+import type { User } from "@/types";
 
 // ============================================================================
 // Types
 // ============================================================================
 
 export interface LoginCredentials {
-  email: string;
+  email?: string;
+  phoneNumber?: string;
   password: string;
 }
 
 export interface RegisterData {
+  fullName: string;
   email: string;
+  phoneNumber: string;
   password: string;
   name: string;
 }
@@ -89,17 +93,79 @@ export const authService = {
     return normalizeAuthResponse(payload);
   },
 
-  logout: (): Promise<void> => api.post(API_ENDPOINTS.AUTH.LOGOUT),
+export interface VerifyCodeRequest {
+  code: string;
+  type: "password_reset" | VerificationOtpType;
+  email?: string;
+  phoneNumber?: string;
+}
 
-  getMe: (): Promise<User> => api.get<User>(API_ENDPOINTS.AUTH.ME),
+export interface VerifyCodeResponse {
+  message: string;
+  email?: string;
+  phoneNumber?: string;
+  token?: string;
+}
 
-  refreshToken: (): Promise<{ token: string }> =>
-    api.post<{ token: string }>(API_ENDPOINTS.AUTH.REFRESH),
+export interface ResetPasswordRequest {
+  newPassword: string;
+  confirmPassword: string;
+}
 
-  getProfile: (): Promise<User> => api.get<User>("/auth/profile"),
+// ============================================================================
+// API Functions
+// ============================================================================
 
-  updateProfile: (data: Partial<User>): Promise<User> =>
-    api.put<User>("/auth/profile", data),
+export const authService = {
+  login: (credentials: LoginCredentials): Promise<ApiResponse<AuthResponse>> =>
+    api.post<ApiResponse<AuthResponse>>(API_ENDPOINTS.AUTH.LOGIN, credentials),
+
+  register: (userData: RegisterData): Promise<ApiResponse<AuthResponse>> =>
+    api.post<ApiResponse<AuthResponse>>(API_ENDPOINTS.AUTH.REGISTER, userData),
+
+  logout: (): Promise<ApiResponse<string>> =>
+    api.post<ApiResponse<string>>(API_ENDPOINTS.AUTH.LOGOUT),
+
+  getMe: (): Promise<ApiResponse<User>> =>
+    api.get<ApiResponse<User>>(API_ENDPOINTS.AUTH.ME),
+
+  refreshToken: (): Promise<ApiResponse<{ token: string }>> =>
+    api.post<ApiResponse<{ token: string }>>(API_ENDPOINTS.AUTH.REFRESH),
+
+  getProfile: (): Promise<ApiResponse<User>> =>
+    api.get<ApiResponse<User>>("/auth/profile"),
+
+  updateProfile: (data: Partial<User>): Promise<ApiResponse<User>> =>
+    api.put<ApiResponse<User>>("/auth/profile", data),
+
+  sendVerificationCode: (
+    payload: VerificationCodeRequest,
+  ): Promise<ApiResponse<string>> =>
+    api.post<ApiResponse<string>>(API_ENDPOINTS.AUTH.VERIFICATION, payload),
+
+  verifyCode: (
+    payload: VerifyCodeRequest,
+  ): Promise<ApiResponse<VerifyCodeResponse>> =>
+    api.post<ApiResponse<VerifyCodeResponse>>(
+      API_ENDPOINTS.AUTH.VERIFY_CODE,
+      payload,
+    ),
+
+  resetPassword: (
+    payload: ResetPasswordRequest,
+    token?: string | null,
+  ): Promise<ApiResponse<{ message: string }>> =>
+    api.post<ApiResponse<{ message: string }>>(
+      API_ENDPOINTS.AUTH.RESET_PASSWORD,
+      payload,
+      token
+        ? {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        : undefined,
+    ),
 };
 
 // ============================================================================
@@ -122,6 +188,7 @@ export const useAuth = () => {
   const { data: user, isLoading } = useQuery({
     queryKey: AUTH_KEYS.me,
     queryFn: authService.getMe,
+    select: (response) => response.data,
     retry: false,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
@@ -130,8 +197,9 @@ export const useAuth = () => {
   const loginMutation = useMutation({
     mutationFn: authService.login,
     onSuccess: (data) => {
-      setToken(data.token);
-      queryClient.setQueryData(AUTH_KEYS.me, data.user);
+      setToken(data.data.token);
+      setUser(data.data.user);
+      queryClient.setQueryData(AUTH_KEYS.me, data.data.user);
       navigate(ROUTES.PROFILE);
     },
   });
@@ -140,8 +208,9 @@ export const useAuth = () => {
   const registerMutation = useMutation({
     mutationFn: authService.register,
     onSuccess: (data) => {
-      setToken(data.token);
-      queryClient.setQueryData(AUTH_KEYS.me, data.user);
+      setToken(data.data.token);
+      setUser(data.data.user);
+      queryClient.setQueryData(AUTH_KEYS.me, data.data.user);
       navigate(ROUTES.PROFILE);
     },
   });
@@ -151,6 +220,7 @@ export const useAuth = () => {
     mutationFn: authService.logout,
     onSuccess: () => {
       removeToken();
+      removeUser();
       queryClient.clear();
       navigate(ROUTES.SIGN_IN);
     },

@@ -1,9 +1,13 @@
 // src/pages/AddListingPage/components/ReviewDialog.tsx
-import * as React from "react";
+import { useState } from "react";
+import type { FC, ReactElement } from "react";
 import { useTranslation } from "react-i18next";
 import type { UseFormHandleSubmit } from "react-hook-form";
 import { Dialog } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { Image } from "@/components/ui/image";
+import { Text } from "@/components/ui/text";
+import { Span } from "@/components/ui/span";
 import { type PhotoItem } from "@/components/ui/file-upload";
 import { Check, ChevronLeft, ChevronRight, MapPin } from "lucide-react";
 import { MapContainer, Marker, TileLayer } from "react-leaflet";
@@ -45,7 +49,7 @@ L.Icon.Default.mergeOptions({
   shadowUrl: markerShadow,
 });
 
-export const ReviewDialog: React.FC<ReviewDialogProps> = ({
+export const ReviewDialog: FC<ReviewDialogProps> = ({
   open,
   onOpenChange,
   values,
@@ -54,9 +58,9 @@ export const ReviewDialog: React.FC<ReviewDialogProps> = ({
   locationCoordinates,
   onSubmit,
   handleSubmit,
-}): React.ReactElement => {
+}): ReactElement => {
   const { t } = useTranslation();
-  const [currentSlide, setCurrentSlide] = React.useState(0);
+  const [currentSlide, setCurrentSlide] = useState(0);
 
   const mainImage = photos[currentSlide]?.url ?? fallbackImage;
 
@@ -106,27 +110,27 @@ export const ReviewDialog: React.FC<ReviewDialogProps> = ({
         <h2 className="text-center text-[20px] font-medium text-[#212121]">
           {t("addListing.reviewModal.title")}
         </h2>
-        <button
+        <Button
           type="button"
           onClick={() => onOpenChange(false)}
           className="flex h-6 w-6 items-center justify-center rounded-md border border-neutral-20 text-sm text-[#828282]"
           aria-label={t("common.close")}
         >
           ×
-        </button>
+        </Button>
       </div>
 
       <div className="flex flex-col gap-6 px-8 pb-8">
         <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
           <div className="flex min-w-0 flex-col gap-6 xl:col-span-2">
             <div className="relative h-[645px] overflow-hidden rounded-[12px]">
-              <img
+              <Image
                 src={mainImage}
                 alt={values.title ?? t("addListing.fields.title.label")}
                 className="h-full w-full object-cover"
               />
               <div className="absolute inset-0 bg-black/20" />
-              <button
+              <Button
                 type="button"
                 className="absolute left-6 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white shadow-[0px_1px_4px_0px_rgba(255,255,255,0.3)]"
                 aria-label="Previous"
@@ -134,8 +138,8 @@ export const ReviewDialog: React.FC<ReviewDialogProps> = ({
                 disabled={photos.length <= 1}
               >
                 <ChevronLeft className="h-5 w-5 text-[#3d3d3d]" />
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
                 className="absolute right-6 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white shadow-[0px_1px_4px_0px_rgba(255,255,255,0.3)]"
                 aria-label="Next"
@@ -143,10 +147,10 @@ export const ReviewDialog: React.FC<ReviewDialogProps> = ({
                 disabled={photos.length <= 1}
               >
                 <ChevronRight className="h-5 w-5 text-[#3d3d3d]" />
-              </button>
+              </Button>
               <div className="absolute bottom-6 left-1/2 flex -translate-x-1/2 gap-2">
                 {photos.map((_, index) => (
-                  <button
+                  <Button
                     key={index}
                     type="button"
                     className={`h-2 rounded-full transition-all duration-200 ${
@@ -167,44 +171,44 @@ export const ReviewDialog: React.FC<ReviewDialogProps> = ({
               </h3>
               <div className="mt-4 grid gap-6 sm:grid-cols-2">
                 <div className="grid grid-cols-[1fr_auto] items-center gap-4 rounded-[12px] bg-[#14b8a6]/5 p-4 text-[16px]">
-                  <span className="min-w-0 text-[#828282]">
+                  <Span className="min-w-0 text-[#828282]">
                     {t("addListing.fields.category.label")}
-                  </span>
-                  <span className="text-right text-[#3d3d3d]">
+                  </Span>
+                  <Span className="text-right text-[#3d3d3d]">
                     {categoryLabel}
-                  </span>
+                  </Span>
                 </div>
                 <div className="grid grid-cols-[1fr_auto] items-center gap-4 rounded-[12px] bg-white p-4 text-[16px]">
-                  <span className="min-w-0 text-[#828282]">
+                  <Span className="min-w-0 text-[#828282]">
                     {t("addListing.fields.brand.label")}
-                  </span>
-                  <span className="text-right text-[#3d3d3d]">
+                  </Span>
+                  <Span className="text-right text-[#3d3d3d]">
                     {brandLabel}
-                  </span>
+                  </Span>
                 </div>
                 <div className="grid grid-cols-[1fr_auto] items-center gap-4 rounded-[12px] bg-white p-4 text-[16px]">
-                  <span className="min-w-0 text-[#828282]">
+                  <Span className="min-w-0 text-[#828282]">
                     {t("addListing.fields.model.label")}
-                  </span>
-                  <span className="text-right text-[#3d3d3d]">
+                  </Span>
+                  <Span className="text-right text-[#3d3d3d]">
                     {values.model || "—"}
-                  </span>
+                  </Span>
                 </div>
                 <div className="grid grid-cols-[1fr_auto] items-center gap-4 rounded-[12px] bg-[#14b8a6]/5 p-4 text-[16px]">
-                  <span className="min-w-0 text-[#828282]">
+                  <Span className="min-w-0 text-[#828282]">
                     {t("addListing.fields.storage.label")}
-                  </span>
-                  <span className="text-right text-[#3d3d3d]">
+                  </Span>
+                  <Span className="text-right text-[#3d3d3d]">
                     {storageLabel}
-                  </span>
+                  </Span>
                 </div>
                 <div className="grid grid-cols-[1fr_auto] items-center gap-4 rounded-[12px] bg-[#14b8a6]/5 p-4 text-[16px]">
-                  <span className="min-w-0 text-[#828282]">
+                  <Span className="min-w-0 text-[#828282]">
                     {t("addListing.fields.batteryHealth.label")}
-                  </span>
-                  <span className="text-right text-[#3d3d3d]">
+                  </Span>
+                  <Span className="text-right text-[#3d3d3d]">
                     {values.batteryHealth || "—"}
-                  </span>
+                  </Span>
                 </div>
                 <div className="opacity-0">&nbsp;</div>
               </div>
@@ -214,10 +218,10 @@ export const ReviewDialog: React.FC<ReviewDialogProps> = ({
               <h3 className="text-[18px] font-medium text-[#212121]">
                 {t("addListing.fields.description.label")}
               </h3>
-              <p className="mt-3 text-[16px] text-[#3d3d3d]">
+              <Text className="mt-3 text-[16px] text-[#3d3d3d]">
                 {descriptionText}{" "}
-                <span className="text-[#828282]">Show More</span>
-              </p>
+                <Span className="text-[#828282]">Show More</Span>
+              </Text>
             </div>
 
             <div className="rounded-[12px] border border-neutral-20 p-4">
@@ -226,7 +230,7 @@ export const ReviewDialog: React.FC<ReviewDialogProps> = ({
               </h3>
               <div className="mt-3 flex items-center gap-2 text-[16px] text-[#3d3d3d]">
                 <MapPin className="h-5 w-5 text-primary" />
-                <span>{locationLabel}</span>
+                <Span>{locationLabel}</Span>
               </div>
               <div className="mt-3 h-[248px] overflow-hidden rounded-[10px]">
                 <MapContainer
@@ -249,57 +253,59 @@ export const ReviewDialog: React.FC<ReviewDialogProps> = ({
             <div className="rounded-[12px] border border-neutral-20 p-4">
               <div className="flex items-end gap-3">
                 <div className="flex-1">
-                  <p className="text-[20px] font-normal text-[#212121]">
+                  <Text className="text-[20px] font-normal text-[#212121]">
                     {values.title || "iPhone 11 Pro 256GB"}
-                  </p>
+                  </Text>
                   <div className="mt-3 flex items-center gap-2">
-                    <span className="text-[24px] font-medium text-primary">
+                    <Span className="text-[24px] font-medium text-primary">
                       {priceLabel}
-                    </span>
+                    </Span>
                     {values.isNegotiable && (
-                      <span className="text-[12px] text-[#828282]">
+                      <Span className="text-[12px] text-[#828282]">
                         {t("addListing.fields.price.negotiable")}
-                      </span>
+                      </Span>
                     )}
                   </div>
                 </div>
-                <span className="rounded-[12px] bg-primary px-4 py-2 text-[14px] text-white">
+                <Span className="rounded-[12px] bg-primary px-4 py-2 text-[14px] text-white">
                   {conditionLabel}
-                </span>
+                </Span>
               </div>
             </div>
 
             <div className="rounded-[12px] border border-neutral-20 p-4">
               <div className="flex items-center gap-4">
                 <div className="relative h-20 w-20 overflow-hidden rounded-full bg-neutral-10">
-                  <img
+                  <Image
                     src={mainImage}
                     alt={t("addListing.reviewModal.seller")}
                     className="h-full w-full object-cover"
                   />
-                  <span className="absolute bottom-0 right-0 flex h-6 w-6 items-center justify-center rounded-[10px] bg-white">
+                  <Span className="absolute bottom-0 right-0 flex h-6 w-6 items-center justify-center rounded-[10px] bg-white">
                     <Check className="h-4 w-4 text-[#22c55e]" />
-                  </span>
+                  </Span>
                 </div>
                 <div className="flex-1">
-                  <p className="text-[18px] text-[#3d3d3d]">Eleanor Vance</p>
+                  <Text className="text-[18px] text-[#3d3d3d]">
+                    Eleanor Vance
+                  </Text>
                   <div className="mt-2 flex items-center gap-2 text-[14px] text-[#828282]">
-                    <span className="text-primary">2</span>
-                    <span>Active listing</span>
-                    <span>-</span>
-                    <span className="text-[#14b8a6]">10</span>
-                    <span>Sold listing</span>
+                    <Span className="text-primary">2</Span>
+                    <Span>Active listing</Span>
+                    <Span>-</Span>
+                    <Span className="text-[#14b8a6]">10</Span>
+                    <Span>Sold listing</Span>
                   </div>
                 </div>
               </div>
               <div className="mt-4 space-y-2 text-[14px] text-[#828282]">
-                <p>Last online 1 week ago</p>
-                <p>Avg. response time: within 1 hour</p>
+                <Text>Last online 1 week ago</Text>
+                <Text>Avg. response time: within 1 hour</Text>
               </div>
             </div>
 
             <div className="rounded-[10px] bg-primary/10 p-4">
-              <p className="text-[18px] text-[#212121]">Safety tips!</p>
+              <Text className="text-[18px] text-[#212121]">Safety tips!</Text>
               <ul className="mt-3 space-y-2 text-[16px] text-[#3d3d3d]">
                 <li className="ms-6 list-disc">
                   Never meet in an unsafe location

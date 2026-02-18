@@ -1,9 +1,10 @@
-import { useState, useEffect, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { SlidersHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FiltersPart } from "@/components/ui/FiltersPart";
 import { SearchSort } from "@/components/ui/SearchSort";
+import { Text } from "@/components/ui/text";
 
 interface Filters {
   categories: string[];
@@ -132,9 +133,7 @@ export default function SearchPage() {
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {!isSearching && (
               <div className="col-span-full py-12 text-center">
-                <p className="text-gray-500">
-                  Search results will appear here.
-                </p>
+                <Text variant="muted">Search results will appear here.</Text>
               </div>
             )}
           </div>

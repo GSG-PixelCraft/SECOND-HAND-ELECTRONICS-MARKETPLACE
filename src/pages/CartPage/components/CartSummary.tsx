@@ -1,3 +1,5 @@
+import { Span } from "@/components/ui/span";
+
 interface CartSummaryProps {
   subtotal: number;
   tax: number;
@@ -19,23 +21,23 @@ const CartSummary = ({
 
       <div className="space-y-2">
         <div className="flex justify-between text-sm">
-          <span className="text-slate-600">Subtotal</span>
-          <span className="font-medium">${subtotal.toFixed(2)}</span>
+          <Span className="text-slate-600">Subtotal</Span>
+          <Span className="font-medium">${subtotal.toFixed(2)}</Span>
         </div>
         <div className="flex justify-between text-sm">
-          <span className="text-slate-600">Tax</span>
-          <span className="font-medium">${tax.toFixed(2)}</span>
+          <Span className="text-slate-600">Tax</Span>
+          <Span className="font-medium">${tax.toFixed(2)}</Span>
         </div>
         <div className="flex justify-between text-sm">
-          <span className="text-slate-600">Shipping</span>
-          <span className="font-medium">${shipping.toFixed(2)}</span>
+          <Span className="text-slate-600">Shipping</Span>
+          <Span className="font-medium">${shipping.toFixed(2)}</Span>
         </div>
         <div className="border-t border-slate-200 pt-2">
           <div className="flex justify-between">
-            <span className="font-semibold text-slate-900">Total</span>
-            <span className="text-lg font-semibold text-slate-900">
+            <Span className="font-semibold text-slate-900">Total</Span>
+            <Span className="text-lg font-semibold text-slate-900">
               ${total.toFixed(2)}
-            </span>
+            </Span>
           </div>
         </div>
       </div>

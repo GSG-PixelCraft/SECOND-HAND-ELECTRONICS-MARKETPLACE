@@ -1,4 +1,5 @@
 import { AdCard } from "@/components/ui/AdCard";
+import { Button } from "@/components/ui/button";
 
 interface ListingItem {
   image: string;
@@ -27,13 +28,13 @@ export const ListingSection = ({
         <h3 className="text-base font-semibold text-neutral-foreground">
           {title}
         </h3>
-        <button
+        <Button
           type="button"
           onClick={onAction}
           className="text-xs font-semibold text-primary"
         >
           {actionLabel}
-        </button>
+        </Button>
       </div>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {items.map((item) => (

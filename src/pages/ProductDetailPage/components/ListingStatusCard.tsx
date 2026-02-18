@@ -1,4 +1,7 @@
 import { Card, CardContent } from "@/components/ui/Card";
+import { Button } from "@/components/ui/button";
+import { Text } from "@/components/ui/text";
+import { Span } from "@/components/ui/span";
 
 type ListingStatus = "pending" | "rejected";
 
@@ -32,25 +35,29 @@ export const ListingStatusCard = ({
     <Card className="gap-2 rounded-2xl border border-neutral-10 bg-white">
       <CardContent className="space-y-2">
         <div className="flex items-center justify-between">
-          <p className="text-xs text-muted-foreground">Status</p>
+          <Text variant="muted" className="text-xs">
+            Status
+          </Text>
           {actionLabel && (
-            <button
+            <Button
               type="button"
               onClick={onAction}
               className="text-xs font-semibold text-primary"
             >
               {actionLabel}
-            </button>
+            </Button>
           )}
         </div>
         <div className="flex items-center gap-2">
-          <span
+          <Span
             className={`rounded-full px-3 py-1 text-[11px] font-semibold ${chip}`}
           >
             {label}
-          </span>
+          </Span>
         </div>
-        <p className="text-xs text-muted-foreground">{message}</p>
+        <Text variant="muted" className="text-xs">
+          {message}
+        </Text>
       </CardContent>
     </Card>
   );

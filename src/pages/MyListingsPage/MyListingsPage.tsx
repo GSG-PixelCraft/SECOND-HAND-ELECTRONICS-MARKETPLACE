@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import PageLayout from "@/components/layout/PageLayout";
 import { Button } from "@/components/ui/button";
+import { Text } from "@/components/ui/text";
 import { Plus, Package, Filter } from "lucide-react";
 import { ROUTES } from "@/constants/routes";
 
@@ -40,9 +41,7 @@ export default function MyListingsPage() {
             <Package className="h-6 w-6 text-primary" />
             <div>
               <h1 className="text-h2 font-semibold">My Listings</h1>
-              <p className="text-body text-muted-foreground">
-                Manage your product listings
-              </p>
+              <Text variant="muted">Manage your product listings</Text>
             </div>
           </div>
           <Button intent="primary" onClick={() => navigate(ROUTES.ADD_LISTING)}>
@@ -61,7 +60,7 @@ export default function MyListingsPage() {
             </label>
             <div className="flex gap-2 overflow-x-auto pb-2">
               {categories.map((cat) => (
-                <button
+                <Button
                   key={cat}
                   onClick={() => handleCategoryChange(cat)}
                   className={`whitespace-nowrap rounded-md px-4 py-2 transition-colors ${
@@ -71,14 +70,14 @@ export default function MyListingsPage() {
                   }`}
                 >
                   {cat}
-                </button>
+                </Button>
               ))}
             </div>
           </div>
 
           {/* Status Filter */}
           <div className="flex gap-2">
-            <button
+            <Button
               onClick={() => setStatusFilter("all")}
               className={`text-bodySmall rounded-md px-4 py-2 ${
                 statusFilter === "all"
@@ -87,8 +86,8 @@ export default function MyListingsPage() {
               }`}
             >
               All
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={() => setStatusFilter("active")}
               className={`text-bodySmall rounded-md px-4 py-2 ${
                 statusFilter === "active"
@@ -97,8 +96,8 @@ export default function MyListingsPage() {
               }`}
             >
               Active
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={() => setStatusFilter("sold")}
               className={`text-bodySmall rounded-md px-4 py-2 ${
                 statusFilter === "sold"
@@ -107,8 +106,8 @@ export default function MyListingsPage() {
               }`}
             >
               Sold
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={() => setStatusFilter("draft")}
               className={`text-bodySmall rounded-md px-4 py-2 ${
                 statusFilter === "draft"
@@ -117,7 +116,7 @@ export default function MyListingsPage() {
               }`}
             >
               Draft
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -126,9 +125,7 @@ export default function MyListingsPage() {
           {/* TODO: Add product cards */}
           <div className="rounded-lg bg-white p-6 text-center shadow-sm">
             <Package className="mx-auto mb-3 h-12 w-12 text-muted-foreground" />
-            <p className="text-muted-foreground">
-              You don't have any listings yet.
-            </p>
+            <Text variant="muted">You don't have any listings yet.</Text>
             <Button
               intent="primary"
               size="sm"
