@@ -1,5 +1,3 @@
-// import ChatTypingIndicator from "./ChatTypingIndicator";
-
 import ChatActions from "./ChatActions";
 
 export default function ChatMessages() {
