@@ -40,6 +40,13 @@ export const ROUTES = {
   ADMIN_CATEGORIES: "/admin/categories",
   ADMIN_CATEGORIES_ADD: "/admin/categories/add",
   ADMIN_CATEGORY_EDIT: "/admin/categories/:id/edit",
+  ADMIN_SETTINGS: "/admin/settings",
+  ADMIN_SETTINGS_PROFILE: "/admin/settings/profile",
+  ADMIN_SETTINGS_SECURITY_LOGIN: "/admin/settings/security-login",
+  ADMIN_SETTINGS_NOTIFICATIONS: "/admin/settings/notifications",
+  ADMIN_SETTINGS_COUNTRIES: "/admin/settings/countries",
+  ADMIN_SETTINGS_CURRENCIES: "/admin/settings/currencies",
+  ADMIN_SETTINGS_SAFETY_POLICIES: "/admin/settings/safety-policies",
   NOT_FOUND: "/404",
   ACCESS_DENIED: "/403",
 } as const;
