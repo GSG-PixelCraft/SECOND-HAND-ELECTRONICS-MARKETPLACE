@@ -3,6 +3,8 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
 import { authService } from "@/services/auth.service";
 import type { AxiosError } from "axios";
+import { Phone } from "lucide-react";
+import { PageLayout } from "@/components/layout/PageLayout";
 
 export default function OtpPhonePage() {
   const navigate = useNavigate();
@@ -109,6 +111,7 @@ export default function OtpPhonePage() {
             We've sent a 6-digit verification code to your phone number. Please
             enter it below.
           </p>
+        </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="flex justify-center gap-2">
@@ -130,46 +133,45 @@ export default function OtpPhonePage() {
             ))}
           </div>
 
+          <button
+            type="submit"
+            disabled={isSubmitting || otp.join("").length !== 4}
+            className={`w-full rounded-md px-4 py-3 text-sm font-medium transition ${
+              otp.join("").length === 4 && !isSubmitting
+                ? "bg-blue-600 text-white hover:bg-blue-700"
+                : "cursor-not-allowed bg-gray-200 text-gray-400"
+            }`}
+          >
+            {isSubmitting ? "Verifying..." : "Verify"}
+          </button>
+        </form>
+
+        {submitError ? (
+          <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+            {submitError}
+          </p>
+        ) : null}
+
+        <div className="space-y-2 text-center text-xs text-gray-500">
+          <div className="mb-4 flex items-center justify-center gap-1">
+            Didn't receive the code?{" "}
             <button
-              type="submit"
-              disabled={isSubmitting || otp.join("").length !== 4}
-              className={`w-full rounded-md px-4 py-3 text-sm font-medium transition ${
-                otp.join("").length === 4 && !isSubmitting
-                  ? "bg-blue-600 text-white hover:bg-blue-700"
-                  : "cursor-not-allowed bg-gray-200 text-gray-400"
-              }`}
+              type="button"
+              onClick={handleResend}
+              disabled={resendTimer > 0}
+              className="font-bold hover:underline disabled:cursor-not-allowed"
             >
-              {isSubmitting ? "Verifying..." : "Verify"}
+              Resend
             </button>
-          </form>
-
-          {submitError ? (
-            <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
-              {submitError}
-            </p>
-          ) : null}
-
-          <div className="space-y-2 text-center text-xs text-gray-500">
-            <div className="mb-4 flex items-center justify-center gap-1">
-              Didn't receive the code?{" "}
-              <button
-                type="button"
-                onClick={handleResend}
-                disabled={resendTimer > 0}
-                className="font-bold hover:underline disabled:cursor-not-allowed"
-              >
-                Resend
-              </button>
-            </div>
-            <Link
-              to={ROUTES.FORGOT_PASSWORD_EMAIL}
-              className="text-gray-600 hover:underline"
-            >
-              Send code via email
-            </Link>
           </div>
+          <Link
+            to={ROUTES.FORGOT_PASSWORD_EMAIL}
+            className="text-gray-600 hover:underline"
+          >
+            Send code via email
+          </Link>
         </div>
       </div>
-    </div>
+    </PageLayout>
   );
 }
