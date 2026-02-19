@@ -46,16 +46,20 @@ export const verificationService = {
     ),
 
   // Phone verification
-  sendPhoneOTP: (data: OTPRequest): Promise<{ success: boolean }> =>
-    api.post<{ success: boolean }>(
-      API_ENDPOINTS.VERIFICATION.PHONE.SEND_OTP,
-      data,
-    ),
+  sendPhoneOTP: (data?: Partial<OTPRequest>): Promise<{ success: boolean }> =>
+    api.post<{ success: boolean }>(API_ENDPOINTS.VERIFICATION.PHONE.SEND_OTP, {
+      otpType: "phone_verification",
+      ...data,
+    }),
 
   verifyPhoneOTP: (data: OTPVerification): Promise<{ success: boolean }> =>
     api.post<{ success: boolean }>(
       API_ENDPOINTS.VERIFICATION.PHONE.VERIFY_OTP,
-      data,
+      {
+        code: data.code,
+        phoneNumber: data.phoneNumber,
+        type: "phone_verification",
+      },
     ),
 
   changePhone: (phoneNumber: string): Promise<{ success: boolean }> =>
@@ -78,16 +82,20 @@ export const verificationService = {
     ),
 
   // Email verification
-  sendEmailOTP: (data: OTPRequest): Promise<{ success: boolean }> =>
-    api.post<{ success: boolean }>(
-      API_ENDPOINTS.VERIFICATION.EMAIL.SEND_OTP,
-      data,
-    ),
+  sendEmailOTP: (data?: Partial<OTPRequest>): Promise<{ success: boolean }> =>
+    api.post<{ success: boolean }>(API_ENDPOINTS.VERIFICATION.EMAIL.SEND_OTP, {
+      otpType: "email_verification",
+      ...data,
+    }),
 
   verifyEmailOTP: (data: OTPVerification): Promise<{ success: boolean }> =>
     api.post<{ success: boolean }>(
       API_ENDPOINTS.VERIFICATION.EMAIL.VERIFY_OTP,
-      data,
+      {
+        code: data.code,
+        email: data.email,
+        type: "email_verification",
+      },
     ),
 };
 

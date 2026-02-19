@@ -2,8 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import {
   fetchCountries,
   fetchCitiesByCountry,
-  type Country,
-} from "./countriesData";
+  type LocationCountry,
+} from "@/services/location.service";
 import { LocationPermissionModal } from "./LocationPermissionModal";
 import { Button } from "./button";
 import { Span } from "./span";
@@ -41,17 +41,17 @@ const Badge = ({
   label: string;
   onRemove: () => void;
 }) => (
-  <Button
+  <button
     type="button"
     className="inline-flex cursor-pointer items-center gap-1 rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-800 hover:bg-blue-200"
     onClick={onRemove}
     aria-label={`Remove ${label} filter`}
   >
     {label}{" "}
-    <Span className="h-3 w-3 text-blue-600" aria-hidden="true">
+    <span className="h-3 w-3 text-blue-600" aria-hidden="true">
       ×
-    </Span>
-  </Button>
+    </span>
+  </button>
 );
 
 const Checkbox = ({
@@ -70,7 +70,7 @@ const Checkbox = ({
       onChange={onChange}
       className="h-4 w-4 rounded border-gray-300 text-blue-600"
     />
-    <Span className="text-sm text-gray-700">{label}</Span>
+    <span className="text-sm text-gray-700">{label}</span>
   </label>
 );
 
@@ -158,21 +158,21 @@ export const FiltersPart = ({
   onFilterChange,
 }: FiltersPartProps) => {
   const [filters, setFilters] = useState<FiltersState>(initialFilters);
-  const [countries, setCountries] = useState<Country[]>([]);
+  const [countries, setCountries] = useState<LocationCountry[]>([]);
   const [cities, setCities] = useState<string[]>([]);
   const [brandSearch, setBrandSearch] = useState("");
   const [modelSearch, setModelSearch] = useState("");
   const [showLocationModal, setShowLocationModal] = useState(false);
+  const selectedCountryName =
+    countries.find((country) => country.code === filters.location.country)
+      ?.name ?? "";
 
   useEffect(() => {
     fetchCountries().then(setCountries);
   }, []);
   useEffect(() => {
-    const selectedCountry = countries.find(
-      (c) => c.code === filters.location.country,
-    );
-    if (!selectedCountry) return setCities([]);
-    fetchCitiesByCountry(selectedCountry.name).then(setCities);
+    if (!filters.location.country) return setCities([]);
+    fetchCitiesByCountry(filters.location.country).then(setCities);
   }, [filters.location.country, countries]);
   useEffect(() => {
     onFilterChange?.(filters);
@@ -274,7 +274,7 @@ export const FiltersPart = ({
             key: "location",
             label: filters.location.useCurrentLocation
               ? "Current Location"
-              : `${filters.location.country}${filters.location.city ? `, ${filters.location.city}` : ""}`,
+              : `${selectedCountryName || filters.location.country}${filters.location.city ? `, ${filters.location.city}` : ""}`,
             onRemove: () =>
               update("location", {
                 country: "",
@@ -291,14 +291,14 @@ export const FiltersPart = ({
       <div className="w-full max-w-sm rounded-lg border border-gray-200 bg-white shadow-sm">
         <div className="border-b border-gray-200 px-6 py-4">
           <div className="flex items-center justify-between">
-            <Text className="text-lg font-semibold text-gray-900">Filters</Text>
-            <Button
+            <h2 className="text-lg font-semibold text-gray-900">Filters</h2>
+            <button
               type="button"
               onClick={reset}
               className="text-sm text-blue-600 hover:text-blue-700"
             >
               Clear all
-            </Button>
+            </button>
           </div>
           {hasFilters && (
             <div className="mt-3 flex flex-wrap gap-2">
@@ -485,7 +485,7 @@ export const FiltersPart = ({
               {filters.location.useCurrentLocation
                 ? "✓ Using current location"
                 : "Use my current location"}
-            </Button>
+            </button>
           </div>
         </div>
       </div>
