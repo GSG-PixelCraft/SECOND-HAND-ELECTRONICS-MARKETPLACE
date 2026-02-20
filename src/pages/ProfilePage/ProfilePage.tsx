@@ -7,6 +7,7 @@ import { ChangePassword } from "./ChangePassword";
 import { HelpCenter } from "./HelpCenter";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
+import { Header } from "@/components/layout/header";
 
 type Section =
   | "profile"
@@ -21,7 +22,7 @@ const ProfilePage = () => {
 
   return (
     <Fragment>
-      {/* <Header></Header> */}
+      <Header></Header>
       <PageLayout>
         <h2 className="text-xl font-semibold text-neutral-foreground">
           My profile
