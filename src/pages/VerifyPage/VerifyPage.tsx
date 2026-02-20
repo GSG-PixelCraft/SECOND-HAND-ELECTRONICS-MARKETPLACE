@@ -13,11 +13,10 @@ import {
 } from "lucide-react";
 import { ROUTES } from "@/constants/routes";
 import { useAuthStore } from "@/stores/useAuthStore";
-import type { ContactVerificationStatus, VerificationStatus } from "@/types";
 
 export default function VerifyPage() {
   const navigate = useNavigate();
-  const { user, verification } = useAuthStore();
+  const { verification } = useAuthStore();
 
   return (
     <PageLayout title="Verify Account" maxWidth="4xl">
@@ -51,7 +50,7 @@ export default function VerifyPage() {
                       Verify your email address to secure your account
                     </Text>
                   </div>
-                  {user?.emailVerified ? (
+                  {verification.email.status === "verified" ? (
                     <div className="flex items-center gap-2">
                       <CheckCircle2 className="h-5 w-5 text-success" />
                       <Span variant="success">Verified</Span>
@@ -150,7 +149,7 @@ export default function VerifyPage() {
 
 // Helper function to render verification status for phone and email
 function renderVerificationStatus(
-  status: ContactVerificationStatus,
+  status: "not_verified" | "verified" | "pending",
   onVerifyClick: () => void,
 ) {
   if (status === "verified") {
@@ -180,7 +179,13 @@ function renderVerificationStatus(
 
 // Helper function to render identity verification status
 function renderIdentityStatus(
-  status: VerificationStatus,
+  status:
+    | "not_started"
+    | "uploading"
+    | "waiting"
+    | "pending"
+    | "approved"
+    | "rejected",
   onStartClick: () => void,
 ) {
   switch (status) {
@@ -192,8 +197,8 @@ function renderIdentityStatus(
         </div>
       );
 
-    case "pending":
     case "waiting":
+    case "pending":
       return (
         <div className="flex items-center gap-2">
           <Clock className="h-5 w-5 text-warning" />

@@ -219,7 +219,7 @@ const IdentityVerificationPage: React.FC = () => {
         }
       });
     };
-  }, []);
+  }, [fileSlots]);
 
   const handleFileSelect = (index: number, selectedFile: File) => {
     setFileSlots((prevSlots) => {

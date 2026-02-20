@@ -22,7 +22,11 @@ export const API_ENDPOINTS = {
     UPDATE: (id: string) => `/products/${id}`,
     DELETE: (id: string) => `/products/${id}`,
     SEARCH: "/products/search",
-    CATEGORIES: "/products/categories",
+    CATEGORIES: "/categories",
+  },
+  LOCATIONS: {
+    COUNTRIES: "/countries",
+    CITIES_BY_COUNTRY: (countryId: string) => `/countries/${countryId}`,
   },
   ORDERS: {
     LIST: "/orders",
@@ -44,15 +48,15 @@ export const API_ENDPOINTS = {
       STATUS: "/verification/identity/status",
     },
     PHONE: {
-      SEND_OTP: "/verification/phone/send-otp",
-      VERIFY_OTP: "/verification/phone/verify-otp",
+      SEND_OTP: "/auth/send-verification-code",
+      VERIFY_OTP: "/auth/verify-code",
       CHANGE: "/verification/phone/change",
       CHANGE_SEND_OTP: "/verification/phone/change/send-otp",
       CHANGE_VERIFY_OTP: "/verification/phone/change/verify-otp",
     },
     EMAIL: {
-      SEND_OTP: "/verification/email/send-otp",
-      VERIFY_OTP: "/verification/email/verify-otp",
+      SEND_OTP: "/auth/send-verification-code",
+      VERIFY_OTP: "/auth/verify-code",
     },
   },
   ADMIN: {
