@@ -14,11 +14,22 @@ export interface Product {
 export interface ProductsParams {
   page?: number;
   limit?: number;
-  category?: string;
+  sellerIds?: number[];
+  categoryIds?: number[];
+  condition?: string[];
+  status?: string[];
+  search?: string;
   minPrice?: number;
   maxPrice?: number;
-  condition?: string;
-  search?: string;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
+  minViews?: number;
+  maxViews?: number;
+  isNegotiable?: boolean;
+  minCreatedAt?: string;
+  maxCreatedAt?: string;
+  minUpdatedAt?: string;
+  maxUpdatedAt?: string;
 }
 
 export interface ProductsResponse {

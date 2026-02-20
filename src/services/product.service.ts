@@ -8,8 +8,29 @@ import type { Product, ProductsParams, ProductsResponse } from "@/types";
 // ============================================================================
 
 export const productService = {
-  getAll: (params?: ProductsParams): Promise<ProductsResponse> =>
-    api.get<ProductsResponse>(API_ENDPOINTS.PRODUCTS.LIST, { params }),
+  getAll: async (params?: ProductsParams): Promise<ProductsResponse> => {
+    const res = await api.get<any>(API_ENDPOINTS.PRODUCTS.LIST, { params });
+
+    const backend = res.data?.data ?? res.data;
+
+    return {
+      products: backend.data.map((item: any) => ({
+        id: String(item.id),
+        name: item.title ?? item.name,
+        description: item.description ?? "",
+        price: item.price,
+        category: item.category?.name ?? item.category ?? "",
+        images: item.images ?? [],
+        condition: item.condition,
+        sellerId: String(item.sellerId),
+        createdAt: item.createdAt,
+      })),
+      total: backend.total ?? 0,
+      page: backend.page ?? 1,
+      totalPages: backend.totalPages ?? 1,
+      limit: backend.limit,
+    };
+  },
 
   getById: (id: string): Promise<Product> =>
     api.get<Product>(API_ENDPOINTS.PRODUCTS.BY_ID(id)),

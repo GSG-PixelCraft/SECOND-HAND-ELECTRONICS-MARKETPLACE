@@ -12,29 +12,37 @@ import {
   ArrowUpDown,
   Filter,
 } from "lucide-react";
-// import { Header } from "@/components/layout/header";
+import { Header } from "@/components/layout/header";
 import { AdCard } from "@/components/ui/AdCard";
 import PageLayout from "@/components/layout/PageLayout";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import { Span } from "@/components/ui/span";
+import { useProducts } from "@/services/product.service";
+import type { Product } from "@/types";
 
-export default function PublicProfilePage() {
+interface PublicProfilePageProps {
+  userId: number; // Pass the seller/user ID to load their listings
+}
+
+export default function PublicProfilePage({ userId }: PublicProfilePageProps) {
   const [sort] = useState("Newest");
 
+  const { data, isLoading, isError } = useProducts({
+    sellerIds: [userId],
+    sortBy: "createdAt",
+    sortOrder: "desc",
+    status: ["active"],
+    limit: 10,
+    page: 1,
+  });
+
   // dummy listings until API arrives
-  const listings = Array.from({ length: 6 }).map((_, i) => ({
-    id: i,
-    title: `Sample Listing ${i + 1}`,
-    price: "$120",
-    image: "https://via.placeholder.com/300",
-    location: "Ramallah",
-    category: "Electronics",
-  }));
+  const listings: Product[] = data?.products ?? [];
 
   return (
     <Fragment>
-      {/* <Header></Header> */}
+      <Header></Header>
       <PageLayout>
         <div className="flex flex-col gap-8 rounded-lg bg-neutral-5 p-6">
           <section className="rounded-lg border border-neutral-20 bg-white p-6">
@@ -134,10 +142,19 @@ export default function PublicProfilePage() {
                 </Button>
               </div>
             </div>
+            {isLoading && <div>Loading listings...</div>}
+            {isError && <div>Error loading listings.</div>}
 
             <div className="grid grid-cols-3 gap-6">
               {listings.map((item) => (
-                <AdCard key={item.id} {...item} />
+                <AdCard
+                  key={item.id}
+                  image={item.images[0] ?? "https://via.placeholder.com/300"}
+                  title={item.name}
+                  location="Unknown"
+                  category={item.category}
+                  price={`$${item.price}`}
+                />
               ))}
             </div>
           </section>
