@@ -12,6 +12,9 @@ import {
 import { EditProfileForm } from "./EditProfileForm";
 import { ROUTES } from "@/constants/routes";
 import { useAuthStore } from "@/stores/useAuthStore";
+import { Button } from "@/components/ui/button";
+import { Text } from "@/components/ui/text";
+import { Span } from "@/components/ui/span";
 import {
   useSendEmailOTP,
   useSendPhoneOTP,
@@ -285,7 +288,7 @@ export default function ProfileDetails() {
         <div className="mb-3 flex items-center justify-between">
           <Text variant="body" className="font-semibold">
             Profile Completion
-          </p>
+          </Text>
           <p className="text-body font-semibold text-primary">
             {profileCompletion}%
           </p>
@@ -302,7 +305,7 @@ export default function ProfileDetails() {
       <section className="rounded-lg border border-neutral-20 bg-white p-5">
         <Text variant="body" className="mb-1 font-semibold">
           Trust indicators
-        </p>
+        </Text>
         <p className="mb-4 text-caption text-muted-foreground">
           Verify your identity, mobile and email to get a verified badge.
         </p>

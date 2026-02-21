@@ -6,8 +6,6 @@ import {
 } from "@/services/location.service";
 import { LocationPermissionModal } from "./LocationPermissionModal";
 import { Button } from "./button";
-import { Span } from "./span";
-import { Text } from "./text";
 export interface FiltersState {
   categories: string[];
   condition: string[];
@@ -485,7 +483,7 @@ export const FiltersPart = ({
               {filters.location.useCurrentLocation
                 ? "✓ Using current location"
                 : "Use my current location"}
-            </button>
+            </Button>
           </div>
         </div>
       </div>

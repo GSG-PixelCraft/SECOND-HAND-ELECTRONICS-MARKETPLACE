@@ -1,7 +1,6 @@
 import { Fragment, useState } from "react";
 import PageLayout from "@/components/layout/PageLayout";
 // import { Header } from "@/components/layout/header";
-import { Fragment } from "react";
 import ProfileDetails from "./ProfileDetails";
 import { NotificationSettings } from "./NotificationSettings";
 import { LanguageSettings } from "./LanguageSettings";

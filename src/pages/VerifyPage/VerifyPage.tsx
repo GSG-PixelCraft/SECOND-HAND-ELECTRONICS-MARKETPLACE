@@ -13,7 +13,6 @@ import {
 } from "lucide-react";
 import { ROUTES } from "@/constants/routes";
 import { useAuthStore } from "@/stores/useAuthStore";
-import type { ContactVerificationStatus, VerificationStatus } from "@/types";
 
 export default function VerifyPage() {
   const navigate = useNavigate();
