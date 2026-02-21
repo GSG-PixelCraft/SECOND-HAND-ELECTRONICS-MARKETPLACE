@@ -12,6 +12,9 @@ import {
 import { EditProfileForm } from "./EditProfileForm";
 import { ROUTES } from "@/constants/routes";
 import { useAuthStore } from "@/stores/useAuthStore";
+import { Button } from "@/components/ui/button";
+import { Text } from "@/components/ui/text";
+import { Span } from "@/components/ui/span";
 import {
   useSendEmailOTP,
   useSendPhoneOTP,

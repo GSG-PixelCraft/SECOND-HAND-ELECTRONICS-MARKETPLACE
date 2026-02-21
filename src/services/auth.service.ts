@@ -21,18 +21,6 @@ export interface RegisterData {
   email: string;
   phoneNumber: string;
   password: string;
-  name: string;
-}
-
-export interface User {
-  id: string;
-  email: string;
-  name: string;
-  role: string;
-  phoneNumber?: string;
-  isEmailVerified?: boolean;
-  isPhoneVerified?: boolean;
-  isIdentityVerified?: boolean;
 }
 
 export interface AuthResponse {
@@ -40,59 +28,21 @@ export interface AuthResponse {
   token: string;
 }
 
-type AuthApiPayload =
-  | AuthResponse
-  | {
-      data?: {
-        user?: User & { fullName?: string };
-        token?: string;
-      };
-    };
+export interface ApiResponse<T> {
+  success: boolean;
+  statusCode: number;
+  path: string;
+  timestamp: string;
+  message: string;
+  data: T;
+}
 
-const normalizeUser = (raw: User & { fullName?: string }): User => ({
-  ...raw,
-  name: raw.name || raw.fullName || "",
-});
+export type VerificationOtpType = "email_verification" | "phone_verification";
 
-const normalizeAuthResponse = (payload: AuthApiPayload): AuthResponse => {
-  const directPayload = payload as AuthResponse;
-  const nestedPayload = payload as {
-    data?: { user?: User & { fullName?: string }; token?: string };
-  };
-  const token = directPayload.token ?? nestedPayload.data?.token;
-  const rawUser = directPayload.user ?? nestedPayload.data?.user;
-
-  if (!token || !rawUser) {
-    throw new Error("Invalid auth response");
-  }
-
-  return {
-    token,
-    user: normalizeUser(rawUser),
-  };
-};
-
-// ============================================================================
-// API Functions
-// ============================================================================
-
-export const authService = {
-  login: async (credentials: LoginCredentials): Promise<AuthResponse> => {
-    const payload = await api.post<AuthApiPayload>(
-      API_ENDPOINTS.AUTH.LOGIN,
-      credentials,
-    );
-    return normalizeAuthResponse(payload);
-  },
-
-  register: async (userData: RegisterData): Promise<AuthResponse> => {
-    const payload = await api.post<AuthApiPayload>(
-      API_ENDPOINTS.AUTH.REGISTER,
-      userData,
-    );
-    return normalizeAuthResponse(payload);
-  },
-};
+export interface VerificationCodeRequest {
+  email?: string;
+  phoneNumber?: string;
+}
 
 export interface VerifyCodeRequest {
   code: string;
