@@ -5,6 +5,7 @@ export const API_ENDPOINTS = {
     LOGOUT: "/auth/logout",
     REFRESH: "/auth/refresh-token",
     ME: "/auth/me",
+    SEND_VERIFICATION_CODE: "/auth/send-verification-code",
     VERIFICATION: "/auth/send-reset-password-code",
     VERIFY_CODE: "/auth/verify-code",
     RESET_PASSWORD: "/auth/reset-password",
@@ -54,6 +55,9 @@ export const API_ENDPOINTS = {
       SEND_OTP: "/verification/email/send-otp",
       VERIFY_OTP: "/verification/email/verify-otp",
     },
+  },
+  PROFILE: {
+    CURRENT: "/profile",
   },
   ADMIN: {
     DASHBOARD: "/admin/dashboard",
