@@ -82,6 +82,8 @@ export const useAuthStore = create<AuthState>((set) => ({
     });
   },
   logout: () => {
+    removeToken();
+    removeUser();
     removeVerification();
     set({ user: null, token: null, verification: initialVerificationState });
   },

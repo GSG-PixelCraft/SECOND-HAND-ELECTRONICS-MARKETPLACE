@@ -1,5 +1,6 @@
-import { useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import PageLayout from "@/components/layout/PageLayout";
 import { ROUTES } from "@/constants/routes";
 import { useVerifyPhoneOTP, useSendPhoneOTP } from "@/services";
@@ -8,9 +9,22 @@ import { useAuthStore } from "@/stores/useAuthStore";
 const OTP_LENGTH = 4;
 
 type ApiLikeError = {
-  response?: { status?: number };
+  response?: { status?: number; data?: { message?: string } };
   code?: string;
+  message?: string;
 };
+
+export function PhoneVerificationOTPPage() {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const user = useAuthStore((state) => state.user);
+  const phoneNumber = searchParams.get("phone") || user?.phoneNumber || "";
+
+  const [otp, setOtp] = useState<string[]>(
+    Array.from({ length: OTP_LENGTH }, () => ""),
+  );
+  const [timer, setTimer] = useState(60);
+  const [error, setError] = useState<string | null>(null);
 
 export function PhoneVerificationOTPPage() {
   const navigate = useNavigate();
@@ -18,70 +32,67 @@ export function PhoneVerificationOTPPage() {
   const phoneNumber = searchParams.get("phone") ?? "";
   const setVerification = useAuthStore((state) => state.setVerification);
 
-  const verifyPhoneOtp = useVerifyPhoneOTP();
-  const resendPhoneOtp = useSendPhoneOTP();
+  useEffect(() => {
+    if (!phoneNumber) {
+      navigate(ROUTES.PROFILE);
+      return;
+    }
 
-  const [otp, setOtp] = useState<string[]>(
-    Array.from({ length: OTP_LENGTH }, () => ""),
-  );
-  const [error, setError] = useState<string | null>(null);
+    resendMutation.mutateAsync({ otpType: "phone_verification" }).catch(() => {
+      setError("Failed to send verification code.");
+    });
 
-  const handleVerify = async () => {
-    const code = otp.join("");
-    if (!phoneNumber || code.length !== OTP_LENGTH) return;
+    const interval = setInterval(() => {
+      setTimer((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+
+    return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phoneNumber, navigate]);
+
+  const handleComplete = async (code: string) => {
+    if (!phoneNumber) return;
     setError(null);
 
     try {
-      await verifyPhoneOtp.mutateAsync({ phoneNumber, code });
+      await verifyMutation.mutateAsync({
+        code,
+        phoneNumber,
+        type: "phone_verification",
+      });
       setVerification({
         phone: { phoneNumber, status: "verified" },
       });
       navigate(ROUTES.PROFILE);
-    } catch (error: unknown) {
-      const typedError = error as ApiLikeError;
-      console.error("Phone OTP verify error:", error);
-      if (typedError.response?.status === 400) {
-        setError("Invalid or expired OTP code.");
-      } else if (typedError.response?.status === 401) {
-        setError("Please sign in first to verify your phone number.");
-      } else if (typedError.response?.status === 404) {
-        setError("Phone service not available. Please contact support.");
-      } else if (typedError.response?.status === 500) {
-        setError("Server error. Please try again later.");
-      } else if (typedError.code === "ECONNABORTED") {
-        setError("Request timed out. Please try again.");
-      } else if (typedError.code === "NETWORK_ERROR") {
-        setError("Network error. Please check your connection.");
-      } else {
-        setError("Invalid OTP code.");
-      }
+    } catch (err: unknown) {
+      const typedError = err as ApiLikeError;
+      setError(
+        typedError.response?.data?.message ||
+          typedError.message ||
+          "Invalid OTP code.",
+      );
     }
   };
 
   const handleResend = async () => {
-    if (!phoneNumber) return;
-    setError(null);
+    if (timer > 0 || !phoneNumber) return;
+
     try {
-      await resendPhoneOtp.mutateAsync(undefined);
+      await resendMutation.mutateAsync({ otpType: "phone_verification" });
+      setTimer(60);
       setOtp(Array.from({ length: OTP_LENGTH }, () => ""));
-    } catch (error: unknown) {
-      const typedError = error as ApiLikeError;
-      console.error("Phone OTP resend error:", error);
-      if (typedError.response?.status === 401) {
-        setError("Please sign in first to resend the code.");
-      } else if (typedError.response?.status === 404) {
-        setError("Phone service not available. Please contact support.");
-      } else if (typedError.response?.status === 500) {
-        setError("Server error. Please try again later.");
-      } else if (typedError.code === "ECONNABORTED") {
-        setError("Request timed out. Please try again.");
-      } else if (typedError.code === "NETWORK_ERROR") {
-        setError("Network error. Please check your connection.");
-      } else {
-        setError("Failed to resend OTP code. Please try again.");
-      }
+      setError(null);
+    } catch (err: unknown) {
+      const typedError = err as ApiLikeError;
+      setError(
+        typedError.response?.data?.message ||
+          typedError.message ||
+          "Failed to resend OTP.",
+      );
     }
   };
+
+  const otpCode = otp.join("");
 
   return (
     <PageLayout title="Phone OTP" maxWidth="md">
@@ -116,22 +127,20 @@ export function PhoneVerificationOTPPage() {
 
         <button
           type="button"
-          onClick={handleVerify}
-          disabled={
-            otp.join("").length !== OTP_LENGTH || verifyPhoneOtp.isPending
-          }
+          onClick={() => handleComplete(otpCode)}
+          disabled={otpCode.length !== OTP_LENGTH || verifyMutation.isPending}
           className="mt-4 w-full rounded-md bg-blue-600 px-4 py-2 text-white disabled:bg-gray-300"
         >
-          {verifyPhoneOtp.isPending ? "Verifying..." : "Verify"}
+          {verifyMutation.isPending ? "Verifying..." : "Verify"}
         </button>
 
         <button
           type="button"
           onClick={handleResend}
-          disabled={!phoneNumber}
+          disabled={!phoneNumber || timer > 0 || resendMutation.isPending}
           className="mt-3 w-full text-sm text-blue-600"
         >
-          Resend code
+          {timer > 0 ? `Resend in ${timer}s` : "Resend code"}
         </button>
       </div>
     </PageLayout>

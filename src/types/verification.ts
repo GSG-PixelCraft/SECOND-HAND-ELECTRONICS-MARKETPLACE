@@ -43,14 +43,14 @@ export interface VerificationState {
 }
 
 export interface OTPRequest {
-  otpType?: VerificationTargetType;
+  otpType?: "email_verification" | "phone_verification";
   phoneNumber?: string;
   email?: string;
 }
 
 export interface OTPVerification {
   code: string;
-  type?: OTPFlowType;
+  type?: "email_verification" | "phone_verification";
   phoneNumber?: string;
   email?: string;
 }

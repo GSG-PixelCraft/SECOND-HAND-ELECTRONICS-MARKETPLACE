@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PageLayout from "@/components/layout/PageLayout";
 import { ROUTES } from "@/constants/routes";
@@ -8,7 +8,7 @@ import { useAuthStore } from "@/stores/useAuthStore";
 const OTP_LENGTH = 4;
 
 type ApiLikeError = {
-  response?: { status?: number };
+  response?: { status?: number; data?: { message?: string } };
   code?: string;
   message?: string;
 };
@@ -25,6 +25,7 @@ export function EmailVerificationPage() {
     Array.from({ length: OTP_LENGTH }, () => ""),
   );
   const [step, setStep] = useState<"email" | "otp">("email");
+  const [timer, setTimer] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
   const handleSendCode = async () => {
@@ -34,36 +35,58 @@ export function EmailVerificationPage() {
     }
     setError(null);
     try {
-      await sendEmailOtp.mutateAsync(undefined);
+      await sendEmailOtp.mutateAsync({ otpType: "email_verification" });
       setStep("otp");
+      setTimer(60);
       setOtp(Array.from({ length: OTP_LENGTH }, () => ""));
-    } catch (error: unknown) {
-      const typedError = error as ApiLikeError;
-      console.error("Email OTP send error:", error);
-      if (typedError.response?.status === 401) {
-        setError("Please sign in first to send a verification code.");
-      } else if (typedError.response?.status === 404) {
-        setError(
-          "Email verification service not available. Please contact the backend team to implement the verification endpoints.",
-        );
-      } else if (typedError.response?.status === 500) {
-        setError("Backend server error. Please contact the backend team.");
-      } else if (typedError.code === "ECONNABORTED") {
-        setError(
-          "Request timed out. Backend may be sleeping or slow. Please try again.",
-        );
-      } else if (
-        typedError.code === "NETWORK_ERROR" ||
-        typedError.message?.includes("ERR_NETWORK")
-      ) {
-        setError(
-          "Cannot connect to backend server. Please ensure the backend is running and accessible.",
-        );
-      } else {
-        setError(
-          "Failed to send verification code. Backend verification endpoints may not be implemented yet.",
-        );
-      }
+    } catch (err: unknown) {
+      const typedError = err as ApiLikeError;
+      setError(
+        typedError.response?.data?.message ||
+          typedError.message ||
+          "Failed to send verification code.",
+      );
+    }
+  };
+
+  useEffect(() => {
+    if (step !== "otp" || timer <= 0) return;
+    const interval = setInterval(() => {
+      setTimer((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [step, timer]);
+
+  const handleComplete = async (code: string) => {
+    if (!email) return;
+
+  const handleSendCode = async () => {
+    if (!email.trim()) {
+      setError("Please enter your email.");
+      return;
+    }
+    setError(null);
+    try {
+      await verifyEmailOtp.mutateAsync({
+        code,
+        email,
+        type: "email_verification",
+      });
+      setVerification({
+        email: {
+          email,
+          status: "verified",
+          verifiedAt: new Date().toISOString(),
+        },
+      });
+      navigate(ROUTES.VERIFY);
+    } catch (err: unknown) {
+      const typedError = err as ApiLikeError;
+      setError(
+        typedError.response?.data?.message ||
+          typedError.message ||
+          "Verification failed.",
+      );
     }
   };
 
@@ -77,31 +100,20 @@ export function EmailVerificationPage() {
     setError(null);
 
     try {
-      await verifyEmailOtp.mutateAsync({ email: email.trim(), code });
-      setVerification({
-        email: { email: email.trim(), status: "verified" },
-      });
-      navigate(ROUTES.PROFILE);
-    } catch (error: unknown) {
-      const typedError = error as ApiLikeError;
-      console.error("Email OTP verify error:", error);
-      if (typedError.response?.status === 400) {
-        setError("Invalid or expired OTP code.");
-      } else if (typedError.response?.status === 401) {
-        setError("Please sign in first to verify your email.");
-      } else if (typedError.response?.status === 404) {
-        setError("Email service not available. Please contact support.");
-      } else if (typedError.response?.status === 500) {
-        setError("Server error. Please try again later.");
-      } else if (typedError.code === "ECONNABORTED") {
-        setError("Request timed out. Please try again.");
-      } else if (typedError.code === "NETWORK_ERROR") {
-        setError("Network error. Please check your connection.");
-      } else {
-        setError("Invalid OTP code.");
-      }
+      await sendEmailOtp.mutateAsync({ otpType: "email_verification" });
+      setTimer(60);
+      setOtp(Array.from({ length: OTP_LENGTH }, () => ""));
+    } catch (err: unknown) {
+      const typedError = err as ApiLikeError;
+      setError(
+        typedError.response?.data?.message ||
+          typedError.message ||
+          "Failed to resend code.",
+      );
     }
   };
+
+  const otpCode = otp.join("");
 
   return (
     <PageLayout title="Verify Email" maxWidth="md">
@@ -110,7 +122,7 @@ export function EmailVerificationPage() {
           <>
             <h1 className="text-xl font-semibold">Verify your email</h1>
             <p className="mt-2 text-sm text-gray-600">
-              Enter your email. Verification will be validated by backend.
+              Enter your email address to receive a verification code.
             </p>
             <input
               type="email"
@@ -158,26 +170,31 @@ export function EmailVerificationPage() {
             {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
             <button
               type="button"
-              onClick={handleVerify}
+              onClick={() => handleComplete(otpCode)}
               disabled={
-                otp.join("").length !== OTP_LENGTH || verifyEmailOtp.isPending
+                otpCode.length !== OTP_LENGTH || verifyEmailOtp.isPending
               }
               className="mt-4 w-full rounded-md bg-blue-600 px-4 py-2 text-white disabled:bg-gray-300"
             >
-              {verifyEmailOtp.isPending ? "Verifying..." : "Verify"}
+              {verifyEmailOtp.isPending ? "Verifying..." : "Verify Email"}
             </button>
-            <button
-              type="button"
-              onClick={handleSendCode}
-              className="mt-3 w-full text-sm text-blue-600"
-            >
-              Resend code
-            </button>
+            <div className="mt-3 text-center text-sm">
+              {timer > 0 ? (
+                <span className="text-gray-600">Resend code in {timer}s</span>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleResend}
+                  disabled={sendEmailOtp.isPending}
+                  className="text-blue-600 disabled:opacity-50"
+                >
+                  {sendEmailOtp.isPending ? "Sending..." : "Resend code"}
+                </button>
+              )}
+            </div>
           </>
         )}
       </div>
     </PageLayout>
   );
 }
-
-export default EmailVerificationPage;

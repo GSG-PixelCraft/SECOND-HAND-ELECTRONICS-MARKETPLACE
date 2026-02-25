@@ -2,12 +2,26 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "./client";
 import { API_ENDPOINTS } from "@/constants/api-endpoints";
 import type {
-  OTPRequest,
-  OTPVerification,
   DocumentUploadRequest,
   DocumentUploadResponse,
   VerificationStatusResponse,
 } from "@/types";
+import type { ApiResponse, VerifyCodeResponse } from "./auth.service";
+import type { User } from "@/types";
+
+type VerificationOtpType = "email_verification" | "phone_verification";
+const IDENTITY_PENDING_KEY = "identity_verification_pending";
+
+interface SendVerificationCodeRequest {
+  otpType: VerificationOtpType;
+}
+
+interface VerifyVerificationCodeRequest {
+  code: string;
+  type: VerificationOtpType;
+  email?: string;
+  phoneNumber?: string;
+}
 
 // ============================================================================
 // API Functions
@@ -15,87 +29,130 @@ import type {
 
 export const verificationService = {
   // Get overall verification status
-  getStatus: (): Promise<VerificationStatusResponse> =>
-    api.get<VerificationStatusResponse>(API_ENDPOINTS.VERIFICATION.STATUS),
+  getStatus: async (): Promise<VerificationStatusResponse> => {
+    const me = await api.get<ApiResponse<User>>(API_ENDPOINTS.AUTH.ME);
+    const user = me.data;
+
+    const isEmailVerified = Boolean(user.emailVerified ?? user.isEmailVerified);
+    const isPhoneVerified = Boolean(user.phoneVerified ?? user.isPhoneVerified);
+    const isIdentityVerified = Boolean(
+      user.identityVerified ?? user.isIdentityVerified,
+    );
+    const pendingIdentityFlag =
+      sessionStorage.getItem(IDENTITY_PENDING_KEY) === "true";
+
+    if (isIdentityVerified) {
+      sessionStorage.removeItem(IDENTITY_PENDING_KEY);
+    }
+
+    return {
+      identity: {
+        status: isIdentityVerified
+          ? "approved"
+          : pendingIdentityFlag
+            ? "pending"
+            : "not_started",
+        type: null,
+      },
+      phone: {
+        status: isPhoneVerified ? "verified" : "not_verified",
+        phoneNumber: user.phoneNumber ?? null,
+      },
+      email: {
+        status: isEmailVerified ? "verified" : "not_verified",
+        email: user.email ?? null,
+      },
+    };
+  },
 
   // Identity verification
   uploadIdentityDocument: (
     data: DocumentUploadRequest,
   ): Promise<DocumentUploadResponse> => {
     const formData = new FormData();
+    // Keep multiple keys for backend compatibility until schema is finalized.
     formData.append("type", data.type);
+    formData.append("verificationType", data.type);
+    formData.append("identityType", data.type);
     formData.append("frontImage", data.frontImage);
+    formData.append("idFrontImage", data.frontImage);
     if (data.backImage) {
       formData.append("backImage", data.backImage);
+      formData.append("idBackImage", data.backImage);
     }
 
-    return api.post<DocumentUploadResponse>(
-      API_ENDPOINTS.VERIFICATION.IDENTITY.UPLOAD,
-      formData,
-      {
+    return api
+      .patch<DocumentUploadResponse>(API_ENDPOINTS.PROFILE.CURRENT, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
-      },
-    );
+      })
+      .then((response) => {
+        sessionStorage.setItem(IDENTITY_PENDING_KEY, "true");
+        return response;
+      });
   },
 
-  getIdentityStatus: (): Promise<VerificationStatusResponse["identity"]> =>
-    api.get<VerificationStatusResponse["identity"]>(
-      API_ENDPOINTS.VERIFICATION.IDENTITY.STATUS,
-    ),
+  getIdentityStatus: async (): Promise<
+    VerificationStatusResponse["identity"]
+  > => {
+    const status = await verificationService.getStatus();
+    return status.identity;
+  },
 
   // Phone verification
-  sendPhoneOTP: (data?: Partial<OTPRequest>): Promise<{ success: boolean }> =>
-    api.post<{ success: boolean }>(API_ENDPOINTS.VERIFICATION.PHONE.SEND_OTP, {
-      otpType: "phone_verification",
-      ...data,
-    }),
-
-  verifyPhoneOTP: (data: OTPVerification): Promise<{ success: boolean }> =>
-    api.post<{ success: boolean }>(
-      API_ENDPOINTS.VERIFICATION.PHONE.VERIFY_OTP,
-      {
-        code: data.code,
-        phoneNumber: data.phoneNumber,
-        type: "phone_verification",
-      },
+  sendPhoneOTP: (
+    data: SendVerificationCodeRequest,
+  ): Promise<ApiResponse<string>> =>
+    api.post<ApiResponse<string>>(
+      API_ENDPOINTS.AUTH.SEND_VERIFICATION_CODE,
+      data,
     ),
 
-  changePhone: (phoneNumber: string): Promise<{ success: boolean }> =>
-    api.post<{ success: boolean }>(API_ENDPOINTS.VERIFICATION.PHONE.CHANGE, {
+  verifyPhoneOTP: (
+    data: VerifyVerificationCodeRequest,
+  ): Promise<ApiResponse<VerifyCodeResponse>> =>
+    api.post<ApiResponse<VerifyCodeResponse>>(
+      API_ENDPOINTS.AUTH.VERIFY_CODE,
+      data,
+    ),
+
+  changePhone: (phoneNumber: string): Promise<unknown> =>
+    api.patch(API_ENDPOINTS.PROFILE.CURRENT, {
       phoneNumber,
     }),
 
-  sendChangePhoneOTP: (data: OTPRequest): Promise<{ success: boolean }> =>
-    api.post<{ success: boolean }>(
-      API_ENDPOINTS.VERIFICATION.PHONE.CHANGE_SEND_OTP,
+  sendChangePhoneOTP: (
+    data: SendVerificationCodeRequest,
+  ): Promise<ApiResponse<string>> =>
+    api.post<ApiResponse<string>>(
+      API_ENDPOINTS.AUTH.SEND_VERIFICATION_CODE,
       data,
     ),
 
   verifyChangePhoneOTP: (
-    data: OTPVerification,
-  ): Promise<{ success: boolean }> =>
-    api.post<{ success: boolean }>(
-      API_ENDPOINTS.VERIFICATION.PHONE.CHANGE_VERIFY_OTP,
+    data: VerifyVerificationCodeRequest,
+  ): Promise<ApiResponse<VerifyCodeResponse>> =>
+    api.post<ApiResponse<VerifyCodeResponse>>(
+      API_ENDPOINTS.AUTH.VERIFY_CODE,
       data,
     ),
 
   // Email verification
-  sendEmailOTP: (data?: Partial<OTPRequest>): Promise<{ success: boolean }> =>
-    api.post<{ success: boolean }>(API_ENDPOINTS.VERIFICATION.EMAIL.SEND_OTP, {
-      otpType: "email_verification",
-      ...data,
-    }),
+  sendEmailOTP: (
+    data: SendVerificationCodeRequest,
+  ): Promise<ApiResponse<string>> =>
+    api.post<ApiResponse<string>>(
+      API_ENDPOINTS.AUTH.SEND_VERIFICATION_CODE,
+      data,
+    ),
 
-  verifyEmailOTP: (data: OTPVerification): Promise<{ success: boolean }> =>
-    api.post<{ success: boolean }>(
-      API_ENDPOINTS.VERIFICATION.EMAIL.VERIFY_OTP,
-      {
-        code: data.code,
-        email: data.email,
-        type: "email_verification",
-      },
+  verifyEmailOTP: (
+    data: VerifyVerificationCodeRequest,
+  ): Promise<ApiResponse<VerifyCodeResponse>> =>
+    api.post<ApiResponse<VerifyCodeResponse>>(
+      API_ENDPOINTS.AUTH.VERIFY_CODE,
+      data,
     ),
 };
 

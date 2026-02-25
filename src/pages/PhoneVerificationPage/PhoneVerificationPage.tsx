@@ -24,7 +24,7 @@ export function PhoneVerificationPage() {
     setError(null);
 
     try {
-      await sendPhoneOtp.mutateAsync(undefined);
+      await sendPhoneOtp.mutateAsync({ otpType: "phone_verification" });
       navigate(
         `${ROUTES.VERIFY_PHONE_OTP}?phone=${encodeURIComponent(phoneNumber.trim())}`,
       );
