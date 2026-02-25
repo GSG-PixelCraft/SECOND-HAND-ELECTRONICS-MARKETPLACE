@@ -44,7 +44,7 @@ export function EmailVerificationPage() {
       setError(
         typedError.response?.data?.message ||
           typedError.message ||
-          "Failed to send verification code.",
+          "Couldn't send the verification code. Please try again.",
       );
     }
   };
@@ -108,7 +108,7 @@ export function EmailVerificationPage() {
       setError(
         typedError.response?.data?.message ||
           typedError.message ||
-          "Failed to resend code.",
+          "Couldn't resend the code. Please try again.",
       );
     }
   };

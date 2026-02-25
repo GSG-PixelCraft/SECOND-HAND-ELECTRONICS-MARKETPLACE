@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 import {
   fetchCountries,
   fetchCitiesByCountry,
@@ -239,7 +239,7 @@ export const FiltersPart = ({
       ? [
           {
             key: "price",
-            label: `${filters.priceRange.min || "0"}-${filters.priceRange.max || "∞"} ILS`,
+            label: `${filters.priceRange.min || "0"}-${filters.priceRange.max || "Max"} ILS`,
             onRemove: () => update("priceRange", { min: "", max: "" }),
           },
         ]
@@ -481,7 +481,7 @@ export const FiltersPart = ({
               className={`w-full rounded-lg border px-3 py-2 text-sm transition-colors ${filters.location.useCurrentLocation ? "border-blue-600 bg-blue-50 text-blue-600" : "border-gray-300 text-gray-700 hover:bg-gray-50"}`}
             >
               {filters.location.useCurrentLocation
-                ? "✓ Using current location"
+                ? "Using current location"
                 : "Use my current location"}
             </Button>
           </div>

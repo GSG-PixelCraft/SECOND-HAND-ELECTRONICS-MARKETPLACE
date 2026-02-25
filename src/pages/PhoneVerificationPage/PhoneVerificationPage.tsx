@@ -34,26 +34,18 @@ export function PhoneVerificationPage() {
       if (typedError.response?.status === 401) {
         setError("Please sign in first to send a verification code.");
       } else if (typedError.response?.status === 404) {
-        setError(
-          "Phone verification service not available. Please contact the backend team to implement the verification endpoints.",
-        );
+        setError("Phone verification is currently unavailable.");
       } else if (typedError.response?.status === 500) {
-        setError("Backend server error. Please contact the backend team.");
+        setError("Server error. Please try again in a moment.");
       } else if (typedError.code === "ECONNABORTED") {
-        setError(
-          "Request timed out. Backend may be sleeping or slow. Please try again.",
-        );
+        setError("Request timed out. Please try again.");
       } else if (
         typedError.code === "NETWORK_ERROR" ||
         typedError.message?.includes("ERR_NETWORK")
       ) {
-        setError(
-          "Cannot connect to backend server. Please ensure the backend is running and accessible.",
-        );
+        setError("Network error. Check your connection and try again.");
       } else {
-        setError(
-          "Failed to send verification code. Backend verification endpoints may not be implemented yet.",
-        );
+        setError("Could not send the verification code. Please try again.");
       }
     }
   };
@@ -63,7 +55,7 @@ export function PhoneVerificationPage() {
       <div className="mx-auto w-full max-w-md rounded-lg bg-white p-6 shadow-sm">
         <h1 className="text-xl font-semibold">Verify your phone number</h1>
         <p className="mt-2 text-sm text-gray-600">
-          Enter your phone number. Verification will be validated by backend.
+          Enter your phone number to receive a verification code.
         </p>
 
         <input

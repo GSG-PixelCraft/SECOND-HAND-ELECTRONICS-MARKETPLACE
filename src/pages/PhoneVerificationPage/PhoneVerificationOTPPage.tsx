@@ -39,7 +39,7 @@ export function PhoneVerificationOTPPage() {
     }
 
     resendMutation.mutateAsync({ otpType: "phone_verification" }).catch(() => {
-      setError("Failed to send verification code.");
+      setError("Couldn't send the verification code. Please try again.");
     });
 
     const interval = setInterval(() => {
@@ -87,7 +87,7 @@ export function PhoneVerificationOTPPage() {
       setError(
         typedError.response?.data?.message ||
           typedError.message ||
-          "Failed to resend OTP.",
+          "Couldn't resend the code. Please try again.",
       );
     }
   };
