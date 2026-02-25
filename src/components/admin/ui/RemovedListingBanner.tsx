@@ -1,7 +1,7 @@
 import { forwardRef } from "react";
 import { Trash2, Calendar, AlertCircle } from "lucide-react";
-import { Text } from "@/components/ui/text";
-import { Span } from "@/components/ui/span";
+import { Text } from "@/components/ui/Text/text";
+import { Span } from "@/components/ui/Span/span";
 
 export interface RemovedListingBannerProps {
   removedAt?: string;

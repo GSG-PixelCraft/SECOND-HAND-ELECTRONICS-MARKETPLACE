@@ -1,6 +1,6 @@
 import { Clock, Eye, Heart } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/Card";
-import { Span } from "@/components/ui/span";
+import { Span } from "@/components/ui/Span/span";
 
 interface ProductSummaryCardProps {
   postedAt: string;

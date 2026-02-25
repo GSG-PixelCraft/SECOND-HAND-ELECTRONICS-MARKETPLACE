@@ -2,10 +2,10 @@ import { Link } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
 import { useCartStore } from "@/stores/useCartStore";
 import { formatPrice } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { PageTitle } from "@/components/layout/PageTitle";
+import { Button } from "@/components/ui/Button/button";
+import { PageTitle } from "@/components/layout/PageTitle/PageTitle";
 import { EmptyState } from "@/components/feedback/emptyState/EmptyState";
-import { Text } from "@/components/ui/text";
+import { Text } from "@/components/ui/Text/text";
 
 const CartPage = () => {
   const { items, clearCart, getTotalPrice } = useCartStore();

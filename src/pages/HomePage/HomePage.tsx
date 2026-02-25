@@ -1,9 +1,9 @@
 // Landing page
 import { Link } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
-import { Button } from "@/components/ui/button";
-import { Image } from "@/components/ui/image";
-import { Text } from "@/components/ui/text";
+import { Button } from "@/components/ui/Button/button";
+import { Image } from "@/components/ui/Image/image";
+import { Text } from "@/components/ui/Text/text";
 import { beforeLoginHomeCover } from "@/assets";
 import {
   ListingSection,

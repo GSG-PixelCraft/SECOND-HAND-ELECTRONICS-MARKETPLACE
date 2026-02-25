@@ -1,6 +1,6 @@
 import { forwardRef } from "react";
-import { Button } from "@/components/ui/button";
-import { Span } from "@/components/ui/span";
+import { Button } from "@/components/ui/Button/button";
+import { Span } from "@/components/ui/Span/span";
 import { cn } from "@/lib/utils";
 
 export interface BulkActionsToolbarProps {

@@ -1,6 +1,6 @@
 import { Link, useParams } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
-import { Text } from "@/components/ui/text";
+import { Text } from "@/components/ui/Text/text";
 
 const OrderDetailPage = () => {
   const { id } = useParams();

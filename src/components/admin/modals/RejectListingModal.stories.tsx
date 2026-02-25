@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
 import { RejectListingModal } from "./RejectListingModal";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button/button";
 import type { RejectionReason } from "@/types/admin";
 
 const meta: Meta<typeof RejectListingModal> = {

@@ -1,9 +1,9 @@
 import { useMemo, useRef, useState } from "react";
 import { X } from "lucide-react";
-import { Dialog } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Text } from "@/components/ui/text";
-import { Span } from "@/components/ui/span";
+import { Dialog } from "@/components/ui/Dialog/dialog";
+import { Button } from "@/components/ui/Button/button";
+import { Text } from "@/components/ui/Text/text";
+import { Span } from "@/components/ui/Span/span";
 
 const REPORT_REASONS = [
   "Scam or misleading information",

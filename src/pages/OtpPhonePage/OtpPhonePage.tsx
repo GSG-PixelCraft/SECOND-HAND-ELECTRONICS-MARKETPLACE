@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
 import { authService } from "@/services/auth.service";
 import type { AxiosError } from "axios";
-import PageLayout from "@/components/layout/PageLayout";
+import PageLayout from "@/components/layout/PageLayout/PageLayout";
 import { Phone } from "lucide-react";
 
 export default function OtpPhonePage() {

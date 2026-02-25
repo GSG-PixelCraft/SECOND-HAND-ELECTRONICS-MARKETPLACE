@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { MoreHorizontal } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/Card";
-import { Button } from "@/components/ui/button";
-import { Image } from "@/components/ui/image";
-import { Text } from "@/components/ui/text";
-import { Span } from "@/components/ui/span";
+import { Button } from "@/components/ui/Button/button";
+import { Image } from "@/components/ui/Image/image";
+import { Text } from "@/components/ui/Text/text";
+import { Span } from "@/components/ui/Span/span";
 
 interface SellerCardProps {
   name: string;

@@ -1,7 +1,7 @@
-import PageLayout from "@/components/layout/PageLayout";
+import PageLayout from "@/components/layout/PageLayout/PageLayout";
 import { Clock } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Text } from "@/components/ui/text";
+import { Button } from "@/components/ui/Button/button";
+import { Text } from "@/components/ui/Text/text";
 
 export default function RecentListingsPage() {
   return (

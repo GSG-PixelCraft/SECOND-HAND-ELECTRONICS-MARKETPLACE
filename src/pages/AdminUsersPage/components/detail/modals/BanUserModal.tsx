@@ -1,8 +1,8 @@
 import { useState, forwardRef, useEffect } from "react";
 import { ShieldOff } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Span } from "@/components/ui/span";
-import { Portal } from "@/components/ui/portal";
+import { Button } from "@/components/ui/Button/button";
+import { Span } from "@/components/ui/Span/span";
+import { Portal } from "@/components/ui/Portal/portal";
 
 export interface BanUserModalProps {
   isOpen: boolean;

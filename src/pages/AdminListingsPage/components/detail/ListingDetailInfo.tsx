@@ -1,6 +1,6 @@
 import { forwardRef } from "react";
-import { Text } from "@/components/ui/text";
-import { Span } from "@/components/ui/span";
+import { Text } from "@/components/ui/Text/text";
+import { Span } from "@/components/ui/Span/span";
 import { SoldListingBanner, RemovedListingBanner } from "@/components/admin/ui";
 import { formatReason, parseLocationToCoordinates } from "@/lib/listing-utils";
 import {

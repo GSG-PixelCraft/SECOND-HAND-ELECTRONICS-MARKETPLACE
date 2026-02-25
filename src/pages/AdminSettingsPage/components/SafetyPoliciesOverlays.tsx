@@ -1,6 +1,6 @@
 import type { Dispatch, ReactNode, SetStateAction } from "react";
-import { Portal } from "@/components/ui/portal";
-import { Switch } from "@/components/ui/switch";
+import { Portal } from "@/components/ui/Portal/portal";
+import { Switch } from "@/components/ui/Switch/switch";
 import { AlertTriangle, X } from "lucide-react";
 import type {
   Accordion,

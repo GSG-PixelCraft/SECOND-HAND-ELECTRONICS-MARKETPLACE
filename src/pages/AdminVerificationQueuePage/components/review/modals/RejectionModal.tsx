@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { X, AlertTriangle, ShieldCheck } from "lucide-react";
-import { Dialog } from "@/components/ui/dialog";
-import { Text } from "@/components/ui/text";
-import { Button } from "@/components/ui/button";
+import { Dialog } from "@/components/ui/Dialog/dialog";
+import { Text } from "@/components/ui/Text/text";
+import { Button } from "@/components/ui/Button/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Textarea } from "@/components/ui/textarea";
+import { Textarea } from "@/components/ui/Textarea/textarea";
 import { ROUTES } from "@/constants/routes";
 
 export interface RejectionModalProps {

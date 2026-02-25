@@ -14,8 +14,8 @@ import {
   Trash2,
   Watch,
 } from "lucide-react";
-import { Switch } from "@/components/ui/switch";
-import { Span } from "@/components/ui/span";
+import { Switch } from "@/components/ui/Switch/switch";
+import { Span } from "@/components/ui/Span/span";
 import { cn } from "@/lib/utils";
 import type { AdminCategory, CategoryIconKey } from "@/types/admin";
 

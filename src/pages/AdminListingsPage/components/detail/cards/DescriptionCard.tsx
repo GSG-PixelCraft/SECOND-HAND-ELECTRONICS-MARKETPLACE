@@ -1,5 +1,5 @@
 import { forwardRef, useState } from "react";
-import { Text } from "@/components/ui/text";
+import { Text } from "@/components/ui/Text/text";
 import { truncateText } from "@/lib/listing-utils";
 
 export interface DescriptionCardProps {

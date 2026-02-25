@@ -1,7 +1,7 @@
 // Root component - Wrap with all providers
 import { RouterProvider } from "react-router-dom";
 import { useEffect } from "react";
-import { AppErrorBoundary } from "@/components/AppErrorBoundary";
+import { AppErrorBoundary } from "@/components/AppErrorBoundary.stories/AppErrorBoundary";
 import { QueryProvider } from "@/providers";
 import { router } from "@/routes";
 import { useAuthStore } from "@/stores/useAuthStore";

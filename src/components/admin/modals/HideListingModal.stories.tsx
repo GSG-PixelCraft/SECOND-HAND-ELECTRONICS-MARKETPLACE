@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
 import { HideListingModal } from "./HideListingModal";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button/button";
 import type { HideReason } from "@/types/admin";
 
 const meta: Meta<typeof HideListingModal> = {

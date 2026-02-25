@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
-import PageLayout from "@/components/layout/PageLayout";
-import { Button } from "@/components/ui/button";
+import PageLayout from "@/components/layout/PageLayout/PageLayout";
+import { Button } from "@/components/ui/Button/button";
 import {
   Shield,
   CheckCircle2,

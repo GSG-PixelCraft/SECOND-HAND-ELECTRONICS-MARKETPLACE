@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSearchParams } from "react-router-dom";
-import PageLayout from "@/components/layout/PageLayout";
+import PageLayout from "@/components/layout/PageLayout/PageLayout";
 import { ROUTES } from "@/constants/routes";
 import { useVerifyPhoneOTP, useSendPhoneOTP } from "@/services";
 import { useAuthStore } from "@/stores/useAuthStore";

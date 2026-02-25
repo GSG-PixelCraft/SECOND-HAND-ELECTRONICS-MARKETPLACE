@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Text } from "@/components/ui/text";
+import { Button } from "@/components/ui/Button/button";
+import { Text } from "@/components/ui/Text/text";
 
 export const ChangePassword = () => {
   const [currentPassword, setCurrentPassword] = useState("");

@@ -1,8 +1,8 @@
 import { forwardRef } from "react";
-import { Dialog } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Text } from "@/components/ui/text";
-import { Span } from "@/components/ui/span";
+import { Dialog } from "@/components/ui/Dialog/dialog";
+import { Button } from "@/components/ui/Button/button";
+import { Text } from "@/components/ui/Text/text";
+import { Span } from "@/components/ui/Span/span";
 import { CheckCircle2 } from "lucide-react";
 import type { RejectionReason } from "@/types/admin";
 
