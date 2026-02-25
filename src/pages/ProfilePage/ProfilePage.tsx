@@ -44,7 +44,7 @@ const ProfilePage = () => {
 
   return (
     <Fragment>
-      {/* <Header></Header> */}
+      <Header></Header>
       <PageLayout>
         <h2 className="text-xl font-semibold text-neutral-foreground">
           My profile

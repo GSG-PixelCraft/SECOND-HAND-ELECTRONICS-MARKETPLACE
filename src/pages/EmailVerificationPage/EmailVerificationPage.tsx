@@ -60,6 +60,12 @@ export function EmailVerificationPage() {
   const handleComplete = async (code: string) => {
     if (!email) return;
 
+  const handleSendCode = async () => {
+    if (!email.trim()) {
+      setError("Please enter your email.");
+      return;
+    }
+    setError(null);
     try {
       await verifyEmailOtp.mutateAsync({
         code,
@@ -84,8 +90,14 @@ export function EmailVerificationPage() {
     }
   };
 
-  const handleResend = async () => {
-    if (timer > 0 || !email) return;
+  const handleVerify = async () => {
+    const code = otp.join("");
+    if (code.length !== OTP_LENGTH) return;
+    if (!email.trim()) {
+      setError("Please enter your email.");
+      return;
+    }
+    setError(null);
 
     try {
       await sendEmailOtp.mutateAsync({ otpType: "email_verification" });

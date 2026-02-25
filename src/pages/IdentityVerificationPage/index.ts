@@ -1,2 +1,2 @@
-export { IdentityVerificationSelectPage } from "./IdentityVerificationSelectPage";
+export { default as IdentityVerificationSelectPage } from "./IdentityVerificationSelectPage";
 export { IdentityVerificationStatusPage } from "./IdentityVerificationStatusPage";

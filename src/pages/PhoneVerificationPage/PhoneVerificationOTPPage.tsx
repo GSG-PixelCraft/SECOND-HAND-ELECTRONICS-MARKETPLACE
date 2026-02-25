@@ -26,8 +26,10 @@ export function PhoneVerificationOTPPage() {
   const [timer, setTimer] = useState(60);
   const [error, setError] = useState<string | null>(null);
 
-  const verifyMutation = useVerifyPhoneOTP();
-  const resendMutation = useSendPhoneOTP();
+export function PhoneVerificationOTPPage() {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const phoneNumber = searchParams.get("phone") ?? "";
   const setVerification = useAuthStore((state) => state.setVerification);
 
   useEffect(() => {
