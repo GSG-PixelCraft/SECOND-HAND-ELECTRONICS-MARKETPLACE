@@ -1,5 +1,6 @@
 import React from "react";
 import { Loader, ShieldCheck, ShieldAlert } from "lucide-react";
+import { ROUTES } from "@/constants/routes";
 
 type PageStatus = "submitting" | "success" | "failed";
 
@@ -10,7 +11,7 @@ interface StatusModalProps {
 
 const StatusModal: React.FC<StatusModalProps> = ({ status, onTryAgain }) => {
   const handleGoToProfile = () => {
-    window.location.href = "http://localhost:5173/profile";
+    window.location.href = ROUTES.PROFILE;
   };
 
   const renderContent = () => {
