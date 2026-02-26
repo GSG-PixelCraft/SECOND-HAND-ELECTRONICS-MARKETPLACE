@@ -1,7 +1,7 @@
 // src/pages/AddListingPage/components/StepIndicator.tsx
 import { Fragment } from "react";
 import type { FC, ReactElement } from "react";
-import { Text } from "@/components/ui/text";
+import { Text } from "@/components/ui/Text/text";
 
 interface StepIndicatorProps {
   currentStep: number;

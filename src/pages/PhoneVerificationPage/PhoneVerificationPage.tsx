@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import PageLayout from "@/components/layout/PageLayout";
+import PageLayout from "@/components/layout/PageLayout/PageLayout";
 import { ROUTES } from "@/constants/routes";
 import { useSendPhoneOTP } from "@/services";
 

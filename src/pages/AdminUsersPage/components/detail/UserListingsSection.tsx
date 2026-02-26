@@ -6,8 +6,8 @@ import type { AdminDateRangeValue } from "@/components/admin/ui/date-filter/Admi
 import { getPresetRange } from "@/components/admin/ui/date-filter/admin-date-range.utils";
 import { Tabs } from "@/components/ui/Tabs";
 import { Input } from "@/components/ui/input";
-import { Span } from "@/components/ui/span";
-import { StatusBadge } from "@/components/ui/StatusBadge";
+import { Span } from "@/components/ui/Span/span";
+import { StatusBadge } from "@/components/ui/StatusBadge/StatusBadge";
 import { EmptyState } from "@/components/feedback/emptyState/EmptyState";
 import { FullScreenLoading } from "@/components/feedback/loading/full-screen-loading";
 import { ShowPagination } from "@/components/admin";

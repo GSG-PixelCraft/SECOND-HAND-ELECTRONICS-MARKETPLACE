@@ -1,9 +1,9 @@
 // User dashboard
 import { Link } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
-import { Button } from "@/components/ui/button";
-import { PageTitle } from "@/components/layout/PageTitle";
-import { Text } from "@/components/ui/text";
+import { Button } from "@/components/ui/Button/button";
+import { PageTitle } from "@/components/layout/PageTitle/PageTitle";
+import { Text } from "@/components/ui/Text/text";
 
 const DashboardPage = () => {
   return (

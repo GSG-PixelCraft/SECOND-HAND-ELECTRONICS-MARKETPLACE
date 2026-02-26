@@ -1,9 +1,9 @@
 import { useMemo, useState } from "react";
-import PageLayout from "@/components/layout/PageLayout";
+import PageLayout from "@/components/layout/PageLayout/PageLayout";
 import { Heart, Filter } from "lucide-react";
 import { FavoritesEmptyState } from "@/components/feedback/emptyState";
 import { useTranslation } from "react-i18next";
-import { Text } from "@/components/ui/text";
+import { Text } from "@/components/ui/Text/text";
 
 export default function FavoritesPage() {
   const { t } = useTranslation();

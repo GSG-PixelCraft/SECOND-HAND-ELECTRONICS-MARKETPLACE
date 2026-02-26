@@ -1,9 +1,9 @@
 import { useState } from "react";
-import PageLayout from "@/components/layout/PageLayout";
+import PageLayout from "@/components/layout/PageLayout/PageLayout";
 import { Input } from "@/components/ui/input";
-import { Text } from "@/components/ui/text";
-import { Button } from "@/components/ui/button";
-import { Span } from "@/components/ui/span";
+import { Text } from "@/components/ui/Text/text";
+import { Button } from "@/components/ui/Button/button";
+import { Span } from "@/components/ui/Span/span";
 
 export default function BlockedUsersPage() {
   const [searchQuery, setSearchQuery] = useState("");

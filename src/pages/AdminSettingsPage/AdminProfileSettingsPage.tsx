@@ -1,8 +1,8 @@
 import { useRef, useState, type ChangeEvent } from "react";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
-import { Image } from "@/components/ui/image";
+import { Button } from "@/components/ui/Button/button";
+import { Image } from "@/components/ui/Image/image";
 import { Upload, ChevronDown } from "lucide-react";
 import {
   initialProfileForm,

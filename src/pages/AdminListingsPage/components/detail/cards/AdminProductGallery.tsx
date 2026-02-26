@@ -1,6 +1,6 @@
 import { forwardRef, useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { Image } from "@/components/ui/image";
+import { Image } from "@/components/ui/Image/image";
 
 export interface AdminProductGalleryProps {
   images: string[];

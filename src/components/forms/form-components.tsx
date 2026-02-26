@@ -7,7 +7,7 @@ import type {
   ReactNode,
 } from "react";
 import { twMerge } from "tailwind-merge";
-import { Text } from "@/components/ui/text";
+import { Text } from "@/components/ui/Text/text";
 
 export interface FormFieldProps {
   children: ReactNode;

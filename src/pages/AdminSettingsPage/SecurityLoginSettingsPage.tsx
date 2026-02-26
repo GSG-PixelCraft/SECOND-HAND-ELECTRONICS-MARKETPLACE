@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
-import { Portal } from "@/components/ui/portal";
+import { Button } from "@/components/ui/Button/button";
+import { Switch } from "@/components/ui/Switch/switch";
+import { Portal } from "@/components/ui/Portal/portal";
 import {
   Eye,
   EyeOff,
@@ -10,7 +10,7 @@ import {
   LogOut,
   TriangleAlert,
 } from "lucide-react";
-import { Image } from "@/components/ui/image";
+import { Image } from "@/components/ui/Image/image";
 import {
   defaultOtpDigits,
   initialPasswordForm,

@@ -9,8 +9,8 @@ import {
   Download,
   Maximize2,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { StatusBadge } from "@/components/ui/StatusBadge";
+import { Button } from "@/components/ui/Button/button";
+import { StatusBadge } from "@/components/ui/StatusBadge/StatusBadge";
 import { FullScreenLoading } from "@/components/feedback/loading/full-screen-loading";
 import { AdminBackButton } from "@/components/admin";
 import {

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Switch } from "@/components/ui/switch";
+import { Switch } from "@/components/ui/Switch/switch";
 import {
   ChevronDown,
   ChevronUp,

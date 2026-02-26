@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Span } from "@/components/ui/span";
-import { Text } from "@/components/ui/text";
+import { Button } from "@/components/ui/Button/button";
+import { Span } from "@/components/ui/Span/span";
+import { Text } from "@/components/ui/Text/text";
 
 interface ToggleSwitchProps {
   checked: boolean;

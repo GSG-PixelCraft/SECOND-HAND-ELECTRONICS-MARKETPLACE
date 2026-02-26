@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { SlidersHorizontal } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { FiltersPart } from "@/components/ui/FiltersPart";
-import { SearchSort } from "@/components/ui/SearchSort";
-import { Text } from "@/components/ui/text";
+import { Button } from "@/components/ui/Button/button";
+import { FiltersPart } from "@/components/ui/FiltersPart/FiltersPart";
+import { SearchSort } from "@/components/ui/SearchSort/SearchSort";
+import { Text } from "@/components/ui/Text/text";
 
 interface Filters {
   categories: string[];

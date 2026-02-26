@@ -1,7 +1,7 @@
 ﻿import { useNavigate } from "react-router-dom";
 import { useAdminDashboard } from "@/services/admin.service";
-import { Text } from "@/components/ui/text";
-import { Button } from "@/components/ui/button";
+import { Text } from "@/components/ui/Text/text";
+import { Button } from "@/components/ui/Button/button";
 import { FullScreenLoading } from "@/components/feedback/loading/full-screen-loading";
 import { getAdminListingDetailRoute } from "@/constants/routes";
 import {

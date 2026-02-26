@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/Card";
-import { Button } from "@/components/ui/button";
-import { Text } from "@/components/ui/text";
-import { Span } from "@/components/ui/span";
+import { Button } from "@/components/ui/Button/button";
+import { Text } from "@/components/ui/Text/text";
+import { Span } from "@/components/ui/Span/span";
 
 type ListingStatus = "pending" | "rejected";
 

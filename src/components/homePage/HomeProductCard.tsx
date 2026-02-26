@@ -1,8 +1,8 @@
 import { Heart, MapPin } from "lucide-react";
-import { Button } from "../ui/button";
-import { Image } from "../ui/image";
-import Card, { CardHeader, CardContent } from "../ui/Card";
-import { Text } from "../ui/text";
+import { Button } from "../ui/Button/button";
+import { Image } from "../ui/Image/image";
+import Card, { CardHeader, CardContent } from "../ui/Card/Card";
+import { Text } from "../ui/Text/text";
 
 type AdCardProps = {
   image: string;

@@ -1,5 +1,5 @@
 import { forwardRef } from "react";
-import { Span } from "@/components/ui/span";
+import { Span } from "@/components/ui/Span/span";
 import { getProductSpecifications } from "@/lib/listing-utils";
 import type { AdminListing } from "@/types/admin";
 

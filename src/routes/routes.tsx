@@ -1,6 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import { FullScreenLoading } from "@/components/feedback/loading/full-screen-loading";
-import { AppLayout } from "@/components/layout/app-layout";
+import { AppLayout } from "@/components/layout/appLayout/app-layout";
 import UnexpectedErrorPage from "@/pages/UnexpectedPage/UnexpectedPage";
 
 const routeHydrateFallback = <FullScreenLoading />;
@@ -257,7 +257,7 @@ export const router = createBrowserRouter(
         const [{ default: AdminOverviewPage }, { AdminDashboardLayout }] =
           await Promise.all([
             import("@/pages/AdminOverviewPage/AdminOverviewPage"),
-            import("@/components/layout/AdminDashboardLayout"),
+            import("@/components/layout/adminLayout/AdminDashboardLayout"),
           ]);
         return {
           Component: () => (
@@ -279,7 +279,7 @@ export const router = createBrowserRouter(
           { AdminGuard },
         ] = await Promise.all([
           import("@/pages/AdminListingsPage/AdminListingsPage"),
-          import("@/components/layout/AdminDashboardLayout"),
+          import("@/components/layout/adminLayout/AdminDashboardLayout"),
           import("@/routes/access-control"),
         ]);
         return {
@@ -304,7 +304,7 @@ export const router = createBrowserRouter(
           { AdminGuard },
         ] = await Promise.all([
           import("@/pages/AdminListingsPage/components/detail/AdminListingDetailPage"),
-          import("@/components/layout/AdminDashboardLayout"),
+          import("@/components/layout/adminLayout/AdminDashboardLayout"),
           import("@/routes/access-control"),
         ]);
         return {
@@ -329,7 +329,7 @@ export const router = createBrowserRouter(
           { AdminGuard },
         ] = await Promise.all([
           import("@/pages/AdminReportsPage/AdminReportsPage"),
-          import("@/components/layout/AdminDashboardLayout"),
+          import("@/components/layout/adminLayout/AdminDashboardLayout"),
           import("@/routes/access-control"),
         ]);
         return {
@@ -354,7 +354,7 @@ export const router = createBrowserRouter(
           { AdminGuard },
         ] = await Promise.all([
           import("@/pages/AdminReportsPage/components/detail/AdminReportDetailPage"),
-          import("@/components/layout/AdminDashboardLayout"),
+          import("@/components/layout/adminLayout/AdminDashboardLayout"),
           import("@/routes/access-control"),
         ]);
         return {
@@ -379,7 +379,7 @@ export const router = createBrowserRouter(
           { AdminGuard },
         ] = await Promise.all([
           import("@/pages/AdminCategoriesPage/AdminCategoriesPage"),
-          import("@/components/layout/AdminDashboardLayout"),
+          import("@/components/layout/adminLayout/AdminDashboardLayout"),
           import("@/routes/access-control"),
         ]);
         return {
@@ -404,7 +404,7 @@ export const router = createBrowserRouter(
           { AdminGuard },
         ] = await Promise.all([
           import("@/pages/AdminCategoriesPage/AddCategoryPage"),
-          import("@/components/layout/AdminDashboardLayout"),
+          import("@/components/layout/adminLayout/AdminDashboardLayout"),
           import("@/routes/access-control"),
         ]);
         return {
@@ -429,7 +429,7 @@ export const router = createBrowserRouter(
           { AdminGuard },
         ] = await Promise.all([
           import("@/pages/AdminCategoriesPage/EditCategoryPage"),
-          import("@/components/layout/AdminDashboardLayout"),
+          import("@/components/layout/adminLayout/AdminDashboardLayout"),
           import("@/routes/access-control"),
         ]);
         return {
@@ -454,7 +454,7 @@ export const router = createBrowserRouter(
           { AdminGuard },
         ] = await Promise.all([
           import("@/pages/AdminVerificationQueuePage/AdminVerificationQueuePage"),
-          import("@/components/layout/AdminDashboardLayout"),
+          import("@/components/layout/adminLayout/AdminDashboardLayout"),
           import("@/routes/access-control"),
         ]);
         return {
@@ -479,7 +479,7 @@ export const router = createBrowserRouter(
           { AdminGuard },
         ] = await Promise.all([
           import("@/pages/AdminVerificationQueuePage/components/review/AdminVerificationReviewPage"),
-          import("@/components/layout/AdminDashboardLayout"),
+          import("@/components/layout/adminLayout/AdminDashboardLayout"),
           import("@/routes/access-control"),
         ]);
         return {
@@ -504,7 +504,7 @@ export const router = createBrowserRouter(
           { AdminGuard },
         ] = await Promise.all([
           import("@/pages/AdminUsersPage/AdminUsersPage"),
-          import("@/components/layout/AdminDashboardLayout"),
+          import("@/components/layout/adminLayout/AdminDashboardLayout"),
           import("@/routes/access-control"),
         ]);
         return {
@@ -529,7 +529,7 @@ export const router = createBrowserRouter(
           { AdminGuard },
         ] = await Promise.all([
           import("@/pages/AdminUsersPage/components/detail/AdminUserDetailPage"),
-          import("@/components/layout/AdminDashboardLayout"),
+          import("@/components/layout/adminLayout/AdminDashboardLayout"),
           import("@/routes/access-control"),
         ]);
         return {
@@ -554,7 +554,7 @@ export const router = createBrowserRouter(
           { AdminGuard },
         ] = await Promise.all([
           import("@/pages/AdminSettingsPage/AdminProfileSettingsPage"),
-          import("@/components/layout/AdminDashboardLayout"),
+          import("@/components/layout/adminLayout/AdminDashboardLayout"),
           import("@/routes/access-control"),
         ]);
         return {
@@ -579,7 +579,7 @@ export const router = createBrowserRouter(
           { AdminGuard },
         ] = await Promise.all([
           import("@/pages/AdminSettingsPage/AdminProfileSettingsPage"),
-          import("@/components/layout/AdminDashboardLayout"),
+          import("@/components/layout/adminLayout/AdminDashboardLayout"),
           import("@/routes/access-control"),
         ]);
         return {
@@ -604,7 +604,7 @@ export const router = createBrowserRouter(
           { AdminGuard },
         ] = await Promise.all([
           import("@/pages/AdminSettingsPage/SecurityLoginSettingsPage"),
-          import("@/components/layout/AdminDashboardLayout"),
+          import("@/components/layout/adminLayout/AdminDashboardLayout"),
           import("@/routes/access-control"),
         ]);
         return {
@@ -629,7 +629,7 @@ export const router = createBrowserRouter(
           { AdminGuard },
         ] = await Promise.all([
           import("@/pages/AdminSettingsPage/NotificationsSettingsPage"),
-          import("@/components/layout/AdminDashboardLayout"),
+          import("@/components/layout/adminLayout/AdminDashboardLayout"),
           import("@/routes/access-control"),
         ]);
         return {
@@ -654,7 +654,7 @@ export const router = createBrowserRouter(
           { AdminGuard },
         ] = await Promise.all([
           import("@/pages/AdminSettingsPage/CountriesSettingsPage"),
-          import("@/components/layout/AdminDashboardLayout"),
+          import("@/components/layout/adminLayout/AdminDashboardLayout"),
           import("@/routes/access-control"),
         ]);
         return {
@@ -679,7 +679,7 @@ export const router = createBrowserRouter(
           { AdminGuard },
         ] = await Promise.all([
           import("@/pages/AdminSettingsPage/CurrenciesSettingsPage"),
-          import("@/components/layout/AdminDashboardLayout"),
+          import("@/components/layout/adminLayout/AdminDashboardLayout"),
           import("@/routes/access-control"),
         ]);
         return {
@@ -704,7 +704,7 @@ export const router = createBrowserRouter(
           { AdminGuard },
         ] = await Promise.all([
           import("@/pages/AdminSettingsPage/SafetyPoliciesSettingsPage"),
-          import("@/components/layout/AdminDashboardLayout"),
+          import("@/components/layout/adminLayout/AdminDashboardLayout"),
           import("@/routes/access-control"),
         ]);
         return {

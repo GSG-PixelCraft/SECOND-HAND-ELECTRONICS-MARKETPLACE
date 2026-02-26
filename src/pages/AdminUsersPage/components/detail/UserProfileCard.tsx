@@ -1,7 +1,7 @@
 import { forwardRef } from "react";
 import { Mail, Phone, MapPin, Clock, Calendar } from "lucide-react";
-import { Span } from "@/components/ui/span";
-import { StatusBadge } from "@/components/ui/StatusBadge";
+import { Span } from "@/components/ui/Span/span";
+import { StatusBadge } from "@/components/ui/StatusBadge/StatusBadge";
 import type { UserDetailInfo, UserStatus } from "@/types/user";
 
 export interface UserProfileCardProps {

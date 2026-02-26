@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
-import { Text } from "@/components/ui/text";
+import { Text } from "@/components/ui/Text/text";
 
 interface EmptyStateProps {
   title: string;

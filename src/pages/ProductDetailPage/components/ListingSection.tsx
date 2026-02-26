@@ -1,5 +1,5 @@
 import { AdCard } from "@/components/ui/AdCard";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button/button";
 
 interface ListingItem {
   image: string;

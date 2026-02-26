@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button/button";
 import { FullScreenLoading } from "@/components/feedback/loading/full-screen-loading";
 import { UserDetailHeader } from "./UserDetailHeader";
 import { UserProfileCard } from "./UserProfileCard";

@@ -1,9 +1,9 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import PageLayout from "@/components/layout/PageLayout";
-import { Button } from "@/components/ui/button";
-import { Alert } from "@/components/ui/alert";
-import { Text } from "@/components/ui/text";
+import PageLayout from "@/components/layout/PageLayout/PageLayout";
+import { Button } from "@/components/ui/Button/button";
+import { Alert } from "@/components/ui/Alert/alert";
+import { Text } from "@/components/ui/Text/text";
 import { FullScreenLoading } from "@/components/feedback/loading/full-screen-loading";
 import { useIdentityStatus } from "@/services";
 import { useAuthStore } from "@/stores";

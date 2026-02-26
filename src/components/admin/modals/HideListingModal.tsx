@@ -1,7 +1,7 @@
 import { forwardRef, useState } from "react";
 import { X } from "lucide-react";
-import { Dialog } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
+import { Dialog } from "@/components/ui/Dialog/dialog";
+import { Button } from "@/components/ui/Button/button";
 import type { HideReason } from "@/types/admin";
 
 export interface HideListingModalProps {

@@ -1,7 +1,7 @@
 import { forwardRef } from "react";
 import type { HTMLAttributes, ReactNode } from "react";
 import { cn } from "@/lib/utils";
-import { Text } from "@/components/ui/text";
+import { Text } from "@/components/ui/Text/text";
 import { Info } from "lucide-react";
 
 export interface TipProps extends HTMLAttributes<HTMLDivElement> {

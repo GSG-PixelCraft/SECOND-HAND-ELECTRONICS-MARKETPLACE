@@ -1,7 +1,7 @@
 import { forwardRef } from "react";
 import type { HTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
-import { Image } from "@/components/ui/image";
+import { Image } from "@/components/ui/Image/image";
 import { X, ZoomIn } from "lucide-react";
 
 export interface VerificationImage {

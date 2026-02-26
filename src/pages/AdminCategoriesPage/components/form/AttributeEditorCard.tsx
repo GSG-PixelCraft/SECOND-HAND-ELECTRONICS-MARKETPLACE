@@ -1,5 +1,5 @@
 import { Trash2 } from "lucide-react";
-import { Switch } from "@/components/ui/switch";
+import { Switch } from "@/components/ui/Switch/switch";
 import type { CategoryAttribute, CategoryAttributeType } from "@/types/admin";
 import { AttributeTypeDropdown } from "./AttributeTypeDropdown";
 import { getCategoryAttributeTypeLabel } from "./constants";

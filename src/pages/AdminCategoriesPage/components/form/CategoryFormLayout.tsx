@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { AdminBackButton } from "@/components/admin/ui/back-button/AdminBackButton";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button/button";
 
 export interface CategoryFormLayoutProps {
   title: string;

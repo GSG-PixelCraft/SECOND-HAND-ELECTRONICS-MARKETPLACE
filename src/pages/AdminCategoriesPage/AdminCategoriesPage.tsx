@@ -1,7 +1,7 @@
 import { useMemo, useState, useCallback } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Text } from "@/components/ui/text";
+import { Button } from "@/components/ui/Button/button";
+import { Text } from "@/components/ui/Text/text";
 import { ShowPagination } from "@/components/admin";
 import { FullScreenLoading } from "@/components/feedback/loading/full-screen-loading";
 import {

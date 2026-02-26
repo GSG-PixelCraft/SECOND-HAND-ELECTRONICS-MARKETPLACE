@@ -8,8 +8,8 @@ import type {
   UseFormWatch,
   UseFormSetValue,
 } from "react-hook-form";
-import { Button } from "@/components/ui/button";
-import { Text } from "@/components/ui/text";
+import { Button } from "@/components/ui/Button/button";
+import { Text } from "@/components/ui/Text/text";
 
 interface ListingFormData {
   title: string;

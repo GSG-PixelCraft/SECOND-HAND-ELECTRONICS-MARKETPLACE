@@ -22,11 +22,11 @@ import {
 } from "lucide-react";
 import { AdminBackButton } from "@/components/admin/ui/back-button/AdminBackButton";
 import { ReportReasonBadge } from "@/components/admin/ui/reports/ReportReasonBadge";
-import { Image } from "@/components/ui/image";
-import { Text } from "@/components/ui/text";
-import { Span } from "@/components/ui/span";
-import { Button } from "@/components/ui/button";
-import { Dialog } from "@/components/ui/dialog";
+import { Image } from "@/components/ui/Image/image";
+import { Text } from "@/components/ui/Text/text";
+import { Span } from "@/components/ui/Span/span";
+import { Button } from "@/components/ui/Button/button";
+import { Dialog } from "@/components/ui/Dialog/dialog";
 import { FullScreenLoading } from "@/components/feedback/loading/full-screen-loading";
 import { useAdminReportDetail } from "@/services/admin-reports.service";
 import type {

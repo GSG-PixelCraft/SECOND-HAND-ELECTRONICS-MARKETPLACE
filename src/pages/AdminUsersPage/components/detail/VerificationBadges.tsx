@@ -1,6 +1,6 @@
 import { forwardRef } from "react";
 import { Smartphone, CreditCard, Mail, Check } from "lucide-react";
-import { Text } from "@/components/ui/text";
+import { Text } from "@/components/ui/Text/text";
 import { cn } from "@/lib/utils";
 import type { UserVerificationStatus } from "@/types/user";
 

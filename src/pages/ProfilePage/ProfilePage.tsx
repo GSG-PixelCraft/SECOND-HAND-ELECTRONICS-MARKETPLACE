@@ -1,6 +1,5 @@
 import * as React from "react";
-import PageLayout from "@/components/layout/PageLayout";
-// import { Header } from "@/components/layout/header";
+import PageLayout from "@/components/layout/PageLayout/PageLayout";
 import { Fragment } from "react";
 import { useNavigate } from "react-router-dom";
 import ProfileDetails from "./ProfileDetails";
@@ -44,7 +43,7 @@ const ProfilePage = () => {
 
   return (
     <Fragment>
-      <Header></Header>
+    
       <PageLayout>
         <h2 className="text-xl font-semibold text-neutral-foreground">
           My profile

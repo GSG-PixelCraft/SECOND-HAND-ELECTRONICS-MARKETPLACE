@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Dialog } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
+import { Dialog } from "@/components/ui/Dialog/dialog";
+import { Button } from "@/components/ui/Button/button";
 import { FullScreenLoading } from "@/components/feedback/loading/full-screen-loading";
 import { useApproveVerification } from "@/services/admin-verification.service";
 

@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import PageLayout from "@/components/layout/PageLayout";
-import { Button } from "@/components/ui/button";
-import { Text } from "@/components/ui/text";
+import PageLayout from "@/components/layout/PageLayout/PageLayout";
+import { Button } from "@/components/ui/Button/button";
+import { Text } from "@/components/ui/Text/text";
 import { Plus, Package, Filter } from "lucide-react";
 import { ROUTES } from "@/constants/routes";
 

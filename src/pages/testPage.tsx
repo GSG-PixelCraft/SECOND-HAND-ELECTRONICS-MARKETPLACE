@@ -1,5 +1,5 @@
 import PhoneImage from "../images/Phone.jpg";
-import { AdCard } from "@/components/ui/AdCard";
+import { AdCard } from "@/components/ui/AdCard/AdCard";
 export default function App() {
   return (
     <div className="flex gap-4 p-6">

@@ -1,4 +1,4 @@
-import { HeartIcon } from "@/components/icons/HeartIcon";
+import { HeartIcon } from "@/components/HeartIcon/HeartIcon.tsx";
 import { EmptyState } from "./EmptyState.tsx";
 
 interface FavoritesEmptyStateProps {

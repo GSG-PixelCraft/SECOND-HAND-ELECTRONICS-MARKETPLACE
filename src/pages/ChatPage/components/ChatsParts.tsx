@@ -2,10 +2,10 @@ import { useMemo, useState } from "react";
 import type { HTMLAttributes } from "react";
 import { MoreVertical, Pin, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { Image } from "@/components/ui/image";
-import { Text } from "@/components/ui/text";
-import { Span } from "@/components/ui/span";
+import { Button } from "@/components/ui/Button/button";
+import { Image } from "@/components/ui/Image/image";
+import { Text } from "@/components/ui/Text/text";
+import { Span } from "@/components/ui/Span/span";
 
 const avatarAhmadAli =
   "http://localhost:3845/assets/23fdb52cc83cd9a5da2b787fda4ccebfbcee347f.png";

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { EmptyState } from "./EmptyState";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button/button";
 
 const meta: Meta<typeof EmptyState> = {
   title: "Components/Feedback/EmptyState",
