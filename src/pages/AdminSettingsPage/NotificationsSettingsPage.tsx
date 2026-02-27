@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState } from "react";
-import { Select } from "@/components/ui/select";
+import { Select } from "@/components/ui/Select/select";
 import { Textarea } from "@/components/ui/Textarea/textarea";
 import { Button } from "@/components/ui/Button/button";
 import { Portal } from "@/components/ui/Portal/portal";

@@ -1,7 +1,10 @@
 import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
 import { Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/Button/button";
 import { Text } from "@/components/ui/Text/text";
+import { authService } from "@/services/auth.service";
+import { getBackendErrorMessage } from "@/lib/api-error";
 
 export const ChangePassword = () => {
   const [currentPassword, setCurrentPassword] = useState("");
@@ -13,6 +16,8 @@ export const ChangePassword = () => {
   const [showConfirm, setShowConfirm] = useState(false);
 
   const [submitted, setSubmitted] = useState(false);
+  const [serverError, setServerError] = useState<string | null>(null);
+  const [isSuccess, setIsSuccess] = useState(false);
 
   const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
 
@@ -20,15 +25,41 @@ export const ChangePassword = () => {
 
   const confirmInvalid = submitted && confirmPassword !== newPassword;
 
+  const changePasswordMutation = useMutation({
+    mutationFn: authService.resetPassword,
+  });
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitted(true);
+    setServerError(null);
+    setIsSuccess(false);
 
     if (!passwordRegex.test(newPassword)) return;
     if (confirmPassword !== newPassword) return;
+    if (!currentPassword.trim()) {
+      setServerError("Please enter your current password.");
+      return;
+    }
 
-    // Future API call here
-    console.log("Password updated (dummy)");
+    changePasswordMutation.mutate(
+      { newPassword, confirmPassword },
+      {
+        onSuccess: () => {
+          setIsSuccess(true);
+          setServerError(null);
+          setSubmitted(false);
+          setCurrentPassword("");
+          setNewPassword("");
+          setConfirmPassword("");
+        },
+        onError: (error: unknown) => {
+          setServerError(
+            getBackendErrorMessage(error) ?? "Failed to update password.",
+          );
+        },
+      },
+    );
   };
 
   const inputBase =
@@ -131,11 +162,23 @@ export const ChangePassword = () => {
           )}
         </div>
 
+        {serverError && (
+          <Text variant="error" className="text-sm">
+            {serverError}
+          </Text>
+        )}
+        {isSuccess && (
+          <Text className="text-sm text-green-600">
+            Password updated successfully.
+          </Text>
+        )}
+
         <Button
           type="submit"
+          disabled={changePasswordMutation.isPending}
           className="mt-4 w-full rounded-md bg-primary py-3 font-semibold text-white transition hover:opacity-90"
         >
-          Change password
+          {changePasswordMutation.isPending ? "Updating..." : "Change password"}
         </Button>
       </form>
     </section>
