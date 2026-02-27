@@ -1,5 +1,5 @@
 import { useEffect, type ReactNode } from "react";
-import { Portal } from "@/components/ui/portal";
+import { Portal } from "@/components/ui/Portal/portal";
 
 export interface FullScreenLoadingProps {
   open?: boolean;

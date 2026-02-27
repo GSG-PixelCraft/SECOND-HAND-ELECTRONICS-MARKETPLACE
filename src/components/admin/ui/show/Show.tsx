@@ -1,7 +1,7 @@
 import { forwardRef } from "react";
 import type { HTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
-import { Text } from "@/components/ui/text";
+import { Text } from "@/components/ui/Text/text";
 
 export interface ShowProps extends Omit<
   HTMLAttributes<HTMLDivElement>,

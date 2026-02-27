@@ -1,6 +1,6 @@
 import { forwardRef } from "react";
-import { Text } from "@/components/ui/text";
-import { Switch } from "@/components/ui/switch";
+import { Text } from "@/components/ui/Text/text";
+import { Switch } from "@/components/ui/Switch/switch";
 import { useUpdateChatAccess } from "@/services/admin-users.service";
 import type { UserStatus } from "@/types/user";
 

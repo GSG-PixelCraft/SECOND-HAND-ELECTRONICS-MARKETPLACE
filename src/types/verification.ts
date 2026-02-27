@@ -9,6 +9,10 @@ export type VerificationStatus =
   | "rejected";
 
 export type ContactVerificationStatus = "not_verified" | "verified" | "pending";
+export type VerificationTargetType =
+  | "email_verification"
+  | "phone_verification";
+export type OTPFlowType = VerificationTargetType | "password_reset";
 
 export interface DocumentVerification {
   type: DocumentType | null;
@@ -39,12 +43,14 @@ export interface VerificationState {
 }
 
 export interface OTPRequest {
+  otpType?: "email_verification" | "phone_verification";
   phoneNumber?: string;
   email?: string;
 }
 
 export interface OTPVerification {
   code: string;
+  type?: "email_verification" | "phone_verification";
   phoneNumber?: string;
   email?: string;
 }

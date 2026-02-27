@@ -12,8 +12,8 @@ import { UsersTable } from "./components/tables/UsersTable";
 import { UsersTableFilters } from "./components/tables/UsersTableFilters";
 import { useAdminUsers } from "@/services/admin-users.service";
 import type { UserFilterParams, UserStatus } from "@/types/user";
-import { Text } from "@/components/ui/text";
-import { Button } from "@/components/ui/button";
+import { Text } from "@/components/ui/Text/text";
+import { Button } from "@/components/ui/Button/button";
 
 // Define custom tab values for user management
 type UserTabValue = "all" | "verified" | "active" | "suspended" | "banned";

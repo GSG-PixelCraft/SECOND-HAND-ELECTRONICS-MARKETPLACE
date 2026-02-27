@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useTranslation } from "react-i18next";
 import { listingSchema } from "@/components/forms/zod-schemas";
-import { type PhotoItem } from "@/components/ui/file-upload";
+import { type PhotoItem } from "@/components/ui/FileUpload/file-upload";
 import { StepIndicator } from "./components/StepIndicator";
 import { BasicDetailsStep } from "./components/BasicDetailsStep";
 import { MoreDetailsStep } from "./components/MoreDetailsStep";

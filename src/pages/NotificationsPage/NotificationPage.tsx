@@ -2,8 +2,8 @@ import { useMemo, useState } from "react";
 import { NotificationItem } from "./components";
 import { NotificationsEmptyState } from "@/components/feedback/emptyState";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { Span } from "@/components/ui/span";
+import { Button } from "@/components/ui/Button/button";
+import { Span } from "@/components/ui/Span/span";
 import {
   MOCK_NOTIFICATIONS,
   NOTIFICATION_TABS,

@@ -11,8 +11,8 @@ import {
 import { ListingsTable } from "./components/tables/ListingsTable";
 import { useAdminListings } from "@/services/admin-listings.service";
 import type { ListingFilterParams, ListingStatus } from "@/types/admin";
-import { Text } from "@/components/ui/text";
-import { Button } from "@/components/ui/button";
+import { Text } from "@/components/ui/Text/text";
+import { Button } from "@/components/ui/Button/button";
 
 type ListingTabValue =
   | "all"

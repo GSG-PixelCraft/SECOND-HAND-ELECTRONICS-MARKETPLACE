@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { Plus } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
-import { Text } from "@/components/ui/text";
+import { Button } from "@/components/ui/Button/button";
+import { Switch } from "@/components/ui/Switch/switch";
+import { Text } from "@/components/ui/Text/text";
 import { FullScreenLoading } from "@/components/feedback/loading/full-screen-loading";
 import { ROUTES } from "@/constants/routes";
 import {

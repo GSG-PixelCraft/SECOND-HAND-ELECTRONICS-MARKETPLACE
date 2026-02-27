@@ -1,9 +1,9 @@
 import { forwardRef } from "react";
 import type { FC, HTMLAttributes, ReactNode } from "react";
 import { cn } from "@/lib/utils";
-import { Text } from "@/components/ui/text";
-import { Span } from "@/components/ui/span";
-import { Image } from "@/components/ui/image";
+import { Text } from "@/components/ui/Text/text";
+import { Span } from "@/components/ui/Span/span";
+import { Image } from "@/components/ui/Image/image";
 
 export interface DashboardTableRowProps extends HTMLAttributes<HTMLTableRowElement> {
   cells?: Array<{

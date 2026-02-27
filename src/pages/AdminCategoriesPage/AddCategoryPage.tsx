@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { Switch } from "@/components/ui/switch";
-import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/Switch/switch";
+import { Button } from "@/components/ui/Button/button";
 import { FullScreenLoading } from "@/components/feedback/loading/full-screen-loading";
 import { ROUTES } from "@/constants/routes";
 import { useCreateAdminCategory } from "@/services/admin-categories.service";

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Camera } from "lucide-react";
 import { countries } from "countries-list";
 import { Button } from "@/components/ui/button";
@@ -8,8 +8,10 @@ import { useAuthStore } from "@/stores/useAuthStore";
 import { authService } from "@/services/auth.service";
 
 interface EditProfileFormProps {
+  initialValues?: Partial<EditProfileSubmitPayload> & { avatarUrl?: string };
+  isSubmitting?: boolean;
   onCancel: () => void;
-  onSubmit: () => void;
+  onSubmit: (payload: EditProfileSubmitPayload) => void | Promise<void>;
 }
 
 const COUNTRIES = Object.values(countries)
@@ -17,6 +19,8 @@ const COUNTRIES = Object.values(countries)
   .sort();
 
 export const EditProfileForm = ({
+  initialValues,
+  isSubmitting = false,
   onCancel,
   onSubmit,
 }: EditProfileFormProps) => {
@@ -53,8 +57,9 @@ export const EditProfileForm = ({
   return (
     <div className="rounded-xl border border-neutral-20 bg-white p-6">
       <div className="flex flex-col items-center gap-6">
-        <Button
+        <button
           type="button"
+          onClick={() => fileInputRef.current?.click()}
           className="group relative h-28 w-28 overflow-hidden rounded-full border border-neutral-20"
         >
           {user?.avatar ? (
@@ -70,11 +75,26 @@ export const EditProfileForm = ({
           <div className="absolute inset-0 hidden items-center justify-center bg-black/40 group-hover:flex">
             <Camera size={20} className="text-white" />
           </div>
-        </Button>
+        </button>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={(event) => {
+            const file = event.target.files?.[0] || null;
+            setAvatarFile(file);
+            if (file) {
+              setAvatarPreview(URL.createObjectURL(file));
+            }
+          }}
+        />
 
         <div className="flex w-full flex-col gap-4">
           <label className="flex flex-col gap-1">
-            <Span variant="label">Full name</Span>
+            <span className="text-label text-neutral-foreground">
+              Full name
+            </span>
             <input
               type="text"
               value={fullName}
@@ -84,7 +104,7 @@ export const EditProfileForm = ({
           </label>
 
           <label className="flex flex-col gap-1">
-            <Span variant="label">Email</Span>
+            <span className="text-label text-neutral-foreground">Email</span>
             <input
               type="email"
               value={email}
@@ -94,7 +114,9 @@ export const EditProfileForm = ({
           </label>
 
           <label className="flex flex-col gap-1">
-            <Span variant="label">Phone number</Span>
+            <span className="text-label text-neutral-foreground">
+              Phone number
+            </span>
             <input
               type="tel"
               value={phone}
@@ -104,7 +126,7 @@ export const EditProfileForm = ({
           </label>
 
           <label className="flex flex-col gap-1">
-            <Span variant="label">Country</Span>
+            <span className="text-label text-neutral-foreground">Country</span>
             <select
               value={country}
               onChange={(e) => setCountry(e.target.value)}
@@ -121,15 +143,16 @@ export const EditProfileForm = ({
         </div>
 
         <div className="flex w-full justify-between pt-4">
-          <Button
+          <button
             type="button"
             onClick={onCancel}
+            disabled={isSubmitting}
             className="rounded-md bg-neutral-10 px-4 py-2 text-body text-neutral-foreground hover:bg-neutral-10"
           >
             Cancel
-          </Button>
+          </button>
 
-          <Button
+          <button
             type="button"
             onClick={handleUpdate}
             disabled={loading}

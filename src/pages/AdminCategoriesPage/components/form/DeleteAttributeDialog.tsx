@@ -1,7 +1,7 @@
 import { AlertTriangle } from "lucide-react";
-import { Dialog } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Text } from "@/components/ui/text";
+import { Dialog } from "@/components/ui/Dialog/dialog";
+import { Button } from "@/components/ui/Button/button";
+import { Text } from "@/components/ui/Text/text";
 
 export interface DeleteAttributeDialogProps {
   open: boolean;

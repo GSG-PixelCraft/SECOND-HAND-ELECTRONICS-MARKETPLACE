@@ -1,4 +1,5 @@
 import { Fragment, useState } from "react";
+import { useParams } from "react-router-dom";
 import {
   MapPin,
   Calendar,
@@ -12,24 +13,26 @@ import {
   ArrowUpDown,
   Filter,
 } from "lucide-react";
-import { Header } from "@/components/layout/header";
-import { AdCard } from "@/components/ui/AdCard";
-import PageLayout from "@/components/layout/PageLayout";
-import { Button } from "@/components/ui/button";
-import { Text } from "@/components/ui/text";
-import { Span } from "@/components/ui/span";
+import { Header } from "@/components/layout/Header/header";
+import { AdCard } from "@/components/ui/AdCard/AdCard";
+import PageLayout from "@/components/layout/PageLayout/PageLayout";
+import { Button } from "@/components/ui/Button/button";
+import { Text } from "@/components/ui/Text/text";
+import { Span } from "@/components/ui/Span/span";
 import { useProducts } from "@/services/product.service";
 import type { Product } from "@/types";
 
-interface PublicProfilePageProps {
-  userId: number; // Pass the seller/user ID to load their listings
-}
-
-export default function PublicProfilePage({ userId }: PublicProfilePageProps) {
+export default function PublicProfilePage() {
   const [sort] = useState("Newest");
+  const { id } = useParams<{ id?: string }>();
+  const sellerId = id ? Number(id) : undefined;
+  const sellerIdFilter =
+    typeof sellerId === "number" && !Number.isNaN(sellerId)
+      ? [sellerId]
+      : undefined;
 
   const { data, isLoading, isError } = useProducts({
-    sellerIds: [userId],
+    sellerIds: sellerIdFilter,
     sortBy: "createdAt",
     sortOrder: "desc",
     status: ["active"],

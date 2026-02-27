@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/components/ui/Card";
-import { Span } from "@/components/ui/span";
+import { Span } from "@/components/ui/Span/span";
 
 interface SafetyTipsCardProps {
   tips: string[];

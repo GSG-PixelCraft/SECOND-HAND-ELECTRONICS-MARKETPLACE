@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
-import Container from "@/components/layout/Container";
+import Container from "@/components/layout/Container/Container";
 import phoneImage from "@/images/Phone.jpg";
 import { ProductGallery } from "./components/ProductGallery";
 import { ProductSummaryCard } from "./components/ProductSummaryCard";
@@ -13,8 +13,8 @@ import { ListingSection } from "./components/ListingSection";
 import { ListingStatusCard } from "./components/ListingStatusCard";
 import { ReportListingDialog } from "./components/ReportListingDialog";
 import { ReportSuccessDialog } from "./components/ReportSuccessDialog";
-import { Button } from "@/components/ui/button";
-import { Span } from "@/components/ui/span";
+import { Button } from "@/components/ui/Button/button";
+import { Span } from "@/components/ui/Span/span";
 import { FullScreenLoading } from "@/components/feedback/loading/full-screen-loading";
 
 type OwnerStatus = "pending" | "rejected" | null;

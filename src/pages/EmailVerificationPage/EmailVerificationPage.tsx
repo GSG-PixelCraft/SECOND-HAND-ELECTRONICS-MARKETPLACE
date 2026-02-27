@@ -1,52 +1,77 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import PageLayout from "@/components/layout/PageLayout";
-import { Button } from "@/components/ui/button";
-import { OTPInput } from "@/components/forms";
-import { Text } from "@/components/ui/text";
-import { Span } from "@/components/ui/span";
-import { useVerifyEmailOTP, useSendEmailOTP } from "@/services";
-import { useAuthStore } from "@/stores";
+import PageLayout from "@/components/layout/PageLayout/PageLayout";
 import { ROUTES } from "@/constants/routes";
-import { MESSAGES } from "@/constants/messages";
-import { Dialog } from "@/components/ui/dialog";
-import { CheckCircle } from "lucide-react";
+import { useSendEmailOTP, useVerifyEmailOTP } from "@/services";
+import { useAuthStore } from "@/stores/useAuthStore";
 
-export const EmailVerificationPage: React.FC = () => {
+const OTP_LENGTH = 4;
+
+type ApiLikeError = {
+  response?: { status?: number; data?: { message?: string } };
+  code?: string;
+  message?: string;
+};
+
+export function EmailVerificationPage() {
   const navigate = useNavigate();
-  const user = useAuthStore((state) => state.user);
-  const email = user?.email;
-
-  const [otp, setOtp] = useState("");
-  const [timer, setTimer] = useState(60);
-  const [showSuccess, setShowSuccess] = useState(false);
-
-  const verifyMutation = useVerifyEmailOTP();
-  const resendMutation = useSendEmailOTP();
   const setVerification = useAuthStore((state) => state.setVerification);
 
-  useEffect(() => {
-    if (!email) {
-      navigate(ROUTES.SIGN_IN);
+  const sendEmailOtp = useSendEmailOTP();
+  const verifyEmailOtp = useVerifyEmailOTP();
+
+  const [email, setEmail] = useState("");
+  const [otp, setOtp] = useState<string[]>(
+    Array.from({ length: OTP_LENGTH }, () => ""),
+  );
+  const [step, setStep] = useState<"email" | "otp">("email");
+  const [timer, setTimer] = useState(0);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSendCode = async () => {
+    if (!email.trim()) {
+      setError("Please enter your email.");
       return;
     }
+    setError(null);
+    try {
+      await sendEmailOtp.mutateAsync({ otpType: "email_verification" });
+      setStep("otp");
+      setTimer(60);
+      setOtp(Array.from({ length: OTP_LENGTH }, () => ""));
+    } catch (err: unknown) {
+      const typedError = err as ApiLikeError;
+      setError(
+        typedError.response?.data?.message ||
+          typedError.message ||
+          "Failed to send verification code.",
+      );
+    }
+  };
 
-    // Send OTP on mount
-    resendMutation.mutate({ email });
-
+  useEffect(() => {
+    if (step !== "otp" || timer <= 0) return;
     const interval = setInterval(() => {
       setTimer((prev) => (prev > 0 ? prev - 1 : 0));
     }, 1000);
-
     return () => clearInterval(interval);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [email, navigate]);
+  }, [step, timer]);
 
   const handleComplete = async (code: string) => {
     if (!email) return;
 
+  const handleSendCode = async () => {
+    if (!email.trim()) {
+      setError("Please enter your email.");
+      return;
+    }
+    setError(null);
     try {
-      await verifyMutation.mutateAsync({ code, email });
+      await verifyEmailOtp.mutateAsync({
+        code,
+        email,
+        type: "email_verification",
+      });
       setVerification({
         email: {
           email,
@@ -54,105 +79,122 @@ export const EmailVerificationPage: React.FC = () => {
           verifiedAt: new Date().toISOString(),
         },
       });
-      setShowSuccess(true);
-      setTimeout(() => {
-        navigate(ROUTES.VERIFY);
-      }, 2000);
-    } catch (error) {
-      console.error("Verification failed:", error);
+      navigate(ROUTES.VERIFY);
+    } catch (err: unknown) {
+      const typedError = err as ApiLikeError;
+      setError(
+        typedError.response?.data?.message ||
+          typedError.message ||
+          "Verification failed.",
+      );
     }
   };
 
-  const handleResend = async () => {
-    if (timer > 0 || !email) return;
+  const handleVerify = async () => {
+    const code = otp.join("");
+    if (code.length !== OTP_LENGTH) return;
+    if (!email.trim()) {
+      setError("Please enter your email.");
+      return;
+    }
+    setError(null);
 
     try {
-      await resendMutation.mutateAsync({ email });
+      await sendEmailOtp.mutateAsync({ otpType: "email_verification" });
       setTimer(60);
-      setOtp("");
-    } catch (error) {
-      console.error("Failed to resend OTP:", error);
+      setOtp(Array.from({ length: OTP_LENGTH }, () => ""));
+    } catch (err: unknown) {
+      const typedError = err as ApiLikeError;
+      setError(
+        typedError.response?.data?.message ||
+          typedError.message ||
+          "Failed to resend code.",
+      );
     }
   };
 
-  if (!email) return null;
+  const otpCode = otp.join("");
 
   return (
-    <>
-      <PageLayout title={MESSAGES.VERIFICATION.EMAIL.TITLE}>
-        <div className="mx-auto max-w-md">
-          <div className="rounded-lg bg-white p-8 shadow-sm">
-            <div className="space-y-6">
-              <div className="space-y-2 text-center">
-                <h2 className="text-xl font-medium text-[#101010]">
-                  {MESSAGES.VERIFICATION.EMAIL.OTP_SENT}
-                </h2>
-                <Text variant="caption">
-                  {MESSAGES.VERIFICATION.EMAIL.DESCRIPTION}
-                  <br />
-                  <Span className="font-medium text-[#3d3d3d]">{email}</Span>
-                </Text>
-              </div>
-
-              <OTPInput
-                length={6}
-                value={otp}
-                onChange={setOtp}
-                onComplete={handleComplete}
-                error={verifyMutation.isError}
-                disabled={verifyMutation.isPending}
-              />
-
-              {verifyMutation.isError && (
-                <Text variant="error" className="text-center text-sm">
-                  {MESSAGES.ERROR.INVALID_OTP}
-                </Text>
-              )}
-
-              <div className="space-y-4">
-                <Button
-                  onClick={() => handleComplete(otp)}
-                  disabled={otp.length !== 6 || verifyMutation.isPending}
-                  size="lg"
-                  className="w-full"
-                >
-                  {verifyMutation.isPending ? "Verifying..." : "Verify Email"}
-                </Button>
-
-                <div className="text-center">
-                  {timer > 0 ? (
-                    <Text variant="caption">Resend code in {timer}s</Text>
-                  ) : (
-                    <button
-                      onClick={handleResend}
-                      disabled={resendMutation.isPending}
-                      className="text-sm font-medium text-[#2563eb] hover:underline disabled:opacity-50"
-                    >
-                      {resendMutation.isPending ? "Sending..." : "Resend Code"}
-                    </button>
-                  )}
-                </div>
-              </div>
+    <PageLayout title="Verify Email" maxWidth="md">
+      <div className="mx-auto w-full max-w-md rounded-lg bg-white p-6 shadow-sm">
+        {step === "email" ? (
+          <>
+            <h1 className="text-xl font-semibold">Verify your email</h1>
+            <p className="mt-2 text-sm text-gray-600">
+              Enter your email address to receive a verification code.
+            </p>
+            <input
+              type="email"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              placeholder="name@example.com"
+              className="mt-4 w-full rounded-md border px-3 py-2"
+            />
+            {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
+            <button
+              type="button"
+              onClick={handleSendCode}
+              disabled={!email.trim() || sendEmailOtp.isPending}
+              className="mt-4 w-full rounded-md bg-blue-600 px-4 py-2 text-white disabled:bg-gray-300"
+            >
+              {sendEmailOtp.isPending ? "Sending..." : "Send code"}
+            </button>
+          </>
+        ) : (
+          <>
+            <h1 className="text-xl font-semibold">Enter verification code</h1>
+            <p className="mt-2 text-sm text-gray-600">
+              We sent a code to {email}.
+            </p>
+            <div className="mt-4 flex justify-center gap-2">
+              {otp.map((digit, index) => (
+                <input
+                  key={index}
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={1}
+                  value={digit}
+                  onChange={(event) => {
+                    const value = event.target.value.replace(/\D/g, "");
+                    setOtp((current) => {
+                      const next = [...current];
+                      next[index] = value;
+                      return next;
+                    });
+                  }}
+                  className="h-11 w-11 rounded-md border text-center"
+                />
+              ))}
             </div>
-          </div>
-        </div>
-      </PageLayout>
-
-      <Dialog open={showSuccess} onOpenChange={setShowSuccess}>
-        <div className="space-y-6 text-center">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
-            <CheckCircle className="h-10 w-10 text-green-600" />
-          </div>
-          <div className="space-y-2">
-            <h3 className="text-xl font-medium text-[#101010]">
-              {MESSAGES.SUCCESS.EMAIL_VERIFIED}
-            </h3>
-            <Text variant="caption">
-              Your email has been successfully verified
-            </Text>
-          </div>
-        </div>
-      </Dialog>
-    </>
+            {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
+            <button
+              type="button"
+              onClick={() => handleComplete(otpCode)}
+              disabled={
+                otpCode.length !== OTP_LENGTH || verifyEmailOtp.isPending
+              }
+              className="mt-4 w-full rounded-md bg-blue-600 px-4 py-2 text-white disabled:bg-gray-300"
+            >
+              {verifyEmailOtp.isPending ? "Verifying..." : "Verify Email"}
+            </button>
+            <div className="mt-3 text-center text-sm">
+              {timer > 0 ? (
+                <span className="text-gray-600">Resend code in {timer}s</span>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleResend}
+                  disabled={sendEmailOtp.isPending}
+                  className="text-blue-600 disabled:opacity-50"
+                >
+                  {sendEmailOtp.isPending ? "Sending..." : "Resend code"}
+                </button>
+              )}
+            </div>
+          </>
+        )}
+      </div>
+    </PageLayout>
   );
-};
+}

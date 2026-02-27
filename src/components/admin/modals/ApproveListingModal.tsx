@@ -1,7 +1,7 @@
 import { forwardRef } from "react";
 import { X } from "lucide-react";
-import { Dialog } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
+import { Dialog } from "@/components/ui/Dialog/dialog";
+import { Button } from "@/components/ui/Button/button";
 
 export interface ApproveListingModalProps {
   open: boolean;

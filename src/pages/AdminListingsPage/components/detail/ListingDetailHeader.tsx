@@ -1,8 +1,8 @@
 import { forwardRef, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { EyeOff, Eye, MoreVertical } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Span } from "@/components/ui/span";
+import { Button } from "@/components/ui/Button/button";
+import { Span } from "@/components/ui/Span/span";
 import { AdminBackButton, ListingStatusBadge } from "@/components/admin";
 import type { AdminListing, ListingStatus } from "@/types/admin";
 

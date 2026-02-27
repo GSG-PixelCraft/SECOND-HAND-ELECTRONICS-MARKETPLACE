@@ -1,7 +1,7 @@
 import { forwardRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { AdminBackButton } from "@/components/admin";
-import { Text } from "@/components/ui/text";
+import { Text } from "@/components/ui/Text/text";
 
 export const UserDetailHeader = forwardRef<HTMLDivElement>((_props, ref) => {
   const navigate = useNavigate();

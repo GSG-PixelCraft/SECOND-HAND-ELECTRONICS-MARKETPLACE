@@ -7,8 +7,8 @@ import {
   Share2,
   Trash2,
 } from "lucide-react";
-import { Image } from "@/components/ui/image";
-import { Button } from "@/components/ui/button";
+import { Image } from "@/components/ui/Image/image";
+import { Button } from "@/components/ui/Button/button";
 
 interface OwnerActions {
   onEdit?: () => void;

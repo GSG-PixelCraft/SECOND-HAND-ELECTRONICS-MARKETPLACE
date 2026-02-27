@@ -1,8 +1,8 @@
 // 403 error page
 import { Link } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
-import { Button } from "@/components/ui/button";
-import { PageTitle } from "@/components/layout/PageTitle";
+import { Button } from "@/components/ui/Button/button";
+import { PageTitle } from "@/components/layout/PageTitle/PageTitle";
 
 const AccessDeniedPage = () => {
   return (

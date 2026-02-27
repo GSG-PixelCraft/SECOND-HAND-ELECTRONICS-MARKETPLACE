@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
 import { useAuthStore } from "@/stores/useAuthStore";
-import AuthHeader from "@/components/layout/AuthHeader";
+import AuthHeader from "@/components/layout/AuthHeader/AuthHeader";
 import { authService } from "@/services/auth.service";
 import type { AxiosError } from "axios";
 

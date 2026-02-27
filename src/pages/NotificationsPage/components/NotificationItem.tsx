@@ -12,9 +12,9 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { NotificationType } from "./notificationTypes";
-import { Text } from "@/components/ui/text";
-import { Span } from "@/components/ui/span";
-import { Button } from "@/components/ui/button";
+import { Text } from "@/components/ui/Text/text";
+import { Span } from "@/components/ui/Span/span";
+import { Button } from "@/components/ui/Button/button";
 
 export interface NotificationItemProps {
   type: NotificationType;

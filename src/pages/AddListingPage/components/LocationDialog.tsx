@@ -1,9 +1,9 @@
 // src/pages/AddListingPage/components/LocationDialog.tsx
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { FC, ReactElement } from "react";
-import { Dialog } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Text } from "@/components/ui/text";
+import { Dialog } from "@/components/ui/Dialog/dialog";
+import { Button } from "@/components/ui/Button/button";
+import { Text } from "@/components/ui/Text/text";
 import {
   MapContainer,
   Marker,
