@@ -3,8 +3,8 @@ import { ChevronDown } from "lucide-react";
 import { Dialog } from "@/components/ui/Dialog/dialog";
 import { Button } from "@/components/ui/Button/button";
 import { Text } from "@/components/ui/Text/text";
-import { Select } from "@/components/ui/Select/select";
-import { Checkbox } from "@/components/ui/Checkbox/checkbox";
+import { Select } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import type { RejectionReason } from "@/types/admin";
 
 export interface RejectListingModalProps {

@@ -1,129 +1,245 @@
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
-import { IdCard, Mail, Smartphone } from "lucide-react";
+import { CheckCircle, IdCard, Mail, Pencil, Smartphone } from "lucide-react";
+import { countries } from "countries-list";
 import { EditProfileForm } from "./EditProfileForm";
+import type { EditProfileSubmitPayload } from "./EditProfileForm";
 import { ROUTES } from "@/constants/routes";
 import { useAuthStore } from "@/stores/useAuthStore";
-import { useProfile, useUpdateProfile } from "@/services/profile.service";
-import { useVerificationStatus } from "@/services/verification.service";
 import {
-  ContactVerificationModal,
-  IdentityVerificationModal,
-} from "@/components/profile/verification";
-import {
-  useEmailVerificationFlow,
-  usePhoneVerificationFlow,
-} from "@/hooks/useContactVerification";
-import { ProfileHero } from "./sections/ProfileHero";
-import { ProfileCompletionCard } from "./sections/ProfileCompletionCard";
-import { TrustIndicators } from "./sections/TrustIndicators";
-import { ActivitySummary } from "./sections/ActivitySummary";
+  useSendEmailOTP,
+  useSendPhoneOTP,
+  useVerifyEmailOTP,
+  useVerifyPhoneOTP,
+} from "@/services/verification.service";
+import { useUpdateProfile } from "@/services/profile.service";
+import { Text } from "@/components/ui/Text/text";
+import { Span } from "@/components/ui/Span/span";
 
-const formatMemberSince = (value?: string) => {
-  if (!value) return "Member since -";
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "Member since -";
-  return `Member since ${date.toLocaleDateString("en-US", { month: "long", year: "numeric" })}`;
+const OTP_LENGTH = 4;
+const createEmptyOtp = () => Array.from({ length: OTP_LENGTH }, () => "");
+
+const getBackendErrorMessage = (error: unknown): string | null => {
+  if (
+    typeof error === "object" &&
+    error !== null &&
+    "response" in error &&
+    typeof error.response === "object" &&
+    error.response !== null &&
+    "data" in error.response &&
+    typeof error.response.data === "object" &&
+    error.response.data !== null &&
+    "message" in error.response.data &&
+    typeof error.response.data.message === "string"
+  ) {
+    return error.response.data.message;
+  }
+  return null;
 };
+
+interface OtpInputsProps {
+  idPrefix: string;
+  value: string[];
+  onChange: (index: number, value: string) => void;
+}
+
+const OtpInputs = ({ idPrefix, value, onChange }: OtpInputsProps) => (
+  <div className="mb-4 flex items-center justify-center gap-2">
+    {value.map((digit, index) => (
+      <input
+        key={`${idPrefix}-${index}`}
+        id={`${idPrefix}-${index}`}
+        type="text"
+        inputMode="numeric"
+        maxLength={1}
+        value={digit}
+        onChange={(event) => {
+          const nextValue = event.target.value.replace(/\D/g, "");
+          onChange(index, nextValue);
+        }}
+        className="h-11 w-11 rounded-md border border-neutral-20 text-center text-lg outline-none focus:border-primary"
+      />
+    ))}
+  </div>
+);
+
+const COUNTRY_DIAL_OPTIONS = Object.values(countries)
+  .map((country) => {
+    const firstDial = country.phone?.[0];
+    return {
+      name: country.name,
+      dialCode: firstDial ? `+${firstDial}` : "",
+    };
+  })
+  .filter((item) => Boolean(item.dialCode))
+  .sort((a, b) => a.name.localeCompare(b.name));
 
 export default function ProfileDetails() {
   const navigate = useNavigate();
   const user = useAuthStore((state) => state.user);
-  const verificationStore = useAuthStore((state) => state.verification);
+  const verification = useAuthStore((state) => state.verification);
   const setVerification = useAuthStore((state) => state.setVerification);
-  const setUser = useAuthStore((state) => state.setUser);
-
-  const [isEditing, setIsEditing] = React.useState(false);
-  const [showIdentityModal, setShowIdentityModal] = React.useState(false);
-
-  const { data: profileData, isLoading: isProfileLoading } = useProfile();
-  const {
-    data: verificationStatus,
-    isLoading: isVerificationLoading,
-    refetch: refetchVerificationStatus,
-  } = useVerificationStatus();
   const updateProfileMutation = useUpdateProfile();
 
-  React.useEffect(() => {
-    if (verificationStatus) {
-      setVerification(verificationStatus);
+  const [isEditing, setIsEditing] = React.useState(false);
+
+  const [showPhoneVerification, setShowPhoneVerification] =
+    React.useState(false);
+  const [phoneStep, setPhoneStep] = React.useState<
+    "input" | "otp" | "change" | "success"
+  >("input");
+  const [phoneNumber, setPhoneNumber] = React.useState("");
+  const [phoneOtp, setPhoneOtp] = React.useState<string[]>(createEmptyOtp());
+  const [phoneError, setPhoneError] = React.useState<string | null>(null);
+  const [countryDialCode, setCountryDialCode] = React.useState("+970");
+  const [showEmailVerification, setShowEmailVerification] =
+    React.useState(false);
+  const [emailStep, setEmailStep] = React.useState<"input" | "otp" | "success">(
+    "input",
+  );
+  const [email, setEmail] = React.useState("");
+  const [emailOtp, setEmailOtp] = React.useState<string[]>(createEmptyOtp());
+  const [emailError, setEmailError] = React.useState<string | null>(null);
+
+  const sendPhoneMutation = useSendPhoneOTP();
+  const verifyPhoneMutation = useVerifyPhoneOTP();
+  const sendEmailMutation = useSendEmailOTP();
+  const verifyEmailMutation = useVerifyEmailOTP();
+
+  if (!user) {
+    return <div className="p-6">Loading profile...</div>;
+  }
+
+  const displayName = user?.fullName || user?.name || "User";
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const handleProfileSubmit = async (payload: EditProfileSubmitPayload) => {
+    setIsEditing(false);
+  };
+
+  const closePhoneOverlay = () => {
+    setShowPhoneVerification(false);
+    setPhoneStep("input");
+    setPhoneError(null);
+    setPhoneOtp(createEmptyOtp());
+  };
+
+  const closeEmailOverlay = () => {
+    setShowEmailVerification(false);
+    setEmailStep("input");
+    setEmailError(null);
+    setEmailOtp(createEmptyOtp());
+  };
+
+  const handleChangePhoneNumber = (
+    event: React.MouseEvent<HTMLAnchorElement>,
+  ) => {
+    event.preventDefault();
+    setPhoneStep("change");
+  };
+
+  const sendPhoneCode = async () => {
+    const enteredPhone =
+      phoneStep === "change" && !phoneNumber.trim().startsWith("+")
+        ? `${countryDialCode}${phoneNumber.trim()}`
+        : phoneNumber.trim();
+    if (!enteredPhone) {
+      setPhoneError("Please enter your phone number.");
+      return;
     }
-  }, [setVerification, verificationStatus]);
+    setPhoneError(null);
 
-  const verification = verificationStatus ?? verificationStore;
+    try {
+      await sendPhoneMutation.mutateAsync({ otpType: "phone_verification" });
+      setPhoneStep("otp");
+      setPhoneOtp(createEmptyOtp());
+    } catch (error: unknown) {
+      setPhoneError(
+        getBackendErrorMessage(error) ?? "Failed to send verification code.",
+      );
+    }
+  };
 
-  const displayName = profileData?.fullName || profileData?.name || user?.name;
-  const displayCountry = profileData?.country || profileData?.location || "-";
-  const displayAvatar =
-    profileData?.profileImageUrl || profileData?.avatarUrl || user?.avatar;
-  const memberSince = formatMemberSince(profileData?.createdAt);
+  const verifyPhoneCode = async () => {
+    const code = phoneOtp.join("");
+    const enteredPhone =
+      phoneStep === "change" && !phoneNumber.trim().startsWith("+")
+        ? `${countryDialCode}${phoneNumber.trim()}`
+        : phoneNumber.trim();
+    if (code.length !== OTP_LENGTH) return;
+    if (!enteredPhone) {
+      setPhoneError("Please enter your phone number.");
+      return;
+    }
+    setPhoneError(null);
 
-  const handlePhoneVerified = React.useCallback(
-    (phoneNumber: string) => {
+    try {
+      await verifyPhoneMutation.mutateAsync({
+        phoneNumber: enteredPhone,
+        code,
+        type: "phone_verification",
+      });
       setVerification({
         phone: {
-          phoneNumber,
+          phoneNumber: enteredPhone,
           status: "verified",
-          verifiedAt: new Date().toISOString(),
         },
       });
-      void refetchVerificationStatus();
-    },
-    [refetchVerificationStatus, setVerification],
-  );
+      setPhoneStep("success");
+    } catch (error: unknown) {
+      setPhoneError(
+        getBackendErrorMessage(error) ?? "Invalid verification code.",
+      );
+    }
+  };
 
-  const handleEmailVerified = React.useCallback(
-    (emailAddress: string) => {
+  const sendEmailCode = async () => {
+    const enteredEmail = email.trim();
+    if (!enteredEmail) {
+      setEmailError("Please enter your email.");
+      return;
+    }
+    setEmailError(null);
+
+    try {
+      await sendEmailMutation.mutateAsync({ otpType: "email_verification" });
+      setEmailStep("otp");
+      setEmailOtp(createEmptyOtp());
+    } catch (error: unknown) {
+      setEmailError(
+        getBackendErrorMessage(error) ?? "Failed to send verification code.",
+      );
+    }
+  };
+
+  const verifyEmailCode = async () => {
+    const code = emailOtp.join("");
+    const enteredEmail = email.trim();
+    if (code.length !== OTP_LENGTH) return;
+    if (!enteredEmail) {
+      setEmailError("Please enter your email.");
+      return;
+    }
+    setEmailError(null);
+
+    try {
+      await verifyEmailMutation.mutateAsync({
+        email: enteredEmail,
+        code,
+        type: "email_verification",
+      });
       setVerification({
         email: {
-          email: emailAddress,
+          email: enteredEmail,
           status: "verified",
-          verifiedAt: new Date().toISOString(),
         },
       });
-      void refetchVerificationStatus();
-    },
-    [refetchVerificationStatus, setVerification],
-  );
-
-  const phoneVerification = usePhoneVerificationFlow({
-    initialValue: profileData?.phoneNumber || user?.phoneNumber || "",
-    onVerified: handlePhoneVerified,
-  });
-
-  const emailVerification = useEmailVerificationFlow({
-    initialValue: profileData?.email || user?.email || "",
-    onVerified: handleEmailVerified,
-  });
-
-  const handleProfileSubmit = async (payload: {
-    fullName: string;
-    email: string;
-    phoneNumber: string;
-    country: string;
-    avatarFile?: File | null;
-  }) => {
-    const updatedProfile = await updateProfileMutation.mutateAsync({
-      bio: payload.fullName,
-      location: payload.country,
-      avatarFile: payload.avatarFile,
-    });
-    const resolvedName = (updatedProfile.fullName ||
-      updatedProfile.name ||
-      user?.name ||
-      "") as string;
-    setUser({
-      ...(user || { id: updatedProfile.id || "", role: "user" }),
-      name: resolvedName,
-      email: (updatedProfile.email || user?.email || "") as string,
-      phoneNumber: (updatedProfile.phoneNumber || user?.phoneNumber) as
-        | string
-        | undefined,
-      avatar: (updatedProfile.profileImageUrl ||
-        updatedProfile.avatarUrl ||
-        user?.avatar) as string | undefined,
-    });
-    setIsEditing(false);
+      setEmailStep("success");
+    } catch (error: unknown) {
+      setEmailError(
+        getBackendErrorMessage(error) ?? "Invalid verification code.",
+      );
+    }
   };
 
   const verifiedItems = [
@@ -139,72 +255,15 @@ export default function ProfileDetails() {
     return (
       <EditProfileForm
         initialValues={{
-          fullName:
-            profileData?.fullName || profileData?.name || user?.name || "",
-          email: profileData?.email || user?.email || "",
-          phoneNumber: profileData?.phoneNumber || user?.phoneNumber || "",
-          country: (profileData?.country ||
-            profileData?.location ||
-            "") as string,
-          avatarUrl: (profileData?.profileImageUrl ||
-            profileData?.avatarUrl ||
-            user?.avatar) as string | undefined,
+          fullName: user?.fullName || user?.name || "",
+          email: user?.email || "",
+          phoneNumber: user?.phoneNumber || "",
+          country: "",
+          avatarUrl: user?.avatar,
         }}
         isSubmitting={updateProfileMutation.isPending}
         onCancel={() => setIsEditing(false)}
         onSubmit={handleProfileSubmit}
-      />
-    );
-  }
-
-  return (
-    <div className="flex flex-col gap-6">
-      <ProfileHero
-        name={displayName || "-"}
-        country={displayCountry}
-        memberSince={memberSince}
-        avatar={displayAvatar}
-        isLoading={isProfileLoading}
-        onEdit={() => setIsEditing(true)}
-      />
-
-      <ProfileCompletionCard completion={profileCompletion} />
-
-      <TrustIndicators
-        isLoading={isVerificationLoading}
-        items={[
-          {
-            key: "phone",
-            label: "Verified Phone",
-            icon: Smartphone,
-            verified: verification.phone.status === "verified",
-          },
-          {
-            key: "identity",
-            label: "Verified Identity",
-            icon: IdCard,
-            verified: verification.identity.status === "approved",
-          },
-          {
-            key: "email",
-            label: "Verified Email",
-            icon: Mail,
-            verified: verification.email.status === "verified",
-          },
-        ]}
-        onSelect={(key) => {
-          if (key === "phone") {
-            phoneVerification.open(
-              profileData?.phoneNumber || user?.phoneNumber || "",
-            );
-          } else if (key === "identity") {
-            setShowIdentityModal(true);
-          } else {
-            emailVerification.open(
-              profileData?.email || user?.email || "",
-            );
-          }
-        }}
       />
     );
   }
@@ -633,20 +692,24 @@ export default function ProfileDetails() {
               </>
             )}
 
-      <ActivitySummary />
-      <ContactVerificationModal type="phone" flow={phoneVerification} />
-      <ContactVerificationModal type="email" flow={emailVerification} />
-      <IdentityVerificationModal
-        isOpen={showIdentityModal}
-        onClose={() => setShowIdentityModal(false)}
-        onStart={() => {
-          setShowIdentityModal(false);
-          navigate(ROUTES.VERIFY_IDENTITY);
-        }}
-        status={verification.identity.status}
-      />
+            {emailStep === "success" && (
+              <>
+                <h2 className="mb-2 text-xl font-bold">Email verified</h2>
+                <p className="mb-6 text-gray-600">
+                  Your email address has been verified successfully.
+                </p>
+                <button
+                  type="button"
+                  onClick={closeEmailOverlay}
+                  className="w-full rounded-md bg-blue-600 py-2 text-white"
+                >
+                  Done
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
-
-
