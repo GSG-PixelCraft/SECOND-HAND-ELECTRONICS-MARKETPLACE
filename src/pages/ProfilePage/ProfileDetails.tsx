@@ -30,6 +30,12 @@ export default function ProfileDetails() {
   const navigate = useNavigate();
   const { user, verification } = useAuthStore();
 
+  if (!user) {
+    return <div className="p-6">Loading profile...</div>;
+  }
+
+  const displayName = user?.fullName || user?.name || "User";
+
   const handleVerify = (label: string) => {
     if (label === "Verified Phone") {
       setShowPhoneVerification(true);
@@ -102,22 +108,34 @@ export default function ProfileDetails() {
       <section className="rounded-lg border border-neutral-20 bg-white p-5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="h-16 w-16 rounded-full bg-muted-10" />
+            {user.avatar ? (
+              <img
+                src={user.avatar}
+                alt="Profile"
+                className="h-16 w-16 rounded-full object-cover"
+              />
+            ) : (
+              <div className="h-16 w-16 rounded-full bg-muted-10" />
+            )}
 
             <div className="space-y-1">
               <Text variant="bodyLg" className="font-semibold">
-                Eleanor Vance
+                {displayName}
               </Text>
 
-              <div className="flex items-center gap-2">
-                <MapPin size={14} className="text-muted-foreground" />
-                <Span variant="caption">Palestine</Span>
-              </div>
+              {user.email && (
+                <div className="flex items-center gap-2">
+                  <Mail size={14} className="text-muted-foreground" />
+                  <Span variant="caption">{user.email}</Span>
+                </div>
+              )}
 
-              <div className="flex items-center gap-2">
-                <Calendar size={14} className="text-muted-foreground" />
-                <Span variant="caption">Member since May 2023</Span>
-              </div>
+              {user.phoneNumber && (
+                <div className="flex items-center gap-2">
+                  <Smartphone size={14} className="text-muted-foreground" />
+                  <Span variant="caption">{user.phoneNumber}</Span>
+                </div>
+              )}
             </div>
           </div>
 

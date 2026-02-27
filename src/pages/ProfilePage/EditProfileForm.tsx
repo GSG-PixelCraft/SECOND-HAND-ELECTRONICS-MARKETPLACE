@@ -4,19 +4,14 @@ import { countries } from "countries-list";
 import { Button } from "@/components/ui/button";
 import { Image } from "@/components/ui/image";
 import { Span } from "@/components/ui/span";
+import { useAuthStore } from "@/stores/useAuthStore";
+import { authService } from "@/services/auth.service";
 
 interface EditProfileFormProps {
   onCancel: () => void;
   onSubmit: () => void;
 }
 
-// const COUNTRIES = [
-//   "Palestine",
-//   "Jordan",
-//   "Egypt",
-//   "Saudi Arabia",
-//   "United Arab Emirates",
-// ];
 const COUNTRIES = Object.values(countries)
   .map((c) => c.name)
   .sort();
@@ -25,10 +20,35 @@ export const EditProfileForm = ({
   onCancel,
   onSubmit,
 }: EditProfileFormProps) => {
-  const [fullName, setFullName] = useState("Eleanor Vance");
-  const [email, setEmail] = useState("eleanor@example.com");
-  const [phone, setPhone] = useState("+970 599 000 000");
-  const [country, setCountry] = useState("Palestine");
+  const { user, setUser } = useAuthStore();
+
+  const [fullName, setFullName] = useState(user?.fullName ?? "");
+  const [email, setEmail] = useState(user?.email ?? "");
+  const [phone, setPhone] = useState(user?.phoneNumber ?? "");
+  const [country, setCountry] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleUpdate = async () => {
+    try {
+      setLoading(true);
+
+      const response = await authService.updateProfile({
+        fullName,
+        email,
+        phoneNumber: phone,
+      });
+
+      const updatedUser = response.data;
+
+      setUser(updatedUser);
+
+      onSubmit();
+    } catch (error) {
+      console.error("Profile update failed", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="rounded-xl border border-neutral-20 bg-white p-6">
@@ -37,11 +57,16 @@ export const EditProfileForm = ({
           type="button"
           className="group relative h-28 w-28 overflow-hidden rounded-full border border-neutral-20"
         >
-          <Image
-            src="https://i.pravatar.cc/150?img=32"
-            alt="Profile"
-            className="h-full w-full object-cover"
-          />
+          {user?.avatar ? (
+            <Image
+              src={user.avatar}
+              alt="Profile"
+              className="h-full w-full object-cover"
+            />
+          ) : (
+            <div className="h-full w-full bg-muted-10" />
+          )}
+
           <div className="absolute inset-0 hidden items-center justify-center bg-black/40 group-hover:flex">
             <Camera size={20} className="text-white" />
           </div>
@@ -106,10 +131,11 @@ export const EditProfileForm = ({
 
           <Button
             type="button"
-            onClick={onSubmit}
+            onClick={handleUpdate}
+            disabled={loading}
             className="rounded-md bg-primary px-4 py-2 text-body text-primary-foreground hover:bg-primary-40"
           >
-            Update profile
+            {loading ? "Updating..." : "Update profile"}
           </Button>
         </div>
       </div>
