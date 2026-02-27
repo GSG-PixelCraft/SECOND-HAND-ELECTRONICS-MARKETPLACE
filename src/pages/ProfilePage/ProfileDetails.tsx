@@ -110,49 +110,28 @@ export default function ProfileDetails() {
     "input",
   );
   const [email, setEmail] = React.useState("");
-  const [emailOtp, setEmailOtp] = React.useState<string[]>(createEmptyOtp());
-  const [emailError, setEmailError] = React.useState<string | null>(null);
-  const { data: profileData, isLoading: isProfileLoading } = useProfile();
-  const updateProfileMutation = useUpdateProfile();
-  const sendPhoneMutation = useSendPhoneOTP();
-  const verifyPhoneMutation = useVerifyPhoneOTP();
-  const sendEmailMutation = useSendEmailOTP();
-  const verifyEmailMutation = useVerifyEmailOTP();
+  const [otp, setOtp] = React.useState(["", "", "", ""]);
+  const navigate = useNavigate();
+  const { user, verification } = useAuthStore();
 
-  const displayName = profileData?.fullName || profileData?.name || user?.name;
-  const displayCountry = profileData?.country || profileData?.location || "-";
-  const displayAvatar =
-    profileData?.profileImageUrl || profileData?.avatarUrl || user?.avatar;
-  const memberSince = formatMemberSince(profileData?.createdAt);
+  if (!user) {
+    return <div className="p-6">Loading profile...</div>;
+  }
 
-  const handleProfileSubmit = async (payload: {
-    fullName: string;
-    email: string;
-    phoneNumber: string;
-    country: string;
-    avatarFile?: File | null;
-  }) => {
-    const updatedProfile = await updateProfileMutation.mutateAsync({
-      bio: payload.fullName,
-      location: payload.country,
-      avatarFile: payload.avatarFile,
-    });
-    const resolvedName = (updatedProfile.fullName ||
-      updatedProfile.name ||
-      user?.name ||
-      "") as string;
-    setUser({
-      ...(user || { id: updatedProfile.id || "", role: "user" }),
-      name: resolvedName,
-      email: (updatedProfile.email || user?.email || "") as string,
-      phoneNumber: (updatedProfile.phoneNumber || user?.phoneNumber) as
-        | string
-        | undefined,
-      avatar: (updatedProfile.profileImageUrl ||
-        updatedProfile.avatarUrl ||
-        user?.avatar) as string | undefined,
-    });
-    setIsEditing(false);
+  const displayName = user?.fullName || user?.name || "User";
+
+  const handleVerify = (label: string) => {
+    if (label === "Verified Phone") {
+      setShowPhoneVerification(true);
+      setPhoneStep(1);
+      setPhoneNumber("");
+    } else if (label === "Verified Identity") {
+      navigate(ROUTES.VERIFY_IDENTITY);
+    } else if (label === "Verified Email") {
+      setShowEmailVerification(true);
+      setEmailStep(1);
+      setEmail("");
+    }
   };
 
   const closePhoneOverlay = () => {
@@ -316,10 +295,10 @@ export default function ProfileDetails() {
       <section className="rounded-lg border border-neutral-20 bg-white p-5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            {displayAvatar ? (
+            {user.avatar ? (
               <img
-                src={displayAvatar}
-                alt="Profile avatar"
+                src={user.avatar}
+                alt="Profile"
                 className="h-16 w-16 rounded-full object-cover"
               />
             ) : (
@@ -327,19 +306,23 @@ export default function ProfileDetails() {
             )}
 
             <div className="space-y-1">
-              <p className="text-bodyLg font-semibold">
-                {isProfileLoading ? "Loading..." : displayName || "-"}
-              </p>
+              <Text variant="bodyLg" className="font-semibold">
+                {displayName}
+              </Text>
 
-              <div className="flex items-center gap-2">
-                <MapPin size={14} className="text-muted-foreground" />
-                <span className="text-caption">{displayCountry}</span>
-              </div>
+              {user.email && (
+                <div className="flex items-center gap-2">
+                  <Mail size={14} className="text-muted-foreground" />
+                  <Span variant="caption">{user.email}</Span>
+                </div>
+              )}
 
-              <div className="flex items-center gap-2">
-                <Calendar size={14} className="text-muted-foreground" />
-                <span className="text-caption">{memberSince}</span>
-              </div>
+              {user.phoneNumber && (
+                <div className="flex items-center gap-2">
+                  <Smartphone size={14} className="text-muted-foreground" />
+                  <Span variant="caption">{user.phoneNumber}</Span>
+                </div>
+              )}
             </div>
           </div>
 
