@@ -1,25 +1,20 @@
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  Calendar,
-  CheckCircle,
-  IdCard,
-  Mail,
-  MapPin,
-  Pencil,
-  Smartphone,
-} from "lucide-react";
+import { CheckCircle, IdCard, Mail, Pencil, Smartphone } from "lucide-react";
 import { countries } from "countries-list";
 import { EditProfileForm } from "./EditProfileForm";
+import type { EditProfileSubmitPayload } from "./EditProfileForm";
 import { ROUTES } from "@/constants/routes";
 import { useAuthStore } from "@/stores/useAuthStore";
-import { useProfile, useUpdateProfile } from "@/services/profile.service";
 import {
   useSendEmailOTP,
   useSendPhoneOTP,
   useVerifyEmailOTP,
   useVerifyPhoneOTP,
 } from "@/services/verification.service";
+import { useUpdateProfile } from "@/services/profile.service";
+import { Text } from "@/components/ui/Text/text";
+import { Span } from "@/components/ui/Span/span";
 
 const OTP_LENGTH = 4;
 const createEmptyOtp = () => Array.from({ length: OTP_LENGTH }, () => "");
@@ -68,13 +63,6 @@ const OtpInputs = ({ idPrefix, value, onChange }: OtpInputsProps) => (
   </div>
 );
 
-const formatMemberSince = (value?: string) => {
-  if (!value) return "Member since -";
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "Member since -";
-  return `Member since ${date.toLocaleDateString("en-US", { month: "long", year: "numeric" })}`;
-};
-
 const COUNTRY_DIAL_OPTIONS = Object.values(countries)
   .map((country) => {
     const firstDial = country.phone?.[0];
@@ -91,7 +79,7 @@ export default function ProfileDetails() {
   const user = useAuthStore((state) => state.user);
   const verification = useAuthStore((state) => state.verification);
   const setVerification = useAuthStore((state) => state.setVerification);
-  const setUser = useAuthStore((state) => state.setUser);
+  const updateProfileMutation = useUpdateProfile();
 
   const [isEditing, setIsEditing] = React.useState(false);
 
@@ -110,9 +98,13 @@ export default function ProfileDetails() {
     "input",
   );
   const [email, setEmail] = React.useState("");
-  const [otp, setOtp] = React.useState(["", "", "", ""]);
-  const navigate = useNavigate();
-  const { user, verification } = useAuthStore();
+  const [emailOtp, setEmailOtp] = React.useState<string[]>(createEmptyOtp());
+  const [emailError, setEmailError] = React.useState<string | null>(null);
+
+  const sendPhoneMutation = useSendPhoneOTP();
+  const verifyPhoneMutation = useVerifyPhoneOTP();
+  const sendEmailMutation = useSendEmailOTP();
+  const verifyEmailMutation = useVerifyEmailOTP();
 
   if (!user) {
     return <div className="p-6">Loading profile...</div>;
@@ -120,18 +112,9 @@ export default function ProfileDetails() {
 
   const displayName = user?.fullName || user?.name || "User";
 
-  const handleVerify = (label: string) => {
-    if (label === "Verified Phone") {
-      setShowPhoneVerification(true);
-      setPhoneStep(1);
-      setPhoneNumber("");
-    } else if (label === "Verified Identity") {
-      navigate(ROUTES.VERIFY_IDENTITY);
-    } else if (label === "Verified Email") {
-      setShowEmailVerification(true);
-      setEmailStep(1);
-      setEmail("");
-    }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const handleProfileSubmit = async (payload: EditProfileSubmitPayload) => {
+    setIsEditing(false);
   };
 
   const closePhoneOverlay = () => {
@@ -272,16 +255,11 @@ export default function ProfileDetails() {
     return (
       <EditProfileForm
         initialValues={{
-          fullName:
-            profileData?.fullName || profileData?.name || user?.name || "",
-          email: profileData?.email || user?.email || "",
-          phoneNumber: profileData?.phoneNumber || user?.phoneNumber || "",
-          country: (profileData?.country ||
-            profileData?.location ||
-            "") as string,
-          avatarUrl: (profileData?.profileImageUrl ||
-            profileData?.avatarUrl ||
-            user?.avatar) as string | undefined,
+          fullName: user?.fullName || user?.name || "",
+          email: user?.email || "",
+          phoneNumber: user?.phoneNumber || "",
+          country: "",
+          avatarUrl: user?.avatar,
         }}
         isSubmitting={updateProfileMutation.isPending}
         onCancel={() => setIsEditing(false)}
@@ -396,7 +374,7 @@ export default function ProfileDetails() {
                     setPhoneStep("input");
                   } else if (item.key === "identity") {
                     navigate(ROUTES.VERIFY_IDENTITY);
-                  } else {
+                  } else if (item.key === "email") {
                     setEmail(user?.email ?? "");
                     setShowEmailVerification(true);
                     setEmailStep("input");

@@ -1,13 +1,19 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Camera } from "lucide-react";
 import { countries } from "countries-list";
-import { Button } from "@/components/ui/button";
-import { Image } from "@/components/ui/image";
-import { Span } from "@/components/ui/span";
+import { Image } from "@/components/ui/Image/image";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { authService } from "@/services/auth.service";
 
-interface EditProfileFormProps {
+export interface EditProfileSubmitPayload {
+  fullName?: string;
+  email?: string;
+  phoneNumber?: string;
+  country?: string;
+  avatar?: File | null;
+}
+
+export interface EditProfileFormProps {
   initialValues?: Partial<EditProfileSubmitPayload> & { avatarUrl?: string };
   isSubmitting?: boolean;
   onCancel: () => void;
@@ -19,13 +25,14 @@ const COUNTRIES = Object.values(countries)
   .sort();
 
 export const EditProfileForm = ({
-  initialValues,
   isSubmitting = false,
   onCancel,
   onSubmit,
 }: EditProfileFormProps) => {
   const { user, setUser } = useAuthStore();
 
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [fullName, setFullName] = useState(user?.fullName ?? "");
   const [email, setEmail] = useState(user?.email ?? "");
   const [phone, setPhone] = useState(user?.phoneNumber ?? "");
@@ -35,6 +42,14 @@ export const EditProfileForm = ({
   const handleUpdate = async () => {
     try {
       setLoading(true);
+
+      const payload: EditProfileSubmitPayload = {
+        fullName,
+        email,
+        phoneNumber: phone,
+        country,
+        avatar: avatarFile,
+      };
 
       const response = await authService.updateProfile({
         fullName,
@@ -46,7 +61,7 @@ export const EditProfileForm = ({
 
       setUser(updatedUser);
 
-      onSubmit();
+      await onSubmit(payload);
     } catch (error) {
       console.error("Profile update failed", error);
     } finally {
@@ -84,9 +99,6 @@ export const EditProfileForm = ({
           onChange={(event) => {
             const file = event.target.files?.[0] || null;
             setAvatarFile(file);
-            if (file) {
-              setAvatarPreview(URL.createObjectURL(file));
-            }
           }}
         />
 
@@ -159,7 +171,7 @@ export const EditProfileForm = ({
             className="rounded-md bg-primary px-4 py-2 text-body text-primary-foreground hover:bg-primary-40"
           >
             {loading ? "Updating..." : "Update profile"}
-          </Button>
+          </button>
         </div>
       </div>
     </div>
