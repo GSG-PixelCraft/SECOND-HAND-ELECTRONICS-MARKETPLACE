@@ -1,6 +1,6 @@
 import { forwardRef, useEffect, useRef, useState } from "react";
 import type { ChangeEvent } from "react";
-import { Input } from "@/components/ui/Input/input";
+import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import type { CategoryFilterParams } from "@/types/admin";
 

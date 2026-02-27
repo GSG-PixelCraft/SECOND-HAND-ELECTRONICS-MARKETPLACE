@@ -1,6 +1,6 @@
 import { useRef, useState, type ChangeEvent } from "react";
-import { Input } from "@/components/ui/Input/input";
-import { Select } from "@/components/ui/Select/select";
+import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
 import { Button } from "@/components/ui/Button/button";
 import { Image } from "@/components/ui/Image/image";
 import { Upload, ChevronDown } from "lucide-react";
