@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Tabs } from "@/components/ui/Tabs";
+import { Tabs } from "@/components/ui/Tabs/Tabs";
 import { Text } from "@/components/ui/Text/text";
 import { Button } from "@/components/ui/Button/button";
 import { EmptyState } from "@/components/feedback/emptyState/EmptyState";
