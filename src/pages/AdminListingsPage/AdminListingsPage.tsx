@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Tabs } from "@/components/ui/Tabs";
+import { Tabs } from "@/components/ui/Tabs/Tabs";
 import { EmptyState } from "@/components/feedback/emptyState/EmptyState";
 import { FullScreenLoading } from "@/components/feedback/loading/full-screen-loading";
 import { ListingsTableFilters, ShowPagination } from "@/components/admin";
