@@ -23,7 +23,8 @@ export function PhoneVerificationOTPPage() {
   const resendMutation = useSendPhoneOTP();
 
   const phoneNumber = searchParams.get("phone") ?? "";
-  // OTP handled by component; we use onComplete
+  // OTP handled by component; we use onComplete and remount key on resend
+  const [otpKey, setOtpKey] = useState(0);
   const [timer, setTimer] = useState(60);
   const [error, setError] = useState<string | null>(null);
 
@@ -58,7 +59,7 @@ export function PhoneVerificationOTPPage() {
     try {
       await resendMutation.mutateAsync({ otpType: "phone_verification", phoneNumber });
       setTimer(60);
-      setOtp(Array.from({ length: OTP_LENGTH }, () => ""));
+      setOtpKey((k) => k + 1);
       setError(null);
     } catch (err: unknown) {
       const typedError = err as ApiLikeError;
@@ -73,7 +74,7 @@ export function PhoneVerificationOTPPage() {
         <p className="mt-2 text-sm text-gray-600">We sent a code to {phoneNumber || "your phone"}.</p>
 
         <div className="mt-4">
-          <OTPInput length={OTP_LENGTH} onComplete={handleComplete} />
+          <OTPInput key={otpKey} length={OTP_LENGTH} onComplete={handleComplete} />
         </div>
 
         {error && <p className="mt-2 text-sm text-red-600">{error}</p>}

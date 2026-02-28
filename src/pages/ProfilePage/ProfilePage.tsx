@@ -7,7 +7,6 @@ import { NotificationSettings } from "./NotificationSettings";
 import { LanguageSettings } from "./LanguageSettings";
 import { ChangePassword } from "./ChangePassword";
 import { HelpCenter } from "./HelpCenter";
-import { authService } from "@/services/auth.service";
 import { removeToken } from "@/lib/storage";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { ROUTES } from "@/constants/routes";

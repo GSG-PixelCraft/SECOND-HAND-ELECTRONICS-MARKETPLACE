@@ -13,7 +13,6 @@ import type { ApiResponse, VerifyCodeResponse } from "./auth.service";
 import { profileService } from "./profile.service";
 import { getUser, getToken } from "@/lib/storage";
 
-type VerificationOtpType = "email_verification" | "phone_verification";
 const IDENTITY_PENDING_KEY = "identity_verification_pending";
 
 // ============================================================================
