@@ -27,6 +27,7 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
+        // Backend endpoints are rooted at '/'; remove '/api' prefix in dev
         target: "https://gsg-project-group-6.onrender.com",
         changeOrigin: true,
         secure: true,

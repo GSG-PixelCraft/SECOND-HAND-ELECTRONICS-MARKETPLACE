@@ -2,6 +2,7 @@ import { createBrowserRouter } from "react-router-dom";
 import { FullScreenLoading } from "@/components/feedback/loading/full-screen-loading";
 import { AppLayout } from "@/components/layout/appLayout/app-layout";
 import UnexpectedErrorPage from "@/pages/UnexpectedPage/UnexpectedPage";
+import { AuthGuard } from "@/routes/guards";
 
 const routeHydrateFallback = <FullScreenLoading />;
 
@@ -114,7 +115,11 @@ const protectedRoutes = [
     lazy: async () => {
       const { default: ProfilePage } =
         await import("@/pages/ProfilePage/ProfilePage");
-      return { Component: ProfilePage };
+      return { Component: () => (
+        <AuthGuard>
+          <ProfilePage />
+        </AuthGuard>
+      ) };
     },
   },
   {
@@ -122,7 +127,11 @@ const protectedRoutes = [
     lazy: async () => {
       const { default: VerifyPage } =
         await import("@/pages/VerifyPage/VerifyPage");
-      return { Component: VerifyPage };
+      return { Component: () => (
+        <AuthGuard>
+          <VerifyPage />
+        </AuthGuard>
+      ) };
     },
   },
   {
@@ -130,7 +139,11 @@ const protectedRoutes = [
     lazy: async () => {
       const { PhoneVerificationPage } =
         await import("@/pages/PhoneVerificationPage/PhoneVerificationPage");
-      return { Component: PhoneVerificationPage };
+      return { Component: () => (
+        <AuthGuard>
+          <PhoneVerificationPage />
+        </AuthGuard>
+      ) };
     },
   },
   {
@@ -138,7 +151,11 @@ const protectedRoutes = [
     lazy: async () => {
       const { PhoneVerificationOTPPage } =
         await import("@/pages/PhoneVerificationPage/PhoneVerificationOTPPage");
-      return { Component: PhoneVerificationOTPPage };
+      return { Component: () => (
+        <AuthGuard>
+          <PhoneVerificationOTPPage />
+        </AuthGuard>
+      ) };
     },
   },
   {
@@ -146,7 +163,11 @@ const protectedRoutes = [
     lazy: async () => {
       const { EmailVerificationPage } =
         await import("@/pages/EmailVerificationPage/EmailVerificationPage");
-      return { Component: EmailVerificationPage };
+      return { Component: () => (
+        <AuthGuard>
+          <EmailVerificationPage />
+        </AuthGuard>
+      ) };
     },
   },
 

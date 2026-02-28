@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import PageLayout from "@/components/layout/PageLayout/PageLayout";
 import { ROUTES } from "@/constants/routes";
 import { useSendPhoneOTP } from "@/services";
+import { getToken } from "@/lib/storage";
 
 type ApiLikeError = {
   response?: { status?: number };
@@ -21,10 +22,17 @@ export function PhoneVerificationPage() {
       setError("Please enter your phone number.");
       return;
     }
+    if (!getToken()) {
+      setError("Please sign in first to send a verification code.");
+      return;
+    }
     setError(null);
 
     try {
-      await sendPhoneOtp.mutateAsync({ otpType: "phone_verification" });
+      await sendPhoneOtp.mutateAsync({
+        otpType: "phone_verification",
+        phoneNumber: phoneNumber.trim(),
+      });
       navigate(
         `${ROUTES.VERIFY_PHONE_OTP}?phone=${encodeURIComponent(phoneNumber.trim())}`,
       );

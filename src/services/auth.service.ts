@@ -84,10 +84,10 @@ export const authService = {
     api.post<ApiResponse<{ token: string }>>(API_ENDPOINTS.AUTH.REFRESH),
 
   getProfile: (): Promise<ApiResponse<User>> =>
-    api.get<ApiResponse<User>>("/auth/profile"),
+    api.get<ApiResponse<User>>("/profile"),
 
   updateProfile: (data: Partial<User>): Promise<ApiResponse<User>> =>
-    api.put<ApiResponse<User>>("/auth/profile", data),
+    api.put<ApiResponse<User>>("/profile", data),
 
   sendVerificationCode: (
     payload: VerificationCodeRequest,

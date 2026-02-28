@@ -1,7 +1,7 @@
 // Axios HTTP client setup
 import axios from "axios";
 import type { AxiosInstance, AxiosRequestConfig, AxiosError } from "axios";
-import { getToken, removeToken } from "@/lib/storage";
+import { getToken } from "@/lib/storage";
 import { apiConfig } from "@/config";
 
 // Create axios instance
@@ -27,10 +27,7 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   (response) => response.data, // Return just the data
   async (error: AxiosError) => {
-    if (error.response?.status === 401) {
-      removeToken();
-      // window.location.href = "/signin";
-    }
+    // Do not auto-logout on 401; allow UI to handle flows (e.g., unverified users)
     return Promise.reject(error);
   },
 );
