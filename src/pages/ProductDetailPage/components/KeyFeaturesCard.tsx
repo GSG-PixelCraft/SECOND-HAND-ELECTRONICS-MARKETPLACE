@@ -1,4 +1,4 @@
-import { Card, CardContent } from "@/components/ui/Card";
+import { Card, CardContent } from "@/components/ui/Card/Card";
 import { Span } from "@/components/ui/Span/span";
 
 interface FeatureItem {

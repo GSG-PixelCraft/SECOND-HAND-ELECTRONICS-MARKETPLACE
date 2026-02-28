@@ -207,71 +207,7 @@ const endOfDay = (date: Date) =>
     999,
   );
 
-const resolveDateBounds = (params: VerificationFilterParams) => {
-  const todayStart = startOfDay(new Date());
-
-  if (params.datePreset === "all") {
-    return { start: null as Date | null, end: null as Date | null };
-  }
-
-  if (params.datePreset === "today") {
-    return { start: todayStart, end: endOfDay(todayStart) };
-  }
-
-  if (params.datePreset === "yesterday") {
-    const yesterday = addDays(todayStart, -1);
-    return { start: yesterday, end: endOfDay(yesterday) };
-  }
-
-  if (params.datePreset === "last7") {
-    return { start: addDays(todayStart, -6), end: endOfDay(todayStart) };
-  }
-
-  if (params.datePreset === "last30") {
-    return { start: addDays(todayStart, -29), end: endOfDay(todayStart) };
-  }
-
-  const parsedStart = parseLocalDate(params.startDate);
-  const parsedEnd = parseLocalDate(params.endDate);
-
-  if (params.datePreset === "custom" || parsedStart || parsedEnd) {
-    if (
-      parsedStart &&
-      parsedEnd &&
-      parsedStart.getTime() > parsedEnd.getTime()
-    ) {
-      return {
-        start: startOfDay(parsedEnd),
-        end: endOfDay(parsedStart),
-      };
-    }
-
-    return {
-      start: parsedStart ? startOfDay(parsedStart) : null,
-      end: parsedEnd ? endOfDay(parsedEnd) : null,
-    };
-  }
-
-  return { start: null as Date | null, end: null as Date | null };
-};
-
-const isWithinDateBounds = (
-  dateValue: string,
-  bounds: { start: Date | null; end: Date | null },
-) => {
-  if (!bounds.start && !bounds.end) return true;
-
-  const parsedLocalDate = parseLocalDate(dateValue);
-  const date = parsedLocalDate
-    ? startOfDay(parsedLocalDate)
-    : new Date(dateValue);
-  if (Number.isNaN(date.getTime())) return false;
-
-  if (bounds.start && date.getTime() < bounds.start.getTime()) return false;
-  if (bounds.end && date.getTime() > bounds.end.getTime()) return false;
-
-  return true;
-};
+// Note: date-bound helpers removed due to no usage; add when needed
 
 export const adminVerificationService = {
   // Get paginated verifications list

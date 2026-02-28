@@ -4,7 +4,7 @@ import { X, AlertTriangle, ShieldCheck } from "lucide-react";
 import { Dialog } from "@/components/ui/Dialog/dialog";
 import { Text } from "@/components/ui/Text/text";
 import { Button } from "@/components/ui/Button/button";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Checkbox } from "@/components/ui/Checkbox/checkbox";
 import { Textarea } from "@/components/ui/Textarea/textarea";
 import { ROUTES } from "@/constants/routes";
 

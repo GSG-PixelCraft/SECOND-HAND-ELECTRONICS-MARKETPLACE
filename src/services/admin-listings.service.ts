@@ -159,90 +159,6 @@ const generateMockListings = (): AdminListing[] => {
 // In-memory mock data store
 let mockListings = generateMockListings();
 
-// Helper function to filter and paginate listings
-const filterListings = (
-  params: ListingFilterParams = {},
-): PaginatedListingsResponse => {
-  let filtered = [...mockListings];
-
-  // Filter by status
-  if (params.status && params.status !== "all") {
-    filtered = filtered.filter((listing) => listing.status === params.status);
-  }
-
-  // Filter by search (name, description, seller)
-  if (params.search) {
-    const searchLower = params.search.toLowerCase();
-    filtered = filtered.filter(
-      (listing) =>
-        listing.name.toLowerCase().includes(searchLower) ||
-        listing.description.toLowerCase().includes(searchLower) ||
-        listing.seller.toLowerCase().includes(searchLower),
-    );
-  }
-
-  // Filter by category
-  if (params.category) {
-    filtered = filtered.filter(
-      (listing) => listing.category === params.category,
-    );
-  }
-
-  // Filter by price range
-  if (params.minPrice !== undefined) {
-    filtered = filtered.filter((listing) => listing.price >= params.minPrice!);
-  }
-  if (params.maxPrice !== undefined) {
-    filtered = filtered.filter((listing) => listing.price <= params.maxPrice!);
-  }
-
-  // Filter by date range
-  if (params.startDate) {
-    filtered = filtered.filter(
-      (listing) => new Date(listing.createdAt) >= new Date(params.startDate!),
-    );
-  }
-  if (params.endDate) {
-    filtered = filtered.filter(
-      (listing) => new Date(listing.createdAt) <= new Date(params.endDate!),
-    );
-  }
-
-  // Sort
-  const sortBy = params.sortBy || "createdAt";
-  const sortOrder = params.sortOrder || "desc";
-  filtered.sort((a, b) => {
-    let aVal: string | number = a[sortBy];
-    let bVal: string | number = b[sortBy];
-
-    if (sortBy === "createdAt" || sortBy === "updatedAt") {
-      aVal = new Date(aVal as string).getTime();
-      bVal = new Date(bVal as string).getTime();
-    }
-
-    if (sortOrder === "asc") {
-      return aVal > bVal ? 1 : -1;
-    } else {
-      return aVal < bVal ? 1 : -1;
-    }
-  });
-
-  // Paginate
-  const page = params.page || 1;
-  const limit = params.limit || 10;
-  const startIndex = (page - 1) * limit;
-  const endIndex = startIndex + limit;
-  const paginatedItems = filtered.slice(startIndex, endIndex);
-
-  return {
-    items: paginatedItems,
-    total: filtered.length,
-    page,
-    totalPages: Math.ceil(filtered.length / limit),
-    limit,
-  };
-};
-
 // Simulate API delay
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -495,3 +411,5 @@ export const useBulkActionMutation = () => {
     },
   });
 };
+
+

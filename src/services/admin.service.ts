@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
 import type {
-  AdminDashboardData,
   DashboardStats,
   RevenueData,
   CategoryData,
