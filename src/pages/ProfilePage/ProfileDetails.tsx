@@ -31,7 +31,7 @@ export default function ProfileDetails() {
   const user = useAuthStore((state) => state.user);
   const verificationStore = useAuthStore((state) => state.verification);
   const setVerification = useAuthStore((state) => state.setVerification);
-  const setUser = useAuthStore((state) => state.setUser);
+  // const setUser = useAuthStore((state) => state.setUser);
 
   const [isEditing, setIsEditing] = React.useState(false);
   const [showIdentityModal, setShowIdentityModal] = React.useState(false);
@@ -97,14 +97,14 @@ export default function ProfileDetails() {
   });
 
   const handleProfileSubmit = async (payload: {
-    fullName: string;
-    email: string;
-    phoneNumber: string;
-    country: string;
+    fullName?: string;
+    email?: string;
+    phoneNumber?: string;
+    country?: string;
     avatarFile?: File | null;
   }) => {
     await updateProfileMutation.mutateAsync({
-      location: payload.country,
+      location: payload.country ?? "",
       avatarFile: payload.avatarFile ?? null,
     });
     setIsEditing(false);
@@ -202,4 +202,3 @@ export default function ProfileDetails() {
     </div>
   );
 }
-
