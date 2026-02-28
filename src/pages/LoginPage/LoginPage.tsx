@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
 import { useAuthStore } from "@/stores/useAuthStore";
 import AuthHeader from "@/components/layout/AuthHeader/AuthHeader";
 import { authService } from "@/services/auth.service";
+import { profileService } from "@/services/profile.service";
 import type { AxiosError } from "axios";
 
 interface Country {
@@ -43,6 +44,8 @@ const COUNTRIES_FALLBACK: Country[] = [
 
 const LoginPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const fromPath = (location.state as { from?: string } | null)?.from;
   const { setUser, setToken } = useAuthStore();
   const [emailOrPhone, setEmailOrPhone] = useState("");
   const [password, setPassword] = useState("");
@@ -172,7 +175,23 @@ const LoginPage = () => {
         identityVerified:
           safeUser.isIdentityVerified ?? safeUser.identityVerified,
       });
-      navigate(ROUTES.PROFILE);
+      // Ensure profile exists (server upserts on PATCH /profile)
+      try {
+        await profileService.updateProfile({});
+      } catch {
+        // ignore; if backend rejects empty form, page will still handle 404 gracefully
+      }
+      const isEmailVerified = Boolean(
+        safeUser.isEmailVerified ?? safeUser.emailVerified,
+      );
+      const isPhoneVerified = Boolean(
+        safeUser.isPhoneVerified ?? safeUser.phoneVerified,
+      );
+      if (!isEmailVerified || !isPhoneVerified) {
+        navigate(ROUTES.VERIFY);
+      } else {
+        navigate(fromPath || ROUTES.PROFILE);
+      }
     } catch (error) {
       const apiError = error as AxiosError<{ message?: string }>;
       setSubmitError(

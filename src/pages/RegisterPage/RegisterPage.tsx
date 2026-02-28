@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
 import { useAuthStore } from "@/stores/useAuthStore";
 import AuthHeader from "@/components/layout/AuthHeader/AuthHeader";
 import { authService } from "@/services/auth.service";
+import { profileService } from "@/services/profile.service";
 import type { AxiosError } from "axios";
 
 // TODO: update feilds rules and validation based on backend requirements
@@ -44,6 +45,8 @@ const COUNTRIES_FALLBACK: Country[] = [
 
 const RegisterPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const fromPath = (location.state as { from?: string } | null)?.from;
   const { setUser, setToken } = useAuthStore();
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -194,7 +197,23 @@ const RegisterPage = () => {
         identityVerified:
           safeUser.isIdentityVerified ?? safeUser.identityVerified,
       });
-      navigate(ROUTES.PROFILE);
+      // Ensure profile exists after registration
+      try {
+        await profileService.updateProfile({});
+      } catch {
+        // ignore failures; UI handles empty profile
+      }
+      const isEmailVerified = Boolean(
+        safeUser.isEmailVerified ?? safeUser.emailVerified,
+      );
+      const isPhoneVerified = Boolean(
+        safeUser.isPhoneVerified ?? safeUser.phoneVerified,
+      );
+      if (!isEmailVerified || !isPhoneVerified) {
+        navigate(ROUTES.VERIFY);
+      } else {
+        navigate(fromPath || ROUTES.PROFILE);
+      }
     } catch (error) {
       const apiError = error as AxiosError<{ message?: string }>;
       setSubmitError(

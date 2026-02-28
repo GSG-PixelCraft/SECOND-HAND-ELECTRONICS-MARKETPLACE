@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "./client";
+import { getToken } from "@/lib/storage";
 import { API_ENDPOINTS } from "@/constants/api-endpoints";
 
 export interface ProfileData {
@@ -60,17 +61,26 @@ const unwrapResponse = <T extends object>(
 
 export const profileService = {
   getProfile: async (): Promise<ProfileData> => {
-    const response = await api.get<ProfileData | ApiEnvelope<ProfileData>>(
-      API_ENDPOINTS.PROFILE.CURRENT,
-    );
-    return unwrapResponse(response) as ProfileData;
+    try {
+      const response = await api.get<ProfileData | ApiEnvelope<ProfileData>>(
+        API_ENDPOINTS.PROFILE.CURRENT,
+      );
+      return unwrapResponse(response) as ProfileData;
+    } catch (err: unknown) {
+      const e = err as { response?: { status?: number } };
+      if (e?.response?.status === 404 || e?.response?.status === 401) {
+        // Treat 404 as "no profile yet" and return an empty object
+        return {} as ProfileData;
+      }
+      throw err;
+    }
   },
 
   updateProfile: async (
     payload: UpdateProfilePayload,
   ): Promise<ProfileData> => {
     const formData = new FormData();
-    const bio = payload.bio ?? payload.fullName;
+    const bio = payload.bio; // do not map fullName -> bio; align with Swagger
     const location = payload.location ?? payload.country;
 
     if (bio !== undefined) {
@@ -116,6 +126,8 @@ export const useProfile = () => {
     queryKey: PROFILE_KEYS.current(),
     queryFn: profileService.getProfile,
     staleTime: 60 * 1000,
+    retry: false,
+    enabled: Boolean(getToken()),
   });
 };
 

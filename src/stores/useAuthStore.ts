@@ -9,8 +9,8 @@ import {
   getUser,
   removeToken,
   removeUser,
-  setToken,
-  setUser,
+  setToken as persistToken,
+  setUser as persistUser,
 } from "@/lib/storage";
 import type { User, VerificationState } from "../types";
 
@@ -46,7 +46,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   setUser: (user: User | null) => {
     set({ user });
     if (user) {
-      setUser(user);
+      persistUser(user);
     } else {
       removeUser();
     }
@@ -54,7 +54,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   setToken: (token: string | null) => {
     set({ token });
     if (token) {
-      setToken(token);
+      persistToken(token);
     } else {
       removeToken();
     }
