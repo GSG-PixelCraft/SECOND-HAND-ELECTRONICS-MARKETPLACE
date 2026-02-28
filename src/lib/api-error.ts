@@ -1,21 +1,27 @@
 export const getBackendErrorMessage = (error: unknown): string | null => {
-  if (
-    typeof error === "object" &&
-    error !== null &&
-    "response" in error &&
-    typeof (error as { response?: unknown }).response === "object" &&
-    (error as { response?: unknown }).response !== null
-  ) {
-    const response = (error as { response: { data?: unknown } }).response;
+  try {
+    // Axios-style error: error.response.data.message
     if (
-      "data" in response &&
-      response.data &&
-      typeof response.data === "object" &&
-      "message" in response.data &&
-      typeof (response.data as { message?: unknown }).message === "string"
+      error &&
+      typeof error === "object" &&
+      "response" in error &&
+      (error as any).response &&
+      typeof (error as any).response === "object" &&
+      "data" in (error as any).response &&
+      (error as any).response.data &&
+      typeof (error as any).response.data === "object" &&
+      "message" in (error as any).response.data &&
+      typeof (error as any).response.data.message === "string"
     ) {
-      return (response.data as { message: string }).message;
+      return (error as any).response.data.message as string;
     }
+
+    // Fallback to plain Error.message
+    if (error instanceof Error && typeof error.message === "string") {
+      return error.message;
+    }
+  } catch {
+    // ignore parsing errors
   }
   return null;
 };

@@ -1,2 +1,7 @@
-export { ContactVerificationModal } from "./ContactVerificationModal";
-export { IdentityVerificationModal } from "./IdentityVerificationModal";
+export {
+  ContactVerificationModal,
+  IdentityVerificationModal,
+  VerificationOverlay,
+  OtpInputGroup,
+} from './ContactVerificationModal';
+

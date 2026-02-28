@@ -1,6 +1,6 @@
 import { useState } from "react";
 import PageLayout from "@/components/layout/PageLayout/PageLayout";
-import { Input } from "@/components/ui/input";
+import { Input } from "@/components/ui/Input/input";
 import { Text } from "@/components/ui/Text/text";
 import { Button } from "@/components/ui/Button/button";
 import { Span } from "@/components/ui/Span/span";

@@ -104,10 +104,7 @@ export const usePhoneVerificationFlow = ({
   const requestCode = useCallback(async () => {
     if (!ensurePhonePresent()) return;
     try {
-      await sendMutation.mutateAsync({
-        otpType: "phone_verification",
-        phoneNumber: formattedPhone,
-      });
+      await sendMutation.mutateAsync({ otpType: "phone_verification" });
       setStep("otp");
       setOtp(createEmptyOtp());
     } catch (error) {
@@ -152,6 +149,7 @@ export const usePhoneVerificationFlow = ({
 
   const startChange = useCallback(() => {
     setStep("change");
+    setOtp(createEmptyOtp());
     setError(null);
   }, []);
 
@@ -227,10 +225,7 @@ export const useEmailVerificationFlow = ({
   const requestCode = useCallback(async () => {
     if (!ensureEmailPresent()) return;
     try {
-      await sendMutation.mutateAsync({
-        otpType: "email_verification",
-        email: formattedEmail,
-      });
+      await sendMutation.mutateAsync({ otpType: "email_verification" });
       setStep("otp");
       setOtp(createEmptyOtp());
     } catch (error) {
@@ -292,3 +287,4 @@ export const useEmailVerificationFlow = ({
     isVerifying: verifyMutation.isPending,
   };
 };
+

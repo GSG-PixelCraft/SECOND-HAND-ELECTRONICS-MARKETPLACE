@@ -20,18 +20,13 @@ export const TrustIndicators = ({
   onSelect,
 }: TrustIndicatorsProps) => (
   <section className="rounded-lg border border-neutral-20 bg-white p-5">
-    <p className="mb-1 font-semibold text-neutral-foreground">
-      Trust indicators
-    </p>
+    <p className="mb-1 font-semibold text-neutral-foreground">Trust indicators</p>
     <p className="mb-4 text-caption text-muted-foreground">
       Verify your identity, mobile and email to get a verified badge.
     </p>
     {isLoading && (
-      <p className="mb-2 text-xs text-muted-foreground">
-        Checking verification status...
-      </p>
+      <p className="mb-2 text-xs text-muted-foreground">Checking verification status...</p>
     )}
-
     <div className="grid grid-cols-3 gap-4">
       {items.map((item) => {
         const Icon = item.icon;
@@ -46,14 +41,9 @@ export const TrustIndicators = ({
             }`}
           >
             <Icon className="text-primary" />
-            <span className="text-caption text-neutral-foreground">
-              {item.label}
-            </span>
+            <span className="text-caption text-neutral-foreground">{item.label}</span>
             {item.verified && (
-              <CheckCircle
-                size={16}
-                className="absolute -right-2 -top-2 text-success"
-              />
+              <CheckCircle size={16} className="absolute -right-2 -top-2 text-success" />
             )}
           </button>
         );
@@ -61,4 +51,3 @@ export const TrustIndicators = ({
     </div>
   </section>
 );
-

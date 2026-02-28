@@ -32,7 +32,6 @@ export default function ProfileDetails() {
   const user = useAuthStore((state) => state.user);
   const verificationStore = useAuthStore((state) => state.verification);
   const setVerification = useAuthStore((state) => state.setVerification);
-  // const setUser = useAuthStore((state) => state.setUser);
 
   const [isEditing, setIsEditing] = React.useState(false);
   const [showIdentityModal, setShowIdentityModal] = React.useState(false);
@@ -53,10 +52,9 @@ export default function ProfileDetails() {
 
   const verification = verificationStatus ?? verificationStore;
 
-  const displayName = profileData?.fullName || profileData?.name || user?.name;
+  const displayName = profileData?.fullName || profileData?.name || user?.name || "-";
   const displayCountry = profileData?.country || profileData?.location || "-";
-  const displayAvatar =
-    profileData?.profileImageUrl || profileData?.avatarUrl || user?.avatar;
+  const displayAvatar = profileData?.profileImageUrl || profileData?.avatarUrl || user?.avatar;
   const memberSince = formatMemberSince(profileData?.createdAt);
 
   const handlePhoneVerified = React.useCallback(
@@ -120,8 +118,7 @@ export default function ProfileDetails() {
     return (
       <EditProfileForm
         initialValues={{
-          fullName:
-            profileData?.fullName || profileData?.name || user?.name || "",
+          fullName: profileData?.fullName || profileData?.name || user?.name || "",
           email: profileData?.email || user?.email || "",
           phoneNumber: profileData?.phoneNumber || user?.phoneNumber || "",
           country: (profileData?.country || profileData?.location || "") as string,
@@ -137,7 +134,7 @@ export default function ProfileDetails() {
   return (
     <div className="flex flex-col gap-6">
       <ProfileHero
-        name={displayName || "-"}
+        name={displayName}
         country={displayCountry}
         memberSince={memberSince}
         avatar={displayAvatar}
@@ -151,19 +148,19 @@ export default function ProfileDetails() {
         isLoading={isVerificationLoading}
         items={[
           {
-            key: "phone",
+            key: "phone" as const,
             label: "Verified Phone",
             icon: Smartphone,
             verified: verification.phone.status === "verified",
           },
           {
-            key: "identity",
+            key: "identity" as const,
             label: "Verified Identity",
             icon: IdCard,
             verified: verification.identity.status === "approved",
           },
           {
-            key: "email",
+            key: "email" as const,
             label: "Verified Email",
             icon: Mail,
             verified: verification.email.status === "verified",
@@ -199,3 +196,4 @@ export default function ProfileDetails() {
     </div>
   );
 }
+
