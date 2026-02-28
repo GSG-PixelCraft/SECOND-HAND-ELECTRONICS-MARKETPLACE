@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { MoreHorizontal } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/Card";
+import { Card, CardContent } from "@/components/ui/Card/Card";
 import { Button } from "@/components/ui/Button/button";
 import { Image } from "@/components/ui/Image/image";
 import { Text } from "@/components/ui/Text/text";
