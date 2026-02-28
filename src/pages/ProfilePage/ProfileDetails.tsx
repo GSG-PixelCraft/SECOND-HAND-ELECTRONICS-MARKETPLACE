@@ -2,6 +2,7 @@ import * as React from "react";
 import { useNavigate } from "react-router-dom";
 import { IdCard, Mail, Smartphone } from "lucide-react";
 import { EditProfileForm } from "./EditProfileForm";
+import type { EditProfileSubmitPayload } from "./EditProfileForm";
 import { ROUTES } from "@/constants/routes";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useProfile, useUpdateProfile } from "@/services/profile.service";
@@ -96,16 +97,12 @@ export default function ProfileDetails() {
     onVerified: handleEmailVerified,
   });
 
-  const handleProfileSubmit = async (payload: {
-    fullName?: string;
-    email?: string;
-    phoneNumber?: string;
-    country?: string;
-    avatarFile?: File | null;
-  }) => {
+  const handleProfileSubmit = async (
+    payload: EditProfileSubmitPayload,
+  ) => {
     await updateProfileMutation.mutateAsync({
       location: payload.country ?? "",
-      avatarFile: payload.avatarFile ?? null,
+      avatarFile: payload.avatar ?? null,
     });
     setIsEditing(false);
   };
