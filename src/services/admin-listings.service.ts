@@ -9,6 +9,7 @@ import type {
   PaginatedListingsResponse,
   RejectListingData,
 } from "@/types/admin";
+import apiClient from "./client";
 
 // ============================================================================
 // Section 1: Types (Re-exported from types/admin.ts)
@@ -251,10 +252,53 @@ export const adminListingsService = {
   getListings: async (
     params?: ListingFilterParams,
   ): Promise<PaginatedListingsResponse> => {
-    await delay(500); // Simulate network delay
-    return filterListings(params);
-  },
+    const response = await apiClient.get("/admin/products", {
+      params: {
+        page: params?.page,
+        limit: params?.limit,
+        status: params?.status !== "all" ? params?.status : undefined,
+        search: params?.search,
+        startDate: params?.startDate,
+        endDate: params?.endDate,
+        sortBy: params?.sortBy,
+        sortOrder: params?.sortOrder,
+      },
+    });
 
+    const backend = response.data.data;
+
+    return {
+      items: backend.data.map((product: any) => ({
+        id: product.id,
+
+        // RecentProduct fields
+        name: product.title,
+        price: product.price,
+        category: product.category?.name || "",
+        condition: product.condition,
+        seller: product.sellerId,
+        status: product.status,
+        createdAt: product.createdAt,
+        image: product.images?.[0],
+
+        // AdminListing fields
+        description: "",
+        images: product.images?.map((img: any) => img.url) || [],
+        sellerId: product.sellerId,
+        sellerName: "",
+        sellerEmail: "",
+        sellerAvatar: undefined,
+        views: product.viewCount ?? 0,
+        favorites: 0,
+        updatedAt: product.updatedAt,
+      })),
+
+      total: backend.total,
+      page: backend.page,
+      totalPages: backend.totalPages,
+      limit: backend.limit,
+    };
+  },
   // Get single listing by ID
   getListingById: async (id: string): Promise<AdminListing> => {
     await delay(300);

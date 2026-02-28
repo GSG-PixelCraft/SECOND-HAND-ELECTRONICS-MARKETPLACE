@@ -9,6 +9,8 @@ import type {
   RecentProduct,
   RecentOrder,
 } from "@/types/admin";
+import apiClient from "./client";
+import { API_ENDPOINTS } from "@/constants/api-endpoints";
 
 // ============================================================================
 // Mock Data for Development (Remove when backend is ready)
@@ -197,22 +199,18 @@ const mockRecentOrders: RecentOrder[] = [
 // ============================================================================
 
 export const adminService = {
-  getDashboard: async (): Promise<AdminDashboardData> => {
-    // TODO: Replace with actual API call when backend is ready
-    // return api.get<AdminDashboardData>(API_ENDPOINTS.ADMIN.DASHBOARD);
+  getDashboard: async (): Promise<DashboardStats> => {
+    try {
+      const response = await apiClient.get<DashboardStats>(
+        API_ENDPOINTS.ADMIN.DASHBOARD,
+      );
 
-    // Simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    return {
-      stats: mockStats,
-      revenueChart: mockRevenueChart,
-      categoryChart: mockCategoryChart,
-      userActivityChart: mockUserActivityChart,
-      recentUsers: mockRecentUsers,
-      recentProducts: mockRecentProducts,
-      recentOrders: mockRecentOrders,
-    };
+      return response.data;
+    } catch (error) {
+      // Temporary fallback until backend API is ready
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      return mockStats;
+    }
   },
 
   getStats: async (): Promise<DashboardStats> => {
