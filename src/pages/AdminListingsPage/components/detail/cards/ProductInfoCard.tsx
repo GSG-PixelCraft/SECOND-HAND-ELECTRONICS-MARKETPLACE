@@ -1,7 +1,7 @@
 import { forwardRef } from "react";
 import { Clock } from "lucide-react";
-import { Text } from "@/components/ui/text";
-import { Span } from "@/components/ui/span";
+import { Text } from "@/components/ui/Text/text";
+import { Span } from "@/components/ui/Span/span";
 import { formatRelativeTime } from "@/lib/listing-utils";
 import type { AdminListing } from "@/types/admin";
 

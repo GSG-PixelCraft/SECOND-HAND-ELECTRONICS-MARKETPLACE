@@ -1,4 +1,4 @@
-import { Span } from "@/components/ui/span";
+import { Span } from "@/components/ui/Span/span";
 
 interface CartSummaryProps {
   subtotal: number;

@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
-import { Text } from "@/components/ui/text";
+import { Text } from "@/components/ui/Text/text";
 
 const OrdersPage = () => {
   const demoOrders = ["o-1001", "o-1002"];

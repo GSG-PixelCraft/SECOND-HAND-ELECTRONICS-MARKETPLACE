@@ -1,6 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import { FullScreenLoading } from "@/components/feedback/loading/full-screen-loading";
-import { AppLayout } from "@/components/layout/app-layout";
+import { AppLayout } from "@/components/layout/appLayout/app-layout";
 import UnexpectedErrorPage from "@/pages/UnexpectedPage/UnexpectedPage";
 
 const routeHydrateFallback = <FullScreenLoading />;
@@ -41,14 +41,6 @@ const publicRoutes = [
 ];
 
 const publicSimpleRoutes = [
-  {
-    path: "/test-identity-verification",
-    lazy: async () => {
-      const { default: IdentityVerificationSelectPage } =
-        await import("@/pages/IdentityVerificationPage/IdentityVerificationSelectPage");
-      return { Component: IdentityVerificationSelectPage };
-    },
-  },
   {
     path: "/forgot-password/email",
     lazy: async () => {
@@ -125,6 +117,38 @@ const protectedRoutes = [
       return { Component: ProfilePage };
     },
   },
+  {
+    path: "/verify",
+    lazy: async () => {
+      const { default: VerifyPage } =
+        await import("@/pages/VerifyPage/VerifyPage");
+      return { Component: VerifyPage };
+    },
+  },
+  {
+    path: "/verify/phone",
+    lazy: async () => {
+      const { PhoneVerificationPage } =
+        await import("@/pages/PhoneVerificationPage/PhoneVerificationPage");
+      return { Component: PhoneVerificationPage };
+    },
+  },
+  {
+    path: "/verify/phone/otp",
+    lazy: async () => {
+      const { PhoneVerificationOTPPage } =
+        await import("@/pages/PhoneVerificationPage/PhoneVerificationOTPPage");
+      return { Component: PhoneVerificationOTPPage };
+    },
+  },
+  {
+    path: "/verify/email",
+    lazy: async () => {
+      const { EmailVerificationPage } =
+        await import("@/pages/EmailVerificationPage/EmailVerificationPage");
+      return { Component: EmailVerificationPage };
+    },
+  },
 
   {
     path: "/verify/identity",
@@ -132,6 +156,14 @@ const protectedRoutes = [
       const { default: IdentityVerificationSelectPage } =
         await import("@/pages/IdentityVerificationPage/IdentityVerificationSelectPage");
       return { Component: IdentityVerificationSelectPage };
+    },
+  },
+  {
+    path: "/verify/identity/status",
+    lazy: async () => {
+      const { IdentityVerificationStatusPage } =
+        await import("@/pages/IdentityVerificationPage");
+      return { Component: IdentityVerificationStatusPage };
     },
   },
 
@@ -225,7 +257,7 @@ export const router = createBrowserRouter(
         const [{ default: AdminOverviewPage }, { AdminDashboardLayout }] =
           await Promise.all([
             import("@/pages/AdminOverviewPage/AdminOverviewPage"),
-            import("@/components/layout/AdminDashboardLayout"),
+            import("@/components/layout/adminLayout/AdminDashboardLayout"),
           ]);
         return {
           Component: () => (
@@ -247,7 +279,7 @@ export const router = createBrowserRouter(
           { AdminGuard },
         ] = await Promise.all([
           import("@/pages/AdminListingsPage/AdminListingsPage"),
-          import("@/components/layout/AdminDashboardLayout"),
+          import("@/components/layout/adminLayout/AdminDashboardLayout"),
           import("@/routes/access-control"),
         ]);
         return {
@@ -272,7 +304,7 @@ export const router = createBrowserRouter(
           { AdminGuard },
         ] = await Promise.all([
           import("@/pages/AdminListingsPage/components/detail/AdminListingDetailPage"),
-          import("@/components/layout/AdminDashboardLayout"),
+          import("@/components/layout/adminLayout/AdminDashboardLayout"),
           import("@/routes/access-control"),
         ]);
         return {
@@ -297,7 +329,7 @@ export const router = createBrowserRouter(
           { AdminGuard },
         ] = await Promise.all([
           import("@/pages/AdminReportsPage/AdminReportsPage"),
-          import("@/components/layout/AdminDashboardLayout"),
+          import("@/components/layout/adminLayout/AdminDashboardLayout"),
           import("@/routes/access-control"),
         ]);
         return {
@@ -322,7 +354,7 @@ export const router = createBrowserRouter(
           { AdminGuard },
         ] = await Promise.all([
           import("@/pages/AdminReportsPage/components/detail/AdminReportDetailPage"),
-          import("@/components/layout/AdminDashboardLayout"),
+          import("@/components/layout/adminLayout/AdminDashboardLayout"),
           import("@/routes/access-control"),
         ]);
         return {
@@ -347,7 +379,7 @@ export const router = createBrowserRouter(
           { AdminGuard },
         ] = await Promise.all([
           import("@/pages/AdminCategoriesPage/AdminCategoriesPage"),
-          import("@/components/layout/AdminDashboardLayout"),
+          import("@/components/layout/adminLayout/AdminDashboardLayout"),
           import("@/routes/access-control"),
         ]);
         return {
@@ -372,7 +404,7 @@ export const router = createBrowserRouter(
           { AdminGuard },
         ] = await Promise.all([
           import("@/pages/AdminCategoriesPage/AddCategoryPage"),
-          import("@/components/layout/AdminDashboardLayout"),
+          import("@/components/layout/adminLayout/AdminDashboardLayout"),
           import("@/routes/access-control"),
         ]);
         return {
@@ -397,7 +429,7 @@ export const router = createBrowserRouter(
           { AdminGuard },
         ] = await Promise.all([
           import("@/pages/AdminCategoriesPage/EditCategoryPage"),
-          import("@/components/layout/AdminDashboardLayout"),
+          import("@/components/layout/adminLayout/AdminDashboardLayout"),
           import("@/routes/access-control"),
         ]);
         return {
@@ -422,7 +454,7 @@ export const router = createBrowserRouter(
           { AdminGuard },
         ] = await Promise.all([
           import("@/pages/AdminVerificationQueuePage/AdminVerificationQueuePage"),
-          import("@/components/layout/AdminDashboardLayout"),
+          import("@/components/layout/adminLayout/AdminDashboardLayout"),
           import("@/routes/access-control"),
         ]);
         return {
@@ -447,7 +479,7 @@ export const router = createBrowserRouter(
           { AdminGuard },
         ] = await Promise.all([
           import("@/pages/AdminVerificationQueuePage/components/review/AdminVerificationReviewPage"),
-          import("@/components/layout/AdminDashboardLayout"),
+          import("@/components/layout/adminLayout/AdminDashboardLayout"),
           import("@/routes/access-control"),
         ]);
         return {
@@ -472,7 +504,7 @@ export const router = createBrowserRouter(
           { AdminGuard },
         ] = await Promise.all([
           import("@/pages/AdminUsersPage/AdminUsersPage"),
-          import("@/components/layout/AdminDashboardLayout"),
+          import("@/components/layout/adminLayout/AdminDashboardLayout"),
           import("@/routes/access-control"),
         ]);
         return {
@@ -497,7 +529,7 @@ export const router = createBrowserRouter(
           { AdminGuard },
         ] = await Promise.all([
           import("@/pages/AdminUsersPage/components/detail/AdminUserDetailPage"),
-          import("@/components/layout/AdminDashboardLayout"),
+          import("@/components/layout/adminLayout/AdminDashboardLayout"),
           import("@/routes/access-control"),
         ]);
         return {
@@ -505,6 +537,181 @@ export const router = createBrowserRouter(
             <AdminGuard>
               <AdminDashboardLayout>
                 <AdminUserDetailPage />
+              </AdminDashboardLayout>
+            </AdminGuard>
+          ),
+        };
+      },
+    },
+    {
+      path: "/admin/settings",
+      errorElement: <UnexpectedErrorPage />,
+      hydrateFallbackElement: routeHydrateFallback,
+      lazy: async () => {
+        const [
+          { default: AdminProfileSettingsPage },
+          { AdminDashboardLayout },
+          { AdminGuard },
+        ] = await Promise.all([
+          import("@/pages/AdminSettingsPage/AdminProfileSettingsPage"),
+          import("@/components/layout/adminLayout/AdminDashboardLayout"),
+          import("@/routes/access-control"),
+        ]);
+        return {
+          Component: () => (
+            <AdminGuard>
+              <AdminDashboardLayout>
+                <AdminProfileSettingsPage />
+              </AdminDashboardLayout>
+            </AdminGuard>
+          ),
+        };
+      },
+    },
+    {
+      path: "/admin/settings/profile",
+      errorElement: <UnexpectedErrorPage />,
+      hydrateFallbackElement: routeHydrateFallback,
+      lazy: async () => {
+        const [
+          { default: AdminProfileSettingsPage },
+          { AdminDashboardLayout },
+          { AdminGuard },
+        ] = await Promise.all([
+          import("@/pages/AdminSettingsPage/AdminProfileSettingsPage"),
+          import("@/components/layout/adminLayout/AdminDashboardLayout"),
+          import("@/routes/access-control"),
+        ]);
+        return {
+          Component: () => (
+            <AdminGuard>
+              <AdminDashboardLayout>
+                <AdminProfileSettingsPage />
+              </AdminDashboardLayout>
+            </AdminGuard>
+          ),
+        };
+      },
+    },
+    {
+      path: "/admin/settings/security-login",
+      errorElement: <UnexpectedErrorPage />,
+      hydrateFallbackElement: routeHydrateFallback,
+      lazy: async () => {
+        const [
+          { default: SecurityLoginSettingsPage },
+          { AdminDashboardLayout },
+          { AdminGuard },
+        ] = await Promise.all([
+          import("@/pages/AdminSettingsPage/SecurityLoginSettingsPage"),
+          import("@/components/layout/adminLayout/AdminDashboardLayout"),
+          import("@/routes/access-control"),
+        ]);
+        return {
+          Component: () => (
+            <AdminGuard>
+              <AdminDashboardLayout>
+                <SecurityLoginSettingsPage />
+              </AdminDashboardLayout>
+            </AdminGuard>
+          ),
+        };
+      },
+    },
+    {
+      path: "/admin/settings/notifications",
+      errorElement: <UnexpectedErrorPage />,
+      hydrateFallbackElement: routeHydrateFallback,
+      lazy: async () => {
+        const [
+          { default: NotificationsSettingsPage },
+          { AdminDashboardLayout },
+          { AdminGuard },
+        ] = await Promise.all([
+          import("@/pages/AdminSettingsPage/NotificationsSettingsPage"),
+          import("@/components/layout/adminLayout/AdminDashboardLayout"),
+          import("@/routes/access-control"),
+        ]);
+        return {
+          Component: () => (
+            <AdminGuard>
+              <AdminDashboardLayout>
+                <NotificationsSettingsPage />
+              </AdminDashboardLayout>
+            </AdminGuard>
+          ),
+        };
+      },
+    },
+    {
+      path: "/admin/settings/countries",
+      errorElement: <UnexpectedErrorPage />,
+      hydrateFallbackElement: routeHydrateFallback,
+      lazy: async () => {
+        const [
+          { default: CountriesSettingsPage },
+          { AdminDashboardLayout },
+          { AdminGuard },
+        ] = await Promise.all([
+          import("@/pages/AdminSettingsPage/CountriesSettingsPage"),
+          import("@/components/layout/adminLayout/AdminDashboardLayout"),
+          import("@/routes/access-control"),
+        ]);
+        return {
+          Component: () => (
+            <AdminGuard>
+              <AdminDashboardLayout>
+                <CountriesSettingsPage />
+              </AdminDashboardLayout>
+            </AdminGuard>
+          ),
+        };
+      },
+    },
+    {
+      path: "/admin/settings/currencies",
+      errorElement: <UnexpectedErrorPage />,
+      hydrateFallbackElement: routeHydrateFallback,
+      lazy: async () => {
+        const [
+          { default: CurrenciesSettingsPage },
+          { AdminDashboardLayout },
+          { AdminGuard },
+        ] = await Promise.all([
+          import("@/pages/AdminSettingsPage/CurrenciesSettingsPage"),
+          import("@/components/layout/adminLayout/AdminDashboardLayout"),
+          import("@/routes/access-control"),
+        ]);
+        return {
+          Component: () => (
+            <AdminGuard>
+              <AdminDashboardLayout>
+                <CurrenciesSettingsPage />
+              </AdminDashboardLayout>
+            </AdminGuard>
+          ),
+        };
+      },
+    },
+    {
+      path: "/admin/settings/safety-policies",
+      errorElement: <UnexpectedErrorPage />,
+      hydrateFallbackElement: routeHydrateFallback,
+      lazy: async () => {
+        const [
+          { default: SafetyPoliciesSettingsPage },
+          { AdminDashboardLayout },
+          { AdminGuard },
+        ] = await Promise.all([
+          import("@/pages/AdminSettingsPage/SafetyPoliciesSettingsPage"),
+          import("@/components/layout/adminLayout/AdminDashboardLayout"),
+          import("@/routes/access-control"),
+        ]);
+        return {
+          Component: () => (
+            <AdminGuard>
+              <AdminDashboardLayout>
+                <SafetyPoliciesSettingsPage />
               </AdminDashboardLayout>
             </AdminGuard>
           ),

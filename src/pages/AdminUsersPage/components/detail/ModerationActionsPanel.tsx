@@ -1,6 +1,6 @@
 import { forwardRef, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Text } from "@/components/ui/text";
+import { Button } from "@/components/ui/Button/button";
+import { Text } from "@/components/ui/Text/text";
 import { FullScreenLoading } from "@/components/feedback/loading/full-screen-loading";
 import {
   useWarnUser,

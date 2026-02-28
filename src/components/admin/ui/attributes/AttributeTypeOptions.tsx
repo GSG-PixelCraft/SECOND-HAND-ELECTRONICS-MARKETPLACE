@@ -1,8 +1,8 @@
 import { forwardRef } from "react";
 import type { HTMLAttributes, ReactNode } from "react";
 import { cn } from "@/lib/utils";
-import { Text } from "@/components/ui/text";
-import { Span } from "@/components/ui/span";
+import { Text } from "@/components/ui/Text/text";
+import { Span } from "@/components/ui/Span/span";
 import { Type, Hash, ToggleLeft, List, Calendar } from "lucide-react";
 
 export interface AttributeTypeOption {

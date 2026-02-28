@@ -13,10 +13,10 @@ import type {
   UseFormSetValue,
 } from "react-hook-form";
 import { Info, Plus, X } from "lucide-react";
-import { type PhotoItem } from "@/components/ui/file-upload";
-import { Button } from "@/components/ui/button";
-import { Text } from "@/components/ui/text";
-import { Image } from "@/components/ui/image";
+import { type PhotoItem } from "@/components/ui/FileUpload/file-upload";
+import { Button } from "@/components/ui/Button/button";
+import { Text } from "@/components/ui/Text/text";
+import { Image } from "@/components/ui/Image/image";
 
 interface PhotoItemWithProgress extends PhotoItem {
   uploadProgress?: number;

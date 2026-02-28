@@ -1,13 +1,16 @@
-import { Fragment, useState } from "react";
-import PageLayout from "@/components/layout/PageLayout";
+import * as React from "react";
+import PageLayout from "@/components/layout/PageLayout/PageLayout";
+import { Fragment } from "react";
+import { useNavigate } from "react-router-dom";
 import ProfileDetails from "./ProfileDetails";
 import { NotificationSettings } from "./NotificationSettings";
 import { LanguageSettings } from "./LanguageSettings";
 import { ChangePassword } from "./ChangePassword";
 import { HelpCenter } from "./HelpCenter";
-import { Button } from "@/components/ui/button";
-import { Text } from "@/components/ui/text";
-import { Header } from "@/components/layout/header";
+import { authService } from "@/services/auth.service";
+import { removeToken } from "@/lib/storage";
+import { useAuthStore } from "@/stores/useAuthStore";
+import { ROUTES } from "@/constants/routes";
 
 type Section =
   | "profile"
@@ -18,11 +21,29 @@ type Section =
   | "logout";
 
 const ProfilePage = () => {
-  const [activeSection, setActiveSection] = useState<Section>("profile");
+  const navigate = useNavigate();
+  const clearAuthState = useAuthStore((state) => state.logout);
+  const [activeSection, setActiveSection] = React.useState<Section>("profile");
+  const [isLoggingOut, setIsLoggingOut] = React.useState(false);
+
+  const handleLogout = async () => {
+    if (isLoggingOut) return;
+    setIsLoggingOut(true);
+    try {
+      await authService.logout();
+    } catch {
+      // Clear local auth state even when backend logout fails.
+    } finally {
+      removeToken();
+      clearAuthState();
+      navigate(ROUTES.SIGN_IN);
+      setIsLoggingOut(false);
+    }
+  };
 
   return (
     <Fragment>
-      <Header></Header>
+    
       <PageLayout>
         <h2 className="text-xl font-semibold text-neutral-foreground">
           My profile
@@ -45,18 +66,17 @@ const ProfilePage = () => {
 
                 return (
                   <li key={item.key}>
-                    <Button
+                    <button
                       type="button"
-                      intent={isActive ? "primary" : "ghost"}
                       onClick={() => setActiveSection(item.key)}
                       className={`w-full px-4 py-4 text-left text-body transition-colors ${
                         isActive
-                          ? "font-semibold text-white"
+                          ? "font-semibold text-neutral-foreground"
                           : "text-muted-foreground hover:text-neutral-foreground"
                       }`}
                     >
                       {item.label}
-                    </Button>
+                    </button>
                   </li>
                 );
               })}
@@ -70,18 +90,16 @@ const ProfilePage = () => {
             {activeSection === "password" && <ChangePassword />}
             {activeSection === "help" && <HelpCenter />}
             {activeSection === "logout" && (
-              // TODO: Implement logout confirmation or trigger logout action
               <div className="rounded-lg border border-neutral-20 bg-white p-5">
-                <Text>Are you sure you want to logout?</Text>
-                <Button
+                <p>Are you sure you want to logout?</p>
+                <button
                   type="button"
-                  onClick={() => {
-                    /* Call logout handler */
-                  }}
+                  onClick={handleLogout}
+                  disabled={isLoggingOut}
                   className="mt-4 rounded-md bg-primary px-4 py-2 text-primary-foreground"
                 >
-                  Confirm Logout
-                </Button>
+                  {isLoggingOut ? "Logging out..." : "Confirm Logout"}
+                </button>
               </div>
             )}
           </div>

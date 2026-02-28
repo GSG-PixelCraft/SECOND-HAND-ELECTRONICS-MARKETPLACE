@@ -2,9 +2,9 @@
 import { useMemo } from "react";
 import type { FC, ReactElement } from "react";
 import { useTranslation } from "react-i18next";
-import { Dialog } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Text } from "@/components/ui/text";
+import { Dialog } from "@/components/ui/Dialog/dialog";
+import { Button } from "@/components/ui/Button/button";
+import { Text } from "@/components/ui/Text/text";
 
 interface PhotoTipsDialogProps {
   open: boolean;

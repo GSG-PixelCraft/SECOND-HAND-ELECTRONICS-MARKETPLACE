@@ -1,8 +1,8 @@
 import { forwardRef } from "react";
 import type { HTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
-import { Text } from "@/components/ui/text";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Text } from "@/components/ui/Text/text";
+import { Checkbox } from "@/components/ui/Checkbox/checkbox";
 
 export interface StatusOption {
   value: string;

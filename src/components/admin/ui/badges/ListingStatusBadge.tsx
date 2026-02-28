@@ -1,7 +1,7 @@
 import { forwardRef } from "react";
 import type { HTMLAttributes, ReactNode } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
-import { Span } from "@/components/ui/span";
+import { Span } from "@/components/ui/Span/span";
 import { cn } from "@/lib/utils";
 import type { ListingStatus } from "@/types/admin";
 

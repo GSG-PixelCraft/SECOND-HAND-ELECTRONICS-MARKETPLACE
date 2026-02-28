@@ -2,8 +2,8 @@ import { Link } from "react-router-dom";
 import { useMemo } from "react";
 import { getProductRoute } from "@/constants/routes";
 import { formatPrice } from "@/lib/utils";
-import { Text } from "@/components/ui/text";
-import { Span } from "@/components/ui/span";
+import { Text } from "@/components/ui/Text/text";
+import { Span } from "@/components/ui/Span/span";
 
 interface DemoProduct {
   id: string;

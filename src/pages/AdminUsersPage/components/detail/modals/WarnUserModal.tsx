@@ -1,7 +1,7 @@
 import { useState, forwardRef, useEffect } from "react";
 import { AlertTriangle } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Portal } from "@/components/ui/portal";
+import { Button } from "@/components/ui/Button/button";
+import { Portal } from "@/components/ui/Portal/portal";
 
 export interface WarnUserModalProps {
   isOpen: boolean;
