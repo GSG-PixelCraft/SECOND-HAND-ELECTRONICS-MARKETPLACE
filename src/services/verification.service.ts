@@ -5,23 +5,16 @@ import type {
   DocumentUploadRequest,
   DocumentUploadResponse,
   VerificationStatusResponse,
+  OTPRequest,
+  OTPVerification,
+  User,
 } from "@/types";
 import type { ApiResponse, VerifyCodeResponse } from "./auth.service";
-import type { User } from "@/types";
+import { profileService } from "./profile.service";
+import { getUser, getToken } from "@/lib/storage";
 
 type VerificationOtpType = "email_verification" | "phone_verification";
 const IDENTITY_PENDING_KEY = "identity_verification_pending";
-
-interface SendVerificationCodeRequest {
-  otpType: VerificationOtpType;
-}
-
-interface VerifyVerificationCodeRequest {
-  code: string;
-  type: VerificationOtpType;
-  email?: string;
-  phoneNumber?: string;
-}
 
 // ============================================================================
 // API Functions
@@ -30,37 +23,42 @@ interface VerifyVerificationCodeRequest {
 export const verificationService = {
   // Get overall verification status
   getStatus: async (): Promise<VerificationStatusResponse> => {
-    const me = await api.get<ApiResponse<User>>(API_ENDPOINTS.AUTH.ME);
-    const user = me.data;
-
-    const isEmailVerified = Boolean(user.emailVerified ?? user.isEmailVerified);
-    const isPhoneVerified = Boolean(user.phoneVerified ?? user.isPhoneVerified);
-    const isIdentityVerified = Boolean(
-      user.identityVerified ?? user.isIdentityVerified,
+    // Derive status from stored user flags and profile info
+    const storedUser = (getUser() || {}) as Partial<User> | null;
+    let isEmailVerified = Boolean(storedUser?.emailVerified ?? storedUser?.isEmailVerified);
+    let isPhoneVerified = Boolean(storedUser?.phoneVerified ?? storedUser?.isPhoneVerified);
+    let isIdentityVerified = Boolean(
+      storedUser?.identityVerified ?? storedUser?.isIdentityVerified,
     );
-    const pendingIdentityFlag =
-      sessionStorage.getItem(IDENTITY_PENDING_KEY) === "true";
 
+    // Fetch profile for latest contact values
+    let email: string | null = storedUser?.email ?? null;
+    let phoneNumber: string | null = storedUser?.phoneNumber ?? null;
+    try {
+      const profile = await profileService.getProfile();
+      email = (profile.email as string) ?? email;
+      phoneNumber = (profile.phoneNumber as string) ?? phoneNumber;
+    } catch {
+      // ignore; fallback to stored user
+    }
+
+    const pendingIdentityFlag = sessionStorage.getItem(IDENTITY_PENDING_KEY) === "true";
     if (isIdentityVerified) {
       sessionStorage.removeItem(IDENTITY_PENDING_KEY);
     }
 
     return {
       identity: {
-        status: isIdentityVerified
-          ? "approved"
-          : pendingIdentityFlag
-            ? "pending"
-            : "not_started",
+        status: isIdentityVerified ? "approved" : pendingIdentityFlag ? "pending" : "not_started",
         type: null,
       },
       phone: {
         status: isPhoneVerified ? "verified" : "not_verified",
-        phoneNumber: user.phoneNumber ?? null,
+        phoneNumber: phoneNumber ?? null,
       },
       email: {
         status: isEmailVerified ? "verified" : "not_verified",
-        email: user.email ?? null,
+        email: email ?? null,
       },
     };
   },
@@ -101,16 +99,14 @@ export const verificationService = {
   },
 
   // Phone verification
-  sendPhoneOTP: (
-    data: SendVerificationCodeRequest,
-  ): Promise<ApiResponse<string>> =>
+  sendPhoneOTP: (data: OTPRequest): Promise<ApiResponse<string>> =>
     api.post<ApiResponse<string>>(
-      API_ENDPOINTS.AUTH.SEND_VERIFICATION_CODE,
+      API_ENDPOINTS.VERIFICATION.PHONE.SEND_OTP,
       data,
     ),
 
   verifyPhoneOTP: (
-    data: VerifyVerificationCodeRequest,
+    data: OTPVerification,
   ): Promise<ApiResponse<VerifyCodeResponse>> =>
     api.post<ApiResponse<VerifyCodeResponse>>(
       API_ENDPOINTS.AUTH.VERIFY_CODE,
@@ -122,33 +118,27 @@ export const verificationService = {
       phoneNumber,
     }),
 
-  sendChangePhoneOTP: (
-    data: SendVerificationCodeRequest,
-  ): Promise<ApiResponse<string>> =>
+  sendChangePhoneOTP: (payload: { phoneNumber: string }): Promise<ApiResponse<string>> =>
     api.post<ApiResponse<string>>(
-      API_ENDPOINTS.AUTH.SEND_VERIFICATION_CODE,
-      data,
+      API_ENDPOINTS.VERIFICATION.PHONE.CHANGE_SEND_OTP,
+      payload,
     ),
 
-  verifyChangePhoneOTP: (
-    data: VerifyVerificationCodeRequest,
-  ): Promise<ApiResponse<VerifyCodeResponse>> =>
+  verifyChangePhoneOTP: (payload: { code: string; phoneNumber: string }): Promise<ApiResponse<VerifyCodeResponse>> =>
     api.post<ApiResponse<VerifyCodeResponse>>(
-      API_ENDPOINTS.AUTH.VERIFY_CODE,
-      data,
+      API_ENDPOINTS.VERIFICATION.PHONE.CHANGE_VERIFY_OTP,
+      payload,
     ),
 
   // Email verification
-  sendEmailOTP: (
-    data: SendVerificationCodeRequest,
-  ): Promise<ApiResponse<string>> =>
+  sendEmailOTP: (data: OTPRequest): Promise<ApiResponse<string>> =>
     api.post<ApiResponse<string>>(
-      API_ENDPOINTS.AUTH.SEND_VERIFICATION_CODE,
+      API_ENDPOINTS.VERIFICATION.EMAIL.SEND_OTP,
       data,
     ),
 
   verifyEmailOTP: (
-    data: VerifyVerificationCodeRequest,
+    data: OTPVerification,
   ): Promise<ApiResponse<VerifyCodeResponse>> =>
     api.post<ApiResponse<VerifyCodeResponse>>(
       API_ENDPOINTS.AUTH.VERIFY_CODE,
@@ -177,6 +167,7 @@ export const useVerificationStatus = () => {
     queryKey: VERIFICATION_KEYS.status(),
     queryFn: verificationService.getStatus,
     staleTime: 30000, // 30 seconds
+    enabled: Boolean(getToken()),
   });
 };
 
@@ -186,6 +177,7 @@ export const useIdentityStatus = () => {
     queryKey: VERIFICATION_KEYS.identityStatus(),
     queryFn: verificationService.getIdentityStatus,
     staleTime: 30000,
+    enabled: Boolean(getToken()),
   });
 };
 

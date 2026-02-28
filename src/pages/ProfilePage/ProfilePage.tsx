@@ -29,16 +29,11 @@ const ProfilePage = () => {
   const handleLogout = async () => {
     if (isLoggingOut) return;
     setIsLoggingOut(true);
-    try {
-      await authService.logout();
-    } catch {
-      // Clear local auth state even when backend logout fails.
-    } finally {
-      removeToken();
-      clearAuthState();
-      navigate(ROUTES.SIGN_IN);
-      setIsLoggingOut(false);
-    }
+    // No /auth/logout in Swagger; clear client state only
+    removeToken();
+    clearAuthState();
+    navigate(ROUTES.SIGN_IN);
+    setIsLoggingOut(false);
   };
 
   return (
