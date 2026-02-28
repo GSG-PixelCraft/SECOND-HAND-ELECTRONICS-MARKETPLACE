@@ -12,6 +12,9 @@ import type {
   PaginatedVerificationsResponse,
   RejectVerificationData,
 } from "@/types/admin";
+import apiClient from "./client";
+import type { ApiResponse } from "./auth.service";
+import { API_ENDPOINTS } from "@/constants";
 
 // ============================================================================
 // Mock Data for Development (Remove when backend is ready)
@@ -272,90 +275,46 @@ const isWithinDateBounds = (
 
 export const adminVerificationService = {
   // Get paginated verifications list
-  getVerifications: (
+  getVerifications: async (
     params: VerificationFilterParams,
   ): Promise<PaginatedVerificationsResponse> => {
-    // TODO: Replace with real API call when backend is ready
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const { status = "all", search = "", page = 1, limit = 10 } = params;
-        const dateBounds = resolveDateBounds(params);
+    const response = await apiClient.get<
+      ApiResponse<{
+        data: VerificationSubmission[];
+        total: number;
+        page: number;
+        limit: number;
+        totalPages: number;
+      }>
+    >(API_ENDPOINTS.ADMIN.VERIFICATIONS.LIST, { params });
 
-        // Filter by status
-        let filtered = mockVerifications;
-        if (status !== "all") {
-          filtered = filtered.filter((v) => v.status === status);
-        }
+    const res = response.data.data;
 
-        // Filter by search (name or ID)
-        if (search) {
-          const searchLower = search.toLowerCase();
-          filtered = filtered.filter(
-            (v) =>
-              v.userName.toLowerCase().includes(searchLower) ||
-              v.id.includes(searchLower),
-          );
-        }
+    const items = res.data;
 
-        // Filter by date range
-        filtered = filtered.filter((verification) =>
-          isWithinDateBounds(verification.submittedDate, dateBounds),
-        );
+    const statusCounts = {
+      all: res.total,
+      pending: items.filter((v) => v.status === "pending").length,
+      approved: items.filter((v) => v.status === "approved").length,
+      rejected: items.filter((v) => v.status === "rejected").length,
+    };
 
-        // Calculate pagination
-        const total = filtered.length;
-        const totalPages = Math.ceil(total / limit);
-        const startIndex = (page - 1) * limit;
-        const endIndex = startIndex + limit;
-        const items = filtered.slice(startIndex, endIndex);
-
-        // Calculate status counts
-        const statusCounts = {
-          all: mockVerifications.length,
-          pending: mockVerifications.filter((v) => v.status === "pending")
-            .length,
-          approved: mockVerifications.filter((v) => v.status === "approved")
-            .length,
-          rejected: mockVerifications.filter((v) => v.status === "rejected")
-            .length,
-        };
-
-        resolve({
-          items,
-          total,
-          page,
-          totalPages,
-          limit,
-          statusCounts,
-        });
-      }, 500);
-    });
-
-    // Real API call:
-    // return api.get<PaginatedVerificationsResponse>(
-    //   API_ENDPOINTS.ADMIN.VERIFICATIONS.LIST,
-    //   { params }
-    // );
+    return {
+      items,
+      total: res.total,
+      page: res.page,
+      totalPages: res.totalPages,
+      limit: res.limit,
+      statusCounts,
+    };
   },
-
   // Get single verification details
-  getVerificationById: (id: string): Promise<VerificationSubmission> => {
-    // TODO: Replace with real API call when backend is ready
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        const verification = mockVerifications.find((v) => v.id === id);
-        if (verification) {
-          resolve(verification);
-        } else {
-          reject(new Error("Verification not found"));
-        }
-      }, 300);
-    });
+  getVerificationById: async (id: string): Promise<VerificationSubmission> => {
+    const response = await apiClient.get<ApiResponse<VerificationSubmission>>(
+      API_ENDPOINTS.ADMIN.VERIFICATIONS.BY_ID(id),
+    );
 
-    // Real API call:
-    // return api.get<VerificationSubmission>(
-    //   API_ENDPOINTS.ADMIN.VERIFICATIONS.BY_ID(id)
-    // );
+    return response.data.data;
   },
 
   // Approve verification
@@ -427,6 +386,7 @@ export function useAdminVerifications(params: VerificationFilterParams) {
   return useQuery({
     queryKey: ADMIN_VERIFICATION_KEYS.list(params),
     queryFn: () => adminVerificationService.getVerifications(params),
+    staleTime: 5 * 60 * 1000,
   });
 }
 
