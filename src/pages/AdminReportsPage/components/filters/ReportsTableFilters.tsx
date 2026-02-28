@@ -1,7 +1,7 @@
 import { forwardRef, useEffect, useRef, useState } from "react";
 import { AdminDateRangePicker } from "@/components/admin/ui/date-filter/AdminDateRangePicker";
 import type { AdminDateRangeValue } from "@/components/admin/ui/date-filter/AdminDateRangePicker";
-import { Input } from "@/components/ui/input";
+import { Input } from "@/components/ui/Input/input";
 import { cn } from "@/lib/utils";
 import type { ReportFilterParams } from "@/types/admin";
 
