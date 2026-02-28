@@ -1,58 +1,73 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Camera } from "lucide-react";
 import { countries } from "countries-list";
+import { Image } from "@/components/ui/Image/image";
+import { useAuthStore } from "@/stores/useAuthStore";
+import { authService } from "@/services/auth.service";
 
-interface EditProfileSubmitPayload {
-  fullName: string;
-  email: string;
-  phoneNumber: string;
-  country: string;
-  avatarFile?: File | null;
+export interface EditProfileSubmitPayload {
+  fullName?: string;
+  email?: string;
+  phoneNumber?: string;
+  country?: string;
+  avatar?: File | null;
 }
 
-interface EditProfileFormProps {
+export interface EditProfileFormProps {
   initialValues?: Partial<EditProfileSubmitPayload> & { avatarUrl?: string };
   isSubmitting?: boolean;
   onCancel: () => void;
   onSubmit: (payload: EditProfileSubmitPayload) => void | Promise<void>;
 }
 
-// const COUNTRIES = [
-//   "Palestine",
-//   "Jordan",
-//   "Egypt",
-//   "Saudi Arabia",
-//   "United Arab Emirates",
-// ];
 const COUNTRIES = Object.values(countries)
   .map((c) => c.name)
   .sort();
 
 export const EditProfileForm = ({
-  initialValues,
   isSubmitting = false,
   onCancel,
   onSubmit,
 }: EditProfileFormProps) => {
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const { user, setUser } = useAuthStore();
 
-  const [fullName, setFullName] = useState(initialValues?.fullName || "");
-  const [email, setEmail] = useState(initialValues?.email || "");
-  const [phone, setPhone] = useState(initialValues?.phoneNumber || "");
-  const [country, setCountry] = useState(initialValues?.country || "");
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
-  const [avatarPreview, setAvatarPreview] = useState(
-    initialValues?.avatarUrl || "",
-  );
+  const [fullName, setFullName] = useState(user?.fullName ?? "");
+  const [email, setEmail] = useState(user?.email ?? "");
+  const [phone, setPhone] = useState(user?.phoneNumber ?? "");
+  const [country, setCountry] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    setFullName(initialValues?.fullName || "");
-    setEmail(initialValues?.email || "");
-    setPhone(initialValues?.phoneNumber || "");
-    setCountry(initialValues?.country || "");
-    setAvatarPreview(initialValues?.avatarUrl || "");
-    setAvatarFile(null);
-  }, [initialValues]);
+  const handleUpdate = async () => {
+    try {
+      setLoading(true);
+
+      const payload: EditProfileSubmitPayload = {
+        fullName,
+        email,
+        phoneNumber: phone,
+        country,
+        avatar: avatarFile,
+      };
+
+      const response = await authService.updateProfile({
+        fullName,
+        email,
+        phoneNumber: phone,
+      });
+
+      const updatedUser = response.data;
+
+      setUser(updatedUser);
+
+      await onSubmit(payload);
+    } catch (error) {
+      console.error("Profile update failed", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="rounded-xl border border-neutral-20 bg-white p-6">
@@ -62,15 +77,16 @@ export const EditProfileForm = ({
           onClick={() => fileInputRef.current?.click()}
           className="group relative h-28 w-28 overflow-hidden rounded-full border border-neutral-20"
         >
-          {avatarPreview ? (
-            <img
-              src={avatarPreview}
+          {user?.avatar ? (
+            <Image
+              src={user.avatar}
               alt="Profile"
               className="h-full w-full object-cover"
             />
           ) : (
             <div className="h-full w-full bg-muted-10" />
           )}
+
           <div className="absolute inset-0 hidden items-center justify-center bg-black/40 group-hover:flex">
             <Camera size={20} className="text-white" />
           </div>
@@ -83,9 +99,6 @@ export const EditProfileForm = ({
           onChange={(event) => {
             const file = event.target.files?.[0] || null;
             setAvatarFile(file);
-            if (file) {
-              setAvatarPreview(URL.createObjectURL(file));
-            }
           }}
         />
 
@@ -153,19 +166,11 @@ export const EditProfileForm = ({
 
           <button
             type="button"
-            disabled={isSubmitting}
-            onClick={() =>
-              onSubmit({
-                fullName: fullName.trim(),
-                email: email.trim(),
-                phoneNumber: phone.trim(),
-                country: country.trim(),
-                avatarFile,
-              })
-            }
+            onClick={handleUpdate}
+            disabled={loading}
             className="rounded-md bg-primary px-4 py-2 text-body text-primary-foreground hover:bg-primary-40"
           >
-            {isSubmitting ? "Updating..." : "Update profile"}
+            {loading ? "Updating..." : "Update profile"}
           </button>
         </div>
       </div>

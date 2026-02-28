@@ -4,11 +4,8 @@ import {
   useSendPhoneOTP,
   useVerifyEmailOTP,
   useVerifyPhoneOTP,
-  useSendChangePhoneOTP,
-  useVerifyChangePhoneOTP,
 } from "@/services/verification.service";
 import { getBackendErrorMessage } from "@/lib/api-error";
-import { getToken } from "@/lib/storage";
 import { COUNTRY_DIAL_OPTIONS, OTP_LENGTH, createEmptyOtp } from "@/constants/verification";
 
 type PhoneStep = "input" | "otp" | "change" | "success";
@@ -55,9 +52,7 @@ export const usePhoneVerificationFlow = ({
   onVerified,
 }: FlowOptions = {}): PhoneVerificationFlow => {
   const sendMutation = useSendPhoneOTP();
-  const sendChangeMutation = useSendChangePhoneOTP();
   const verifyMutation = useVerifyPhoneOTP();
-  const verifyChangeMutation = useVerifyChangePhoneOTP();
 
   const [isOpen, setIsOpen] = useState(false);
   const [step, setStep] = useState<PhoneStep>("input");
@@ -108,16 +103,11 @@ export const usePhoneVerificationFlow = ({
 
   const requestCode = useCallback(async () => {
     if (!ensurePhonePresent()) return;
-    if (!getToken()) {
-      setError("Please sign in first to send a verification code.");
-      return;
-    }
     try {
-      if (step === "change") {
-        await sendChangeMutation.mutateAsync({ phoneNumber: formattedPhone });
-      } else {
-        await sendMutation.mutateAsync({ otpType: "phone_verification" });
-      }
+      await sendMutation.mutateAsync({
+        otpType: "phone_verification",
+        phoneNumber: formattedPhone,
+      });
       setStep("otp");
       setOtp(createEmptyOtp());
     } catch (error) {
@@ -125,7 +115,7 @@ export const usePhoneVerificationFlow = ({
         getBackendErrorMessage(error) ?? "Failed to send verification code.",
       );
     }
-  }, [ensurePhonePresent, formattedPhone, sendChangeMutation, sendMutation, step]);
+  }, [ensurePhonePresent, sendMutation]);
 
   const verifyCode = useCallback(async () => {
     const code = otp.join("");
@@ -133,11 +123,11 @@ export const usePhoneVerificationFlow = ({
     if (!ensurePhonePresent()) return;
 
     try {
-      if (step === "change") {
-        await verifyChangeMutation.mutateAsync({ code, phoneNumber: formattedPhone });
-      } else {
-        await verifyMutation.mutateAsync({ code, phoneNumber: formattedPhone, type: "phone_verification" });
-      }
+      await verifyMutation.mutateAsync({
+        code,
+        phoneNumber: formattedPhone,
+        type: "phone_verification",
+      });
       onVerified?.(formattedPhone);
       setStep("success");
       setError(null);
@@ -146,7 +136,7 @@ export const usePhoneVerificationFlow = ({
         getBackendErrorMessage(error) ?? "Verification failed. Try again.",
       );
     }
-  }, [ensurePhonePresent, formattedPhone, onVerified, otp, step, verifyChangeMutation, verifyMutation]);
+  }, [ensurePhonePresent, formattedPhone, onVerified, otp, verifyMutation]);
 
   const resendCode = useCallback(async () => {
     await requestCode();
@@ -236,12 +226,11 @@ export const useEmailVerificationFlow = ({
 
   const requestCode = useCallback(async () => {
     if (!ensureEmailPresent()) return;
-    if (!getToken()) {
-      setError("Please sign in first to send a verification code.");
-      return;
-    }
     try {
-      await sendMutation.mutateAsync({ otpType: "email_verification" });
+      await sendMutation.mutateAsync({
+        otpType: "email_verification",
+        email: formattedEmail,
+      });
       setStep("otp");
       setOtp(createEmptyOtp());
     } catch (error) {

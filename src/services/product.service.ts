@@ -9,6 +9,7 @@ import type { Product, ProductsParams, ProductsResponse } from "@/types";
 
 export const productService = {
   getAll: async (params?: ProductsParams): Promise<ProductsResponse> => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const res = await api.get<any>(API_ENDPOINTS.PRODUCTS.LIST, { params });
 
     const backend = res.data?.data ?? res.data;

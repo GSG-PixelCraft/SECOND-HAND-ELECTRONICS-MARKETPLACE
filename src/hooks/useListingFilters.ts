@@ -1,152 +1,166 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  fetchCountries,
+  fetchCitiesByCountry,
+  type LocationCountry,
+} from "@/services/location.service";
+import {
+  createInitialFilters,
+  MODEL_OPTIONS_BY_CATEGORY,
+  STORAGE_CATEGORIES,
+} from "@/constants/filter-options";
 import type {
   ArrayFilterKey,
   FilterBadge,
+  FiltersPartProps,
   FiltersState,
 } from "@/types/filters";
-import {
-  BRAND_OPTIONS,
-  CATEGORY_OPTIONS,
-  CONDITION_OPTIONS,
-  MODEL_OPTIONS_BY_CATEGORY,
-  STORAGE_CATEGORIES,
-  STORAGE_OPTIONS,
-  createInitialFilters,
-} from "@/constants/filter-options";
-import { fetchCountries, fetchCitiesByCountry } from "@/services/location.service";
 
-type OnChange = (filters: FiltersState) => void;
+const buildBadgeItems = (
+  filters: FiltersState,
+  remove: (key: ArrayFilterKey, value: string) => void,
+  update: <K extends keyof FiltersState>(key: K, value: FiltersState[K]) => void,
+  selectedCountryName: string,
+): FilterBadge[] => {
+  const badges: FilterBadge[] = [];
+  const collect = (key: ArrayFilterKey) => {
+    filters[key].forEach((value) =>
+      badges.push({
+        id: `${key}-${value}`,
+        label: value,
+        onRemove: () => remove(key, value),
+      }),
+    );
+  };
 
-export const useListingFilters = (onChange?: OnChange) => {
-  const [filters, setFilters] = useState<FiltersState>(createInitialFilters());
-  const [countries, setCountries] = useState<Array<{ code: string; name: string }>>([]);
+  (["categories", "condition", "brand", "model", "storage", "sellerType"] as ArrayFilterKey[]).forEach(
+    collect,
+  );
+
+  if (filters.priceRange.min || filters.priceRange.max) {
+    badges.push({
+      id: "price",
+      label: `${filters.priceRange.min || "0"}-${filters.priceRange.max || "\u221e"} ILS`,
+      onRemove: () => update("priceRange", { min: "", max: "" }),
+    });
+  }
+
+  if (
+    filters.location.country ||
+    filters.location.city ||
+    filters.location.useCurrentLocation
+  ) {
+    badges.push({
+      id: "location",
+      label: filters.location.useCurrentLocation
+        ? "Current Location"
+        : `${selectedCountryName || filters.location.country}${filters.location.city ? `, ${filters.location.city}` : ""}`,
+      onRemove: () =>
+        update("location", {
+          country: "",
+          city: "",
+          useCurrentLocation: false,
+        }),
+    });
+  }
+
+  return badges;
+};
+
+export const useListingFilters = (
+  onFilterChange?: FiltersPartProps["onFilterChange"],
+) => {
+  const [filters, setFilters] = useState<FiltersState>(() =>
+    createInitialFilters(),
+  );
+  const [countries, setCountries] = useState<LocationCountry[]>([]);
   const [cities, setCities] = useState<string[]>([]);
 
-  // Fetch countries once
   useEffect(() => {
-    void (async () => {
-      const result = await fetchCountries();
-      setCountries(result);
-    })();
+    fetchCountries().then(setCountries);
   }, []);
 
-  // Fetch cities when country changes
   useEffect(() => {
-    const code = filters.location.country;
-    if (!code) {
+    if (!filters.location.country) {
       setCities([]);
       return;
     }
-    void (async () => {
-      const result = await fetchCitiesByCountry(code);
-      setCities(result);
-    })();
+    fetchCitiesByCountry(filters.location.country).then(setCities);
   }, [filters.location.country]);
 
-  const emitChange = useCallback(
-    (next: FiltersState) => {
-      setFilters(next);
-      onChange?.(next);
-    },
-    [onChange],
-  );
+  useEffect(() => {
+    onFilterChange?.(filters);
+  }, [filters, onFilterChange]);
 
   const update = useCallback(
     <K extends keyof FiltersState>(key: K, value: FiltersState[K]) => {
-      emitChange({ ...filters, [key]: value });
+      setFilters((prev) => ({ ...prev, [key]: value }));
     },
-    [emitChange, filters],
+    [],
   );
 
-  const toggle = useCallback(
-    (key: ArrayFilterKey, value: string) => {
-      const current = filters[key] as string[];
-      const exists = current.includes(value);
-      const next = exists ? current.filter((v) => v !== value) : [...current, value];
-      emitChange({ ...filters, [key]: next } as FiltersState);
-    },
-    [emitChange, filters],
+  const toggle = useCallback((key: ArrayFilterKey, value: string) => {
+    setFilters((prev) => {
+      const list = prev[key] as string[];
+      const next = list.includes(value)
+        ? list.filter((item) => item !== value)
+        : [...list, value];
+      return { ...prev, [key]: next };
+    });
+  }, []);
+
+  const remove = useCallback((key: ArrayFilterKey, value: string) => {
+    setFilters((prev) => {
+      const list = prev[key] as string[];
+      return { ...prev, [key]: list.filter((item) => item !== value) };
+    });
+  }, []);
+
+  const reset = useCallback(() => setFilters(createInitialFilters()), []);
+
+  const selectedCountryName = useMemo(
+    () =>
+      countries.find((country) => country.code === filters.location.country)
+        ?.name ?? "",
+    [countries, filters.location.country],
   );
 
-  const reset = useCallback(() => {
-    const initial = createInitialFilters();
-    emitChange(initial);
-  }, [emitChange]);
+  const badgeItems = useMemo(
+    () => buildBadgeItems(filters, remove, update, selectedCountryName),
+    [filters, remove, update, selectedCountryName],
+  );
 
-  // Derived options
-  const modelOptions = useMemo(() => {
-    if (!filters.categories.length) return [] as string[];
-    const sets = filters.categories.map((c) => MODEL_OPTIONS_BY_CATEGORY[c] || []);
-    const flat = ([] as string[]).concat(...sets);
-    return Array.from(new Set(flat));
-  }, [filters.categories]);
-
-  const showStorage = useMemo(
-    () => filters.categories.some((c) => STORAGE_CATEGORIES.includes(c)),
+  const modelOptions = useMemo(
+    () =>
+      Array.from(
+        new Set(
+          filters.categories.flatMap(
+            (category) => MODEL_OPTIONS_BY_CATEGORY[category] ?? [],
+          ),
+        ),
+      ),
     [filters.categories],
   );
 
-  // Badges
-  const badgeItems = useMemo<FilterBadge[]>(() => {
-    const items: FilterBadge[] = [];
-
-    // Helper to push many
-    const pushMany = (list: string[], remover: (value: string) => void) => {
-      for (const v of list) {
-        items.push({ id: `${items.length}-${v}`, label: v, onRemove: () => remover(v) });
-      }
-    };
-
-    // categories, condition, brand, model, storage, sellerType
-    pushMany(filters.categories, (v) => toggle("categories", v));
-    pushMany(filters.condition, (v) => toggle("condition", v));
-    pushMany(filters.brand, (v) => toggle("brand", v));
-    pushMany(filters.model, (v) => toggle("model", v));
-    pushMany(filters.storage, (v) => toggle("storage", v));
-    pushMany(filters.sellerType, (v) => toggle("sellerType", v));
-
-    // price range badge
-    const { min, max } = filters.priceRange;
-    if (min || max) {
-      const label = `Price: ${min || "0"}${max ? ` - ${max}` : "+"}`;
-      items.push({
-        id: `price-range`,
-        label,
-        onRemove: () => update("priceRange", { min: "", max: "" }),
-      });
-    }
-
-    // location badge
-    if (filters.location.useCurrentLocation) {
-      items.push({
-        id: `loc-current`,
-        label: "Current location",
-        onRemove: () => update("location", { country: "", city: "", useCurrentLocation: false }),
-      });
-    } else if (filters.location.country || filters.location.city) {
-      const country = filters.location.country || "";
-      const city = filters.location.city || "";
-      const label = city ? `${city}${country ? ", " + country : ""}` : country;
-      items.push({
-        id: `loc-${country}-${city}`,
-        label,
-        onRemove: () => update("location", { country: "", city: "", useCurrentLocation: false }),
-      });
-    }
-
-    return items;
-  }, [filters, toggle, update]);
+  const showStorage = useMemo(
+    () =>
+      filters.categories.some((category) =>
+        STORAGE_CATEGORIES.includes(category),
+      ),
+    [filters.categories],
+  );
 
   return {
     filters,
     update,
     toggle,
+    remove,
     reset,
     countries,
     cities,
+    selectedCountryName,
     badgeItems,
     modelOptions,
     showStorage,
-  } as const;
+  };
 };
-
