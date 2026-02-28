@@ -4,6 +4,8 @@ import PageLayout from "@/components/layout/PageLayout/PageLayout";
 import { ROUTES } from "@/constants/routes";
 import { useSendEmailOTP, useVerifyEmailOTP } from "@/services";
 import { useAuthStore } from "@/stores/useAuthStore";
+import { getToken } from "@/lib/storage";
+import { OTPInput } from "@/components/forms/OTPInput";
 
 const OTP_LENGTH = 4;
 
@@ -21,16 +23,19 @@ export function EmailVerificationPage() {
   const verifyEmailOtp = useVerifyEmailOTP();
 
   const [email, setEmail] = useState("");
-  const [otp, setOtp] = useState<string[]>(
-    Array.from({ length: OTP_LENGTH }, () => ""),
-  );
+  // OTP handled by component; we use onComplete
   const [step, setStep] = useState<"email" | "otp">("email");
   const [timer, setTimer] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
   const handleSendCode = async () => {
-    if (!email.trim()) {
+    const trimmed = email.trim();
+    if (!trimmed) {
       setError("Please enter your email.");
+      return;
+    }
+    if (!getToken()) {
+      setError("Please sign in first to send a verification code.");
       return;
     }
     setError(null);
@@ -41,11 +46,7 @@ export function EmailVerificationPage() {
       setOtp(Array.from({ length: OTP_LENGTH }, () => ""));
     } catch (err: unknown) {
       const typedError = err as ApiLikeError;
-      setError(
-        typedError.response?.data?.message ||
-          typedError.message ||
-          "Failed to send verification code.",
-      );
+      setError(typedError.response?.data?.message || typedError.message || "Failed to send verification code.");
     }
   };
 
@@ -58,62 +59,38 @@ export function EmailVerificationPage() {
   }, [step, timer]);
 
   const handleComplete = async (code: string) => {
-    if (!email) return;
-
-  const handleSendCode = async () => {
-    if (!email.trim()) {
-      setError("Please enter your email.");
-      return;
-    }
+    const trimmed = email.trim();
+    if (!trimmed || code.length !== OTP_LENGTH) return;
     setError(null);
     try {
-      await verifyEmailOtp.mutateAsync({
-        code,
-        email,
-        type: "email_verification",
-      });
+      await verifyEmailOtp.mutateAsync({ code, email: trimmed, type: "email_verification" });
       setVerification({
-        email: {
-          email,
-          status: "verified",
-          verifiedAt: new Date().toISOString(),
-        },
+        email: { email: trimmed, status: "verified", verifiedAt: new Date().toISOString() },
       });
       navigate(ROUTES.VERIFY);
     } catch (err: unknown) {
       const typedError = err as ApiLikeError;
-      setError(
-        typedError.response?.data?.message ||
-          typedError.message ||
-          "Verification failed.",
-      );
+      setError(typedError.response?.data?.message || typedError.message || "Verification failed.");
     }
   };
 
-  const handleVerify = async () => {
-    const code = otp.join("");
-    if (code.length !== OTP_LENGTH) return;
-    if (!email.trim()) {
-      setError("Please enter your email.");
+  const handleResend = async () => {
+    const trimmed = email.trim();
+    if (timer > 0 || !trimmed) return;
+    if (!getToken()) {
+      setError("Please sign in first to resend a verification code.");
       return;
     }
-    setError(null);
-
     try {
       await sendEmailOtp.mutateAsync({ otpType: "email_verification" });
       setTimer(60);
       setOtp(Array.from({ length: OTP_LENGTH }, () => ""));
+      setError(null);
     } catch (err: unknown) {
       const typedError = err as ApiLikeError;
-      setError(
-        typedError.response?.data?.message ||
-          typedError.message ||
-          "Failed to resend code.",
-      );
+      setError(typedError.response?.data?.message || typedError.message || "Failed to resend code.");
     }
   };
-
-  const otpCode = otp.join("");
 
   return (
     <PageLayout title="Verify Email" maxWidth="md">
@@ -121,9 +98,7 @@ export function EmailVerificationPage() {
         {step === "email" ? (
           <>
             <h1 className="text-xl font-semibold">Verify your email</h1>
-            <p className="mt-2 text-sm text-gray-600">
-              Enter your email address to receive a verification code.
-            </p>
+            <p className="mt-2 text-sm text-gray-600">Enter your email address to receive a verification code.</p>
             <input
               type="email"
               value={email}
@@ -144,40 +119,14 @@ export function EmailVerificationPage() {
         ) : (
           <>
             <h1 className="text-xl font-semibold">Enter verification code</h1>
-            <p className="mt-2 text-sm text-gray-600">
-              We sent a code to {email}.
-            </p>
-            <div className="mt-4 flex justify-center gap-2">
-              {otp.map((digit, index) => (
-                <input
-                  key={index}
-                  type="text"
-                  inputMode="numeric"
-                  maxLength={1}
-                  value={digit}
-                  onChange={(event) => {
-                    const value = event.target.value.replace(/\D/g, "");
-                    setOtp((current) => {
-                      const next = [...current];
-                      next[index] = value;
-                      return next;
-                    });
-                  }}
-                  className="h-11 w-11 rounded-md border text-center"
-                />
-              ))}
+            <p className="mt-2 text-sm text-gray-600">We sent a code to {email}.</p>
+            <div className="mt-4">
+              <OTPInput length={OTP_LENGTH} onComplete={handleComplete} />
             </div>
             {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
-            <button
-              type="button"
-              onClick={() => handleComplete(otpCode)}
-              disabled={
-                otpCode.length !== OTP_LENGTH || verifyEmailOtp.isPending
-              }
-              className="mt-4 w-full rounded-md bg-blue-600 px-4 py-2 text-white disabled:bg-gray-300"
-            >
-              {verifyEmailOtp.isPending ? "Verifying..." : "Verify Email"}
-            </button>
+            <div className="mt-3 text-center text-sm text-gray-600">
+              Enter the {OTP_LENGTH}-digit code above.
+            </div>
             <div className="mt-3 text-center text-sm">
               {timer > 0 ? (
                 <span className="text-gray-600">Resend code in {timer}s</span>

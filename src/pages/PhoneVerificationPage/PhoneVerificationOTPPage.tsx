@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import PageLayout from "@/components/layout/PageLayout/PageLayout";
 import { ROUTES } from "@/constants/routes";
 import { useVerifyPhoneOTP, useSendPhoneOTP } from "@/services";
+import { OTPInput } from "@/components/forms/OTPInput";
 import { useAuthStore } from "@/stores/useAuthStore";
 
 const OTP_LENGTH = 4;
@@ -17,122 +17,70 @@ type ApiLikeError = {
 export function PhoneVerificationOTPPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const user = useAuthStore((state) => state.user);
-  const phoneNumber = searchParams.get("phone") || user?.phoneNumber || "";
+  const setVerification = useAuthStore((state) => state.setVerification);
 
-  const [otp, setOtp] = useState<string[]>(
-    Array.from({ length: OTP_LENGTH }, () => ""),
-  );
+  const verifyMutation = useVerifyPhoneOTP();
+  const resendMutation = useSendPhoneOTP();
+
+  const phoneNumber = searchParams.get("phone") ?? "";
+  // OTP handled by component; we use onComplete
   const [timer, setTimer] = useState(60);
   const [error, setError] = useState<string | null>(null);
-
-export function PhoneVerificationOTPPage() {
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const phoneNumber = searchParams.get("phone") ?? "";
-  const setVerification = useAuthStore((state) => state.setVerification);
 
   useEffect(() => {
     if (!phoneNumber) {
       navigate(ROUTES.PROFILE);
       return;
     }
+    resendMutation
+      .mutateAsync({ otpType: "phone_verification", phoneNumber })
+      .catch(() => setError("Failed to send verification code."));
 
-    resendMutation.mutateAsync({ otpType: "phone_verification" }).catch(() => {
-      setError("Failed to send verification code.");
-    });
-
-    const interval = setInterval(() => {
-      setTimer((prev) => (prev > 0 ? prev - 1 : 0));
-    }, 1000);
-
+    const interval = setInterval(() => setTimer((prev) => (prev > 0 ? prev - 1 : 0)), 1000);
     return () => clearInterval(interval);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [phoneNumber, navigate]);
+  }, [phoneNumber, navigate, resendMutation]);
 
   const handleComplete = async (code: string) => {
-    if (!phoneNumber) return;
+    if (!phoneNumber || code.length !== OTP_LENGTH) return;
     setError(null);
-
     try {
-      await verifyMutation.mutateAsync({
-        code,
-        phoneNumber,
-        type: "phone_verification",
-      });
-      setVerification({
-        phone: { phoneNumber, status: "verified" },
-      });
+      await verifyMutation.mutateAsync({ code, phoneNumber, type: "phone_verification" });
+      setVerification({ phone: { phoneNumber, status: "verified" } });
       navigate(ROUTES.PROFILE);
     } catch (err: unknown) {
       const typedError = err as ApiLikeError;
-      setError(
-        typedError.response?.data?.message ||
-          typedError.message ||
-          "Invalid OTP code.",
-      );
+      setError(typedError.response?.data?.message || typedError.message || "Invalid OTP code.");
     }
   };
 
   const handleResend = async () => {
     if (timer > 0 || !phoneNumber) return;
-
     try {
-      await resendMutation.mutateAsync({ otpType: "phone_verification" });
+      await resendMutation.mutateAsync({ otpType: "phone_verification", phoneNumber });
       setTimer(60);
       setOtp(Array.from({ length: OTP_LENGTH }, () => ""));
       setError(null);
     } catch (err: unknown) {
       const typedError = err as ApiLikeError;
-      setError(
-        typedError.response?.data?.message ||
-          typedError.message ||
-          "Failed to resend OTP.",
-      );
+      setError(typedError.response?.data?.message || typedError.message || "Failed to resend OTP.");
     }
   };
-
-  const otpCode = otp.join("");
 
   return (
     <PageLayout title="Phone OTP" maxWidth="md">
       <div className="mx-auto w-full max-w-md rounded-lg bg-white p-6 shadow-sm">
         <h1 className="text-xl font-semibold">Enter verification code</h1>
-        <p className="mt-2 text-sm text-gray-600">
-          We sent a code to {phoneNumber || "your phone"}.
-        </p>
+        <p className="mt-2 text-sm text-gray-600">We sent a code to {phoneNumber || "your phone"}.</p>
 
-        <div className="mt-4 flex justify-center gap-2">
-          {otp.map((digit, index) => (
-            <input
-              key={index}
-              type="text"
-              inputMode="numeric"
-              maxLength={1}
-              value={digit}
-              onChange={(event) => {
-                const value = event.target.value.replace(/\D/g, "");
-                setOtp((current) => {
-                  const next = [...current];
-                  next[index] = value;
-                  return next;
-                });
-              }}
-              className="h-11 w-11 rounded-md border text-center"
-            />
-          ))}
+        <div className="mt-4">
+          <OTPInput length={OTP_LENGTH} onComplete={handleComplete} />
         </div>
 
         {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
 
-        <button
-          type="button"
-          onClick={() => handleComplete(otpCode)}
-          disabled={otpCode.length !== OTP_LENGTH || verifyMutation.isPending}
-          className="mt-4 w-full rounded-md bg-blue-600 px-4 py-2 text-white disabled:bg-gray-300"
-        >
-          {verifyMutation.isPending ? "Verifying..." : "Verify"}
-        </button>
+        <div className="mt-3 text-center text-sm text-gray-600">
+          Enter the {OTP_LENGTH}-digit code above.
+        </div>
 
         <button
           type="button"
