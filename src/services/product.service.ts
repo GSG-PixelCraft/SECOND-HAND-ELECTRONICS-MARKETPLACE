@@ -1,7 +1,44 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "./client";
 import { API_ENDPOINTS } from "@/constants/api-endpoints";
-import type { Product, ProductsParams, ProductsResponse } from "@/types";
+import type {
+  Category,
+  Product,
+  ProductsParams,
+  ProductsResponse,
+} from "@/types";
+
+type RawCategory = {
+  id?: string | number;
+  name?: string;
+};
+
+type RawImage = string | { url?: string } | null;
+
+type RawProduct = {
+  id?: string | number;
+  title?: string;
+  name?: string;
+  price?: number;
+  sellerId?: string | number;
+  categoryId?: string | number;
+  category?: RawCategory;
+  status?: string;
+  viewCount?: number;
+  isNegotiable?: boolean;
+  images?: RawImage[];
+  condition?: Product["condition"];
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+type RawProductsPayload = {
+  data?: RawProduct[];
+  total?: number;
+  page?: number;
+  totalPages?: number;
+  limit?: number;
+};
 
 // ============================================================================
 // API Functions
@@ -9,22 +46,45 @@ import type { Product, ProductsParams, ProductsResponse } from "@/types";
 
 export const productService = {
   getAll: async (params?: ProductsParams): Promise<ProductsResponse> => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const res = await api.get<any>(API_ENDPOINTS.PRODUCTS.LIST, { params });
+    const responseData = await api.get<
+      RawProductsPayload | { data?: RawProductsPayload }
+    >(API_ENDPOINTS.PRODUCTS.LIST, { params });
 
-    const backend = res.data?.data ?? res.data;
+    const nestedData = (responseData as { data?: RawProductsPayload }).data;
+    const backend: RawProductsPayload =
+      nestedData && !Array.isArray(nestedData)
+        ? nestedData
+        : (responseData as RawProductsPayload);
+    const products = Array.isArray(backend.data) ? backend.data : [];
 
     return {
-      products: backend.data.map((item: any) => ({
+      products: products.map((item) => ({
         id: String(item.id),
-        name: item.title ?? item.name,
-        description: item.description ?? "",
-        price: item.price,
-        category: item.category?.name ?? item.category ?? "",
-        images: item.images ?? [],
-        condition: item.condition,
+        title: item.title ?? item.name ?? "",
+        price: item.price ?? 0,
         sellerId: String(item.sellerId),
-        createdAt: item.createdAt,
+        categoryId: String(item.categoryId ?? item.category?.id ?? ""),
+        category: {
+          id: String(item.category?.id ?? item.categoryId ?? ""),
+          name: item.category?.name ?? "",
+        },
+        status: item.status ?? "pending",
+        viewCount: Number(item.viewCount ?? 0),
+        isNegotiable: Boolean(item.isNegotiable),
+        images: Array.isArray(item.images)
+          ? item.images
+              .map((img) => {
+                if (typeof img === "string") {
+                  return img;
+                }
+
+                return img?.url ?? "";
+              })
+              .filter((image): image is string => Boolean(image))
+          : [],
+        condition: item.condition ?? "good",
+        createdAt: item.createdAt ?? new Date().toISOString(),
+        updatedAt: item.updatedAt ?? item.createdAt ?? new Date().toISOString(),
       })),
       total: backend.total ?? 0,
       page: backend.page ?? 1,
@@ -50,8 +110,8 @@ export const productService = {
       params: { q: query },
     }),
 
-  getCategories: (): Promise<string[]> =>
-    api.get<string[]>(API_ENDPOINTS.PRODUCTS.CATEGORIES),
+  getCategories: (): Promise<Category[]> =>
+    api.get<Category[]>(API_ENDPOINTS.PRODUCTS.CATEGORIES),
 
   getProducts: (params?: ProductsParams): Promise<ProductsResponse> =>
     api.get<ProductsResponse>("/products", { params }),
@@ -59,8 +119,9 @@ export const productService = {
   getProduct: (id: string): Promise<Product> =>
     api.get<Product>(`/products/${id}`),
 
-  createProduct: (data: Omit<Product, "id" | "createdAt">): Promise<Product> =>
-    api.post<Product>("/products", data),
+  createProduct: (
+    data: Omit<Product, "id" | "createdAt" | "updatedAt">,
+  ): Promise<Product> => api.post<Product>("/products", data),
 
   updateProduct: (id: string, data: Partial<Product>): Promise<Product> =>
     api.put<Product>(`/products/${id}`, data),
