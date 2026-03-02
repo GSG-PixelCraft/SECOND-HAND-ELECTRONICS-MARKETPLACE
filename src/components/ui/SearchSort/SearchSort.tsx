@@ -72,7 +72,7 @@ const SearchSort = ({ onSortChange, className = "" }: SearchSortProps) => {
       </button>
 
       {isOpen && (
-        <div className="absolute left-0 top-full z-10 mt-2 w-max rounded-lg border border-[hsl(var(--border))] bg-white shadow-lg">
+        <div className="absolute right-0 top-full z-10 mt-2 w-max rounded-lg border border-[hsl(var(--border))] bg-white shadow-lg">
           <div className="space-y-1 p-2">
             {sortOptions.map((option) => (
               <label
