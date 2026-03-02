@@ -5,66 +5,71 @@ import { Button } from "@/components/ui/Button/button";
 import { FiltersPart } from "@/components/ui/FiltersPart/FiltersPart";
 import { SearchSort } from "@/components/ui/SearchSort/SearchSort";
 import { Text } from "@/components/ui/Text/text";
-
-interface Filters {
-  categories: string[];
-  condition: string[];
-  priceRange: { min: string; max: string };
-  brand: string[];
-  model: string[];
-  storage: string[];
-  sellerType: string[];
-  location: { country: string; city: string; useCurrentLocation: boolean };
-}
+import { mockProducts } from "@/pages/HomePage/mockProducts";
+import { HomeProductCard } from "@/components/homePage/HomeProductCard";
+import type { Product } from "@/types";
 
 export default function SearchPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState(searchParams.get("q") || "");
+  const [categoryFilter, setCategoryFilter] = useState(
+    searchParams.get("category") || "",
+  );
   const [showFilters, setShowFilters] = useState(false);
-  const [filters, setFilters] = useState<Filters>({
-    categories: [],
-    condition: [],
-    priceRange: { min: "", max: "" },
-    brand: [],
-    model: [],
-    storage: [],
-    sellerType: [],
-    location: { country: "", city: "", useCurrentLocation: false },
-  });
-  const [sortBy, setSortBy] = useState("Newest");
   const [isSearching, setIsSearching] = useState(false);
+  const [filteredProducts, setFilteredProducts] =
+    useState<Product[]>(mockProducts);
 
   const performSearch = useCallback(
     (query: string) => {
       setIsSearching(true);
       setTimeout(() => {
+        let results = mockProducts;
+
+        // Filter by category
+        if (categoryFilter) {
+          results = results.filter(
+            (product) =>
+              product.category.name.toLowerCase() ===
+              categoryFilter.toLowerCase(),
+          );
+        }
+
+        // Filter by search query
+        if (query.trim()) {
+          results = results.filter(
+            (product) =>
+              product.title.toLowerCase().includes(query.toLowerCase()) ||
+              product.category.name.toLowerCase().includes(query.toLowerCase()),
+          );
+        }
+
+        setFilteredProducts(results);
         setIsSearching(false);
-        console.log(
-          "Searching for:",
-          query,
-          "with filters:",
-          filters,
-          "sorted by:",
-          sortBy,
-        );
-      }, 500);
+      }, 300);
     },
-    [filters, sortBy],
+    [categoryFilter],
   );
 
   useEffect(() => {
     const query = searchParams.get("q");
+    const category = searchParams.get("category");
+
+    if (category && category !== categoryFilter) {
+      setCategoryFilter(category);
+    }
+
     if (query && query !== searchQuery) {
       setSearchQuery(query);
       performSearch(query);
     }
-  }, [searchParams, searchQuery, performSearch]);
+  }, [searchParams, searchQuery, categoryFilter, performSearch]);
 
   useEffect(() => {
-    if (searchQuery) {
+    if (searchQuery || categoryFilter) {
       performSearch(searchQuery);
     }
-  }, [searchQuery, performSearch]);
+  }, [searchQuery, categoryFilter, performSearch]);
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
@@ -72,17 +77,6 @@ export default function SearchPage() {
       setSearchParams({ q: query });
       performSearch(query);
     }
-  };
-
-  const handleFilterChange = (newFilters: Filters) => {
-    setFilters(newFilters);
-    console.log("Filters updated:", newFilters);
-    performSearch(searchQuery);
-  };
-
-  const handleSortChange = (sort: string) => {
-    setSortBy(sort);
-    performSearch(searchQuery);
   };
 
   return (
@@ -103,10 +97,7 @@ export default function SearchPage() {
               </Button>
             </div>
             <div className={`${showFilters ? "block" : "hidden"} lg:block`}>
-              <FiltersPart
-                onFilterChange={handleFilterChange}
-                onSearch={handleSearch}
-              />
+              <FiltersPart onSearch={handleSearch} />
             </div>
           </div>
         </div>
@@ -115,10 +106,14 @@ export default function SearchPage() {
           <div className="mb-6 flex items-center justify-between">
             <div>
               <h2 className="text-xl font-semibold text-gray-900">
-                {searchQuery ? `Results for "${searchQuery}"` : "All Products"}
+                {categoryFilter
+                  ? `${categoryFilter.charAt(0).toUpperCase() + categoryFilter.slice(1)} Products`
+                  : searchQuery
+                    ? `Results for "${searchQuery}"`
+                    : "All Products"}
               </h2>
             </div>
-            <SearchSort onSortChange={handleSortChange} />
+            <SearchSort />
           </div>
 
           {isSearching && (
@@ -131,11 +126,27 @@ export default function SearchPage() {
           )}
 
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {!isSearching && (
+            {!isSearching && filteredProducts.length > 0 ? (
+              filteredProducts.map((product) => (
+                <HomeProductCard
+                  key={product.id}
+                  image={product.images[0] ?? ""}
+                  title={product.title}
+                  price={`${product.price} ILS`}
+                  location="Gaza"
+                  category={product.category.name}
+                  isFavorite={false}
+                />
+              ))
+            ) : !isSearching ? (
               <div className="col-span-full py-12 text-center">
-                <Text variant="muted">Search results will appear here.</Text>
+                <Text variant="muted">
+                  {searchQuery || categoryFilter
+                    ? "No products found."
+                    : "Search results will appear here."}
+                </Text>
               </div>
-            )}
+            ) : null}
           </div>
         </div>
       </div>
