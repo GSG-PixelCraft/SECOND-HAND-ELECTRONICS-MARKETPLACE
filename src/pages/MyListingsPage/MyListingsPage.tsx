@@ -839,7 +839,6 @@ export default function MyListingsPage() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<StatusTab>("all");
   const [currentPage, setCurrentPage] = useState(1);
-  const [, setSortBy] = useState("Newest");
 
   // Delete dialog state
   const [deleteTarget, setDeleteTarget] = useState<MyListing | null>(null);
@@ -882,9 +881,30 @@ export default function MyListingsPage() {
     return MOCK_LISTINGS.filter((l) => l.status === activeTab);
   }, [activeTab]);
 
-  const totalItems = filteredListings.length;
+  // Apply sorting similar to SearchPage/SearchSort options
+  const [sortBy, setSortBy] = useState("Newest");
+  const sortedListings = useMemo(() => {
+    const list = [...filteredListings];
+    const key = (sortBy || "Newest").toLowerCase();
+    // Treat undefined price as 0 for consistent ordering
+    const priceOf = (p?: number) => (typeof p === "number" ? p : 0);
+    if (key.includes("low to high")) {
+      list.sort((a, b) => priceOf(a.price) - priceOf(b.price));
+    } else if (key.includes("high to low")) {
+      list.sort((a, b) => priceOf(b.price) - priceOf(a.price));
+    } else if (key.includes("most viewed")) {
+      // No viewCount available on MyListing; fallback to newest
+      list.sort((a, b) => Number(b.id) - Number(a.id));
+    } else {
+      // Newest (default) - IDs are sequential based on insertion
+      list.sort((a, b) => Number(b.id) - Number(a.id));
+    }
+    return list;
+  }, [filteredListings, sortBy]);
+
+  const totalItems = sortedListings.length;
   const totalPages = Math.max(1, Math.ceil(totalItems / ITEMS_PER_PAGE));
-  const paginatedListings = filteredListings.slice(
+  const paginatedListings = sortedListings.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
     currentPage * ITEMS_PER_PAGE,
   );
