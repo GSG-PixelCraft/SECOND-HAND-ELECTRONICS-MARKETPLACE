@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { SlidersHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/Button/button";
@@ -6,8 +6,10 @@ import { FiltersPart } from "@/components/ui/FiltersPart/FiltersPart";
 import { SearchSort } from "@/components/ui/SearchSort/SearchSort";
 import { Text } from "@/components/ui/Text/text";
 import { mockProducts } from "@/pages/HomePage/mockProducts";
+import { mockCategories } from "@/pages/HomePage/mockCategories";
 import { HomeProductCard } from "@/components/homePage/HomeProductCard";
 import type { Product } from "@/types";
+import type { FiltersState } from "@/components/ui/FiltersPart/FiltersPart";
 
 export default function SearchPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -19,14 +21,30 @@ export default function SearchPage() {
   const [isSearching, setIsSearching] = useState(false);
   const [filteredProducts, setFilteredProducts] =
     useState<Product[]>(mockProducts);
+  const [filtersState, setFiltersState] = useState<FiltersState>({
+    categories: [],
+    condition: [],
+    priceRange: { min: "", max: "" },
+    brand: [],
+    model: [],
+    storage: [],
+    sellerType: [],
+    location: { country: "", city: "", useCurrentLocation: false },
+  });
+
+  const searchTimeoutRef = useRef<number | undefined>(undefined);
+  useCleanupTimers(searchTimeoutRef);
 
   const performSearch = useCallback(
-    (query: string) => {
+    (query: string, filters: FiltersState) => {
+      if (searchTimeoutRef.current) {
+        window.clearTimeout(searchTimeoutRef.current);
+      }
       setIsSearching(true);
-      setTimeout(() => {
+      searchTimeoutRef.current = window.setTimeout(() => {
         let results = mockProducts;
 
-        // Filter by category
+        // Category from URL param
         if (categoryFilter) {
           results = results.filter(
             (product) =>
@@ -35,18 +53,39 @@ export default function SearchPage() {
           );
         }
 
-        // Filter by search query
+        // Categories from side filters
+        if (filters.categories.length > 0) {
+          const selected = new Set(filters.categories.map((c) => c.toLowerCase()));
+          results = results.filter((p) => selected.has(p.category.name.toLowerCase()));
+        }
+
+        // Condition filter mapping UI -> data
+        if (filters.condition.length > 0) {
+          const mapCond = (c: string) =>
+            c.toLowerCase().replace(/\s+/g, "-"); // Like New -> like-new
+          const selectedConds = new Set(filters.condition.map(mapCond));
+          results = results.filter((p) => selectedConds.has(p.condition));
+        }
+
+        // Price range
+        const min = filters.priceRange.min ? Number(filters.priceRange.min) : undefined;
+        const max = filters.priceRange.max ? Number(filters.priceRange.max) : undefined;
+        if (min !== undefined) results = results.filter((p) => p.price >= min);
+        if (max !== undefined) results = results.filter((p) => p.price <= max);
+
+        // Text search
         if (query.trim()) {
+          const q = query.toLowerCase();
           results = results.filter(
-            (product) =>
-              product.title.toLowerCase().includes(query.toLowerCase()) ||
-              product.category.name.toLowerCase().includes(query.toLowerCase()),
+            (p) =>
+              p.title.toLowerCase().includes(q) ||
+              p.category.name.toLowerCase().includes(q),
           );
         }
 
         setFilteredProducts(results);
         setIsSearching(false);
-      }, 300);
+      }, 250);
     },
     [categoryFilter],
   );
@@ -61,22 +100,24 @@ export default function SearchPage() {
 
     if (query && query !== searchQuery) {
       setSearchQuery(query);
-      performSearch(query);
     }
   }, [searchParams, searchQuery, categoryFilter, performSearch]);
 
   useEffect(() => {
-    if (searchQuery || categoryFilter) {
-      performSearch(searchQuery);
-    }
-  }, [searchQuery, categoryFilter, performSearch]);
+    performSearch(searchQuery, filtersState);
+  }, [searchQuery, categoryFilter, filtersState, performSearch]);
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
     if (query.trim()) {
       setSearchParams({ q: query });
-      performSearch(query);
+      // Let the effect run the search
     }
+  };
+
+  const handleFiltersChange = (next: FiltersState) => {
+    setFiltersState(next);
+    performSearch(searchQuery, next);
   };
 
   return (
@@ -97,7 +138,10 @@ export default function SearchPage() {
               </Button>
             </div>
             <div className={`${showFilters ? "block" : "hidden"} lg:block`}>
-              <FiltersPart onSearch={handleSearch} />
+              <FiltersPart
+                onFilterChange={handleFiltersChange}
+                categoriesList={mockCategories.map((c) => c.name)}
+              />
             </div>
           </div>
         </div>
@@ -152,4 +196,14 @@ export default function SearchPage() {
       </div>
     </div>
   );
+}
+
+// Ensure pending timers are cleared on unmount
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function useCleanupTimers(ref: React.MutableRefObject<number | undefined>) {
+  useEffect(() => {
+    return () => {
+      if (ref.current) window.clearTimeout(ref.current);
+    };
+  }, [ref]);
 }
