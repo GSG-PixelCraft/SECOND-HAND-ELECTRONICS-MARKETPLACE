@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/Button/button";
 import { Text } from "@/components/ui/Text/text";
 import { Span } from "@/components/ui/Span/span";
+import { mockCategories } from "@/pages/HomePage/mockCategories";
 
 const SearchIcon = () => (
   <svg
@@ -149,16 +150,6 @@ const ChevronDownIcon = () => (
   </svg>
 );
 
-const categories = [
-  "Phones",
-  "Laptops",
-  "Tablets",
-  "Accessories",
-  "Smartwatches",
-  "Gaming",
-  "Cameras",
-];
-
 export const Header = () => {
   const navigate = useNavigate();
   const { user, token, logout } = useAuthStore();
@@ -284,27 +275,15 @@ export const Header = () => {
                 <MenuIcon />
                 <Span>All Categories</Span>
               </Button>
-              {categories.map((cat) => (
+              {mockCategories.map((cat) => (
                 <NavLink
-                  key={cat}
-                  to={`${ROUTES.SEARCH}?category=${cat.toLowerCase()}`}
+                  key={cat.id}
+                  to={`${ROUTES.SEARCH}?category=${cat.name.toLowerCase()}`}
                   className="whitespace-nowrap text-sm font-medium text-gray-600 transition hover:text-gray-900"
                 >
-                  {cat}
+                  {cat.name}
                 </NavLink>
               ))}
-              <NavLink
-                to={ROUTES.MY_LISTINGS}
-                className="whitespace-nowrap text-sm font-medium text-gray-600 transition hover:text-gray-900"
-              >
-                Dashboard
-              </NavLink>
-              <NavLink
-                to={ROUTES.ADMIN_DASHBOARD}
-                className="whitespace-nowrap text-sm font-medium text-gray-600 transition hover:text-gray-900"
-              >
-                Admin
-              </NavLink>
             </nav>
 
             <div className="flex items-center gap-3">
@@ -347,39 +326,23 @@ export const Header = () => {
               <Text className="px-3 py-2 text-xs font-semibold uppercase text-gray-500">
                 Categories
               </Text>
-              {["All", ...categories].map((cat) => (
+              <NavLink
+                to={ROUTES.SEARCH}
+                className="block rounded-lg px-3 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                All
+              </NavLink>
+              {mockCategories.map((cat) => (
                 <NavLink
-                  key={cat}
-                  to={
-                    cat === "All"
-                      ? ROUTES.SEARCH
-                      : `${ROUTES.SEARCH}?category=${cat.toLowerCase()}`
-                  }
+                  key={cat.id}
+                  to={`${ROUTES.SEARCH}?category=${cat.name.toLowerCase()}`}
                   className="block rounded-lg px-3 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  {cat}
+                  {cat.name}
                 </NavLink>
               ))}
-            </div>
-            <div className="space-y-1 border-t border-gray-200 pt-2">
-              <Text className="px-3 py-2 text-xs font-semibold uppercase text-gray-500">
-                Pages
-              </Text>
-              <NavLink
-                to={ROUTES.MY_LISTINGS}
-                className="block rounded-lg px-3 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Dashboard
-              </NavLink>
-              <NavLink
-                to={ROUTES.ADMIN_DASHBOARD}
-                className="block rounded-lg px-3 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Admin
-              </NavLink>
             </div>
             <div className="space-y-2 border-t border-gray-200 pt-2">
               {isAuthenticated ? (

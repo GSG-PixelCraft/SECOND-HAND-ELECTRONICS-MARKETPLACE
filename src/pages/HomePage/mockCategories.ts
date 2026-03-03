@@ -1,0 +1,88 @@
+import type { Category } from "@/types";
+
+export const mockCategories: Category[] = [
+  {
+    id: "1",
+    name: "Smartphones",
+    icon: {
+      id: "1",
+      url: "https://ik.imagekit.io/xxx/categories/smartphones.png",
+      fileName: "smartphones.png",
+      type: "category_icon",
+      createdAt: "2024-01-20T10:00:00.000Z",
+    },
+    isActive: true,
+    createdAt: "2024-01-20T10:00:00.000Z",
+    updatedAt: "2024-01-20T10:00:00.000Z",
+  },
+  {
+    id: "2",
+    name: "Laptops",
+    icon: {
+      id: "2",
+      url: "https://ik.imagekit.io/xxx/categories/laptops.png",
+      fileName: "laptops.png",
+      type: "category_icon",
+      createdAt: "2024-01-20T10:00:00.000Z",
+    },
+    isActive: true,
+    createdAt: "2024-01-20T10:00:00.000Z",
+    updatedAt: "2024-01-20T10:00:00.000Z",
+  },
+  {
+    id: "3",
+    name: "Audio",
+    icon: {
+      id: "3",
+      url: "https://ik.imagekit.io/xxx/categories/audio.png",
+      fileName: "audio.png",
+      type: "category_icon",
+      createdAt: "2024-01-20T10:00:00.000Z",
+    },
+    isActive: true,
+    createdAt: "2024-01-20T10:00:00.000Z",
+    updatedAt: "2024-01-20T10:00:00.000Z",
+  },
+  {
+    id: "4",
+    name: "Tablets",
+    icon: {
+      id: "4",
+      url: "https://ik.imagekit.io/xxx/categories/tablets.png",
+      fileName: "tablets.png",
+      type: "category_icon",
+      createdAt: "2024-01-20T10:00:00.000Z",
+    },
+    isActive: true,
+    createdAt: "2024-01-20T10:00:00.000Z",
+    updatedAt: "2024-01-20T10:00:00.000Z",
+  },
+  {
+    id: "5",
+    name: "Cameras",
+    icon: {
+      id: "5",
+      url: "https://ik.imagekit.io/xxx/categories/cameras.png",
+      fileName: "cameras.png",
+      type: "category_icon",
+      createdAt: "2024-01-20T10:00:00.000Z",
+    },
+    isActive: true,
+    createdAt: "2024-01-20T10:00:00.000Z",
+    updatedAt: "2024-01-20T10:00:00.000Z",
+  },
+  {
+    id: "6",
+    name: "Gaming",
+    icon: {
+      id: "6",
+      url: "https://ik.imagekit.io/xxx/categories/gaming.png",
+      fileName: "gaming.png",
+      type: "category_icon",
+      createdAt: "2024-01-20T10:00:00.000Z",
+    },
+    isActive: true,
+    createdAt: "2024-01-20T10:00:00.000Z",
+    updatedAt: "2024-01-20T10:00:00.000Z",
+  },
+];

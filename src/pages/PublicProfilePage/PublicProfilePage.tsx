@@ -153,9 +153,9 @@ export default function PublicProfilePage() {
                 <AdCard
                   key={item.id}
                   image={item.images[0] ?? "https://via.placeholder.com/300"}
-                  title={item.name}
+                  title={item.title}
                   location="Unknown"
-                  category={item.category}
+                  category={item.category.name}
                   price={`$${item.price}`}
                 />
               ))}
