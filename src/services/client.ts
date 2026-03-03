@@ -9,9 +9,7 @@ const apiClient: AxiosInstance = axios.create({
   baseURL: apiConfig.baseURL,
   timeout: apiConfig.timeout,
   headers: apiConfig.headers,
-});
-
-// Request interceptor - Add auth token
+},`n  paramsSerializer: {`n    serialize: (params) => {`n      const usp = new URLSearchParams();`n      if (params && typeof params === "object") {`n        Object.entries(params).forEach(([key, value]) => {`n          if (value === undefined || value === null) return;`n          if (Array.isArray(value)) {`n            value.forEach((v) => usp.append(key, String(v)));`n          } else {`n            usp.append(key, String(value));`n          }`n        });`n      }`n      return usp.toString();`n    },`n  },`n});`n`n// Request interceptor - Add auth token
 apiClient.interceptors.request.use(
   (config) => {
     const token = getToken();
@@ -73,3 +71,4 @@ export const api = {
 };
 
 export default apiClient;
+
