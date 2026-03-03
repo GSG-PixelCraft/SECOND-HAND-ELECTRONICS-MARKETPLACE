@@ -9,7 +9,27 @@ const apiClient: AxiosInstance = axios.create({
   baseURL: apiConfig.baseURL,
   timeout: apiConfig.timeout,
   headers: apiConfig.headers,
-},`n  paramsSerializer: {`n    serialize: (params) => {`n      const usp = new URLSearchParams();`n      if (params && typeof params === "object") {`n        Object.entries(params).forEach(([key, value]) => {`n          if (value === undefined || value === null) return;`n          if (Array.isArray(value)) {`n            value.forEach((v) => usp.append(key, String(v)));`n          } else {`n            usp.append(key, String(value));`n          }`n        });`n      }`n      return usp.toString();`n    },`n  },`n});`n`n// Request interceptor - Add auth token
+  // Ensure arrays are serialized as repeated keys: status=active&status=pending
+  // to match typical backend expectations (no bracket notation like status[])
+  paramsSerializer: {
+    serialize: (params) => {
+      const usp = new URLSearchParams();
+      if (params && typeof params === "object") {
+        Object.entries(params).forEach(([key, value]) => {
+          if (value === undefined || value === null) return;
+          if (Array.isArray(value)) {
+            value.forEach((v) => usp.append(key, String(v)));
+          } else {
+            usp.append(key, String(value));
+          }
+        });
+      }
+      return usp.toString();
+    },
+  },
+});
+
+// Request interceptor - Add auth token
 apiClient.interceptors.request.use(
   (config) => {
     const token = getToken();
