@@ -10,6 +10,7 @@ import { mockCategories } from "@/pages/HomePage/mockCategories";
 import { HomeProductCard } from "@/components/homePage/HomeProductCard";
 import type { Product } from "@/types";
 import type { FiltersState } from "@/components/ui/FiltersPart/FiltersPart";
+// import { useProducts } from "@/services/product.service"; // Enable when backend search is ready
 
 export default function SearchPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -21,6 +22,7 @@ export default function SearchPage() {
   const [isSearching, setIsSearching] = useState(false);
   const [filteredProducts, setFilteredProducts] =
     useState<Product[]>(mockProducts);
+  const [sortBy, setSortBy] = useState<string>("Newest");
   const [filtersState, setFiltersState] = useState<FiltersState>({
     categories: [],
     condition: [],
@@ -34,6 +36,12 @@ export default function SearchPage() {
 
   const searchTimeoutRef = useRef<number | undefined>(undefined);
   useCleanupTimers(searchTimeoutRef);
+  // Backend data source (enable when API is ready)
+  // const { data: apiData } = useProducts(
+  //   searchQuery.trim()
+  //     ? { search: searchQuery.trim(), limit: 100, sortBy: "createdAt", sortOrder: "desc" }
+  //     : undefined,
+  // );
 
   const performSearch = useCallback(
     (query: string, filters: FiltersState) => {
@@ -42,24 +50,23 @@ export default function SearchPage() {
       }
       setIsSearching(true);
       searchTimeoutRef.current = window.setTimeout(() => {
+        // NOTE: Using mockProducts for now. To switch to backend:
+        // const base = apiData?.products ?? [];
+        // let results = base.length ? base : mockProducts;
         let results = mockProducts;
 
-        // Category from URL param
-        if (categoryFilter) {
-          results = results.filter(
-            (product) =>
-              product.category.name.toLowerCase() ===
-              categoryFilter.toLowerCase(),
-          );
-        }
+        const effectiveCategories =
+          filters.categories.length > 0
+            ? filters.categories.map((c) => c.toLowerCase())
+            : categoryFilter
+              ? [categoryFilter.toLowerCase()]
+              : [];
 
-        // Categories from side filters
-        if (filters.categories.length > 0) {
-          const selected = new Set(filters.categories.map((c) => c.toLowerCase()));
+        if (effectiveCategories.length > 0) {
+          const selected = new Set(effectiveCategories);
           results = results.filter((p) => selected.has(p.category.name.toLowerCase()));
         }
 
-        // Condition filter mapping UI -> data
         if (filters.condition.length > 0) {
           const mapCond = (c: string) =>
             c.toLowerCase().replace(/\s+/g, "-"); // Like New -> like-new
@@ -67,13 +74,11 @@ export default function SearchPage() {
           results = results.filter((p) => selectedConds.has(p.condition));
         }
 
-        // Price range
         const min = filters.priceRange.min ? Number(filters.priceRange.min) : undefined;
         const max = filters.priceRange.max ? Number(filters.priceRange.max) : undefined;
         if (min !== undefined) results = results.filter((p) => p.price >= min);
         if (max !== undefined) results = results.filter((p) => p.price <= max);
 
-        // Text search
         if (query.trim()) {
           const q = query.toLowerCase();
           results = results.filter(
@@ -82,12 +87,38 @@ export default function SearchPage() {
               p.category.name.toLowerCase().includes(q),
           );
         }
+        const sorted = [...results];
+        const sort = (sortBy || "Newest").toLowerCase();
+        const byDateDesc = (a: Product, b: Product) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        if (sort.includes("best match")) {
+          const q = query.trim().toLowerCase();
+          if (q) {
+            const score = (p: Product) => {
+              const title = p.title.toLowerCase();
+              const ci = title.indexOf(q);
+              const catHit = p.category.name.toLowerCase().includes(q) ? -50 : 0;
+              return (ci === -1 ? 10000 : ci) + catHit;
+            };
+            sorted.sort((a, b) => score(a) - score(b) || byDateDesc(a, b));
+          } else {
+            sorted.sort(byDateDesc);
+          }
+        } else if (sort.includes("most viewed")) {
+          sorted.sort((a, b) => (b.viewCount ?? 0) - (a.viewCount ?? 0));
+        } else if (sort.includes("low to high")) {
+          sorted.sort((a, b) => a.price - b.price);
+        } else if (sort.includes("high to low")) {
+          sorted.sort((a, b) => b.price - a.price);
+        } else {
+          sorted.sort(byDateDesc);
+        }
 
-        setFilteredProducts(results);
+        setFilteredProducts(sorted);
         setIsSearching(false);
       }, 250);
     },
-    [categoryFilter],
+    [categoryFilter, sortBy],
   );
 
   useEffect(() => {
@@ -101,7 +132,21 @@ export default function SearchPage() {
     if (query && query !== searchQuery) {
       setSearchQuery(query);
     }
-  }, [searchParams, searchQuery, categoryFilter, performSearch]);
+  }, [searchParams, searchQuery, categoryFilter]);
+
+  useEffect(() => {
+    if (!categoryFilter) return;
+    if (filtersState.categories.length === 0) {
+      const match = mockCategories.find(
+        (c) => c.name.toLowerCase() === categoryFilter.toLowerCase(),
+      );
+      const displayName =
+        match
+          ? match.name
+          : (categoryFilter[0]?.toUpperCase() || "") + categoryFilter.slice(1);
+      setFiltersState((prev) => ({ ...prev, categories: [displayName] }));
+    }
+  }, [categoryFilter, filtersState.categories.length]);
 
   useEffect(() => {
     performSearch(searchQuery, filtersState);
@@ -109,16 +154,39 @@ export default function SearchPage() {
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
-    if (query.trim()) {
-      setSearchParams({ q: query });
-      // Let the effect run the search
+    const trimmed = query.trim();
+    if (trimmed) {
+      const next: Record<string, string> = { q: trimmed };
+      if (filtersState.categories.length === 1)
+        next.category = filtersState.categories[0].toLowerCase();
+      else if (categoryFilter) next.category = categoryFilter;
+      setSearchParams(next);
+    } else {
+      const next: Record<string, string> = {};
+      if (filtersState.categories.length === 1)
+        next.category = filtersState.categories[0].toLowerCase();
+      else if (categoryFilter) next.category = categoryFilter;
+      setSearchParams(next);
     }
   };
 
-  const handleFiltersChange = (next: FiltersState) => {
+  useEffect(() => {
+    const q = searchQuery.trim();
+    if (filtersState.categories.length === 1) {
+      const cat = filtersState.categories[0].toLowerCase();
+      const next: Record<string, string> = { category: cat };
+      if (q) next.q = q;
+      setSearchParams(next);
+    } else if (filtersState.categories.length !== 1) {
+      const next: Record<string, string> = {};
+      if (q) next.q = q;
+      setSearchParams(next);
+    }
+  }, [filtersState.categories, searchQuery, setSearchParams]);
+
+  const handleFiltersChange = useCallback((next: FiltersState) => {
     setFiltersState(next);
-    performSearch(searchQuery, next);
-  };
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -139,6 +207,7 @@ export default function SearchPage() {
             </div>
             <div className={`${showFilters ? "block" : "hidden"} lg:block`}>
               <FiltersPart
+                onSearch={handleSearch}
                 onFilterChange={handleFiltersChange}
                 categoriesList={mockCategories.map((c) => c.name)}
               />
@@ -149,15 +218,9 @@ export default function SearchPage() {
         <div className="flex-1 p-6">
           <div className="mb-6 flex items-center justify-between">
             <div>
-              <h2 className="text-xl font-semibold text-gray-900">
-                {categoryFilter
-                  ? `${categoryFilter.charAt(0).toUpperCase() + categoryFilter.slice(1)} Products`
-                  : searchQuery
-                    ? `Results for "${searchQuery}"`
-                    : "All Products"}
-              </h2>
+
             </div>
-            <SearchSort />
+            <SearchSort onSortChange={setSortBy} />
           </div>
 
           {isSearching && (
@@ -198,8 +261,7 @@ export default function SearchPage() {
   );
 }
 
-// Ensure pending timers are cleared on unmount
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+
 function useCleanupTimers(ref: React.MutableRefObject<number | undefined>) {
   useEffect(() => {
     return () => {
@@ -207,3 +269,4 @@ function useCleanupTimers(ref: React.MutableRefObject<number | undefined>) {
     };
   }, [ref]);
 }
+
