@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { Dialog } from "@/components/ui/Dialog/dialog";
 import { Button } from "@/components/ui/Button/button";
 import { Image } from "@/components/ui/Image/image";
+import { AlertTriangle, CheckCircle2 } from "lucide-react";
 import { Text } from "@/components/ui/Text/text";
 import { FullScreenLoading } from "@/components/feedback/loading/full-screen-loading";
 import { ROUTES } from "@/constants/routes";
@@ -26,10 +27,7 @@ export const ConfirmationDialogs: FC<ConfirmationDialogsProps> = ({
 }): ReactElement => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const warningIcon =
-    "http://localhost:3845/assets/0c03194102e72180b212b744376b7091d5470b13.svg";
-  const successIcon =
-    "http://localhost:3845/assets/5fd8f670978b5c2939b59169cceb6c064c37ff92.svg";
+  // Use inline icons to avoid broken external asset URLs in dev
 
   return (
     <>
@@ -41,7 +39,7 @@ export const ConfirmationDialogs: FC<ConfirmationDialogsProps> = ({
         className="max-w-[400px] border-0 p-0 shadow-xl backdrop:bg-black/85"
       >
         <div className="flex flex-col items-center gap-6 rounded-[20px] bg-white px-8 py-8 text-center">
-          <Image src={warningIcon} alt="" className="h-20 w-20" />
+          <AlertTriangle className="h-20 w-20 text-yellow-500" />
           <div className="space-y-3">
             <Text className="text-[18px] font-medium text-[#212121]">
               {t("addListing.leaveModal.title")}
@@ -79,7 +77,7 @@ export const ConfirmationDialogs: FC<ConfirmationDialogsProps> = ({
         className="max-w-[455px] border-0 p-0 shadow-xl backdrop:bg-black/85"
       >
         <div className="flex flex-col items-center gap-6 rounded-[20px] bg-white px-8 py-8 text-center">
-          <Image src={successIcon} alt="" className="h-20 w-20" />
+          <CheckCircle2 className="h-20 w-20 text-green-500" />
           <div className="space-y-3">
             <Text className="text-[18px] font-medium text-[#212121]">
               {t("addListing.successModal.title")}

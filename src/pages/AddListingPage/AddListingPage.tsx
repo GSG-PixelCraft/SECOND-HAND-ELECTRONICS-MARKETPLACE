@@ -13,7 +13,15 @@ import { PhotoTipsDialog } from "./components/PhotoTipsDialog";
 import { LocationDialog } from "./components/LocationDialog";
 import { ReviewDialog } from "./components/ReviewDialog";
 import { ConfirmationDialogs } from "./components/ConfirmationDialogs";
-import { useCreateProduct, useCategories } from "@/services/product.service";
+import {
+  useCreateProduct,
+  useCreatePendingProduct,
+  useCategories,
+  productService,
+  PRODUCTS_KEYS,
+} from "@/services/product.service";
+import { useQueryClient } from "@tanstack/react-query";
+import { useLocation } from "react-router-dom";
 import type { Product } from "@/types";
 
 type ListingFormData = z.infer<typeof listingSchema>;
@@ -30,8 +38,14 @@ const FALLBACK_IMAGE = new URL("../../images/Phone.jpg", import.meta.url).href;
 
 export default function AddListingPage(): ReactElement {
   const { t } = useTranslation();
-  const { data: categoriesData } = useCategories();
-  const createProduct = useCreateProduct();
+  const location = useLocation();
+  const queryClient = useQueryClient();
+  const isPendingRoute =
+    location.pathname.endsWith("/products/bending") ||
+    location.pathname.endsWith("/products/pending");
+  const { data: categoriesData, isLoading: isCategoriesLoading } = useCategories() as any;
+  const draftMutation = useCreateProduct();
+  const pendingMutation = useCreatePendingProduct();
   const [currentStep, setCurrentStep] = useState<1 | 2>(1);
   const [photos, setPhotos] = useState<PhotoItemWithProgress[]>([]);
   const [photoError, setPhotoError] = useState<string | null>(null);
@@ -66,7 +80,8 @@ export default function AddListingPage(): ReactElement {
     Boolean(values.category?.trim().length) &&
     Boolean(values.condition?.trim().length) &&
     Number(values.price) > 0 &&
-    photos.length > 0;
+    photos.length > 0 &&
+    !isCategoriesLoading;
 
   useEffect(() => {
     const formatted = [locationValue.city, locationValue.country]
@@ -90,29 +105,130 @@ export default function AddListingPage(): ReactElement {
   const onSubmit = async (data: ListingFormData) => {
     setIsSending(true);
     try {
-      // Try to match selected category to backend categories
+      // Ensure categories available (fetch if not yet loaded)
+      let localCategories = categoriesData as any[] | undefined;
+      if (!localCategories || !localCategories.length) {
+        localCategories = await queryClient.fetchQuery({
+          queryKey: PRODUCTS_KEYS.categories as any,
+          queryFn: productService.getCategories,
+        });
+      }
+      // Try to match selected category to backend categories (fallback to first)
       const selectedCategoryName = data.category?.trim() || "";
-      const match = (categoriesData ?? []).find(
-        (c) => c.name.toLowerCase() === selectedCategoryName.toLowerCase(),
+      const match = (localCategories ?? []).find(
+        (c: any) => String(c.name).toLowerCase() === selectedCategoryName.toLowerCase(),
+      );
+      // If backend has no categories, fall back to '1' (common default in seeded DBs)
+      const categoryFallbackId = "1";
+      const categoryId = String(
+        match?.id ?? localCategories?.[0]?.id ?? categoryFallbackId,
       );
 
-      // Minimal draft payload (matches CreateDraftProductDto)
+      // Build attributes (required for pending; harmless for draft)
+      const attributes = [
+        data.brand && { attributeId: "1", value: String(data.brand) },
+        data.model && { attributeId: "2", value: String(data.model) },
+        data.storage && {
+          attributeId: "3",
+          value:
+            String(data.storage) + (String(data.storage).endsWith("GB") ? "" : "GB"),
+        },
+        data.batteryHealth && {
+          attributeId: "4",
+          value: String(data.batteryHealth),
+        },
+        data.description && { attributeId: "5", value: String(data.description) },
+        values.location && { attributeId: "6", value: String(values.location) },
+      ].filter(Boolean) as { attributeId: string; value: string }[];
+
       const images = photos.map((p) => p.file);
-      await createProduct.mutateAsync({
-        title: data.title,
-        categoryId: match ? match.id : "",
-        condition: normalizeCondition(data.condition),
-        price: Number(data.price) || 0,
-        isNegotiable: Boolean(data.isNegotiable),
-        images,
-      } as any);
+
+      if (isPendingRoute) {
+        // Fetch category attributes to map to real attribute IDs
+        const catDetail = await productService.getCategoryDetail(categoryId);
+        const defs = catDetail?.attributes ?? [];
+        const pick = (names: string[]) =>
+          defs.find((d) => names.some((n) => d.name.toLowerCase().includes(n)));
+
+        const brandDef = pick(["brand", "company", "manufacturer", "make"]);
+        const modelDef = pick(["model"]);
+        const storageDef = pick(["storage", "capacity", "rom"]);
+        const batteryDef = pick(["battery", "battery health"]);
+        const descDef = pick(["description", "details", "notes"]);
+        const locDef = pick(["location", "address", "city"]);
+
+        const mappedAttrs = [] as { attributeId: string; value: string }[];
+        if (brandDef && data.brand) mappedAttrs.push({ attributeId: brandDef.id, value: String(data.brand) });
+        if (modelDef && data.model) mappedAttrs.push({ attributeId: modelDef.id, value: String(data.model) });
+        if (storageDef && data.storage)
+          mappedAttrs.push({
+            attributeId: storageDef.id,
+            value: String(data.storage).endsWith("GB") ? String(data.storage) : `${data.storage}GB`,
+          });
+        if (batteryDef && data.batteryHealth)
+          mappedAttrs.push({ attributeId: batteryDef.id, value: String(data.batteryHealth) });
+        if (descDef && data.description)
+          mappedAttrs.push({ attributeId: descDef.id, value: String(data.description) });
+        if (locDef && values.location)
+          mappedAttrs.push({ attributeId: locDef.id, value: String(values.location) });
+
+        // Example-based fallback mapping (as per Swagger example)
+        const exampleAttrs = [
+          data.brand && { attributeId: "1", value: String(data.brand) },
+          data.model && { attributeId: "2", value: String(data.model) },
+          data.storage && {
+            attributeId: "3",
+            value: String(data.storage).endsWith("GB")
+              ? String(data.storage)
+              : `${data.storage}GB`,
+          },
+          data.batteryHealth && { attributeId: "4", value: String(data.batteryHealth) },
+          data.description && { attributeId: "5", value: String(data.description) },
+          values.location && { attributeId: "6", value: String(values.location) },
+        ].filter(Boolean) as { attributeId: string; value: string }[];
+
+        const attrsForPending = mappedAttrs.length ? mappedAttrs : exampleAttrs;
+
+        if (attrsForPending.length) {
+          await pendingMutation.mutateAsync({
+            title: data.title,
+            categoryId,
+            condition: normalizeCondition(data.condition),
+            price: Number(data.price) || 0,
+            isNegotiable: Boolean(data.isNegotiable),
+            images,
+            attributes: attrsForPending,
+          } as any);
+        } else {
+          // Last resort: fallback to draft to avoid 400
+          await draftMutation.mutateAsync({
+            title: data.title,
+            categoryId,
+            condition: normalizeCondition(data.condition),
+            price: Number(data.price) || 0,
+            isNegotiable: Boolean(data.isNegotiable),
+            images,
+          } as any);
+        }
+      } else {
+        await draftMutation.mutateAsync({
+          title: data.title,
+          categoryId,
+          condition: normalizeCondition(data.condition),
+          price: Number(data.price) || 0,
+          isNegotiable: Boolean(data.isNegotiable),
+          images,
+        } as any);
+      }
 
       setIsSending(false);
       setReviewOpen(false);
       setReviewSuccessOpen(true);
-    } catch (e) {
+    } catch (e: any) {
       // If backend rejects, keep dialog open and stop the sending spinner
-      console.error("Create listing failed", e);
+      const status = e?.response?.status;
+      const message = e?.response?.data || e?.message;
+      console.error("Create listing failed", status, message);
       setIsSending(false);
     }
   };
