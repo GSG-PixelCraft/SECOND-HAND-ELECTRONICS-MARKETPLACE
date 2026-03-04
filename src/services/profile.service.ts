@@ -2,38 +2,10 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "./client";
 import { getToken } from "@/lib/storage";
 import { API_ENDPOINTS } from "@/constants/api-endpoints";
+import type { ProfileResponseDto, UpdateProfilePayload } from "@/dto/profile";
 
-export interface ProfileData {
-  id?: string;
-  fullName?: string;
-  name?: string;
-  email?: string;
-  phoneNumber?: string;
-  bio?: string;
-  country?: string;
-  countryId?: number;
-  location?: string;
-  latitude?: number;
-  longitude?: number;
-  avatar?: string;
-  avatarUrl?: string;
-  profileImageUrl?: string;
-  createdAt?: string;
-  updatedAt?: string;
-  [key: string]: unknown;
-}
-
-export interface UpdateProfilePayload {
-  // Legacy UI fields, mapped to swagger-compatible payload where possible.
-  fullName?: string;
-  country?: string;
-  bio?: string;
-  location?: string;
-  countryId?: number;
-  latitude?: number;
-  longitude?: number;
-  avatarFile?: File | null;
-}
+// Re-export for consumers that previously imported from this module
+export type { ProfileResponseDto, UpdateProfilePayload } from "@/dto/profile";
 
 type ApiEnvelope<T> = {
   data?: T;
@@ -41,7 +13,7 @@ type ApiEnvelope<T> = {
 
 const unwrapResponse = <T extends object>(
   response: T | ApiEnvelope<T>,
-): T | Record<string, unknown> => {
+): T | Partial<T> => {
   if (
     response &&
     typeof response === "object" &&
@@ -53,24 +25,24 @@ const unwrapResponse = <T extends object>(
   }
 
   if (response && typeof response === "object") {
-    return response as Record<string, unknown>;
+    return response as T;
   }
 
-  return {};
+  return {} as Partial<T>;
 };
 
 export const profileService = {
-  getProfile: async (): Promise<ProfileData> => {
+  getProfile: async (): Promise<ProfileResponseDto> => {
     try {
-      const response = await api.get<ProfileData | ApiEnvelope<ProfileData>>(
-        API_ENDPOINTS.PROFILE.CURRENT,
-      );
-      return unwrapResponse(response) as ProfileData;
+      const response = await api.get<
+        ProfileResponseDto | ApiEnvelope<ProfileResponseDto>
+      >(API_ENDPOINTS.PROFILE.CURRENT);
+      return unwrapResponse(response) as ProfileResponseDto;
     } catch (err: unknown) {
       const e = err as { response?: { status?: number } };
       if (e?.response?.status === 404 || e?.response?.status === 401) {
-        // Treat 404 as "no profile yet" and return an empty object
-        return {} as ProfileData;
+        // No profile created yet — return safe empty object
+        return {} as ProfileResponseDto;
       }
       throw err;
     }
@@ -78,18 +50,16 @@ export const profileService = {
 
   updateProfile: async (
     payload: UpdateProfilePayload,
-  ): Promise<ProfileData> => {
+  ): Promise<ProfileResponseDto> => {
     const formData = new FormData();
-    const bio = payload.bio; // do not map fullName -> bio; align with Swagger
-    const location = payload.location ?? payload.country;
 
-    if (bio !== undefined) {
-      formData.append("bio", bio);
+    if (payload.bio !== undefined) {
+      formData.append("bio", payload.bio);
     }
-    if (location !== undefined) {
-      formData.append("location", location);
+    if (payload.location !== undefined) {
+      formData.append("location", payload.location);
     }
-    if (typeof payload.countryId === "number") {
+    if (payload.countryId !== undefined && payload.countryId !== "") {
       formData.append("countryId", String(payload.countryId));
     }
     if (typeof payload.latitude === "number") {
@@ -102,17 +72,13 @@ export const profileService = {
       formData.append("avatar", payload.avatarFile);
     }
 
-    const response = await api.patch<ProfileData | ApiEnvelope<ProfileData>>(
-      API_ENDPOINTS.PROFILE.CURRENT,
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      },
-    );
+    const response = await api.patch<
+      ProfileResponseDto | ApiEnvelope<ProfileResponseDto>
+    >(API_ENDPOINTS.PROFILE.CURRENT, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
 
-    return unwrapResponse(response) as ProfileData;
+    return unwrapResponse(response) as ProfileResponseDto;
   },
 };
 
@@ -137,7 +103,7 @@ export const useUpdateProfile = () => {
   return useMutation({
     mutationFn: profileService.updateProfile,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: PROFILE_KEYS.all });
+      void queryClient.invalidateQueries({ queryKey: PROFILE_KEYS.all });
     },
   });
 };

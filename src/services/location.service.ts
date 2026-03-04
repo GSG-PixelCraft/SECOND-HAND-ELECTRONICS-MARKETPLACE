@@ -1,3 +1,5 @@
+import { useQuery } from "@tanstack/react-query";
+import { api } from "./client";
 import { API_ENDPOINTS } from "@/constants/api-endpoints";
 
 export interface LocationCountry {
@@ -145,3 +147,49 @@ export const fetchCitiesByCountry = async (
     return [];
   }
 };
+
+/**
+ * Typed response matching the Swagger CountryResponseDto.
+ * `id` is used as the `countryId` value when calling PATCH /profile.
+ */
+export interface Country {
+  id: string;
+  nameEn: string;
+  nameAr: string;
+  isoCode: string;
+  currency: string;
+  isActive: boolean;
+}
+
+interface CountriesApiEnvelope {
+  success?: boolean;
+  data?: Country[];
+}
+
+export const COUNTRY_KEYS = {
+  all: ["countries"] as const,
+};
+
+/** React Query hook — data is cached forever (countries never change). */
+export const useCountries = () =>
+  useQuery({
+    queryKey: COUNTRY_KEYS.all,
+    queryFn: async (): Promise<Country[]> => {
+      const response = await api.get<CountriesApiEnvelope | Country[]>(
+        API_ENDPOINTS.LOCATIONS.COUNTRIES,
+      );
+      // Unwrap { data: [...] } envelope if present
+      if (
+        response &&
+        !Array.isArray(response) &&
+        Array.isArray((response as CountriesApiEnvelope).data)
+      ) {
+        return (response as CountriesApiEnvelope).data ?? [];
+      }
+      if (Array.isArray(response)) return response as Country[];
+      return [];
+    },
+    staleTime: Infinity,
+    gcTime: Infinity,
+    retry: 2,
+  });

@@ -10,7 +10,6 @@ import type {
   User,
 } from "@/types";
 import type { ApiResponse, VerifyCodeResponse } from "./auth.service";
-import { profileService } from "./profile.service";
 import { getUser, getToken } from "@/lib/storage";
 
 const IDENTITY_PENDING_KEY = "identity_verification_pending";
@@ -24,31 +23,33 @@ export const verificationService = {
   getStatus: async (): Promise<VerificationStatusResponse> => {
     // Derive status from stored user flags and profile info
     const storedUser = (getUser() || {}) as Partial<User> | null;
-    let isEmailVerified = Boolean(storedUser?.emailVerified ?? storedUser?.isEmailVerified);
-    let isPhoneVerified = Boolean(storedUser?.phoneVerified ?? storedUser?.isPhoneVerified);
-    let isIdentityVerified = Boolean(
+    const isEmailVerified = Boolean(
+      storedUser?.emailVerified ?? storedUser?.isEmailVerified,
+    );
+    const isPhoneVerified = Boolean(
+      storedUser?.phoneVerified ?? storedUser?.isPhoneVerified,
+    );
+    const isIdentityVerified = Boolean(
       storedUser?.identityVerified ?? storedUser?.isIdentityVerified,
     );
 
     // Fetch profile for latest contact values
-    let email: string | null = storedUser?.email ?? null;
-    let phoneNumber: string | null = storedUser?.phoneNumber ?? null;
-    try {
-      const profile = await profileService.getProfile();
-      email = (profile.email as string) ?? email;
-      phoneNumber = (profile.phoneNumber as string) ?? phoneNumber;
-    } catch {
-      // ignore; fallback to stored user
-    }
+    const email: string | null = storedUser?.email ?? null;
+    const phoneNumber: string | null = storedUser?.phoneNumber ?? null;
 
-    const pendingIdentityFlag = sessionStorage.getItem(IDENTITY_PENDING_KEY) === "true";
+    const pendingIdentityFlag =
+      sessionStorage.getItem(IDENTITY_PENDING_KEY) === "true";
     if (isIdentityVerified) {
       sessionStorage.removeItem(IDENTITY_PENDING_KEY);
     }
 
     return {
       identity: {
-        status: isIdentityVerified ? "approved" : pendingIdentityFlag ? "pending" : "not_started",
+        status: isIdentityVerified
+          ? "approved"
+          : pendingIdentityFlag
+            ? "pending"
+            : "not_started",
         type: null,
       },
       phone: {
@@ -117,13 +118,18 @@ export const verificationService = {
       phoneNumber,
     }),
 
-  sendChangePhoneOTP: (payload: { phoneNumber: string }): Promise<ApiResponse<string>> =>
+  sendChangePhoneOTP: (payload: {
+    phoneNumber: string;
+  }): Promise<ApiResponse<string>> =>
     api.post<ApiResponse<string>>(
       API_ENDPOINTS.VERIFICATION.PHONE.CHANGE_SEND_OTP,
       payload,
     ),
 
-  verifyChangePhoneOTP: (payload: { code: string; phoneNumber: string }): Promise<ApiResponse<VerifyCodeResponse>> =>
+  verifyChangePhoneOTP: (payload: {
+    code: string;
+    phoneNumber: string;
+  }): Promise<ApiResponse<VerifyCodeResponse>> =>
     api.post<ApiResponse<VerifyCodeResponse>>(
       API_ENDPOINTS.VERIFICATION.PHONE.CHANGE_VERIFY_OTP,
       payload,
