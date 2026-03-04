@@ -57,7 +57,7 @@ const RegisterPage = () => {
   const [countryCode, setCountryCode] = useState("+970");
   const [countries, setCountries] = useState<Country[]>(COUNTRIES_FALLBACK);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [emailValidation, setEmailValidation] = useState<{
     isValid: boolean;
     isTouched: boolean;
@@ -111,6 +111,34 @@ const RegisterPage = () => {
     );
   };
 
+  const parseErrorToFields = (errorMessage: string): Record<string, string> => {
+    const errors: Record<string, string> = {};
+    const lowerMessage = errorMessage.toLowerCase();
+
+    // Parse error message and map to fields with user-friendly constant messages
+    if (
+      lowerMessage.includes("email") ||
+      lowerMessage.includes("already exists") ||
+      lowerMessage.includes("already registered")
+    ) {
+      errors.email =
+        "This email is already registered. Please use a different email or sign in.";
+    } else if (lowerMessage.includes("phone")) {
+      errors.phone =
+        "This phone number is already registered or invalid. Please check and try again.";
+    } else if (lowerMessage.includes("password")) {
+      errors.password =
+        "Password does not meet requirements. Please use a stronger password.";
+    } else if (lowerMessage.includes("name")) {
+      errors.fullName = "Please enter a valid full name.";
+    } else {
+      errors.general =
+        "Registration failed. Please check your information and try again.";
+    }
+
+    return errors;
+  };
+
   useEffect(() => {
     const controller = new AbortController();
     const fetchCountries = async () => {
@@ -162,7 +190,7 @@ const RegisterPage = () => {
     if (!isFormValid()) return;
 
     setIsSubmitting(true);
-    setSubmitError(null);
+    setFieldErrors({});
 
     const cleanValue = phoneNumber.replace(/\s/g, "");
     const normalizedCountryCode = countryCode.startsWith("+")
@@ -216,10 +244,11 @@ const RegisterPage = () => {
       }
     } catch (error) {
       const apiError = error as AxiosError<{ message?: string }>;
-      setSubmitError(
-        apiError.response?.data?.message ??
-          "Registration failed. Please try again.",
-      );
+      const backendMessage = apiError.response?.data?.message ?? "";
+
+      // Parse field-specific errors from backend message
+      const parsedErrors = parseErrorToFields(backendMessage);
+      setFieldErrors(parsedErrors);
     } finally {
       setIsSubmitting(false);
     }
@@ -312,12 +341,26 @@ const RegisterPage = () => {
                   id="fullName"
                   type="text"
                   value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
+                  onChange={(e) => {
+                    setFullName(e.target.value);
+                    if (fieldErrors.fullName) {
+                      setFieldErrors((prev) => ({ ...prev, fullName: "" }));
+                    }
+                  }}
                   placeholder="Enter your full name"
-                  className="block w-full rounded-md border border-gray-300 px-3 py-2.5 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className={`block w-full rounded-md border px-3 py-2.5 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-1 ${
+                    fieldErrors.fullName
+                      ? "border-red-500 bg-red-50 focus:border-red-500 focus:ring-red-500"
+                      : "border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                  }`}
                   required
                 />
               </div>
+              {fieldErrors.fullName && (
+                <p className="mt-1 text-sm text-red-600">
+                  {fieldErrors.fullName}
+                </p>
+              )}
             </div>
 
             {/* Email Input */}
@@ -333,21 +376,33 @@ const RegisterPage = () => {
                   id="email"
                   type="email"
                   value={email}
-                  onChange={(e) => handleEmailChange(e.target.value)}
+                  onChange={(e) => {
+                    handleEmailChange(e.target.value);
+                    if (fieldErrors.email) {
+                      setFieldErrors((prev) => ({ ...prev, email: "" }));
+                    }
+                  }}
                   placeholder="Enter your email"
                   className={`block w-full rounded-md border px-3 py-2.5 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-1 ${
-                    emailValidation.isTouched && !emailValidation.isValid
-                      ? "border-red-500 focus:border-red-500 focus:ring-red-500"
-                      : "border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                    fieldErrors.email
+                      ? "border-red-500 bg-red-50 focus:border-red-500 focus:ring-red-500"
+                      : emailValidation.isTouched && !emailValidation.isValid
+                        ? "border-red-500 focus:border-red-500 focus:ring-red-500"
+                        : "border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                   }`}
                   required
                 />
               </div>
-              {emailValidation.isTouched && !emailValidation.isValid && (
-                <p className="mt-1 text-sm text-red-600">
-                  Please enter a valid email address
-                </p>
+              {fieldErrors.email && (
+                <p className="mt-1 text-sm text-red-600">{fieldErrors.email}</p>
               )}
+              {!fieldErrors.email &&
+                emailValidation.isTouched &&
+                !emailValidation.isValid && (
+                  <p className="mt-1 text-sm text-red-600">
+                    Please enter a valid email address
+                  </p>
+                )}
             </div>
 
             {/* Phone Number Input */}
@@ -362,7 +417,12 @@ const RegisterPage = () => {
                 <div className="absolute inset-y-0 left-0 z-10 flex items-center pl-3">
                   <select
                     value={countryCode}
-                    onChange={(e) => setCountryCode(e.target.value)}
+                    onChange={(e) => {
+                      setCountryCode(e.target.value);
+                      if (fieldErrors.phone) {
+                        setFieldErrors((prev) => ({ ...prev, phone: "" }));
+                      }
+                    }}
                     className="h-full cursor-pointer appearance-none border-0 bg-transparent px-0 py-0 text-2xl font-semibold focus:outline-none focus:ring-0"
                   >
                     {countries.map((country) => (
@@ -379,19 +439,33 @@ const RegisterPage = () => {
                   id="phoneNumber"
                   type="text"
                   value={phoneNumber}
-                  onChange={(e) => handlePhoneChange(e.target.value)}
+                  onChange={(e) => {
+                    handlePhoneChange(e.target.value);
+                    if (fieldErrors.phone) {
+                      setFieldErrors((prev) => ({ ...prev, phone: "" }));
+                    }
+                  }}
                   placeholder="Enter your phone number"
                   className={`block w-full rounded-md border py-2.5 pl-16 pr-3 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-1 ${
-                    phoneValidation.isTouched && !phoneValidation.isValid
-                      ? "border-red-500 focus:border-red-500 focus:ring-red-500"
-                      : "border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                    fieldErrors.phone
+                      ? "border-red-500 bg-red-50 focus:border-red-500 focus:ring-red-500"
+                      : phoneValidation.isTouched && !phoneValidation.isValid
+                        ? "border-red-500 focus:border-red-500 focus:ring-red-500"
+                        : "border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                   }`}
                   required
                 />
               </div>
-              {phoneValidation.isTouched && !phoneValidation.isValid && (
-                <p className="mt-1 text-sm text-red-600">The number is wrong</p>
+              {fieldErrors.phone && (
+                <p className="mt-1 text-sm text-red-600">{fieldErrors.phone}</p>
               )}
+              {!fieldErrors.phone &&
+                phoneValidation.isTouched &&
+                !phoneValidation.isValid && (
+                  <p className="mt-1 text-sm text-red-600">
+                    The number is wrong
+                  </p>
+                )}
             </div>
 
             {/* Password Input */}
@@ -407,9 +481,21 @@ const RegisterPage = () => {
                   id="password"
                   type={showPassword ? "text" : "password"}
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    if (fieldErrors.password) {
+                      setFieldErrors((prev) => ({
+                        ...prev,
+                        password: "",
+                      }));
+                    }
+                  }}
                   placeholder="Enter your password"
-                  className="block w-full rounded-md border border-gray-300 px-3 py-2.5 pr-10 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className={`block w-full rounded-md border px-3 py-2.5 pr-10 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-1 ${
+                    fieldErrors.password
+                      ? "border-red-500 bg-red-50 focus:border-red-500 focus:ring-red-500"
+                      : "border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                  }`}
                   required
                 />
                 <button
@@ -454,6 +540,11 @@ const RegisterPage = () => {
                   )}
                 </button>
               </div>
+              {fieldErrors.password && (
+                <p className="mt-1 text-sm text-red-600">
+                  {fieldErrors.password}
+                </p>
+              )}
             </div>
 
             {/* Terms and Conditions Checkbox */}
@@ -486,12 +577,29 @@ const RegisterPage = () => {
               </label>
             </div>
 
-            {/* Register Button */}
-            {submitError ? (
-              <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
-                {submitError}
-              </p>
-            ) : null}
+            {/* Error Messages Display */}
+            {fieldErrors.general && (
+              <div className="rounded-lg border-l-4 border-red-500 bg-red-50 p-4 shadow-sm">
+                <div className="flex items-start">
+                  <svg
+                    className="h-5 w-5 flex-shrink-0 text-red-500"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  <div className="ml-3">
+                    <p className="text-sm font-medium text-red-700">
+                      {fieldErrors.general}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
 
             <button
               type="submit"
