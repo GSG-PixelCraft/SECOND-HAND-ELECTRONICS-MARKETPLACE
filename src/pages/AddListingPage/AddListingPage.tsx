@@ -113,11 +113,31 @@ export default function AddListingPage(): ReactElement {
           queryFn: productService.getCategories,
         });
       }
-      // Try to match selected category to backend categories (fallback to first)
+      // Try to match selected category to backend categories (fallback to heuristic/first)
       const selectedCategoryName = data.category?.trim() || "";
-      const match = (localCategories ?? []).find(
-        (c: any) => String(c.name).toLowerCase() === selectedCategoryName.toLowerCase(),
+      const norm = selectedCategoryName.toLowerCase();
+      const synonymGroups: Array<string[]> = [
+        ["phone", "phones", "smartphone", "smartphones", "mobile", "mobiles"],
+        ["laptop", "laptops", "notebook"],
+        ["tablet", "tablets"],
+        ["camera", "cameras"],
+        ["audio", "headphone", "headphones", "earbud", "earbuds"],
+        ["gaming", "console", "playstation", "xbox", "nintendo"],
+        ["accessories", "accessory"],
+        ["pc parts", "pc", "parts", "component", "components"],
+      ];
+      const includesMatch = (name: string) => {
+        const n = name.toLowerCase();
+        return synonymGroups.some((group) =>
+          group.some((key) => n.includes(key) && norm.includes(group[0])),
+        );
+      };
+      let match = (localCategories ?? []).find(
+        (c: any) => String(c.name).toLowerCase() === norm,
       );
+      if (!match) {
+        match = (localCategories ?? []).find((c: any) => includesMatch(String(c.name)));
+      }
       // If backend has no categories, fall back to '1' (common default in seeded DBs)
       const categoryFallbackId = "1";
       const categoryId = String(
