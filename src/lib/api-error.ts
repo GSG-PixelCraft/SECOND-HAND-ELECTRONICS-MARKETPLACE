@@ -1,19 +1,25 @@
+type AxiosLikeError = {
+  response?: {
+    data?: {
+      message?: unknown;
+    };
+  };
+};
+
 export const getBackendErrorMessage = (error: unknown): string | null => {
   try {
     // Axios-style error: error.response.data.message
-    if (
-      error &&
-      typeof error === "object" &&
-      "response" in error &&
-      (error as any).response &&
-      typeof (error as any).response === "object" &&
-      "data" in (error as any).response &&
-      (error as any).response.data &&
-      typeof (error as any).response.data === "object" &&
-      "message" in (error as any).response.data &&
-      typeof (error as any).response.data.message === "string"
-    ) {
-      return (error as any).response.data.message as string;
+    if (error && typeof error === "object" && "response" in error) {
+      const axiosErr = error as AxiosLikeError;
+      if (
+        axiosErr.response &&
+        typeof axiosErr.response === "object" &&
+        axiosErr.response.data &&
+        typeof axiosErr.response.data === "object" &&
+        typeof axiosErr.response.data.message === "string"
+      ) {
+        return axiosErr.response.data.message;
+      }
     }
 
     // Fallback to plain Error.message
@@ -25,4 +31,3 @@ export const getBackendErrorMessage = (error: unknown): string | null => {
   }
   return null;
 };
-

@@ -205,7 +205,7 @@ export const adminService = {
       );
 
       return response.data;
-    } catch (error) {
+    } catch {
       // Temporary fallback until backend API is ready
       await new Promise((resolve) => setTimeout(resolve, 500));
       return mockStats;

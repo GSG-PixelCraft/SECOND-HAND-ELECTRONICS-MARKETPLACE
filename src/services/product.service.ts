@@ -15,6 +15,7 @@ export const productService = {
     const backend = res.data?.data ?? res.data;
 
     return {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       products: backend.data.map((item: any) => ({
         id: String(item.id),
         name: item.title ?? item.name,

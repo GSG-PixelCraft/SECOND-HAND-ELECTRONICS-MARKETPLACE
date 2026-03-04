@@ -184,6 +184,7 @@ export const adminListingsService = {
     const backend = response.data.data;
 
     return {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       items: backend.data.map((product: any) => ({
         id: product.id,
 
@@ -199,6 +200,7 @@ export const adminListingsService = {
 
         // AdminListing fields
         description: "",
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         images: product.images?.map((img: any) => img.url) || [],
         sellerId: product.sellerId,
         sellerName: "",
@@ -411,5 +413,3 @@ export const useBulkActionMutation = () => {
     },
   });
 };
-
-

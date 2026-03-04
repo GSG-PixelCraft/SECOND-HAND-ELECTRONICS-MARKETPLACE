@@ -1,3 +1,3 @@
 export * from "./Card";
-import CardDefault, { Card } from "./Card";
+import CardDefault from "./Card";
 export default CardDefault;
