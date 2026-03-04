@@ -25,9 +25,13 @@ export const ROUTES = {
   PRODUCT_DETAIL: "/products/:id",
   CHAT: "/chat",
   BLOCKED_USERS: "/blocked-users",
-  MY_LISTINGS: "/my-listings",
-  MY_LISTINGS_CATEGORY: "/my-listings/category/:category",
-  ADD_LISTING: "/listings/new",
+  MY_LISTINGS: "/products/my",
+  MY_LISTINGS_CATEGORY: "/products/my/category/:category",
+  // Default Add Listing should open pending creation page
+  ADD_LISTING: "/products/pending",
+  // Optional explicit routes
+  ADD_LISTING_PENDING: "/products/pending",
+  ADD_LISTING_DRAFT: "/products/draft",
   FAVORITES: "/favorites",
   NOTIFICATIONS: "/notifications",
   ADMIN_DASHBOARD: "/admin",
@@ -55,7 +59,7 @@ export const ROUTES = {
 export const getProductRoute = (id: string) => `/products/${id}`;
 export const getPublicProfileRoute = (id: string) => `/profile/${id}`;
 export const getMyListingsCategoryRoute = (category: string) =>
-  `/my-listings/category/${category}`;
+  `/products/my/category/${category}`;
 export const getAdminVerificationReviewRoute = (id: string) =>
   `/admin/verifications/${encodeURIComponent(id)}`;
 export const getAdminUserDetailRoute = (id: string) =>

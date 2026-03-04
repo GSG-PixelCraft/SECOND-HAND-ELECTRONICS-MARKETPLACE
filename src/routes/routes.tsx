@@ -220,27 +220,59 @@ const protectedRoutes = [
     },
   },
   {
-    path: "/my-listings",
+    path: "/products/my",
     lazy: async () => {
       const { default: MyListingsPage } =
         await import("@/pages/MyListingsPage/MyListingsPage");
-      return { Component: MyListingsPage };
+      return {
+        Component: () => (
+          <AuthGuard>
+            <MyListingsPage />
+          </AuthGuard>
+        ),
+      };
     },
   },
   {
-    path: "/my-listings/category/:category",
+    path: "/prducts/category/:category",
     lazy: async () => {
       const { default: MyListingsPage } =
         await import("@/pages/MyListingsPage/MyListingsPage");
-      return { Component: MyListingsPage };
+      return {
+        Component: () => (
+          <AuthGuard>
+            <MyListingsPage />
+          </AuthGuard>
+        ),
+      };
     },
   },
   {
-    path: "/listings/new",
+    path: "/products/draft",
     lazy: async () => {
       const { default: AddListingPage } =
         await import("@/pages/AddListingPage/AddListingPage");
-      return { Component: AddListingPage };
+      return {
+        Component: () => (
+          <AuthGuard>
+            <AddListingPage />
+          </AuthGuard>
+        ),
+      };
+    },
+  },
+  {
+    path: "/products/pending",
+    lazy: async () => {
+      const { default: AddListingPage } =
+        await import("@/pages/AddListingPage/AddListingPage");
+      return {
+        Component: () => (
+          <AuthGuard>
+            <AddListingPage />
+          </AuthGuard>
+        ),
+      };
     },
   },
   {
@@ -315,7 +347,7 @@ export const router = createBrowserRouter(
       },
     },
     {
-      path: "/admin/listings/:id",
+      path: "/admin/products/:id",
       errorElement: <UnexpectedErrorPage />,
       hydrateFallbackElement: routeHydrateFallback,
       lazy: async () => {
