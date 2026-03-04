@@ -1,27 +1,29 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { SlidersHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/Button/button";
 import { FiltersPart } from "@/components/ui/FiltersPart/FiltersPart";
 import { SearchSort } from "@/components/ui/SearchSort/SearchSort";
 import { Text } from "@/components/ui/Text/text";
-
-interface Filters {
-  categories: string[];
-  condition: string[];
-  priceRange: { min: string; max: string };
-  brand: string[];
-  model: string[];
-  storage: string[];
-  sellerType: string[];
-  location: { country: string; city: string; useCurrentLocation: boolean };
-}
+import { mockProducts } from "@/pages/HomePage/mockProducts";
+import { mockCategories } from "@/pages/HomePage/mockCategories";
+import { HomeProductCard } from "@/components/homePage/HomeProductCard";
+import type { Product } from "@/types";
+import type { FiltersState } from "@/components/ui/FiltersPart/FiltersPart";
+import { useProducts, useCategories } from "@/services/product.service";
 
 export default function SearchPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState(searchParams.get("q") || "");
+  const [categoryFilter, setCategoryFilter] = useState(
+    searchParams.get("category") || "",
+  );
   const [showFilters, setShowFilters] = useState(false);
-  const [filters, setFilters] = useState<Filters>({
+  const [isSearching, setIsSearching] = useState(false);
+  const [filteredProducts, setFilteredProducts] =
+    useState<Product[]>(mockProducts);
+  const [sortBy, setSortBy] = useState<string>("Newest");
+  const [filtersState, setFiltersState] = useState<FiltersState>({
     categories: [],
     condition: [],
     priceRange: { min: "", max: "" },
@@ -31,59 +33,168 @@ export default function SearchPage() {
     sellerType: [],
     location: { country: "", city: "", useCurrentLocation: false },
   });
-  const [sortBy, setSortBy] = useState("Newest");
-  const [isSearching, setIsSearching] = useState(false);
+
+  const searchTimeoutRef = useRef<number | undefined>(undefined);
+  useCleanupTimers(searchTimeoutRef);
+  // Backend data source
+  const { data: apiData } = useProducts(
+    searchQuery.trim()
+      ? {
+          search: searchQuery.trim(),
+          limit: 100,
+          sortBy: "createdAt",
+          sortOrder: "desc",
+        }
+      : { limit: 100, sortBy: "createdAt", sortOrder: "desc" },
+  );
+  const { data: categoriesData } = useCategories();
+  const effectiveCategories = Array.isArray(categoriesData)
+    ? categoriesData
+    : mockCategories;
 
   const performSearch = useCallback(
-    (query: string) => {
+    (query: string, filters: FiltersState) => {
+      if (searchTimeoutRef.current) {
+        window.clearTimeout(searchTimeoutRef.current);
+      }
       setIsSearching(true);
-      setTimeout(() => {
+      searchTimeoutRef.current = window.setTimeout(() => {
+        // Prefer backend products; fallback to mockProducts
+        const base = apiData?.products ?? [];
+        let results = base.length ? base : mockProducts;
+
+        const effectiveCategories =
+          filters.categories.length > 0
+            ? filters.categories.map((c) => c.toLowerCase())
+            : categoryFilter
+              ? [categoryFilter.toLowerCase()]
+              : [];
+
+        if (effectiveCategories.length > 0) {
+          const selected = new Set(effectiveCategories);
+          results = results.filter((p) => selected.has(p.category.name.toLowerCase()));
+        }
+
+        if (filters.condition.length > 0) {
+          const mapCond = (c: string) =>
+            c.toLowerCase().replace(/\s+/g, "-"); // Like New -> like-new
+          const selectedConds = new Set(filters.condition.map(mapCond));
+          results = results.filter((p) => selectedConds.has(p.condition));
+        }
+
+        const min = filters.priceRange.min ? Number(filters.priceRange.min) : undefined;
+        const max = filters.priceRange.max ? Number(filters.priceRange.max) : undefined;
+        if (min !== undefined) results = results.filter((p) => p.price >= min);
+        if (max !== undefined) results = results.filter((p) => p.price <= max);
+
+        if (query.trim()) {
+          const q = query.toLowerCase();
+          results = results.filter(
+            (p) =>
+              p.title.toLowerCase().includes(q) ||
+              p.category.name.toLowerCase().includes(q),
+          );
+        }
+        const sorted = [...results];
+        const sort = (sortBy || "Newest").toLowerCase();
+        const byDateDesc = (a: Product, b: Product) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        if (sort.includes("best match")) {
+          const q = query.trim().toLowerCase();
+          if (q) {
+            const score = (p: Product) => {
+              const title = p.title.toLowerCase();
+              const ci = title.indexOf(q);
+              const catHit = p.category.name.toLowerCase().includes(q) ? -50 : 0;
+              return (ci === -1 ? 10000 : ci) + catHit;
+            };
+            sorted.sort((a, b) => score(a) - score(b) || byDateDesc(a, b));
+          } else {
+            sorted.sort(byDateDesc);
+          }
+        } else if (sort.includes("most viewed")) {
+          sorted.sort((a, b) => (b.viewCount ?? 0) - (a.viewCount ?? 0));
+        } else if (sort.includes("low to high")) {
+          sorted.sort((a, b) => a.price - b.price);
+        } else if (sort.includes("high to low")) {
+          sorted.sort((a, b) => b.price - a.price);
+        } else {
+          sorted.sort(byDateDesc);
+        }
+
+        setFilteredProducts(sorted);
         setIsSearching(false);
-        console.log(
-          "Searching for:",
-          query,
-          "with filters:",
-          filters,
-          "sorted by:",
-          sortBy,
-        );
-      }, 500);
+      }, 250);
     },
-    [filters, sortBy],
+    [categoryFilter, sortBy],
   );
 
   useEffect(() => {
     const query = searchParams.get("q");
+    const category = searchParams.get("category");
+
+    if (category && category !== categoryFilter) {
+      setCategoryFilter(category);
+    }
+
     if (query && query !== searchQuery) {
       setSearchQuery(query);
-      performSearch(query);
     }
-  }, [searchParams, searchQuery, performSearch]);
+  }, [searchParams, searchQuery, categoryFilter]);
 
   useEffect(() => {
-    if (searchQuery) {
-      performSearch(searchQuery);
+    if (!categoryFilter) return;
+    if (filtersState.categories.length === 0) {
+      const match = effectiveCategories.find(
+        (c) => c.name.toLowerCase() === categoryFilter.toLowerCase(),
+      );
+      const displayName =
+        match
+          ? match.name
+          : (categoryFilter[0]?.toUpperCase() || "") + categoryFilter.slice(1);
+      setFiltersState((prev) => ({ ...prev, categories: [displayName] }));
     }
-  }, [searchQuery, performSearch]);
+  }, [categoryFilter, filtersState.categories.length]);
+
+  useEffect(() => {
+    performSearch(searchQuery, filtersState);
+  }, [searchQuery, categoryFilter, filtersState, performSearch]);
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
-    if (query.trim()) {
-      setSearchParams({ q: query });
-      performSearch(query);
+    const trimmed = query.trim();
+    if (trimmed) {
+      const next: Record<string, string> = { q: trimmed };
+      if (filtersState.categories.length === 1)
+        next.category = filtersState.categories[0].toLowerCase();
+      else if (categoryFilter) next.category = categoryFilter;
+      setSearchParams(next);
+    } else {
+      const next: Record<string, string> = {};
+      if (filtersState.categories.length === 1)
+        next.category = filtersState.categories[0].toLowerCase();
+      else if (categoryFilter) next.category = categoryFilter;
+      setSearchParams(next);
     }
   };
 
-  const handleFilterChange = (newFilters: Filters) => {
-    setFilters(newFilters);
-    console.log("Filters updated:", newFilters);
-    performSearch(searchQuery);
-  };
+  useEffect(() => {
+    const q = searchQuery.trim();
+    if (filtersState.categories.length === 1) {
+      const cat = filtersState.categories[0].toLowerCase();
+      const next: Record<string, string> = { category: cat };
+      if (q) next.q = q;
+      setSearchParams(next);
+    } else if (filtersState.categories.length !== 1) {
+      const next: Record<string, string> = {};
+      if (q) next.q = q;
+      setSearchParams(next);
+    }
+  }, [filtersState.categories, searchQuery, setSearchParams]);
 
-  const handleSortChange = (sort: string) => {
-    setSortBy(sort);
-    performSearch(searchQuery);
-  };
+  const handleFiltersChange = useCallback((next: FiltersState) => {
+    setFiltersState(next);
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -104,8 +215,9 @@ export default function SearchPage() {
             </div>
             <div className={`${showFilters ? "block" : "hidden"} lg:block`}>
               <FiltersPart
-                onFilterChange={handleFilterChange}
                 onSearch={handleSearch}
+                onFilterChange={handleFiltersChange}
+                categoriesList={effectiveCategories.map((c) => c.name)}
               />
             </div>
           </div>
@@ -114,11 +226,9 @@ export default function SearchPage() {
         <div className="flex-1 p-6">
           <div className="mb-6 flex items-center justify-between">
             <div>
-              <h2 className="text-xl font-semibold text-gray-900">
-                {searchQuery ? `Results for "${searchQuery}"` : "All Products"}
-              </h2>
+
             </div>
-            <SearchSort onSortChange={handleSortChange} />
+            <SearchSort onSortChange={setSortBy} />
           </div>
 
           {isSearching && (
@@ -131,14 +241,40 @@ export default function SearchPage() {
           )}
 
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {!isSearching && (
+            {!isSearching && filteredProducts.length > 0 ? (
+              filteredProducts.map((product) => (
+                <HomeProductCard
+                  key={product.id}
+                  image={product.images[0] ?? ""}
+                  title={product.title}
+                  price={`${product.price} ILS`}
+                  location="Gaza"
+                  category={product.category.name}
+                  isFavorite={false}
+                />
+              ))
+            ) : !isSearching ? (
               <div className="col-span-full py-12 text-center">
-                <Text variant="muted">Search results will appear here.</Text>
+                <Text variant="muted">
+                  {searchQuery || categoryFilter
+                    ? "No products found."
+                    : "Search results will appear here."}
+                </Text>
               </div>
-            )}
+            ) : null}
           </div>
         </div>
       </div>
     </div>
   );
 }
+
+
+function useCleanupTimers(ref: React.MutableRefObject<number | undefined>) {
+  useEffect(() => {
+    return () => {
+      if (ref.current) window.clearTimeout(ref.current);
+    };
+  }, [ref]);
+}
+

@@ -1,21 +1,27 @@
+import type { Category } from "./category";
+
 // Product-related types
 export interface Product {
   id: string;
-  name: string;
-  description: string;
+  title: string;
   price: number;
-  category: string;
+  sellerId: string;
+  categoryId: string;
+  category: Pick<Category, "id" | "name">;
+  status: string;
+  viewCount: number;
+  isNegotiable: boolean;
   images: string[];
   condition: "new" | "like-new" | "good" | "fair";
-  sellerId: string;
   createdAt: string;
+  updatedAt: string;
 }
 
 export interface ProductsParams {
   page?: number;
   limit?: number;
-  sellerIds?: number[];
-  categoryIds?: number[];
+  sellerIds?: Array<string | number>;
+  categoryIds?: Array<string | number>;
   condition?: string[];
   status?: string[];
   search?: string;

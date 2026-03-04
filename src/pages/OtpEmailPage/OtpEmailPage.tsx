@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import { ROUTES } from "@/constants/routes";
 import { authService } from "@/services/auth.service";
 import type { AxiosError } from "axios";
@@ -53,10 +54,6 @@ export default function OtpEmailPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: remove this after fixing backend issue with OTP verification
-    console.log("Submitting OTP:", otp.join(""));
-    navigate(ROUTES.CHANGE_PASSWORD, { state: { email } });
-    return;
     const otpCode = otp.join("");
 
     if (otpCode.length !== 4) {
@@ -72,7 +69,7 @@ export default function OtpEmailPage() {
         return;
       }
       const response = await authService.verifyCode({
-        type: "email_verification",
+        type: "password_reset",
         email,
         code: otpCode,
       });
@@ -80,6 +77,9 @@ export default function OtpEmailPage() {
       if (resetToken) {
         // sessionStorage.setItem("reset_token", resetToken);
       }
+      toast.success("✓ Code verified successfully!", {
+        duration: 4000,
+      });
       // Navigate to change password screen
       navigate(ROUTES.CHANGE_PASSWORD, { state: { email } });
     } catch (error) {

@@ -1,4 +1,4 @@
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { NotificationMenu } from "@/pages/NotificationsPage/components";
@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/Button/button";
 import { Text } from "@/components/ui/Text/text";
 import { Span } from "@/components/ui/Span/span";
+import { mockCategories } from "@/pages/HomePage/mockCategories";
 
 const SearchIcon = () => (
   <svg
@@ -149,18 +150,9 @@ const ChevronDownIcon = () => (
   </svg>
 );
 
-const categories = [
-  "Phones",
-  "Laptops",
-  "Tablets",
-  "Accessories",
-  "Smartwatches",
-  "Gaming",
-  "Cameras",
-];
-
 export const Header = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, token, logout } = useAuthStore();
   const isAuthenticated = Boolean(user && token);
   const [searchQuery, setSearchQuery] = useState("");
@@ -280,36 +272,40 @@ export const Header = () => {
         <div className="mx-auto max-w-[1400px] px-6 py-3.5">
           <div className="flex items-center justify-between gap-4">
             <nav className="flex items-center gap-6 overflow-x-auto">
-              <Button className="flex items-center gap-2 whitespace-nowrap text-sm font-medium text-gray-600 hover:text-gray-900">
+              <Button
+                onClick={() => navigate(ROUTES.HOME)}
+                className={`flex items-center gap-2 whitespace-nowrap text-sm font-medium ${new URLSearchParams(location.search).get("category") ? "text-gray-600 hover:text-gray-900" : "text-blue-600"}`}
+              >
                 <MenuIcon />
                 <Span>All Categories</Span>
               </Button>
-              {categories.map((cat) => (
-                <NavLink
-                  key={cat}
-                  to={`${ROUTES.SEARCH}?category=${cat.toLowerCase()}`}
-                  className="whitespace-nowrap text-sm font-medium text-gray-600 transition hover:text-gray-900"
-                >
-                  {cat}
-                </NavLink>
-              ))}
-              <NavLink
-                to={ROUTES.MY_LISTINGS}
-                className="whitespace-nowrap text-sm font-medium text-gray-600 transition hover:text-gray-900"
-              >
-                Dashboard
-              </NavLink>
-              <NavLink
-                to={ROUTES.ADMIN_DASHBOARD}
-                className="whitespace-nowrap text-sm font-medium text-gray-600 transition hover:text-gray-900"
-              >
-                Admin
-              </NavLink>
+              {mockCategories.map((cat) => {
+                const activeCategory =
+                  new URLSearchParams(location.search).get("category") || "";
+                const isActive =
+                  activeCategory.toLowerCase() === cat.name.toLowerCase();
+                return (
+                  <NavLink
+                    key={cat.id}
+                    to={`${ROUTES.SEARCH}?category=${cat.name.toLowerCase()}`}
+                    className={`whitespace-nowrap text-sm font-medium transition ${
+                      isActive
+                        ? "text-blue-600"
+                        : "text-gray-600 hover:text-gray-900"
+                    }`}
+                  >
+                    {cat.name}
+                  </NavLink>
+                );
+              })}
             </nav>
 
             <div className="flex items-center gap-3">
               <NotificationMenu />
-              <Button className="rounded-lg p-1.5 transition hover:bg-gray-100">
+              <Button
+                onClick={() => navigate(ROUTES.CHAT)}
+                className="rounded-lg p-1.5 transition hover:bg-gray-100"
+              >
                 <ChatIcon />
               </Button>
               <Button className="rounded-lg p-1.5 transition hover:bg-gray-100">
@@ -347,39 +343,36 @@ export const Header = () => {
               <Text className="px-3 py-2 text-xs font-semibold uppercase text-gray-500">
                 Categories
               </Text>
-              {["All", ...categories].map((cat) => (
-                <NavLink
-                  key={cat}
-                  to={
-                    cat === "All"
-                      ? ROUTES.SEARCH
-                      : `${ROUTES.SEARCH}?category=${cat.toLowerCase()}`
-                  }
-                  className="block rounded-lg px-3 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  {cat}
-                </NavLink>
-              ))}
-            </div>
-            <div className="space-y-1 border-t border-gray-200 pt-2">
-              <Text className="px-3 py-2 text-xs font-semibold uppercase text-gray-500">
-                Pages
-              </Text>
-              <NavLink
-                to={ROUTES.MY_LISTINGS}
-                className="block rounded-lg px-3 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                onClick={() => setMobileMenuOpen(false)}
+              <button
+                type="button"
+                onClick={() => {
+                  navigate(ROUTES.HOME);
+                  setMobileMenuOpen(false);
+                }}
+                className="block w-full rounded-lg px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
               >
-                Dashboard
-              </NavLink>
-              <NavLink
-                to={ROUTES.ADMIN_DASHBOARD}
-                className="block rounded-lg px-3 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Admin
-              </NavLink>
+                All
+              </button>
+              {mockCategories.map((cat) => {
+                const activeCategory =
+                  new URLSearchParams(location.search).get("category") || "";
+                const isActive =
+                  activeCategory.toLowerCase() === cat.name.toLowerCase();
+                return (
+                  <NavLink
+                    key={cat.id}
+                    to={`${ROUTES.SEARCH}?category=${cat.name.toLowerCase()}`}
+                    className={`block rounded-lg px-3 py-2 text-sm transition ${
+                      isActive
+                        ? "bg-blue-50 text-blue-700"
+                        : "text-gray-700 hover:bg-gray-100"
+                    }`}
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    {cat.name}
+                  </NavLink>
+                );
+              })}
             </div>
             <div className="space-y-2 border-t border-gray-200 pt-2">
               {isAuthenticated ? (

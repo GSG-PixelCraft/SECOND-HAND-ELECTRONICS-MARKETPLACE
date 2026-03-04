@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { api } from "./client";
 import { removeToken, setToken, removeUser, setUser } from "@/lib/storage";
+import { useAuthStore } from "@/stores/useAuthStore";
 import { API_ENDPOINTS } from "@/constants/api-endpoints";
 import { ROUTES } from "@/constants/routes";
 import type { User } from "@/types";
@@ -150,6 +151,9 @@ export const useAuth = () => {
     onSuccess: (data) => {
       setToken(data.data.token);
       setUser(data.data.user);
+      // Keep zustand store in sync for route guards
+      useAuthStore.getState().setToken(data.data.token);
+      useAuthStore.getState().setUser(data.data.user);
       queryClient.setQueryData(AUTH_KEYS.me, data.data.user);
       navigate(ROUTES.PROFILE);
     },
@@ -161,6 +165,9 @@ export const useAuth = () => {
     onSuccess: (data) => {
       setToken(data.data.token);
       setUser(data.data.user);
+      // Keep zustand store in sync for route guards
+      useAuthStore.getState().setToken(data.data.token);
+      useAuthStore.getState().setUser(data.data.user);
       queryClient.setQueryData(AUTH_KEYS.me, data.data.user);
       navigate(ROUTES.PROFILE);
     },
@@ -172,6 +179,8 @@ export const useAuth = () => {
     onSuccess: () => {
       removeToken();
       removeUser();
+      // Clear zustand store for route guards
+      useAuthStore.getState().logout();
       queryClient.clear();
       navigate(ROUTES.SIGN_IN);
     },

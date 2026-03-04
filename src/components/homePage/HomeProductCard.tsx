@@ -26,7 +26,7 @@ export function HomeProductCard({
   onToggleFavorite,
 }: AdCardProps) {
   return (
-    <Card className="w-[294px] max-w-sm gap-0 overflow-visible rounded-xl border p-0 ring-0">
+    <Card className="w-full max-w-[294px] gap-0 overflow-visible rounded-xl border p-0 ring-0">
       <CardHeader className="relative p-0">
         <Image
           src={image}
