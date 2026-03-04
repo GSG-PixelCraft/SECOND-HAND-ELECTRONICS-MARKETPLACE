@@ -10,7 +10,7 @@ import { mockCategories } from "@/pages/HomePage/mockCategories";
 import { HomeProductCard } from "@/components/homePage/HomeProductCard";
 import type { Product } from "@/types";
 import type { FiltersState } from "@/components/ui/FiltersPart/FiltersPart";
-// import { useProducts } from "@/services/product.service"; // Enable when backend search is ready
+import { useProducts, useCategories } from "@/services/product.service";
 
 export default function SearchPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -36,12 +36,21 @@ export default function SearchPage() {
 
   const searchTimeoutRef = useRef<number | undefined>(undefined);
   useCleanupTimers(searchTimeoutRef);
-  // Backend data source (enable when API is ready)
-  // const { data: apiData } = useProducts(
-  //   searchQuery.trim()
-  //     ? { search: searchQuery.trim(), limit: 100, sortBy: "createdAt", sortOrder: "desc" }
-  //     : undefined,
-  // );
+  // Backend data source
+  const { data: apiData } = useProducts(
+    searchQuery.trim()
+      ? {
+          search: searchQuery.trim(),
+          limit: 100,
+          sortBy: "createdAt",
+          sortOrder: "desc",
+        }
+      : { limit: 100, sortBy: "createdAt", sortOrder: "desc" },
+  );
+  const { data: categoriesData } = useCategories();
+  const effectiveCategories = Array.isArray(categoriesData)
+    ? categoriesData
+    : mockCategories;
 
   const performSearch = useCallback(
     (query: string, filters: FiltersState) => {
@@ -50,10 +59,9 @@ export default function SearchPage() {
       }
       setIsSearching(true);
       searchTimeoutRef.current = window.setTimeout(() => {
-        // NOTE: Using mockProducts for now. To switch to backend:
-        // const base = apiData?.products ?? [];
-        // let results = base.length ? base : mockProducts;
-        let results = mockProducts;
+        // Prefer backend products; fallback to mockProducts
+        const base = apiData?.products ?? [];
+        let results = base.length ? base : mockProducts;
 
         const effectiveCategories =
           filters.categories.length > 0
@@ -137,7 +145,7 @@ export default function SearchPage() {
   useEffect(() => {
     if (!categoryFilter) return;
     if (filtersState.categories.length === 0) {
-      const match = mockCategories.find(
+      const match = effectiveCategories.find(
         (c) => c.name.toLowerCase() === categoryFilter.toLowerCase(),
       );
       const displayName =
@@ -209,7 +217,7 @@ export default function SearchPage() {
               <FiltersPart
                 onSearch={handleSearch}
                 onFilterChange={handleFiltersChange}
-                categoriesList={mockCategories.map((c) => c.name)}
+                categoriesList={effectiveCategories.map((c) => c.name)}
               />
             </div>
           </div>
