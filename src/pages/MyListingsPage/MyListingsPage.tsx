@@ -10,6 +10,10 @@ import { MyListingCard } from "./components/MyListingCard";
 import type { MyListing, MyListingStatus } from "./components/MyListingCard";
 import { Dialog } from "@/components/ui/Dialog/dialog";
 import { StatusBadge } from "@/components/ui/StatusBadge/StatusBadge";
+import { useAuthStore } from "@/stores/useAuthStore";
+import { useQuery } from "@tanstack/react-query";
+import { productService } from "@/services/product.service";
+import type { Product } from "@/types";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -157,6 +161,13 @@ const MOCK_LISTINGS: MyListing[] = RAW_PRODUCTS.map((p, i) => ({
   rejectionReason:
     STATUSES[i] === "rejected" ? REJECTION_REASONS[i] : undefined,
 }));
+
+// Disable demo data usage (kept to avoid large refactor):
+void PRODUCT_IMAGES; // mark as used for TS
+void RAW_PRODUCTS;
+void LOCATIONS;
+void STATUSES;
+void MOCK_LISTINGS;
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -837,6 +848,7 @@ function ContinueEditingDialog({
 
 export default function MyListingsPage() {
   const navigate = useNavigate();
+  const userId = useAuthStore((s) => s.user?.id ?? null);
   const [activeTab, setActiveTab] = useState<StatusTab>("all");
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -875,11 +887,51 @@ export default function MyListingsPage() {
     subtitle: string;
   } | null>(null);
   const [toastVisible, setToastVisible] = useState(false);
+  // Fetch user's real listings from backend
+  const { data: productsData } = useQuery({
+    queryKey: [
+      "my-listings",
+      userId,
+      activeTab,
+    ],
+    queryFn: () =>
+      productService.getMine({
+        // Only pass status filter when it makes sense; drafts handled separately
+        status:
+          activeTab !== "all" && activeTab !== "draft"
+            ? [activeTab]
+            : undefined,
+        limit: 200,
+        sortBy: "createdAt",
+        sortOrder: "desc",
+      }),
+    enabled: Boolean(userId),
+    staleTime: 60 * 1000,
+  });
+
+  const backendListings: MyListing[] = useMemo(() => {
+    const items = productsData?.products ?? [];
+    return items.map((p: Product) => ({
+      id: p.id,
+      image: p.images?.[0],
+      title: p.title,
+      price: p.price,
+      location: "Gaza", // TODO: map real location when available from API
+      status: ((): MyListingStatus => {
+        const s = (p.status || "active").toLowerCase();
+        if (s === "pending" || s === "active" || s === "rejected") return s;
+        if (s === "sold" || s === "archived" || s === "draft")
+          return s as MyListingStatus;
+        return "active";
+      })(),
+    }));
+  }, [productsData]);
 
   const filteredListings = useMemo(() => {
-    if (activeTab === "all") return MOCK_LISTINGS;
-    return MOCK_LISTINGS.filter((l) => l.status === activeTab);
-  }, [activeTab]);
+    const base = backendListings;
+    if (activeTab === "all") return base;
+    return base.filter((l) => l.status === activeTab);
+  }, [activeTab, backendListings]);
 
   // Apply sorting similar to SearchPage/SearchSort options
   const [sortBy, setSortBy] = useState("Newest");
@@ -925,24 +977,24 @@ export default function MyListingsPage() {
 
   const handleAction = (id: string, action: string) => {
     if (action === "Delete") {
-      const listing = MOCK_LISTINGS.find((l) => l.id === id) ?? null;
+      const listing = backendListings.find((l) => l.id === id) ?? null;
       setDeleteTarget(listing);
     } else if (action === "Mark as Sold") {
-      const listing = MOCK_LISTINGS.find((l) => l.id === id) ?? null;
+      const listing = backendListings.find((l) => l.id === id) ?? null;
       setMarkAsSoldTarget(listing);
     } else if (action === "Archive") {
-      const listing = MOCK_LISTINGS.find((l) => l.id === id) ?? null;
+      const listing = backendListings.find((l) => l.id === id) ?? null;
       setArchiveTarget(listing);
     } else if (action === "Republish") {
-      const listing = MOCK_LISTINGS.find((l) => l.id === id) ?? null;
+      const listing = backendListings.find((l) => l.id === id) ?? null;
       setRepublishTarget(listing);
     } else if (action === "View Reason") {
-      const listing = MOCK_LISTINGS.find((l) => l.id === id) ?? null;
+      const listing = backendListings.find((l) => l.id === id) ?? null;
       setViewReasonTarget(listing);
     } else if (action === "Edit") {
       navigate(`${ROUTES.ADD_LISTING}?edit=${id}`);
     } else if (action === "Continue editing") {
-      const listing = MOCK_LISTINGS.find((l) => l.id === id) ?? null;
+      const listing = backendListings.find((l) => l.id === id) ?? null;
       setContinueEditingTarget(listing);
     }
     // TODO: handle other actions (Share, etc.)
