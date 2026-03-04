@@ -36,6 +36,16 @@ apiClient.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+    // If sending FormData, let the browser set the multipart boundary
+    const isFormData =
+      typeof FormData !== "undefined" && config.data instanceof FormData;
+    if (isFormData) {
+      if (config.headers) {
+        // Remove any preset content-type so axios/browser sets it correctly
+        delete (config.headers as any)["Content-Type"];
+        delete (config.headers as any)["content-type"];
+      }
+    }
     return config;
   },
   (error) => Promise.reject(error),

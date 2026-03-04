@@ -205,19 +205,28 @@ export const productService = {
     if (Array.isArray(anyPayload.attributes)) {
       // Send as JSON string for robust parsing on backend
       form.append("attributes", JSON.stringify(anyPayload.attributes));
+      (anyPayload.attributes as any[]).forEach((attr: any, idx: number) => {
+        const i = String(idx);
+        if (attr && typeof attr === "object") {
+          if (attr.attributeId !== undefined)
+            form.append(`attributes[${i}][attributeId]`, String(attr.attributeId));
+          if (attr.value !== undefined)
+            form.append(`attributes[${i}][value]`, String(attr.value));
+          if (attr.attributeId !== undefined)
+            form.append(`attributes.${i}.attributeId`, String(attr.attributeId));
+          if (attr.value !== undefined)
+            form.append(`attributes.${i}.value`, String(attr.value));
+        }
+      });
     }
 
     try {
-      return await api.post<Product>(API_ENDPOINTS.PRODUCTS.CREATE, form, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      return await api.post<Product>(API_ENDPOINTS.PRODUCTS.CREATE, form);
     } catch (e: any) {
       const status = e?.response?.status;
       if (status === 404 || status === 405) {
         // Fallback to generic /products create if draft route is unavailable on env
-        return api.post<Product>(API_ENDPOINTS.PRODUCTS.LIST, form, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
+        return api.post<Product>(API_ENDPOINTS.PRODUCTS.LIST, form);
       }
       throw e;
     }
@@ -240,40 +249,99 @@ export const productService = {
     }
     if (Array.isArray(payload.attributes)) {
       form.append("attributes", JSON.stringify(payload.attributes));
+      // Also include bracket/dot notations for robust backend parsing
+      payload.attributes.forEach((attr, idx) => {
+        const i = String(idx);
+        form.append(`attributes[${i}][attributeId]`, String(attr.attributeId));
+        form.append(`attributes[${i}][value]`, String(attr.value));
+        form.append(`attributes.${i}.attributeId`, String(attr.attributeId));
+        form.append(`attributes.${i}.value`, String(attr.value));
+      });
     }
 
     try {
       return await api.post<Product>(
         API_ENDPOINTS.PRODUCTS.CREATE_PENDING,
         form,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-        },
       );
     } catch (e1: any) {
       const status1 = e1?.response?.status;
       if (status1 !== 404 && status1 !== 405) throw e1;
       // Fallback 1: try draft
       try {
-        return await api.post<Product>(API_ENDPOINTS.PRODUCTS.CREATE, form, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
+        return await api.post<Product>(API_ENDPOINTS.PRODUCTS.CREATE, form);
       } catch (e2: any) {
         const status2 = e2?.response?.status;
         if (status2 !== 404 && status2 !== 405) throw e2;
         // Fallback 2: try generic /products
-        return await api.post<Product>(API_ENDPOINTS.PRODUCTS.LIST, form, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
+        return await api.post<Product>(API_ENDPOINTS.PRODUCTS.LIST, form);
       }
     }
   },
 
-  update: (id: string, productData: Partial<Product>): Promise<Product> =>
-    api.put<Product>(API_ENDPOINTS.PRODUCTS.UPDATE(id), productData),
+  // Update and submit as pending (PUT /products/{id}) with multipart form
+  update: async (
+    id: string,
+    productData: Partial<Product> | Partial<CreateProductPayload>,
+  ): Promise<Product> => {
+    const toBackendCondition = (val?: any): string | undefined =>
+      typeof val === "string" ? val.replace("-", "_") : undefined;
+    const form = new FormData();
+    const anyPayload = productData as any;
+    if (anyPayload.title) form.append("title", String(anyPayload.title));
+    if (anyPayload.categoryId)
+      form.append("categoryId", String(anyPayload.categoryId));
+    if (anyPayload.price !== undefined)
+      form.append("price", String(anyPayload.price));
+    if (anyPayload.isNegotiable !== undefined)
+      form.append("isNegotiable", String(Boolean(anyPayload.isNegotiable)));
+    if (anyPayload.condition)
+      form.append("condition", toBackendCondition(anyPayload.condition)!);
+    if (Array.isArray(anyPayload.images)) {
+      anyPayload.images.forEach((file: File) => form.append("images", file));
+    }
+    if (Array.isArray(anyPayload.attributes)) {
+      form.append("attributes", JSON.stringify(anyPayload.attributes));
+    }
+    return api.put<Product>(API_ENDPOINTS.PRODUCTS.UPDATE(id), form);
+  },
 
   delete: (id: string): Promise<void> =>
     api.delete<void>(API_ENDPOINTS.PRODUCTS.DELETE(id)),
+
+  // Edit a draft product (PUT /products/draft/{id})
+  updateDraft: async (
+    id: string,
+    payload: Partial<CreateProductPayload>,
+  ): Promise<Product> => {
+    const toBackendCondition = (val?: Product["condition"]): string | undefined =>
+      val ? val.replace("-", "_") : undefined;
+    const form = new FormData();
+    if (payload.title) form.append("title", String(payload.title));
+    if (payload.categoryId)
+      form.append("categoryId", String(payload.categoryId));
+    if (payload.condition)
+      form.append("condition", toBackendCondition(payload.condition)!);
+    if (payload.price !== undefined)
+      form.append("price", String(payload.price));
+    if (payload.isNegotiable !== undefined)
+      form.append("isNegotiable", String(Boolean(payload.isNegotiable)));
+    if (Array.isArray(payload.images)) {
+      payload.images.forEach((file) => form.append("images", file));
+    }
+    if (Array.isArray(payload.attributes)) {
+      form.append("attributes", JSON.stringify(payload.attributes));
+    }
+    return api.put<Product>(API_ENDPOINTS.PRODUCTS.UPDATE_DRAFT(id), form);
+  },
+
+  // Transitions
+  archive: (id: string): Promise<Product> =>
+    api.patch<Product>(API_ENDPOINTS.PRODUCTS.ARCHIVE(id), {}),
+  markSold: (id: string): Promise<Product> =>
+    api.patch<Product>(API_ENDPOINTS.PRODUCTS.SOLD(id), {}),
+  republish: (id: string): Promise<Product> =>
+    api.patch<Product>(API_ENDPOINTS.PRODUCTS.REPUBLISH(id), {}),
 
   search: (query: string): Promise<ProductsResponse> =>
     api.get<ProductsResponse>(API_ENDPOINTS.PRODUCTS.SEARCH, {
@@ -318,6 +386,19 @@ export const productService = {
       createdAt: String(item?.createdAt ?? now),
       updatedAt: String(item?.updatedAt ?? item?.createdAt ?? now),
     }));
+  },
+
+  // Get single category with attributes (raw)
+  getCategoryDetail: async (
+    id: string | number,
+  ): Promise<{ id: string; name: string; attributes?: Array<{ id: string; name: string }> } | null> => {
+    const raw = await api.get<any>(`${API_ENDPOINTS.PRODUCTS.CATEGORIES}/${id}`);
+    const data = raw && typeof raw === "object" && "data" in raw ? (raw as any).data : raw;
+    if (!data) return null;
+    const attrs = Array.isArray((data as any).attributes)
+      ? (data as any).attributes.map((a: any) => ({ id: String(a?.id ?? ""), name: String(a?.name ?? "") }))
+      : undefined;
+    return { id: String((data as any)?.id ?? id), name: String((data as any)?.name ?? ""), attributes: attrs };
   },
 
   getProducts: (params?: ProductsParams): Promise<ProductsResponse> =>
@@ -429,6 +510,67 @@ export const useDeleteProduct = () => {
   return useMutation({
     mutationFn: productService.delete,
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: PRODUCTS_KEYS.lists() });
+    },
+  });
+};
+
+// Extra mutations for full API coverage
+export const useUpdateDraftProduct = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, data }: { id: string; data: Partial<CreateProductPayload> }) =>
+      productService.updateDraft?.(id, data) as Promise<Product>,
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: PRODUCTS_KEYS.detail(variables.id) });
+      queryClient.invalidateQueries({ queryKey: PRODUCTS_KEYS.lists() });
+    },
+  });
+};
+
+export const useSubmitProductPending = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, data }: { id: string; data: Partial<CreateProductPayload> }) =>
+      productService.update(id, data),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: PRODUCTS_KEYS.detail(variables.id) });
+      queryClient.invalidateQueries({ queryKey: PRODUCTS_KEYS.lists() });
+    },
+  });
+};
+
+export const useArchiveProduct = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) =>
+      (productService as any).archive?.(id) as Promise<Product>,
+    onSuccess: (_, id) => {
+      queryClient.invalidateQueries({ queryKey: PRODUCTS_KEYS.detail(id as string) });
+      queryClient.invalidateQueries({ queryKey: PRODUCTS_KEYS.lists() });
+    },
+  });
+};
+
+export const useMarkProductSold = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) =>
+      (productService as any).markSold?.(id) as Promise<Product>,
+    onSuccess: (_, id) => {
+      queryClient.invalidateQueries({ queryKey: PRODUCTS_KEYS.detail(id as string) });
+      queryClient.invalidateQueries({ queryKey: PRODUCTS_KEYS.lists() });
+    },
+  });
+};
+
+export const useRepublishProduct = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) =>
+      (productService as any).republish?.(id) as Promise<Product>,
+    onSuccess: (_, id) => {
+      queryClient.invalidateQueries({ queryKey: PRODUCTS_KEYS.detail(id as string) });
       queryClient.invalidateQueries({ queryKey: PRODUCTS_KEYS.lists() });
     },
   });
