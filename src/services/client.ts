@@ -6,9 +6,27 @@ import { apiConfig } from "@/config";
 
 // Create axios instance
 const apiClient: AxiosInstance = axios.create({
-  baseURL: apiConfig.baseURL,
+  // Leave baseURL undefined; we resolve full URLs ourselves to avoid proxy/base path confusion
   timeout: apiConfig.timeout,
   headers: apiConfig.headers,
+  // Ensure arrays are serialized as repeated keys: status=active&status=pending
+  // to match typical backend expectations (no bracket notation like status[])
+  paramsSerializer: {
+    serialize: (params) => {
+      const usp = new URLSearchParams();
+      if (params && typeof params === "object") {
+        Object.entries(params).forEach(([key, value]) => {
+          if (value === undefined || value === null) return;
+          if (Array.isArray(value)) {
+            value.forEach((v) => usp.append(key, String(v)));
+          } else {
+            usp.append(key, String(value));
+          }
+        });
+      }
+      return usp.toString();
+    },
+  },
 });
 
 // Request interceptor - Add auth token
@@ -17,6 +35,16 @@ apiClient.interceptors.request.use(
     const token = getToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+    }
+    // If sending FormData, let the browser set the multipart boundary
+    const isFormData =
+      typeof FormData !== "undefined" && config.data instanceof FormData;
+    if (isFormData) {
+      if (config.headers) {
+        // Remove any preset content-type so axios/browser sets it correctly
+        delete (config.headers as any)["Content-Type"];
+        delete (config.headers as any)["content-type"];
+      }
     }
     return config;
   },
@@ -35,7 +63,8 @@ apiClient.interceptors.response.use(
 // Generic API methods
 export const api = {
   get: async <T>(url: string, config?: AxiosRequestConfig): Promise<T> => {
-    const response = await apiClient.get<T>(url, config);
+    const finalUrl = resolveUrl(url);
+    const response = await apiClient.get<T>(finalUrl, config);
     return response as T;
   },
 
@@ -44,7 +73,8 @@ export const api = {
     data?: unknown,
     config?: AxiosRequestConfig,
   ): Promise<T> => {
-    const response = await apiClient.post<T>(url, data, config);
+    const finalUrl = resolveUrl(url);
+    const response = await apiClient.post<T>(finalUrl, data, config);
     return response as T;
   },
 
@@ -53,7 +83,8 @@ export const api = {
     data?: unknown,
     config?: AxiosRequestConfig,
   ): Promise<T> => {
-    const response = await apiClient.put<T>(url, data, config);
+    const finalUrl = resolveUrl(url);
+    const response = await apiClient.put<T>(finalUrl, data, config);
     return response as T;
   },
 
@@ -62,14 +93,26 @@ export const api = {
     data?: unknown,
     config?: AxiosRequestConfig,
   ): Promise<T> => {
-    const response = await apiClient.patch<T>(url, data, config);
+    const finalUrl = resolveUrl(url);
+    const response = await apiClient.patch<T>(finalUrl, data, config);
     return response as T;
   },
 
   delete: async <T>(url: string, config?: AxiosRequestConfig): Promise<T> => {
-    const response = await apiClient.delete<T>(url, config);
+    const finalUrl = resolveUrl(url);
+    const response = await apiClient.delete<T>(finalUrl, config);
     return response as T;
   },
 };
 
 export default apiClient;
+
+// Helpers
+function resolveUrl(input: string): string {
+  if (/^https?:\/\//i.test(input)) return input;
+  const base = apiConfig.baseURL || "/api";
+  const baseNorm = base.replace(/\/+$/, "");
+  const pathNorm = input.replace(/^\/+/, "");
+  return `${baseNorm}/${pathNorm}`;
+}
+

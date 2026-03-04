@@ -11,7 +11,7 @@ import {
   type ListingSectionData,
 } from "../../components/homePage/ListingSection";
 import { mockProducts } from "./mockProducts";
-// import { useProducts } from "@/services/product.service";
+import { useProducts } from "@/services/product.service";
 import type { Product } from "@/types";
 // import type { AxiosError } from "axios";
 
@@ -35,23 +35,22 @@ const transformProductToListingItem = (product: Product): ListingItem => {
 };
 
 const HomePage = () => {
-  // Fetch products from API
-  // TODO : uncomment this after BE fixes the API
-  // const {
-  //   data: productsData,
-  //   isLoading,
-  //   error,
-  // } = useProducts({
-  //   limit: 12,
-  //   sortBy: "createdAt",
-  //   sortOrder: "desc",
-  // });
-
-  const isLoading = false;
-  const error = null;
+  // Fetch products from API (fallback to mocks on empty/error)
+  const {
+    data: productsData,
+    isLoading,
+    error,
+  } = useProducts({
+    limit: 12,
+    sortBy: "createdAt",
+    sortOrder: "desc",
+  });
 
   // Transform products to listing items
-  const products = mockProducts;
+  const products: Product[] =
+    productsData?.products && productsData.products.length > 0
+      ? productsData.products
+      : mockProducts;
 
   // Split products into sections (4 items each)
   const recentListings = products

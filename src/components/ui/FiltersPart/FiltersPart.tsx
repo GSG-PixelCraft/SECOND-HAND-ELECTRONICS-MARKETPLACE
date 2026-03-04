@@ -1,9 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
-import {
-  fetchCountries,
-  fetchCitiesByCountry,
-  type LocationCountry,
-} from "@/services/location.service";
+import { useFiltersController } from "./useFilters";
 import { LocationPermissionModal } from "../LocationPermissionModal/LocationPermissionModal";
 import { Button } from "../Button/button";
 export interface FiltersState {
@@ -21,14 +16,12 @@ export interface FiltersPartProps {
   className?: string;
   onSearch?: (query: string) => void;
   onFilterChange?: (filters: FiltersState) => void;
+  categoriesList?: string[]; // optional override to supply categories from navbar/API
 }
 
-const categories = ["Phones", "Tablets", "Laptops", "PC Parts"];
+const DEFAULT_CATEGORIES = ["Phones", "Tablets", "Laptops", "PC Parts"];
 const conditions = ["New", "Like New", "Good", "Fair", "Poor"];
 const brands = ["Apple", "Samsung", "Google", "Dell", "HP", "Lenovo"];
-const phoneModels = ["iPhone 15", "iPhone 14", "Samsung S24", "Pixel 8"];
-const laptopModels = ["MacBook Pro", "MacBook Air", "Dell XPS", "HP Spectre"];
-const tabletModels = ["iPad Pro", "iPad Air", "Samsung Tab"];
 const storageOptions = ["64GB", "128GB", "256GB", "512GB", "1TB", "2TB"];
 const sellerTypes = ["Spoke with before", "Verified sellers"];
 
@@ -97,7 +90,6 @@ const SearchSection = ({
   setSearch,
   selected,
   onToggle,
-  onSearch,
   placeholder,
 }: {
   title: string;
@@ -106,7 +98,6 @@ const SearchSection = ({
   setSearch: (v: string) => void;
   selected: string[];
   onToggle: (v: string) => void;
-  onSearch?: (query: string) => void;
   placeholder: string;
 }) => (
   <div className="space-y-2">
@@ -121,7 +112,6 @@ const SearchSection = ({
         value={search}
         onChange={(e) => {
           setSearch(e.target.value);
-          onSearch?.(e.target.value);
         }}
         className="w-full rounded-lg border border-gray-300 py-2 pl-8 pr-3 text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
@@ -139,83 +129,34 @@ const SearchSection = ({
   </div>
 );
 
-const initialFilters: FiltersState = {
-  categories: [],
-  condition: [],
-  priceRange: { min: "", max: "" },
-  brand: [],
-  model: [],
-  storage: [],
-  sellerType: [],
-  location: { country: "", city: "", useCurrentLocation: false },
-};
+
 
 export const FiltersPart = ({
   className = "",
   onSearch,
   onFilterChange,
+  categoriesList,
 }: FiltersPartProps) => {
-  const [filters, setFilters] = useState<FiltersState>(initialFilters);
-  const [countries, setCountries] = useState<LocationCountry[]>([]);
-  const [cities, setCities] = useState<string[]>([]);
-  const [brandSearch, setBrandSearch] = useState("");
-  const [modelSearch, setModelSearch] = useState("");
-  const [showLocationModal, setShowLocationModal] = useState(false);
-  const selectedCountryName =
-    countries.find((country) => country.code === filters.location.country)
-      ?.name ?? "";
-
-  useEffect(() => {
-    fetchCountries().then(setCountries);
-  }, []);
-  useEffect(() => {
-    if (!filters.location.country) return setCities([]);
-    fetchCitiesByCountry(filters.location.country).then(setCities);
-  }, [filters.location.country, countries]);
-  useEffect(() => {
-    onFilterChange?.(filters);
-  }, [filters, onFilterChange]);
-
-  const modelOptions = useMemo(() => {
-    const m: string[] = [];
-    if (filters.categories.includes("Phones")) m.push(...phoneModels);
-    if (filters.categories.includes("Laptops")) m.push(...laptopModels);
-    if (filters.categories.includes("Tablets")) m.push(...tabletModels);
-    return m;
-  }, [filters.categories]);
-
-  const update = <K extends keyof FiltersState>(
-    key: K,
-    value: FiltersState[K],
-  ) => setFilters((prev) => ({ ...prev, [key]: value }));
-  const toggle = (key: keyof FiltersState, val: string) => {
-    const arr = filters[key] as string[];
-    update(
-      key,
-      arr.includes(val) ? arr.filter((v) => v !== val) : [...arr, val],
-    );
-  };
-  const remove = (key: keyof FiltersState, val: string) =>
-    update(
-      key,
-      (filters[key] as string[]).filter((v) => v !== val),
-    );
-  const reset = () =>
-    setFilters({
-      ...initialFilters,
-      priceRange: { ...initialFilters.priceRange },
-      location: { ...initialFilters.location },
-    });
-
-  const hasFilters = Object.values(filters).some((v) =>
-    Array.isArray(v)
-      ? v.length > 0
-      : typeof v === "object"
-        ? Object.values(v).some((x) => x)
-        : v,
-  );
-  const showBrand = filters.categories.length > 0;
-  const showModel = modelOptions.length > 0;
+  const {
+    filters,
+    countries,
+    cities,
+    brandSearch,
+    modelSearch,
+    showLocationModal,
+    setBrandSearch,
+    setModelSearch,
+    setShowLocationModal,
+    modelOptions,
+    showBrand,
+    showModel,
+    hasFilters,
+    selectedCountryName,
+    update,
+    toggle,
+    remove,
+    reset,
+  } = useFiltersController({ onFilterChange, onSearch });
   const showStorage = filters.categories.some((c) =>
     ["Phones", "Tablets", "Laptops"].includes(c),
   );
@@ -283,6 +224,8 @@ export const FiltersPart = ({
         ]
       : []),
   ];
+
+  const categories = categoriesList && categoriesList.length > 0 ? categoriesList : DEFAULT_CATEGORIES;
 
   return (
     <div className={`w-full ${className}`}>
@@ -386,7 +329,6 @@ export const FiltersPart = ({
               setSearch={setBrandSearch}
               selected={filters.brand}
               onToggle={(v) => toggle("brand", v)}
-              onSearch={onSearch}
               placeholder="Search about Brand"
             />
           )}
@@ -398,7 +340,6 @@ export const FiltersPart = ({
               setSearch={setModelSearch}
               selected={filters.model}
               onToggle={(v) => toggle("model", v)}
-              onSearch={onSearch}
               placeholder="Search about Model"
             />
           )}
@@ -501,3 +442,5 @@ export const FiltersPart = ({
     </div>
   );
 };
+
+
