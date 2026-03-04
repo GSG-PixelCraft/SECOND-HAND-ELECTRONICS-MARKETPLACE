@@ -11,4 +11,5 @@ export * from "./admin-reports.service";
 export * from "./admin-verification.service";
 export * from "./admin-users.service";
 export * from "./profile.service";
+export * from "./location.service";
 export { api } from "./client";

@@ -2,10 +2,11 @@ import * as React from "react";
 import { useNavigate } from "react-router-dom";
 import { IdCard, Mail, Smartphone } from "lucide-react";
 import { EditProfileForm } from "./EditProfileForm";
-import type { EditProfileSubmitPayload } from "./EditProfileForm";
 import { ROUTES } from "@/constants/routes";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useProfile, useUpdateProfile } from "@/services/profile.service";
+import { useCountries } from "@/services/location.service";
+import { useProducts } from "@/services/product.service";
 import { useVerificationStatus } from "@/services/verification.service";
 import {
   ContactVerificationModal,
@@ -19,8 +20,9 @@ import { ProfileHero } from "./sections/ProfileHero";
 import { ProfileCompletionCard } from "./sections/ProfileCompletionCard";
 import { TrustIndicators } from "./sections/TrustIndicators";
 import { ActivitySummary } from "./sections/ActivitySummary";
+import type { UpdateProfilePayload } from "@/dto/profile";
 
-const formatMemberSince = (value?: string) => {
+const formatMemberSince = (value?: string | null) => {
   if (!value) return "Member since -";
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "Member since -";
@@ -29,6 +31,8 @@ const formatMemberSince = (value?: string) => {
 
 export default function ProfileDetails() {
   const navigate = useNavigate();
+
+  // ── Auth store: holds user-level fields (fullName, email, phoneNumber, avatar)
   const user = useAuthStore((state) => state.user);
   const verificationStore = useAuthStore((state) => state.verification);
   const setVerification = useAuthStore((state) => state.setVerification);
@@ -36,13 +40,21 @@ export default function ProfileDetails() {
   const [isEditing, setIsEditing] = React.useState(false);
   const [showIdentityModal, setShowIdentityModal] = React.useState(false);
 
+  // ── Server state
   const { data: profileData, isLoading: isProfileLoading } = useProfile();
+  const { data: countriesData } = useCountries();
   const {
     data: verificationStatus,
     isLoading: isVerificationLoading,
     refetch: refetchVerificationStatus,
   } = useVerificationStatus();
   const updateProfileMutation = useUpdateProfile();
+
+  // Fetch the seller's active listings count (limit=1 minimises payload)
+  const userId = user?.id ? Number(user.id) : undefined;
+  const { data: listingsData, isLoading: isListingsLoading } = useProducts(
+    userId !== undefined ? { sellerIds: [userId], limit: 1 } : undefined,
+  );
 
   React.useEffect(() => {
     if (verificationStatus) {
@@ -52,11 +64,28 @@ export default function ProfileDetails() {
 
   const verification = verificationStatus ?? verificationStore;
 
-  const displayName = profileData?.fullName || profileData?.name || user?.name || "-";
-  const displayCountry = profileData?.country || profileData?.location || "-";
-  const displayAvatar = profileData?.profileImageUrl || profileData?.avatarUrl || user?.avatar;
+  // ── Derived display values
+  // Name / email / phone come from the auth store (User entity), not /profile
+  const displayName = user?.fullName ?? user?.name ?? "-";
+
+  // Country name: look up profileData.countryId in the countries list
+  const displayCountry = React.useMemo(() => {
+    if (profileData?.countryId && countriesData?.length) {
+      const match = countriesData.find(
+        (c) => c.id === String(profileData.countryId),
+      );
+      if (match) return match.nameEn;
+    }
+    // Fallback: free-text location stored on the profile
+    return profileData?.location ?? "-";
+  }, [profileData?.countryId, profileData?.location, countriesData]);
+
+  // Avatar: stored on the User object at login time
+  const displayAvatar = user?.avatar;
+
   const memberSince = formatMemberSince(profileData?.createdAt);
 
+  // ── Verification flows
   const handlePhoneVerified = React.useCallback(
     (phoneNumber: string) => {
       setVerification({
@@ -86,25 +115,22 @@ export default function ProfileDetails() {
   );
 
   const phoneVerification = usePhoneVerificationFlow({
-    initialValue: profileData?.phoneNumber || user?.phoneNumber || "",
+    initialValue: user?.phoneNumber ?? "",
     onVerified: handlePhoneVerified,
   });
 
   const emailVerification = useEmailVerificationFlow({
-    initialValue: profileData?.email || user?.email || "",
+    initialValue: user?.email ?? "",
     onVerified: handleEmailVerified,
   });
 
-  const handleProfileSubmit = async (
-    payload: EditProfileSubmitPayload,
-  ) => {
-    await updateProfileMutation.mutateAsync({
-      location: payload.country ?? "",
-      avatarFile: payload.avatar ?? null,
-    });
+  // ── Profile update
+  const handleProfileSubmit = async (payload: UpdateProfilePayload) => {
+    await updateProfileMutation.mutateAsync(payload);
     setIsEditing(false);
   };
 
+  // ── Profile completion %
   const verifiedItems = [
     verification.phone.status === "verified",
     verification.identity.status === "approved",
@@ -118,11 +144,11 @@ export default function ProfileDetails() {
     return (
       <EditProfileForm
         initialValues={{
-          fullName: profileData?.fullName || profileData?.name || user?.name || "",
-          email: profileData?.email || user?.email || "",
-          phoneNumber: profileData?.phoneNumber || user?.phoneNumber || "",
-          country: (profileData?.country || profileData?.location || "") as string,
-          avatarUrl: (profileData?.profileImageUrl || profileData?.avatarUrl || user?.avatar) as string | undefined,
+          bio: profileData?.bio ?? "",
+          location: profileData?.location ?? "",
+          countryId:
+            profileData?.countryId != null ? String(profileData.countryId) : "",
+          avatarUrl: displayAvatar,
         }}
         isSubmitting={updateProfileMutation.isPending}
         onCancel={() => setIsEditing(false)}
@@ -136,6 +162,7 @@ export default function ProfileDetails() {
       <ProfileHero
         name={displayName}
         country={displayCountry}
+        bio={profileData?.bio ?? undefined}
         memberSince={memberSince}
         avatar={displayAvatar}
         isLoading={isProfileLoading}
@@ -168,20 +195,20 @@ export default function ProfileDetails() {
         ]}
         onSelect={(key) => {
           if (key === "phone") {
-            phoneVerification.open(
-              profileData?.phoneNumber || user?.phoneNumber || "",
-            );
+            phoneVerification.open(user?.phoneNumber ?? "");
           } else if (key === "identity") {
             setShowIdentityModal(true);
           } else {
-            emailVerification.open(
-              profileData?.email || user?.email || "",
-            );
+            emailVerification.open(user?.email ?? "");
           }
         }}
       />
 
-      <ActivitySummary />
+      <ActivitySummary
+        listingsCount={listingsData?.total}
+        isLoading={isListingsLoading}
+      />
+
       <ContactVerificationModal type="phone" flow={phoneVerification} />
       <ContactVerificationModal type="email" flow={emailVerification} />
       <IdentityVerificationModal
@@ -196,4 +223,3 @@ export default function ProfileDetails() {
     </div>
   );
 }
-

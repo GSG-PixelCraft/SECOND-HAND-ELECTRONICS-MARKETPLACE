@@ -4,6 +4,7 @@ interface ProfileHeroProps {
   name: string;
   country: string;
   memberSince: string;
+  bio?: string;
   avatar?: string;
   isLoading?: boolean;
   onEdit: () => void;
@@ -13,6 +14,7 @@ export const ProfileHero = ({
   name,
   country,
   memberSince,
+  bio,
   avatar,
   isLoading = false,
   onEdit,
@@ -44,6 +46,8 @@ export const ProfileHero = ({
             <Calendar size={14} className="text-muted-foreground" />
             <span className="text-caption">{memberSince}</span>
           </div>
+
+          {bio && <p className="text-caption text-muted-foreground">{bio}</p>}
         </div>
       </div>
 
@@ -57,4 +61,3 @@ export const ProfileHero = ({
     </div>
   </section>
 );
-
