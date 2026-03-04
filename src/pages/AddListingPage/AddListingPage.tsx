@@ -13,6 +13,8 @@ import { PhotoTipsDialog } from "./components/PhotoTipsDialog";
 import { LocationDialog } from "./components/LocationDialog";
 import { ReviewDialog } from "./components/ReviewDialog";
 import { ConfirmationDialogs } from "./components/ConfirmationDialogs";
+import { useCreateProduct, useCategories } from "@/services/product.service";
+import type { Product } from "@/types";
 
 type ListingFormData = z.infer<typeof listingSchema>;
 type PhotoItemWithProgress = PhotoItem & { uploadProgress?: number };
@@ -28,6 +30,8 @@ const FALLBACK_IMAGE = new URL("../../images/Phone.jpg", import.meta.url).href;
 
 export default function AddListingPage(): ReactElement {
   const { t } = useTranslation();
+  const { data: categoriesData } = useCategories();
+  const createProduct = useCreateProduct();
   const [currentStep, setCurrentStep] = useState<1 | 2>(1);
   const [photos, setPhotos] = useState<PhotoItemWithProgress[]>([]);
   const [photoError, setPhotoError] = useState<string | null>(null);
@@ -73,13 +77,44 @@ export default function AddListingPage(): ReactElement {
     }
   }, [locationValue.city, locationValue.country, setValue]);
 
+  const normalizeCondition = (value: string): Product["condition"] => {
+    const v = value.trim().toLowerCase();
+    if (v === "new") return "new";
+    if (v === "like new" || v === "like-new") return "like-new";
+    if (v === "excellent") return "like-new";
+    if (v === "good") return "good";
+    if (v === "fair") return "fair";
+    return "good";
+  };
+
   const onSubmit = async (data: ListingFormData) => {
-    console.log("Listing data:", data);
     setIsSending(true);
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    setIsSending(false);
-    setReviewOpen(false);
-    setReviewSuccessOpen(true);
+    try {
+      // Try to match selected category to backend categories
+      const selectedCategoryName = data.category?.trim() || "";
+      const match = (categoriesData ?? []).find(
+        (c) => c.name.toLowerCase() === selectedCategoryName.toLowerCase(),
+      );
+
+      // Minimal draft payload (matches CreateDraftProductDto)
+      const images = photos.map((p) => p.file);
+      await createProduct.mutateAsync({
+        title: data.title,
+        categoryId: match ? match.id : "",
+        condition: normalizeCondition(data.condition),
+        price: Number(data.price) || 0,
+        isNegotiable: Boolean(data.isNegotiable),
+        images,
+      } as any);
+
+      setIsSending(false);
+      setReviewOpen(false);
+      setReviewSuccessOpen(true);
+    } catch (e) {
+      // If backend rejects, keep dialog open and stop the sending spinner
+      console.error("Create listing failed", e);
+      setIsSending(false);
+    }
   };
 
   const steps = useMemo(

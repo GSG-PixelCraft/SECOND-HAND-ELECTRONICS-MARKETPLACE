@@ -6,7 +6,7 @@ import { apiConfig } from "@/config";
 
 // Create axios instance
 const apiClient: AxiosInstance = axios.create({
-  baseURL: apiConfig.baseURL,
+  // Leave baseURL undefined; we resolve full URLs ourselves to avoid proxy/base path confusion
   timeout: apiConfig.timeout,
   headers: apiConfig.headers,
   // Ensure arrays are serialized as repeated keys: status=active&status=pending
@@ -53,7 +53,8 @@ apiClient.interceptors.response.use(
 // Generic API methods
 export const api = {
   get: async <T>(url: string, config?: AxiosRequestConfig): Promise<T> => {
-    const response = await apiClient.get<T>(url, config);
+    const finalUrl = resolveUrl(url);
+    const response = await apiClient.get<T>(finalUrl, config);
     return response as T;
   },
 
@@ -62,7 +63,8 @@ export const api = {
     data?: unknown,
     config?: AxiosRequestConfig,
   ): Promise<T> => {
-    const response = await apiClient.post<T>(url, data, config);
+    const finalUrl = resolveUrl(url);
+    const response = await apiClient.post<T>(finalUrl, data, config);
     return response as T;
   },
 
@@ -71,7 +73,8 @@ export const api = {
     data?: unknown,
     config?: AxiosRequestConfig,
   ): Promise<T> => {
-    const response = await apiClient.put<T>(url, data, config);
+    const finalUrl = resolveUrl(url);
+    const response = await apiClient.put<T>(finalUrl, data, config);
     return response as T;
   },
 
@@ -80,15 +83,26 @@ export const api = {
     data?: unknown,
     config?: AxiosRequestConfig,
   ): Promise<T> => {
-    const response = await apiClient.patch<T>(url, data, config);
+    const finalUrl = resolveUrl(url);
+    const response = await apiClient.patch<T>(finalUrl, data, config);
     return response as T;
   },
 
   delete: async <T>(url: string, config?: AxiosRequestConfig): Promise<T> => {
-    const response = await apiClient.delete<T>(url, config);
+    const finalUrl = resolveUrl(url);
+    const response = await apiClient.delete<T>(finalUrl, config);
     return response as T;
   },
 };
 
 export default apiClient;
+
+// Helpers
+function resolveUrl(input: string): string {
+  if (/^https?:\/\//i.test(input)) return input;
+  const base = apiConfig.baseURL || "/api";
+  const baseNorm = base.replace(/\/+$/, "");
+  const pathNorm = input.replace(/^\/+/, "");
+  return `${baseNorm}/${pathNorm}`;
+}
 
