@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/Button/button";
 import { Text } from "@/components/ui/Text/text";
 import { Span } from "@/components/ui/Span/span";
-import { mockCategories } from "@/pages/HomePage/mockCategories";
+import { useCategories } from "@/services/product.service";
 
 const SearchIcon = () => (
   <svg
@@ -157,6 +157,8 @@ export const Header = () => {
   const isAuthenticated = Boolean(user && token);
   const [searchQuery, setSearchQuery] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { data: categoriesData } = useCategories();
+  const navCategories = categoriesData ?? [];
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -279,7 +281,7 @@ export const Header = () => {
                 <MenuIcon />
                 <Span>All Categories</Span>
               </Button>
-              {mockCategories.map((cat) => {
+              {navCategories.map((cat) => {
                 const activeCategory =
                   new URLSearchParams(location.search).get("category") || "";
                 const isActive =
@@ -353,7 +355,7 @@ export const Header = () => {
               >
                 All
               </button>
-              {mockCategories.map((cat) => {
+              {navCategories.map((cat) => {
                 const activeCategory =
                   new URLSearchParams(location.search).get("category") || "";
                 const isActive =

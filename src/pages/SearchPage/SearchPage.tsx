@@ -5,8 +5,6 @@ import { Button } from "@/components/ui/Button/button";
 import { FiltersPart } from "@/components/ui/FiltersPart/FiltersPart";
 import { SearchSort } from "@/components/ui/SearchSort/SearchSort";
 import { Text } from "@/components/ui/Text/text";
-import { mockProducts } from "@/pages/HomePage/mockProducts";
-import { mockCategories } from "@/pages/HomePage/mockCategories";
 import { HomeProductCard } from "@/components/homePage/HomeProductCard";
 import type { Product } from "@/types";
 import type { FiltersState } from "@/components/ui/FiltersPart/FiltersPart";
@@ -20,8 +18,7 @@ export default function SearchPage() {
   );
   const [showFilters, setShowFilters] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
-  const [filteredProducts, setFilteredProducts] =
-    useState<Product[]>(mockProducts);
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [sortBy, setSortBy] = useState<string>("Newest");
   const [filtersState, setFiltersState] = useState<FiltersState>({
     categories: [],
@@ -50,7 +47,7 @@ export default function SearchPage() {
   const { data: categoriesData } = useCategories();
   const effectiveCategories = Array.isArray(categoriesData)
     ? categoriesData
-    : mockCategories;
+    : [];
 
   const performSearch = useCallback(
     (query: string, filters: FiltersState) => {
@@ -59,9 +56,8 @@ export default function SearchPage() {
       }
       setIsSearching(true);
       searchTimeoutRef.current = window.setTimeout(() => {
-        // Prefer backend products; fallback to mockProducts
         const base = apiData?.products ?? [];
-        let results = base.length ? base : mockProducts;
+        let results = base;
 
         const effectiveCategories =
           filters.categories.length > 0

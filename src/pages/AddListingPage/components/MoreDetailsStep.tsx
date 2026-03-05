@@ -10,6 +10,7 @@ import type {
 } from "react-hook-form";
 import { Button } from "@/components/ui/Button/button";
 import { Text } from "@/components/ui/Text/text";
+import type { Category } from "@/types/category";
 
 interface ListingFormData {
   title: string;
@@ -34,6 +35,7 @@ interface MoreDetailsStepProps {
   onBack: () => void;
   onReview: () => void;
   onLocationClick: () => void;
+  categoryAttributes?: Category["attributes"];
 }
 
 const BRANDS = [
@@ -59,8 +61,10 @@ export const MoreDetailsStep: FC<MoreDetailsStepProps> = ({
   watch,
   onReview,
   onLocationClick,
+  categoryAttributes: _categoryAttributes,
 }): ReactElement => {
   const { t } = useTranslation();
+  void _categoryAttributes; // reserved for category-specific customizations
   const descriptionValue = watch("description") ?? "";
   const locationValue = watch("location") ?? "";
   const watchedBrand = watch("brand") ?? "";

@@ -11,7 +11,7 @@ import type { MyListing, MyListingStatus } from "./components/MyListingCard";
 import { Dialog } from "@/components/ui/Dialog/dialog";
 import { StatusBadge } from "@/components/ui/StatusBadge/StatusBadge";
 import { useAuthStore } from "@/stores/useAuthStore";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { productService } from "@/services/product.service";
 import type { Product } from "@/types";
 
@@ -28,6 +28,20 @@ const STATUS_TABS: { label: string; value: StatusTab }[] = [
   { label: "Archived", value: "archived" },
   { label: "Drafts", value: "draft" },
 ];
+
+const BACKEND_STATUS_MAP: Partial<Record<string, MyListingStatus>> = {
+  pending: "pending",
+  "pending-review": "pending",
+  "in-review": "pending",
+  active: "active",
+  rejected: "rejected",
+  sold: "sold",
+  archived: "archived",
+  inactive: "archived",
+  draft: "draft",
+};
+
+const HIDDEN_BACKEND_STATUSES = new Set(["removed", "deleted"]);
 
 // ─── Mock Data ────────────────────────────────────────────────────────────────
 
@@ -338,9 +352,16 @@ interface SuccessToastProps {
   title: string;
   subtitle: string;
   visible: boolean;
+  variant?: "success" | "error";
 }
 
-function SuccessToast({ title, subtitle, visible }: SuccessToastProps) {
+function SuccessToast({
+  title,
+  subtitle,
+  visible,
+  variant = "success",
+}: SuccessToastProps) {
+  const accentColor = variant === "error" ? "#EF4444" : "#22C55E";
   return (
     <div
       className={`fixed bottom-6 left-6 z-50 flex min-w-[280px] max-w-[360px] items-start gap-3 overflow-hidden rounded-2xl border border-[#DDE2E8] bg-white py-4 pl-5 pr-4 shadow-[0_4px_12px_rgba(16,24,40,0.12)] transition-all duration-300 ${
@@ -348,7 +369,7 @@ function SuccessToast({ title, subtitle, visible }: SuccessToastProps) {
           ? "translate-y-0 opacity-100"
           : "pointer-events-none translate-y-4 opacity-0"
       }`}
-      style={{ borderLeft: "5px solid #22C55E" }}
+      style={{ borderLeft: `5px solid ${accentColor}` }}
       role="status"
       aria-live="polite"
     >
@@ -849,6 +870,7 @@ function ContinueEditingDialog({
 export default function MyListingsPage() {
   const navigate = useNavigate();
   const userId = useAuthStore((s) => s.user?.id ?? null);
+  const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState<StatusTab>("all");
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -885,6 +907,7 @@ export default function MyListingsPage() {
   const [successToast, setSuccessToast] = useState<{
     title: string;
     subtitle: string;
+    variant?: "success" | "error";
   } | null>(null);
   const [toastVisible, setToastVisible] = useState(false);
   // Fetch user's real listings from backend
@@ -911,20 +934,28 @@ export default function MyListingsPage() {
 
   const backendListings: MyListing[] = useMemo(() => {
     const items = productsData?.products ?? [];
-    return items.map((p: Product) => ({
-      id: p.id,
-      image: p.images?.[0],
-      title: p.title,
-      price: p.price,
-      location: "Gaza", // TODO: map real location when available from API
-      status: ((): MyListingStatus => {
-        const s = (p.status || "active").toLowerCase();
-        if (s === "pending" || s === "active" || s === "rejected") return s;
-        if (s === "sold" || s === "archived" || s === "draft")
-          return s as MyListingStatus;
-        return "active";
-      })(),
-    }));
+    return items
+      .map((p: Product) => {
+        const normalizedStatus = (p.status || "active")
+          .toLowerCase()
+          .replace(/_/g, "-");
+        if (HIDDEN_BACKEND_STATUSES.has(normalizedStatus)) {
+          return null;
+        }
+
+        const mappedStatus =
+          BACKEND_STATUS_MAP[normalizedStatus] ?? "active";
+
+        return {
+          id: p.id,
+          image: p.images?.[0],
+          title: p.title,
+          price: p.price,
+          location: "Gaza", // TODO: map real location when available from API
+          status: mappedStatus,
+        };
+      })
+      .filter((listing): listing is MyListing => listing !== null);
   }, [productsData]);
 
   const filteredListings = useMemo(() => {
@@ -966,13 +997,22 @@ export default function MyListingsPage() {
     setCurrentPage(1);
   };
 
-  const showSuccessToast = (title: string, subtitle: string) => {
-    setSuccessToast({ title, subtitle });
+  const showSuccessToast = (
+    title: string,
+    subtitle: string,
+    variant: "success" | "error" = "success",
+  ) => {
+    setSuccessToast({ title, subtitle, variant });
     setToastVisible(true);
     setTimeout(() => {
       setToastVisible(false);
       setTimeout(() => setSuccessToast(null), 300);
     }, 4000);
+  };
+
+  const refreshListingData = async () => {
+    await queryClient.invalidateQueries({ queryKey: ["my-listings"] });
+    await queryClient.invalidateQueries({ queryKey: ["products"] });
   };
 
   const handleAction = (id: string, action: string) => {
@@ -1020,14 +1060,24 @@ export default function MyListingsPage() {
   const handleMarkAsSoldConfirm = async () => {
     if (!markAsSoldTarget) return;
     setIsMarkingAsSold(true);
-    // TODO: call real mark-as-sold API
-    await new Promise((r) => setTimeout(r, 1500));
-    setIsMarkingAsSold(false);
-    setMarkAsSoldTarget(null);
-    showSuccessToast(
-      "Listing marked as sold",
-      "This listing is no longer visible to buyers.",
-    );
+    try {
+      await productService.markSold(markAsSoldTarget.id);
+      await refreshListingData();
+      setMarkAsSoldTarget(null);
+      showSuccessToast(
+        "Listing marked as sold",
+        "This listing is no longer visible to buyers.",
+      );
+    } catch (error) {
+      console.error("Failed to mark listing as sold", error);
+      showSuccessToast(
+        "Failed to mark as sold",
+        "Something went wrong. Please try again.",
+        "error",
+      );
+    } finally {
+      setIsMarkingAsSold(false);
+    }
   };
 
   const handleMarkAsSoldCancel = () => {
@@ -1037,14 +1087,24 @@ export default function MyListingsPage() {
   const handleDeleteConfirm = async () => {
     if (!deleteTarget) return;
     setIsDeleting(true);
-    // TODO: call real delete API
-    await new Promise((r) => setTimeout(r, 1500));
-    setIsDeleting(false);
-    setDeleteTarget(null);
-    showSuccessToast(
-      "Listing deleted successfully",
-      "This listing is no longer visible to buyers.",
-    );
+    try {
+      await productService.delete(deleteTarget.id);
+      await refreshListingData();
+      setDeleteTarget(null);
+      showSuccessToast(
+        "Listing deleted successfully",
+        "This listing is no longer visible to buyers.",
+      );
+    } catch (error) {
+      console.error("Failed to delete listing", error);
+      showSuccessToast(
+        "Failed to delete listing",
+        "Please try again in a moment.",
+        "error",
+      );
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   const handleDeleteCancel = () => {
@@ -1082,6 +1142,7 @@ export default function MyListingsPage() {
           title={successToast.title}
           subtitle={successToast.subtitle}
           visible={toastVisible}
+          variant={successToast.variant}
         />
       )}
 

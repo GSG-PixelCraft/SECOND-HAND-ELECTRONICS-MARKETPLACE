@@ -6,9 +6,11 @@ type Props = {
   audioUrl: string;
 };
 
+type WaveSurferInstance = ReturnType<typeof WaveSurfer.create>;
+
 export default function VoiceMessage({ audioUrl }: Props) {
   const waveformRef = useRef<HTMLDivElement>(null);
-  const waveSurferRef = useRef<WaveSurfer | null>(null);
+  const waveSurferRef = useRef<WaveSurferInstance | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {

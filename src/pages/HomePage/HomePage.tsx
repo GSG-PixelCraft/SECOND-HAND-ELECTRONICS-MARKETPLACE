@@ -10,7 +10,6 @@ import {
   type ListingItem,
   type ListingSectionData,
 } from "../../components/homePage/ListingSection";
-import { mockProducts } from "./mockProducts";
 import { useProducts } from "@/services/product.service";
 import type { Product } from "@/types";
 // import type { AxiosError } from "axios";
@@ -35,7 +34,7 @@ const transformProductToListingItem = (product: Product): ListingItem => {
 };
 
 const HomePage = () => {
-  // Fetch products from API (fallback to mocks on empty/error)
+  // Fetch products from API only
   const {
     data: productsData,
     isLoading,
@@ -46,11 +45,8 @@ const HomePage = () => {
     sortOrder: "desc",
   });
 
-  // Transform products to listing items
-  const products: Product[] =
-    productsData?.products && productsData.products.length > 0
-      ? productsData.products
-      : mockProducts;
+  // Transform products to listing items (no mock fallback)
+  const products: Product[] = productsData?.products ?? [];
 
   // Split products into sections (4 items each)
   const recentListings = products

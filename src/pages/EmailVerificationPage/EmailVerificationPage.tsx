@@ -43,7 +43,6 @@ export function EmailVerificationPage() {
       await sendEmailOtp.mutateAsync({ otpType: "email_verification" });
       setStep("otp");
       setTimer(60);
-      setOtp(Array.from({ length: OTP_LENGTH }, () => ""));
     } catch (err: unknown) {
       const typedError = err as ApiLikeError;
       setError(typedError.response?.data?.message || typedError.message || "Failed to send verification code.");
@@ -84,7 +83,6 @@ export function EmailVerificationPage() {
     try {
       await sendEmailOtp.mutateAsync({ otpType: "email_verification" });
       setTimer(60);
-      setOtp(Array.from({ length: OTP_LENGTH }, () => ""));
       setError(null);
     } catch (err: unknown) {
       const typedError = err as ApiLikeError;

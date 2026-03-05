@@ -1,9 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import type { ReactElement } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useTranslation } from "react-i18next";
+import toast from "react-hot-toast";
 import { listingSchema } from "@/components/forms/zod-schemas";
 import { type PhotoItem } from "@/components/ui/FileUpload/file-upload";
 import { StepIndicator } from "./components/StepIndicator";
@@ -20,9 +21,11 @@ import {
   productService,
   PRODUCTS_KEYS,
 } from "@/services/product.service";
+import type { CreateProductPayload } from "@/services/product.service";
 import { useQueryClient } from "@tanstack/react-query";
 import { useLocation } from "react-router-dom";
 import type { Product } from "@/types";
+import type { Category } from "@/types/category";
 
 type ListingFormData = z.infer<typeof listingSchema>;
 type PhotoItemWithProgress = PhotoItem & { uploadProgress?: number };
@@ -36,6 +39,208 @@ type LocationValue = {
 
 const FALLBACK_IMAGE = new URL("../../images/Phone.jpg", import.meta.url).href;
 
+type AttributeKey =
+  | "brand"
+  | "model"
+  | "storage"
+  | "battery"
+  | "description"
+  | "location";
+
+type AttributeValueMap = Partial<Record<AttributeKey, string | undefined>>;
+
+const ATTRIBUTE_LABELS: Record<AttributeKey, string> = {
+  brand: "Brand",
+  model: "Model",
+  storage: "Storage",
+  battery: "Battery health",
+  description: "Description",
+  location: "Location",
+};
+
+const ATTRIBUTE_KEYWORDS: Record<AttributeKey, string[]> = {
+  brand: [
+    "brand",
+    "company",
+    "manufacturer",
+    "make",
+    "ماركة",
+    "الماركة",
+    "العلامة",
+    "العلامة التجارية",
+    "الشركة",
+    "الشركة المصنعة",
+  ],
+  model: [
+    "model",
+    "موديل",
+    "الموديل",
+    "طراز",
+    "الطراز",
+  ],
+  storage: [
+    "storage",
+    "capacity",
+    "rom",
+    "التخزين",
+    "سعة",
+    "سعة التخزين",
+    "الذاكرة",
+    "مساحة التخزين",
+  ],
+  battery: [
+    "battery",
+    "battery health",
+    "البطارية",
+    "صحة البطارية",
+    "عمر البطارية",
+  ],
+  description: [
+    "description",
+    "details",
+    "notes",
+    "الوصف",
+    "التفاصيل",
+    "ملاحظات",
+  ],
+  location: [
+    "location",
+    "address",
+    "city",
+    "الموقع",
+    "العنوان",
+    "المدينة",
+    "المدينه",
+    "المكان",
+  ],
+};
+
+const matchesAttributeName = (label: string, keywords: string[]): boolean => {
+  const normalized = (label ?? "").toString().trim().toLowerCase();
+  return keywords.some((keyword) => normalized.includes(keyword));
+};
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null;
+
+const REQUIRED_ATTRIBUTE_KEYS: AttributeKey[] = [
+  "brand",
+  "model",
+  "storage",
+  "location",
+];
+
+const resolveListingAttributes = async (
+  categoryId: string,
+  attributeValues: AttributeValueMap,
+) => {
+  const catDetail = await productService.getCategoryDetail(categoryId);
+  const defs = (catDetail?.attributes ?? []) as Array<{ id: string; name: string }>;
+  const findAttribute = (key: AttributeKey) =>
+    defs.find((definition) =>
+      matchesAttributeName(definition.name, ATTRIBUTE_KEYWORDS[key]),
+    );
+
+  const attributeDefs: Record<
+    AttributeKey,
+    { id: string; name: string } | undefined
+  > = {
+    brand: findAttribute("brand"),
+    model: findAttribute("model"),
+    storage: findAttribute("storage"),
+    battery: findAttribute("battery"),
+    description: findAttribute("description"),
+    location: findAttribute("location"),
+  };
+
+  const missingRequired = REQUIRED_ATTRIBUTE_KEYS.filter(
+    (key) => !attributeDefs[key],
+  );
+
+  const mappedAttrs: { attributeId: string; value: string }[] = [];
+  const appendAttribute = (
+    key: AttributeKey,
+    formatter?: (value: string) => string,
+  ) => {
+    const def = attributeDefs[key];
+    const raw = attributeValues[key];
+    const safeValue = raw?.toString().trim();
+    if (!def || !safeValue) return;
+    mappedAttrs.push({
+      attributeId: def.id,
+      value: formatter ? formatter(safeValue) : safeValue,
+    });
+  };
+
+  appendAttribute("brand");
+  appendAttribute("model");
+  appendAttribute("storage", (value) =>
+    value.toUpperCase().endsWith("GB") ? value : `${value}GB`,
+  );
+  appendAttribute("battery");
+  appendAttribute("description");
+  appendAttribute("location");
+
+  return { attributes: mappedAttrs, missingRequired };
+};
+
+const extractApiError = (
+  error: unknown,
+): { message: string; details?: string[] } => {
+  const defaultMessage =
+    isRecord(error) && typeof error.message === "string"
+      ? error.message
+      : "Request failed";
+
+  const response = isRecord(error) && "response" in error ? (error as Record<string, unknown>).response : undefined;
+  const responseRecord = isRecord(response) ? response : undefined;
+  const responseData = responseRecord && "data" in responseRecord ? (responseRecord as Record<string, unknown>).data : undefined;
+
+  if (!responseData) {
+    return { message: defaultMessage };
+  }
+
+  if (typeof responseData === "string") {
+    return { message: responseData };
+  }
+
+  const dataRecord = isRecord(responseData) ? responseData : undefined;
+
+  const details = Array.isArray(dataRecord?.fields)
+    ? dataRecord?.fields
+        .map((field) => {
+          if (!isRecord(field)) return "";
+          const fieldLabel =
+            typeof field.field === "string"
+              ? field.field
+              : typeof field.name === "string"
+                ? field.name
+                : "";
+          const message =
+            typeof field.message === "string" ? field.message : "";
+          return fieldLabel
+            ? `${fieldLabel}: ${message}`.trim()
+            : message.trim();
+        })
+        .filter(Boolean)
+    : undefined;
+
+  const message =
+    (typeof dataRecord?.message === "string" && dataRecord.message) ||
+    (typeof dataRecord?.error === "string" && dataRecord.error) ||
+    defaultMessage;
+
+  return { message, details };
+};
+
+const getErrorStatus = (error: unknown): number | undefined => {
+  if (!isRecord(error) || !("response" in error)) return undefined;
+  const response = (error as Record<string, unknown>).response;
+  if (!isRecord(response)) return undefined;
+  const statusValue = response.status;
+  return typeof statusValue === "number" ? statusValue : undefined;
+};
+
 export default function AddListingPage(): ReactElement {
   const { t } = useTranslation();
   const location = useLocation();
@@ -43,7 +248,44 @@ export default function AddListingPage(): ReactElement {
   const isPendingRoute =
     location.pathname.endsWith("/products/bending") ||
     location.pathname.endsWith("/products/pending");
-  const { data: categoriesData, isLoading: isCategoriesLoading } = useCategories() as any;
+  const { data: categoriesData, isLoading: isCategoriesLoading } = useCategories();
+  const categoryOptions = useMemo(
+    () =>
+      (categoriesData ?? []).map((cat) => ({
+        value: String(cat?.id ?? cat?.name ?? ""),
+        label: String(cat?.name ?? cat?.id ?? ""),
+      })),
+    [categoriesData],
+  );
+  const findCategory = useCallback(
+    (name: string | undefined): Category | undefined => {
+      if (!name) return undefined;
+      const categories = categoriesData ?? [];
+      const norm = name.trim().toLowerCase();
+      const synonymGroups: Array<string[]> = [
+        ["phone", "phones", "smartphone", "smartphones", "mobile", "mobiles"],
+        ["laptop", "laptops", "notebook"],
+        ["tablet", "tablets"],
+        ["camera", "cameras"],
+        ["audio", "headphone", "headphones", "earbud", "earbuds"],
+        ["gaming", "console", "playstation", "xbox", "nintendo"],
+        ["accessories", "accessory"],
+        ["pc parts", "pc", "parts", "component", "components"],
+      ];
+      const includesMatch = (label: string = "") => {
+        const lower = label.toLowerCase();
+        return synonymGroups.some((group) =>
+          group.some((key) => norm.includes(key) && lower.includes(group[0])),
+        );
+      };
+      let match = categories.find((cat) => cat.name.toLowerCase() === norm);
+      if (!match) {
+        match = categories.find((cat) => includesMatch(cat.name));
+      }
+      return match;
+    },
+    [categoriesData],
+  );
   const draftMutation = useCreateProduct();
   const pendingMutation = useCreatePendingProduct();
   const [currentStep, setCurrentStep] = useState<1 | 2>(1);
@@ -75,6 +317,10 @@ export default function AddListingPage(): ReactElement {
   });
 
   const values = watch();
+  const selectedCategoryData = useMemo(
+    () => findCategory(values.category),
+    [findCategory, values.category],
+  );
   const isBasicDetailsValid =
     Boolean(values.title?.trim().length) &&
     Boolean(values.category?.trim().length) &&
@@ -106,129 +352,119 @@ export default function AddListingPage(): ReactElement {
     setIsSending(true);
     try {
       // Ensure categories available (fetch if not yet loaded)
-      let localCategories = categoriesData as any[] | undefined;
+      let localCategories: Category[] | undefined = categoriesData ?? undefined;
       if (!localCategories || !localCategories.length) {
-        localCategories = await queryClient.fetchQuery({
-          queryKey: PRODUCTS_KEYS.categories as any,
+        localCategories = await queryClient.fetchQuery<Category[]>({
+          queryKey: PRODUCTS_KEYS.categories,
           queryFn: productService.getCategories,
         });
       }
-      // Try to match selected category to backend categories (fallback to first)
+      // Try to match selected category to backend categories (fallback to heuristic/first)
       const selectedCategoryName = data.category?.trim() || "";
-      const match = (localCategories ?? []).find(
-        (c: any) => String(c.name).toLowerCase() === selectedCategoryName.toLowerCase(),
+      const norm = selectedCategoryName.toLowerCase();
+      const synonymGroups: Array<string[]> = [
+        ["phone", "phones", "smartphone", "smartphones", "mobile", "mobiles"],
+        ["laptop", "laptops", "notebook"],
+        ["tablet", "tablets"],
+        ["camera", "cameras"],
+        ["audio", "headphone", "headphones", "earbud", "earbuds"],
+        ["gaming", "console", "playstation", "xbox", "nintendo"],
+        ["accessories", "accessory"],
+        ["pc parts", "pc", "parts", "component", "components"],
+      ];
+      const includesMatch = (name: string = "") => {
+        const n = name.toLowerCase();
+        return synonymGroups.some((group) =>
+          group.some((key) => n.includes(key) && norm.includes(group[0])),
+        );
+      };
+      let match = (localCategories ?? []).find(
+        (category) => category.name.toLowerCase() === norm,
       );
+      if (!match) {
+        match = (localCategories ?? []).find((category) =>
+          includesMatch(category.name),
+        );
+      }
       // If backend has no categories, fall back to '1' (common default in seeded DBs)
       const categoryFallbackId = "1";
       const categoryId = String(
         match?.id ?? localCategories?.[0]?.id ?? categoryFallbackId,
       );
 
-      // Build attributes (required for pending; harmless for draft)
-      const attributes = [
-        data.brand && { attributeId: "1", value: String(data.brand) },
-        data.model && { attributeId: "2", value: String(data.model) },
-        data.storage && {
-          attributeId: "3",
-          value:
-            String(data.storage) + (String(data.storage).endsWith("GB") ? "" : "GB"),
-        },
-        data.batteryHealth && {
-          attributeId: "4",
-          value: String(data.batteryHealth),
-        },
-        data.description && { attributeId: "5", value: String(data.description) },
-        values.location && { attributeId: "6", value: String(values.location) },
-      ].filter(Boolean) as { attributeId: string; value: string }[];
-
       const images = photos.map((p) => p.file);
+      const basePayload: CreateProductPayload = {
+        title: data.title,
+        categoryId,
+        condition: normalizeCondition(data.condition),
+        price: Number(data.price) || 0,
+        isNegotiable: Boolean(data.isNegotiable),
+        images,
+      };
+
+      const resolvedLocation =
+        data.location?.trim() ||
+        values.location?.trim() ||
+        [locationValue.city, locationValue.country].filter(Boolean).join(", ");
+
+      const attributeInputs: AttributeValueMap = {
+        brand: data.brand,
+        model: data.model,
+        storage: data.storage,
+        battery: data.batteryHealth,
+        description:
+          typeof data.description === "string" ? data.description : undefined,
+        location: resolvedLocation,
+      };
+
+      const { attributes: mappedAttrs, missingRequired } =
+        await resolveListingAttributes(categoryId, attributeInputs);
+
+      if (missingRequired.length) {
+        const missingLabels = missingRequired
+          .map((key) => ATTRIBUTE_LABELS[key])
+          .join(", ");
+        console.error(
+          "Missing attribute definitions for category",
+          categoryId,
+          missingRequired,
+        );
+        toast.error(
+          `The selected category is missing attributes for: ${missingLabels}. Please choose another category or ask an admin to add them.`,
+        );
+        setIsSending(false);
+        return;
+      }
+
+      if (!mappedAttrs.length) {
+        toast.error(
+          "We could not resolve any category attributes for this listing. Please try again later.",
+        );
+        setIsSending(false);
+        return;
+      }
+
+      const payloadWithAttributes: CreateProductPayload = {
+        ...basePayload,
+        attributes: mappedAttrs,
+      };
 
       if (isPendingRoute) {
-        // Fetch category attributes to map to real attribute IDs
-        const catDetail = await productService.getCategoryDetail(categoryId);
-        const defs = catDetail?.attributes ?? [];
-        const pick = (names: string[]) =>
-          defs.find((d) => names.some((n) => d.name.toLowerCase().includes(n)));
-
-        const brandDef = pick(["brand", "company", "manufacturer", "make"]);
-        const modelDef = pick(["model"]);
-        const storageDef = pick(["storage", "capacity", "rom"]);
-        const batteryDef = pick(["battery", "battery health"]);
-        const descDef = pick(["description", "details", "notes"]);
-        const locDef = pick(["location", "address", "city"]);
-
-        const mappedAttrs = [] as { attributeId: string; value: string }[];
-        if (brandDef && data.brand) mappedAttrs.push({ attributeId: brandDef.id, value: String(data.brand) });
-        if (modelDef && data.model) mappedAttrs.push({ attributeId: modelDef.id, value: String(data.model) });
-        if (storageDef && data.storage)
-          mappedAttrs.push({
-            attributeId: storageDef.id,
-            value: String(data.storage).endsWith("GB") ? String(data.storage) : `${data.storage}GB`,
-          });
-        if (batteryDef && data.batteryHealth)
-          mappedAttrs.push({ attributeId: batteryDef.id, value: String(data.batteryHealth) });
-        if (descDef && data.description)
-          mappedAttrs.push({ attributeId: descDef.id, value: String(data.description) });
-        if (locDef && values.location)
-          mappedAttrs.push({ attributeId: locDef.id, value: String(values.location) });
-
-        // Example-based fallback mapping (as per Swagger example)
-        const exampleAttrs = [
-          data.brand && { attributeId: "1", value: String(data.brand) },
-          data.model && { attributeId: "2", value: String(data.model) },
-          data.storage && {
-            attributeId: "3",
-            value: String(data.storage).endsWith("GB")
-              ? String(data.storage)
-              : `${data.storage}GB`,
-          },
-          data.batteryHealth && { attributeId: "4", value: String(data.batteryHealth) },
-          data.description && { attributeId: "5", value: String(data.description) },
-          values.location && { attributeId: "6", value: String(values.location) },
-        ].filter(Boolean) as { attributeId: string; value: string }[];
-
-        const attrsForPending = mappedAttrs.length ? mappedAttrs : exampleAttrs;
-
-        if (attrsForPending.length) {
-          await pendingMutation.mutateAsync({
-            title: data.title,
-            categoryId,
-            condition: normalizeCondition(data.condition),
-            price: Number(data.price) || 0,
-            isNegotiable: Boolean(data.isNegotiable),
-            images,
-            attributes: attrsForPending,
-          } as any);
-        } else {
-          // Last resort: fallback to draft to avoid 400
-          await draftMutation.mutateAsync({
-            title: data.title,
-            categoryId,
-            condition: normalizeCondition(data.condition),
-            price: Number(data.price) || 0,
-            isNegotiable: Boolean(data.isNegotiable),
-            images,
-          } as any);
-        }
+        await pendingMutation.mutateAsync(payloadWithAttributes);
       } else {
-        await draftMutation.mutateAsync({
-          title: data.title,
-          categoryId,
-          condition: normalizeCondition(data.condition),
-          price: Number(data.price) || 0,
-          isNegotiable: Boolean(data.isNegotiable),
-          images,
-        } as any);
+        await draftMutation.mutateAsync(payloadWithAttributes);
       }
 
       setIsSending(false);
       setReviewOpen(false);
       setReviewSuccessOpen(true);
-    } catch (e: any) {
+    } catch (e: unknown) {
       // If backend rejects, keep dialog open and stop the sending spinner
-      const status = e?.response?.status;
-      const message = e?.response?.data || e?.message;
-      console.error("Create listing failed", status, message);
+      const status = getErrorStatus(e);
+      const { message, details } = extractApiError(e);
+      const detailMessage = details?.length ? `\n${details.join("\n")}` : "";
+      console.error("Create listing failed", status, message, detailMessage);
+      toast.error(details?.length ? `${message}\n${details.join("\n")}` : message);
       setIsSending(false);
     }
   };
@@ -299,6 +535,7 @@ export default function AddListingPage(): ReactElement {
                 onTipsClick={() => setTipsOpen(true)}
                 onNext={handleNextStep}
                 isNextDisabled={!isBasicDetailsValid}
+                categoriesList={categoryOptions}
               />
             )}
 
@@ -311,6 +548,7 @@ export default function AddListingPage(): ReactElement {
                 onBack={handleBackStep}
                 onReview={handleReview}
                 onLocationClick={() => setLocationOpen(true)}
+                categoryAttributes={selectedCategoryData?.attributes}
               />
             )}
           </form>

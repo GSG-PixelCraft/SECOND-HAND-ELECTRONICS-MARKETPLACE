@@ -19,7 +19,6 @@ export interface FiltersPartProps {
   categoriesList?: string[]; // optional override to supply categories from navbar/API
 }
 
-const DEFAULT_CATEGORIES = ["Phones", "Tablets", "Laptops", "PC Parts"];
 const conditions = ["New", "Like New", "Good", "Fair", "Poor"];
 const brands = ["Apple", "Samsung", "Google", "Dell", "HP", "Lenovo"];
 const storageOptions = ["64GB", "128GB", "256GB", "512GB", "1TB", "2TB"];
@@ -225,7 +224,7 @@ export const FiltersPart = ({
       : []),
   ];
 
-  const categories = categoriesList && categoriesList.length > 0 ? categoriesList : DEFAULT_CATEGORIES;
+  const categories = categoriesList && categoriesList.length > 0 ? categoriesList : [];
 
   return (
     <div className={`w-full ${className}`}>
