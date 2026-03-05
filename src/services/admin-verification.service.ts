@@ -151,64 +151,6 @@ const mockVerifications: VerificationSubmission[] = [
 // API Functions
 // ============================================================================
 
-const addDays = (date: Date, days: number) =>
-  new Date(
-    date.getFullYear(),
-    date.getMonth(),
-    date.getDate() + days,
-    date.getHours(),
-    date.getMinutes(),
-    date.getSeconds(),
-    date.getMilliseconds(),
-  );
-
-const parseLocalDate = (value?: string | null) => {
-  if (!value) return null;
-  const [yearText, monthText, dayText] = value.split("-");
-  const year = Number.parseInt(yearText, 10);
-  const month = Number.parseInt(monthText, 10);
-  const day = Number.parseInt(dayText, 10);
-
-  if (
-    Number.isNaN(year) ||
-    Number.isNaN(month) ||
-    Number.isNaN(day) ||
-    month < 1 ||
-    month > 12 ||
-    day < 1 ||
-    day > 31
-  ) {
-    return null;
-  }
-
-  const parsed = new Date(year, month - 1, day);
-  if (
-    parsed.getFullYear() !== year ||
-    parsed.getMonth() !== month - 1 ||
-    parsed.getDate() !== day
-  ) {
-    return null;
-  }
-
-  return parsed;
-};
-
-const startOfDay = (date: Date) =>
-  new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0);
-
-const endOfDay = (date: Date) =>
-  new Date(
-    date.getFullYear(),
-    date.getMonth(),
-    date.getDate(),
-    23,
-    59,
-    59,
-    999,
-  );
-
-// Note: date-bound helpers removed due to no usage; add when needed
-
 export const adminVerificationService = {
   // Get paginated verifications list
   getVerifications: async (
