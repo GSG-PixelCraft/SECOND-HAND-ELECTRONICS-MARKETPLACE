@@ -4,7 +4,6 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { Dialog } from "@/components/ui/Dialog/dialog";
 import { Button } from "@/components/ui/Button/button";
-import { Image } from "@/components/ui/Image/image";
 import { AlertTriangle, CheckCircle2 } from "lucide-react";
 import { Text } from "@/components/ui/Text/text";
 import { FullScreenLoading } from "@/components/feedback/loading/full-screen-loading";
