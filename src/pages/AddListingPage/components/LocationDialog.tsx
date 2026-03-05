@@ -11,7 +11,11 @@ import {
   useMap,
   useMapEvents,
 } from "react-leaflet";
-import L from "leaflet";
+import L, {
+  type LeafletEvent,
+  type LeafletMouseEvent,
+  type Marker as LeafletMarker,
+} from "leaflet";
 import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
@@ -89,7 +93,8 @@ const MapEvents = ({
   onPick: (lat: number, lng: number) => void;
 }) => {
   useMapEvents({
-    click: (event) => onPick(event.latlng.lat, event.latlng.lng),
+    click: (event: LeafletMouseEvent) =>
+      onPick(event.latlng.lat, event.latlng.lng),
   });
   return null;
 };
@@ -315,8 +320,8 @@ export const LocationDialog: FC<LocationDialogProps> = ({
               position={mapPosition}
               draggable
               eventHandlers={{
-                dragend: (event) => {
-                  const marker = event.target as L.Marker;
+                dragend: (event: LeafletEvent) => {
+                  const marker = event.target as LeafletMarker;
                   const { lat, lng } = marker.getLatLng();
                   handleMapPick(lat, lng);
                 },
