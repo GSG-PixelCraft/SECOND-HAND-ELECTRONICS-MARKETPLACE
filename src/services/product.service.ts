@@ -203,21 +203,18 @@ export const productService = {
       anyPayload.images.forEach((file: File) => form.append("images", file));
     }
     if (Array.isArray(anyPayload.attributes)) {
-      // Send as JSON string for robust parsing on backend
-      form.append("attributes", JSON.stringify(anyPayload.attributes));
-      (anyPayload.attributes as any[]).forEach((attr: any, idx: number) => {
-        const i = String(idx);
-        if (attr && typeof attr === "object") {
-          if (attr.attributeId !== undefined)
+      (anyPayload.attributes as ProductAttributeInput[]).forEach(
+        (attr, idx) => {
+          if (!attr) return;
+          const i = String(idx);
+          if (attr.attributeId !== undefined) {
             form.append(`attributes[${i}][attributeId]`, String(attr.attributeId));
-          if (attr.value !== undefined)
+          }
+          if (attr.value !== undefined) {
             form.append(`attributes[${i}][value]`, String(attr.value));
-          if (attr.attributeId !== undefined)
-            form.append(`attributes.${i}.attributeId`, String(attr.attributeId));
-          if (attr.value !== undefined)
-            form.append(`attributes.${i}.value`, String(attr.value));
-        }
-      });
+          }
+        },
+      );
     }
 
     try {
@@ -248,14 +245,10 @@ export const productService = {
       payload.images.forEach((file) => form.append("images", file));
     }
     if (Array.isArray(payload.attributes)) {
-      form.append("attributes", JSON.stringify(payload.attributes));
-      // Also include bracket/dot notations for robust backend parsing
       payload.attributes.forEach((attr, idx) => {
         const i = String(idx);
         form.append(`attributes[${i}][attributeId]`, String(attr.attributeId));
         form.append(`attributes[${i}][value]`, String(attr.value));
-        form.append(`attributes.${i}.attributeId`, String(attr.attributeId));
-        form.append(`attributes.${i}.value`, String(attr.value));
       });
     }
 
@@ -355,36 +348,62 @@ export const productService = {
 
     const extract = (value: unknown): unknown[] => {
       if (Array.isArray(value)) return value;
-      if (
-        value &&
-        typeof value === "object" &&
-        Array.isArray((value as any).data)
-      )
-        return (value as any).data as unknown[];
-      if (
-        value &&
-        typeof value === "object" &&
-        Array.isArray((value as any).categories)
-      )
-        return (value as any).categories as unknown[];
+      if (value && typeof value === "object") {
+        const obj = value as any;
+        if (Array.isArray(obj.data)) return obj.data as unknown[];
+        if (obj.data && typeof obj.data === "object" && Array.isArray(obj.data.data))
+          return obj.data.data as unknown[];
+        if (Array.isArray(obj.categories)) return obj.categories as unknown[];
+      }
       return [];
     };
 
     const items = extract(raw);
     const now = new Date().toISOString();
+    const parseIcon = (icon: any): Category["icon"] => {
+      if (!icon) return null;
+      return {
+        id: String(icon?.id ?? ""),
+        url: String(icon?.url ?? ""),
+        fileName: String(icon?.fileName ?? ""),
+        type: String(icon?.type ?? "category_icon"),
+        createdAt: String(icon?.createdAt ?? now),
+        storageProviderName: icon?.storageProviderName,
+        fileId: icon?.fileId,
+        fileSizeInKB: icon?.fileSizeInKB,
+        fileType: icon?.fileType,
+        width: icon?.width ?? null,
+        height: icon?.height ?? null,
+        altText: icon?.altText ?? null,
+        uploaderId: icon?.uploaderId ?? null,
+        updatedAt: icon?.updatedAt ?? icon?.createdAt ?? now,
+        productId: icon?.productId ?? null,
+      };
+    };
+    const parseAttributes = (value: any): Category["attributes"] => {
+      if (!Array.isArray(value)) return undefined;
+      return value.map((attr) => ({
+        id: String(attr?.id ?? ""),
+        categoryId: String(attr?.categoryId ?? ""),
+        name: String(attr?.name ?? ""),
+        type: String(attr?.type ?? "text"),
+        body: attr?.body ? (attr.body as Record<string, unknown>) : undefined,
+        isRequired: Boolean(attr?.isRequired ?? false),
+        createdAt: String(attr?.createdAt ?? now),
+        updatedAt: String(attr?.updatedAt ?? attr?.createdAt ?? now),
+        assetId: attr?.assetId ?? null,
+      }));
+    };
+
     return items.map((item: any) => ({
       id: String(item?.id ?? ""),
       name: String(item?.name ?? ""),
-      icon: {
-        id: String(item?.icon?.id ?? ""),
-        url: String(item?.icon?.url ?? ""),
-        fileName: String(item?.icon?.fileName ?? ""),
-        type: String(item?.icon?.type ?? "category_icon"),
-        createdAt: String(item?.icon?.createdAt ?? now),
-      },
+      icon: parseIcon(item?.icon),
+      parentId: item?.parentId ? String(item.parentId) : null,
       isActive: Boolean(item?.isActive ?? true),
       createdAt: String(item?.createdAt ?? now),
       updatedAt: String(item?.updatedAt ?? item?.createdAt ?? now),
+      attributes: parseAttributes(item?.attributes),
     }));
   },
 
