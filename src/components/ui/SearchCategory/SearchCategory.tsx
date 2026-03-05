@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Button } from "../Button/button";
 import { Span } from "@/components/ui/Span/span";
+import { useCategories } from "@/services/product.service";
 
 interface SearchCategoryProps {
   onSearch?: (searchTerm: string) => void;
@@ -10,15 +11,15 @@ interface SearchCategoryProps {
   className?: string;
 }
 
-const categories = [
-  { id: "all", name: "All", icon: "🏠" },
-  { id: "phones", name: "Phones", icon: "📱" },
-  { id: "laptops", name: "Laptops", icon: "💻" },
-  { id: "tablets", name: "Tablets", icon: "📋" },
-  { id: "accessories", name: "Accessories", icon: "🎧" },
-  { id: "smartwatches", name: "Smartwatches", icon: "⌚" },
-  { id: "gaming", name: "Gaming", icon: "🎮" },
-  { id: "cameras", name: "Cameras", icon: "📷" },
+const FALLBACK_CATEGORIES = [
+  { id: "all", name: "All", icon: "??" },
+  { id: "phones", name: "Phones", icon: "??" },
+  { id: "laptops", name: "Laptops", icon: "??" },
+  { id: "tablets", name: "Tablets", icon: "??" },
+  { id: "accessories", name: "Accessories", icon: "??" },
+  { id: "smartwatches", name: "Smartwatches", icon: "?" },
+  { id: "gaming", name: "Gaming", icon: "??" },
+  { id: "cameras", name: "Cameras", icon: "??" },
 ];
 
 const SearchIcon = () => (
@@ -46,6 +47,20 @@ export default function SearchCategory({
 }: SearchCategoryProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeCategory, setActiveCategory] = useState(selectedCategory);
+  const { data: categoriesData } = useCategories();
+  const categories = useMemo(() => {
+    const backend = (categoriesData ?? []).map((cat) => ({
+      id: cat.id,
+      name: cat.name,
+      icon: cat.icon?.fileName
+        ? cat.icon.fileName.charAt(0).toUpperCase()
+        : cat.name.charAt(0).toUpperCase(),
+    }));
+    if (!backend.length) {
+      return FALLBACK_CATEGORIES;
+    }
+    return [{ id: "all", name: "All", icon: "📦" }, ...backend];
+  }, [categoriesData]);
 
   const handleSearchChange = (value: string) => {
     setSearchTerm(value);

@@ -48,9 +48,10 @@ interface BasicDetailsStepProps {
   onTipsClick: () => void;
   onNext: () => void;
   isNextDisabled: boolean;
+  categoriesList?: Array<{ value: string; label: string }>;
 }
 
-const CATEGORIES = [
+const DEFAULT_CATEGORIES = [
   { value: "phones", label: "Phones" },
   { value: "tablets", label: "Tablets" },
   { value: "laptops", label: "Laptops" },
@@ -77,11 +78,23 @@ export const BasicDetailsStep: FC<BasicDetailsStepProps> = ({
   onTipsClick,
   onNext,
   isNextDisabled,
+  categoriesList,
 }): ReactElement => {
   const [categoryOpen, setCategoryOpen] = useState(false);
   const [conditionOpen, setConditionOpen] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState("Phones");
+  const categoryOptions =
+    categoriesList && categoriesList.length ? categoriesList : DEFAULT_CATEGORIES;
+  const [selectedCategory, setSelectedCategory] = useState(
+    categoryOptions[0]?.label ?? "Phones",
+  );
   const [selectedCondition, setSelectedCondition] = useState("Like New");
+  useEffect(() => {
+    if (!categoryOptions.length) return;
+    setSelectedCategory((prev) => {
+      const hasPrev = categoryOptions.some((cat) => cat.label === prev);
+      return hasPrev ? prev : categoryOptions[0]?.label ?? "Phones";
+    });
+  }, [categoryOptions]);
   useEffect(() => {
     setValue("category", selectedCategory, { shouldValidate: true });
   }, [selectedCategory, setValue]);
@@ -417,67 +430,68 @@ export const BasicDetailsStep: FC<BasicDetailsStepProps> = ({
 
                 {/* Options */}
                 <div className="flex flex-col gap-3 overflow-y-auto">
-                  {CATEGORIES.map((category) => (
-                    <Button
-                      key={category.value}
-                      type="button"
-                      onClick={() => {
-                        setSelectedCategory(category.label);
-                        setCategoryOpen(false);
-                      }}
-                      className={`flex w-full items-center gap-2.5 rounded-xl border border-solid px-4 py-3 ${
-                        category.value === "phones"
-                          ? "border-[#2563eb] bg-white"
-                          : "border-[#e4e4e4] bg-white"
-                      }`}
-                    >
-                      <Text
-                        className={`flex-1 whitespace-pre-wrap text-left font-['Poppins'] text-base leading-normal ${
-                          category.value === "phones"
-                            ? "text-[#3d3d3d]"
-                            : "text-[#828282]"
+                  {categoryOptions.map((category) => {
+                    const isSelected = category.label === selectedCategory;
+                    return (
+                      <Button
+                        key={category.value}
+                        type="button"
+                        onClick={() => {
+                          setSelectedCategory(category.label);
+                          setCategoryOpen(false);
+                        }}
+                        className={`flex w-full items-center gap-2.5 rounded-xl border border-solid px-4 py-3 ${
+                          isSelected
+                            ? "border-[#2563eb] bg-white"
+                            : "border-[#e4e4e4] bg-white"
                         }`}
                       >
-                        {category.label}
-                      </Text>
-                      <div className="relative size-6 overflow-clip">
-                        {category.value === "phones" ? (
-                          <svg
-                            className="size-full"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <circle
-                              cx="12"
-                              cy="12"
-                              r="9"
-                              fill="#2563eb"
-                              stroke="#2563eb"
-                              strokeWidth="2"
-                            />
-                            <circle cx="12" cy="12" r="4" fill="white" />
-                          </svg>
-                        ) : (
-                          <svg
-                            className="size-full"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <circle
-                              cx="12"
-                              cy="12"
-                              r="9"
-                              stroke="#828282"
-                              strokeWidth="2"
+                        <Text
+                          className={`flex-1 whitespace-pre-wrap text-left font-['Poppins'] text-base leading-normal ${
+                            isSelected ? "text-[#3d3d3d]" : "text-[#828282]"
+                          }`}
+                        >
+                          {category.label}
+                        </Text>
+                        <div className="relative size-6 overflow-clip">
+                          {isSelected ? (
+                            <svg
+                              className="size-full"
+                              viewBox="0 0 24 24"
                               fill="none"
-                            />
-                          </svg>
-                        )}
-                      </div>
-                    </Button>
-                  ))}
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <circle
+                                cx="12"
+                                cy="12"
+                                r="9"
+                                fill="#2563eb"
+                                stroke="#2563eb"
+                                strokeWidth="2"
+                              />
+                              <circle cx="12" cy="12" r="4" fill="white" />
+                            </svg>
+                          ) : (
+                            <svg
+                              className="size-full"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <circle
+                                cx="12"
+                                cy="12"
+                                r="9"
+                                stroke="#828282"
+                                strokeWidth="2"
+                                fill="none"
+                              />
+                            </svg>
+                          )}
+                        </div>
+                      </Button>
+                    );
+                  })}
                 </div>
               </div>
 
