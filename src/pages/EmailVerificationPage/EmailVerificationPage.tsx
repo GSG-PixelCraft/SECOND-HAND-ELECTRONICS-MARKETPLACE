@@ -66,7 +66,7 @@ export function EmailVerificationPage() {
       setVerification({
         email: { email: trimmed, status: "verified", verifiedAt: new Date().toISOString() },
       });
-      navigate(ROUTES.VERIFY);
+      navigate(ROUTES.PROFILE);
     } catch (err: unknown) {
       const typedError = err as ApiLikeError;
       setError(typedError.response?.data?.message || typedError.message || "Verification failed.");
