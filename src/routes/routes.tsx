@@ -123,18 +123,6 @@ const protectedRoutes = [
     },
   },
   {
-    path: "/verify",
-    lazy: async () => {
-      const { default: VerifyPage } =
-        await import("@/pages/VerifyPage/VerifyPage");
-      return { Component: () => (
-        <AuthGuard>
-          <VerifyPage />
-        </AuthGuard>
-      ) };
-    },
-  },
-  {
     path: "/verify/phone",
     lazy: async () => {
       const { PhoneVerificationPage } =

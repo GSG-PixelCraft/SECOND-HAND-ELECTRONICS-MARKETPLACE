@@ -57,7 +57,7 @@ export const IdentityVerificationStatusPage: React.FC = () => {
           description:
             "Your identity has been successfully verified. You can now access all features.",
           variant: "success" as const,
-          action: () => navigate(ROUTES.VERIFY),
+          action: () => navigate(ROUTES.PROFILE),
         };
       case "rejected":
         return {

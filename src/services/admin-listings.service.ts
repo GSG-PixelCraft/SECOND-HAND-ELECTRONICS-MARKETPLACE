@@ -9,7 +9,7 @@ import type {
   PaginatedListingsResponse,
   RejectListingData,
 } from "@/types/admin";
-import apiClient from "./client";
+import { api } from "./client";
 
 // ============================================================================
 // Section 1: Types (Re-exported from types/admin.ts)
@@ -162,27 +162,47 @@ let mockListings = generateMockListings();
 // Simulate API delay
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
+type ApiSuccessResponse<T> = {
+  success?: boolean;
+  statusCode?: number;
+  message?: string;
+  path?: string;
+  timestamp?: string;
+  data?: T;
+};
+
+type AdminProductsPayload = {
+  data?: any[];
+  total?: number;
+  page?: number;
+  totalPages?: number;
+  limit?: number;
+};
+
+type AdminProductsApiResponse = ApiSuccessResponse<AdminProductsPayload>;
+
 // API Functions
 export const adminListingsService = {
   // Get all listings with filters and pagination
   getListings: async (
     params?: ListingFilterParams,
   ): Promise<PaginatedListingsResponse> => {
-    const response = await apiClient.get("/admin/products", {
-      params: {
-        page: params?.page,
-        limit: params?.limit,
-        status: params?.status !== "all" ? params?.status : undefined,
-        search: params?.search ? params.search : undefined,
-        sortBy: params?.sortBy,
-        sortOrder: params?.sortOrder,
+    const response = await api.get<AdminProductsApiResponse>(
+      "/admin/products",
+      {
+        params: {
+          page: params?.page,
+          limit: params?.limit,
+          status: params?.status !== "all" ? params?.status : undefined,
+          search: params?.search ? params.search : undefined,
+          sortBy: params?.sortBy,
+          sortOrder: params?.sortOrder,
+        },
       },
-    });
+    );
 
-    const backend = response.data;
-    const products = backend?.data ?? [];
-
-    console.log("FULL RESPONSE:", response.data);
+    const payload = response?.data;
+    const products = payload?.data ?? [];
 
     return {
       items: products.map((product: any) => ({
@@ -208,10 +228,10 @@ export const adminListingsService = {
         updatedAt: product.updatedAt,
       })),
 
-      total: backend?.total ?? 0,
-      page: backend?.page ?? 1,
-      totalPages: backend?.totalPages ?? 1,
-      limit: backend?.limit ?? 10,
+      total: payload?.total ?? 0,
+      page: payload?.page ?? 1,
+      totalPages: payload?.totalPages ?? 1,
+      limit: payload?.limit ?? 10,
     };
   },
   // Get single listing by ID

@@ -204,7 +204,7 @@ export const adminService = {
         API_ENDPOINTS.ADMIN.DASHBOARD,
       );
 
-      return response.data;
+      return response;
     } catch (error) {
       // Temporary fallback until backend API is ready
       await new Promise((resolve) => setTimeout(resolve, 500));

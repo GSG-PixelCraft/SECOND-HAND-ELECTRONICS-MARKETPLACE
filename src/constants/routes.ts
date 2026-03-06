@@ -12,7 +12,6 @@ export const ROUTES = {
   PUBLIC_PROFILE: "/profile/:id",
   PROFILE: "/profile",
   SETTINGS: "/settings",
-  VERIFY: "/verify",
   VERIFY_IDENTITY: "/verify/identity",
   VERIFY_IDENTITY_UPLOAD: "/verify/identity/upload",
   VERIFY_IDENTITY_STATUS: "/verify/identity/status",

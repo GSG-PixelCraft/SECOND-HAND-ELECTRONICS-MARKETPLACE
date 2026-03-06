@@ -231,17 +231,7 @@ const RegisterPage = () => {
       } catch {
         // ignore failures; UI handles empty profile
       }
-      const isEmailVerified = Boolean(
-        safeUser.isEmailVerified ?? safeUser.emailVerified,
-      );
-      const isPhoneVerified = Boolean(
-        safeUser.isPhoneVerified ?? safeUser.phoneVerified,
-      );
-      if (!isEmailVerified || !isPhoneVerified) {
-        navigate(ROUTES.VERIFY);
-      } else {
-        navigate(fromPath || ROUTES.PROFILE);
-      }
+      navigate(fromPath || ROUTES.HOME);
     } catch (error) {
       const apiError = error as AxiosError<{ message?: string }>;
       const backendMessage = apiError.response?.data?.message ?? "";

@@ -181,17 +181,7 @@ const LoginPage = () => {
       } catch {
         // ignore; if backend rejects empty form, page will still handle 404 gracefully
       }
-      const isEmailVerified = Boolean(
-        safeUser.isEmailVerified ?? safeUser.emailVerified,
-      );
-      const isPhoneVerified = Boolean(
-        safeUser.isPhoneVerified ?? safeUser.phoneVerified,
-      );
-      if (!isEmailVerified || !isPhoneVerified) {
-        navigate(ROUTES.VERIFY);
-      } else {
-        navigate(fromPath || ROUTES.PROFILE);
-      }
+      navigate(fromPath || ROUTES.HOME);
     } catch (error) {
       const apiError = error as AxiosError<{ message?: string }>;
       setSubmitError(
