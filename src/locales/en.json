@@ -102,7 +102,13 @@
       "useThisAddress": "Use this address",
       "viewListings": "View my Listings",
       "goHome": "Go Home",
+      "goToHome": "Go to Home",
+      "addAnother": "Add another listing",
       "back": "Back"
+    },
+    "successModal": {
+      "title": "Listing created successfully",
+      "body": "Your listing has been submitted. You can manage it anytime from My Listings."
     },
     "tipsModal": {
       "title": "Tips good photos",

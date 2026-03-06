@@ -62,7 +62,23 @@ export default function ProfileDetails() {
     }
   }, [setVerification, verificationStatus]);
 
-  const verification = verificationStatus ?? verificationStore;
+  const verification = React.useMemo(() => {
+    if (!verificationStatus) return verificationStore;
+    return {
+      identity: {
+        ...verificationStatus.identity,
+        ...verificationStore.identity,
+      },
+      phone: {
+        ...verificationStatus.phone,
+        ...verificationStore.phone,
+      },
+      email: {
+        ...verificationStatus.email,
+        ...verificationStore.email,
+      },
+    };
+  }, [verificationStatus, verificationStore]);
 
   // ── Derived display values
   // Name / email / phone come from the auth store (User entity), not /profile

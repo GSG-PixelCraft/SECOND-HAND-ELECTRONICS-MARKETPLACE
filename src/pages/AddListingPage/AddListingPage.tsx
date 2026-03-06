@@ -49,15 +49,6 @@ type AttributeKey =
 
 type AttributeValueMap = Partial<Record<AttributeKey, string | undefined>>;
 
-const ATTRIBUTE_LABELS: Record<AttributeKey, string> = {
-  brand: "Brand",
-  model: "Model",
-  storage: "Storage",
-  battery: "Battery health",
-  description: "Description",
-  location: "Location",
-};
-
 const ATTRIBUTE_KEYWORDS: Record<AttributeKey, string[]> = {
   brand: [
     "brand",
@@ -123,13 +114,6 @@ const matchesAttributeName = (label: string, keywords: string[]): boolean => {
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null;
 
-const REQUIRED_ATTRIBUTE_KEYS: AttributeKey[] = [
-  "brand",
-  "model",
-  "storage",
-  "location",
-];
-
 const resolveListingAttributes = async (
   categoryId: string,
   attributeValues: AttributeValueMap,
@@ -152,10 +136,6 @@ const resolveListingAttributes = async (
     description: findAttribute("description"),
     location: findAttribute("location"),
   };
-
-  const missingRequired = REQUIRED_ATTRIBUTE_KEYS.filter(
-    (key) => !attributeDefs[key],
-  );
 
   const mappedAttrs: { attributeId: string; value: string }[] = [];
   const appendAttribute = (
@@ -181,7 +161,7 @@ const resolveListingAttributes = async (
   appendAttribute("description");
   appendAttribute("location");
 
-  return { attributes: mappedAttrs, missingRequired };
+  return { attributes: mappedAttrs };
 };
 
 const extractApiError = (
@@ -417,36 +397,14 @@ export default function AddListingPage(): ReactElement {
         location: resolvedLocation,
       };
 
-      const { attributes: mappedAttrs, missingRequired } =
-        await resolveListingAttributes(categoryId, attributeInputs);
-
-      if (missingRequired.length) {
-        const missingLabels = missingRequired
-          .map((key) => ATTRIBUTE_LABELS[key])
-          .join(", ");
-        console.error(
-          "Missing attribute definitions for category",
-          categoryId,
-          missingRequired,
-        );
-        toast.error(
-          `The selected category is missing attributes for: ${missingLabels}. Please choose another category or ask an admin to add them.`,
-        );
-        setIsSending(false);
-        return;
-      }
-
-      if (!mappedAttrs.length) {
-        toast.error(
-          "We could not resolve any category attributes for this listing. Please try again later.",
-        );
-        setIsSending(false);
-        return;
-      }
+      const { attributes: mappedAttrs } = await resolveListingAttributes(
+        categoryId,
+        attributeInputs,
+      );
 
       const payloadWithAttributes: CreateProductPayload = {
         ...basePayload,
-        attributes: mappedAttrs,
+        attributes: mappedAttrs.length ? mappedAttrs : undefined,
       };
 
       if (isPendingRoute) {
