@@ -3,8 +3,11 @@ import { Button } from "../ui/Button/button";
 import { Image } from "../ui/Image/image";
 import Card, { CardHeader, CardContent } from "../ui/Card/Card";
 import { Text } from "../ui/Text/text";
+import { getProductRoute } from "@/constants/routes";
+import { useNavigate } from "react-router-dom";
 
 type AdCardProps = {
+  id: string;
   image: string;
   title: string;
   price: string;
@@ -16,6 +19,7 @@ type AdCardProps = {
 };
 
 export function HomeProductCard({
+  id,
   image,
   title,
   price,
@@ -25,8 +29,12 @@ export function HomeProductCard({
   downBadge = false,
   onToggleFavorite,
 }: AdCardProps) {
+  const navigate = useNavigate();
   return (
-    <Card className="w-full max-w-[294px] gap-0 overflow-visible rounded-xl border p-0 ring-0">
+    <Card
+      className="w-full max-w-[294px] cursor-pointer gap-0 overflow-visible rounded-xl border p-0 ring-0 transition hover:shadow-lg"
+      onClick={() => navigate(getProductRoute(id))}
+    >
       <CardHeader className="relative p-0">
         <Image
           src={image}
@@ -47,7 +55,11 @@ export function HomeProductCard({
 
         <Button
           type="button"
-          onClick={onToggleFavorite}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onToggleFavorite?.();
+          }}
           className="absolute right-3 top-3 h-8 w-8 rounded-full bg-white p-1 shadow transition hover:bg-error"
           aria-label="Toggle Favorite"
         >

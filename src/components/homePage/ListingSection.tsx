@@ -40,7 +40,7 @@ export const ListingSection = ({ title, link, items }: ListingSectionProps) => {
       <div className="grid grid-cols-1 justify-items-center gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {items.map((item) => (
           <HomeProductCard
-            key={item.id}
+            id={item.id}
             image={item.image}
             title={item.title}
             price={item.price}
