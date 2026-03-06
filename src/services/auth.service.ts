@@ -88,7 +88,7 @@ export const authService = {
     api.get<ApiResponse<User>>("/profile"),
 
   updateProfile: (data: Partial<User>): Promise<ApiResponse<User>> =>
-    api.put<ApiResponse<User>>("/profile", data),
+    api.patch<ApiResponse<User>>("/profile", data),
 
   sendVerificationCode: (
     payload: VerificationCodeRequest,

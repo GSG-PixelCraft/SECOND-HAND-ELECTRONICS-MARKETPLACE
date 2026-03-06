@@ -173,21 +173,21 @@ export const adminListingsService = {
         page: params?.page,
         limit: params?.limit,
         status: params?.status !== "all" ? params?.status : undefined,
-        search: params?.search,
-        startDate: params?.startDate,
-        endDate: params?.endDate,
+        search: params?.search ? params.search : undefined,
         sortBy: params?.sortBy,
         sortOrder: params?.sortOrder,
       },
     });
 
-    const backend = response.data.data;
+    const backend = response.data;
+    const products = backend?.data ?? [];
+
+    console.log("FULL RESPONSE:", response.data);
 
     return {
-      items: backend.data.map((product: any) => ({
+      items: products.map((product: any) => ({
         id: product.id,
 
-        // RecentProduct fields
         name: product.title,
         price: product.price,
         category: product.category?.name || "",
@@ -195,9 +195,8 @@ export const adminListingsService = {
         seller: product.sellerId,
         status: product.status,
         createdAt: product.createdAt,
-        image: product.images?.[0],
+        image: product.images?.[0]?.url,
 
-        // AdminListing fields
         description: "",
         images: product.images?.map((img: any) => img.url) || [],
         sellerId: product.sellerId,
@@ -205,14 +204,14 @@ export const adminListingsService = {
         sellerEmail: "",
         sellerAvatar: undefined,
         views: product.viewCount ?? 0,
-        favorites: 0,
+        favorites: product.wishlistCount ?? 0,
         updatedAt: product.updatedAt,
       })),
 
-      total: backend.total,
-      page: backend.page,
-      totalPages: backend.totalPages,
-      limit: backend.limit,
+      total: backend?.total ?? 0,
+      page: backend?.page ?? 1,
+      totalPages: backend?.totalPages ?? 1,
+      limit: backend?.limit ?? 10,
     };
   },
   // Get single listing by ID
@@ -411,5 +410,3 @@ export const useBulkActionMutation = () => {
     },
   });
 };
-
-
