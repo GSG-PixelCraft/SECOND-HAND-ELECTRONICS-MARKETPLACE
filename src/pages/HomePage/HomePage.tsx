@@ -21,12 +21,15 @@ const transformProductToListingItem = (product: Product): ListingItem => {
     product.images && product.images.length > 0
       ? product.images[0]
       : "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=800&auto=format&fit=crop";
+  const locationLabel =
+    (typeof product.location === "string" && product.location.trim()) ||
+    "Location not specified";
 
   return {
     id: product.id,
     title: product.title,
     price: `${product.price} ILS`,
-    location: "Gaza", // Default location - API doesn't seem to provide this
+    location: locationLabel,
     category: product.category.name,
     image: imageUrl,
     isFavorite: false,

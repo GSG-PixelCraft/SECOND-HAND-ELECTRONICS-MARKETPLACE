@@ -4,13 +4,14 @@ import { API_ENDPOINTS } from "@/constants/api-endpoints";
 import type {
   DocumentUploadRequest,
   DocumentUploadResponse,
+  VerificationState,
   VerificationStatusResponse,
   OTPRequest,
   OTPVerification,
   User,
 } from "@/types";
 import type { ApiResponse, VerifyCodeResponse } from "./auth.service";
-import { getUser, getToken } from "@/lib/storage";
+import { getUser, getToken, getVerification } from "@/lib/storage";
 
 const IDENTITY_PENDING_KEY = "identity_verification_pending";
 
@@ -23,6 +24,8 @@ export const verificationService = {
   getStatus: async (): Promise<VerificationStatusResponse> => {
     // Derive status from stored user flags and profile info
     const storedUser = (getUser() || {}) as Partial<User> | null;
+    const storedVerification =
+      (getVerification() as VerificationState | null) ?? null;
     const isEmailVerified = Boolean(
       storedUser?.emailVerified ?? storedUser?.isEmailVerified,
     );
@@ -39,26 +42,43 @@ export const verificationService = {
 
     const pendingIdentityFlag =
       sessionStorage.getItem(IDENTITY_PENDING_KEY) === "true";
-    if (isIdentityVerified) {
+    const identityFromStore = storedVerification?.identity;
+    const phoneFromStore = storedVerification?.phone;
+    const emailFromStore = storedVerification?.email;
+
+    if (isIdentityVerified || identityFromStore?.status === "approved") {
       sessionStorage.removeItem(IDENTITY_PENDING_KEY);
     }
 
+    const resolvedIdentityStatus =
+      identityFromStore?.status ??
+      (isIdentityVerified
+        ? "approved"
+        : pendingIdentityFlag
+          ? "pending"
+          : "not_started");
+
+    const resolvedPhoneStatus =
+      phoneFromStore?.status ??
+      (isPhoneVerified ? "verified" : "not_verified");
+    const resolvedEmailStatus =
+      emailFromStore?.status ??
+      (isEmailVerified ? "verified" : "not_verified");
+
     return {
       identity: {
-        status: isIdentityVerified
-          ? "approved"
-          : pendingIdentityFlag
-            ? "pending"
-            : "not_started",
-        type: null,
+        status: resolvedIdentityStatus,
+        type: identityFromStore?.type ?? null,
+        rejectionReason: identityFromStore?.rejectionReason,
+        reviewedAt: identityFromStore?.reviewedAt,
       },
       phone: {
-        status: isPhoneVerified ? "verified" : "not_verified",
-        phoneNumber: phoneNumber ?? null,
+        status: resolvedPhoneStatus,
+        phoneNumber: phoneFromStore?.phoneNumber ?? phoneNumber ?? null,
       },
       email: {
-        status: isEmailVerified ? "verified" : "not_verified",
-        email: email ?? null,
+        status: resolvedEmailStatus,
+        email: emailFromStore?.email ?? email ?? null,
       },
     };
   },

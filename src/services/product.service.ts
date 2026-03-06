@@ -31,6 +31,25 @@ type RawCategory = {
 
 type RawImage = string | { url?: string } | null;
 
+type RawProductAttributeValue = {
+  id?: string | number;
+  attributeId?: string | number;
+  value?: string;
+  attribute?: { name?: string };
+};
+
+type RawSeller = {
+  id?: string | number;
+  name?: string;
+  fullName?: string;
+  email?: string;
+  avatar?: string;
+  activeListings?: number;
+  soldListings?: number;
+  lastOnline?: string;
+  responseTime?: string;
+};
+
 type RawProduct = {
   id?: string | number;
   title?: string;
@@ -46,6 +65,18 @@ type RawProduct = {
   condition?: string; // backend may return underscore variant
   createdAt?: string;
   updatedAt?: string;
+  description?: string;
+  location?: string;
+  city?: string;
+  country?: string;
+  lat?: number;
+  lng?: number;
+  latitude?: number;
+  longitude?: number;
+  rejectionReason?: string;
+  rejectionReasons?: string[] | string;
+  productAttributeValues?: RawProductAttributeValue[];
+  seller?: RawSeller;
 };
 
 type RawProductsPayload = {
@@ -54,6 +85,154 @@ type RawProductsPayload = {
   page?: number;
   totalPages?: number;
   limit?: number;
+};
+
+const unwrapProductsPayload = (
+  payload: RawProductsPayload | { data?: RawProductsPayload },
+): RawProductsPayload => {
+  const nested = (payload as { data?: RawProductsPayload }).data;
+  if (nested && typeof nested === "object" && !Array.isArray(nested)) {
+    return nested;
+  }
+  return payload as RawProductsPayload;
+};
+
+const parseImages = (images?: RawImage[]): string[] => {
+  if (!Array.isArray(images)) return [];
+  return images
+    .map((img) => {
+      if (typeof img === "string") return img;
+      return img?.url ?? "";
+    })
+    .filter((url): url is string => Boolean(url));
+};
+
+const parseAttributes = (
+  values?: RawProductAttributeValue[],
+): Product["attributes"] => {
+  if (!Array.isArray(values) || !values.length) return undefined;
+  const parsed = values
+    .map((entry, index) => {
+      const rawValue =
+        typeof entry?.value === "string" ? entry.value.trim() : undefined;
+      if (!rawValue) return null;
+      const attributeId = entry.attributeId ?? entry.id ?? index;
+      return {
+        attributeId: String(attributeId),
+        value: rawValue,
+        attributeName: entry.attribute?.name ?? undefined,
+      };
+    })
+    .filter(
+      (
+        value,
+      ): value is NonNullable<Product["attributes"]>[number] => value !== null,
+    );
+  return parsed.length ? parsed : undefined;
+};
+
+const resolveLocation = (
+  item: RawProduct,
+  attributes?: Product["attributes"],
+): string | undefined => {
+  const trimmed = (value?: string) =>
+    typeof value === "string" && value.trim().length ? value.trim() : undefined;
+
+  const locationField = trimmed(item.location);
+  if (locationField) return locationField;
+
+  const city = trimmed(item.city);
+  const country = trimmed(item.country);
+  const combined = [city, country].filter(Boolean).join(", ");
+  if (combined.length) return combined;
+
+  const attributeLocation = attributes?.find((attr) => {
+    const name = attr.attributeName?.toLowerCase() ?? "";
+    return name.includes("location") || name.includes("city");
+  });
+
+  return attributeLocation?.value;
+};
+
+const resolveCoordinates = (item: RawProduct): Product["locationCoordinates"] => {
+  const parseNumber = (value?: unknown) =>
+    typeof value === "number" && !Number.isNaN(value) ? value : undefined;
+
+  const lat = parseNumber(item.lat ?? item.latitude);
+  const lng = parseNumber(item.lng ?? item.longitude);
+
+  if (lat !== undefined && lng !== undefined) {
+    return { lat, lng };
+  }
+  return null;
+};
+
+const mapSeller = (seller?: RawSeller): Product["seller"] => {
+  if (!seller) return undefined;
+  const idSource = seller.id ?? seller.email ?? seller.name;
+  if (idSource === undefined || idSource === null) return undefined;
+  return {
+    id: String(idSource),
+    name: seller.fullName ?? seller.name ?? seller.email ?? undefined,
+    email: seller.email ?? undefined,
+    avatar: seller.avatar ?? undefined,
+    activeListings: seller.activeListings,
+    soldListings: seller.soldListings,
+    lastOnline: seller.lastOnline,
+    responseTime: seller.responseTime,
+  };
+};
+
+const normalizeCondition = (value?: string): Product["condition"] => {
+  if (!value) return "good";
+  const normalized = value.toLowerCase().replace(/\s+/g, "-");
+  if (normalized === "new") return "new";
+  if (normalized === "like-new" || normalized === "like_new") return "like-new";
+  if (normalized === "fair") return "fair";
+  return "good";
+};
+
+const mapRawProduct = (item: RawProduct): Product => {
+  const attributes = parseAttributes(item.productAttributeValues);
+  const location = resolveLocation(item, attributes);
+  const images = parseImages(item.images);
+  const locationCoordinates = resolveCoordinates(item);
+  const descriptionFromAttribute = attributes?.find((attr) =>
+    attr.attributeName?.toLowerCase().includes("description"),
+  )?.value;
+  const seller = mapSeller(item.seller);
+  const now = new Date().toISOString();
+  const rejectionReason =
+    typeof item.rejectionReason === "string"
+      ? item.rejectionReason
+      : Array.isArray(item.rejectionReasons)
+        ? item.rejectionReasons.join(" • ")
+        : undefined;
+
+  return {
+    id: String(item.id ?? ""),
+    title: item.title ?? item.name ?? "",
+    price: item.price ?? 0,
+    sellerId: String(item.sellerId ?? seller?.id ?? ""),
+    categoryId: String(item.categoryId ?? item.category?.id ?? ""),
+    category: {
+      id: String(item.category?.id ?? item.categoryId ?? ""),
+      name: item.category?.name ?? "",
+    },
+    status: item.status ?? "pending",
+    viewCount: Number(item.viewCount ?? 0),
+    isNegotiable: Boolean(item.isNegotiable),
+    images,
+    condition: normalizeCondition(item.condition),
+    createdAt: item.createdAt ?? now,
+    updatedAt: item.updatedAt ?? item.createdAt ?? now,
+    description: item.description ?? descriptionFromAttribute,
+    location: location ?? undefined,
+    locationCoordinates,
+    attributes,
+    rejectionReason,
+    seller,
+  };
 };
 
 // ============================================================================
@@ -66,43 +245,11 @@ export const productService = {
       RawProductsPayload | { data?: RawProductsPayload }
     >(API_ENDPOINTS.PRODUCTS.LIST, { params });
 
-    const nestedData = (responseData as { data?: RawProductsPayload }).data;
-    const backend: RawProductsPayload =
-      nestedData && !Array.isArray(nestedData)
-        ? nestedData
-        : (responseData as RawProductsPayload);
+    const backend = unwrapProductsPayload(responseData);
     const products = Array.isArray(backend.data) ? backend.data : [];
 
     return {
-      products: products.map((item) => ({
-        id: String(item.id),
-        title: item.title ?? item.name ?? "",
-        price: item.price ?? 0,
-        sellerId: String(item.sellerId),
-        categoryId: String(item.categoryId ?? item.category?.id ?? ""),
-        category: {
-          id: String(item.category?.id ?? item.categoryId ?? ""),
-          name: item.category?.name ?? "",
-        },
-        status: item.status ?? "pending",
-        viewCount: Number(item.viewCount ?? 0),
-        isNegotiable: Boolean(item.isNegotiable),
-        images: Array.isArray(item.images)
-          ? item.images
-              .map((img) => {
-                if (typeof img === "string") {
-                  return img;
-                }
-
-                return img?.url ?? "";
-              })
-              .filter((image): image is string => Boolean(image))
-          : [],
-        condition: (item.condition?.replace("_", "-") as Product["condition"]) ??
-          "good",
-        createdAt: item.createdAt ?? new Date().toISOString(),
-        updatedAt: item.updatedAt ?? item.createdAt ?? new Date().toISOString(),
-      })),
+      products: products.map(mapRawProduct),
       total: backend.total ?? 0,
       page: backend.page ?? 1,
       totalPages: backend.totalPages ?? 1,
@@ -116,37 +263,11 @@ export const productService = {
       RawProductsPayload | { data?: RawProductsPayload }
     >(API_ENDPOINTS.PRODUCTS.MY ?? "/products/my", { params });
 
-    const nestedData = (responseData as { data?: RawProductsPayload }).data;
-    const backend: RawProductsPayload =
-      nestedData && !Array.isArray(nestedData)
-        ? nestedData
-        : (responseData as RawProductsPayload);
+    const backend = unwrapProductsPayload(responseData);
     const products = Array.isArray(backend.data) ? backend.data : [];
 
     return {
-      products: products.map((item) => ({
-        id: String(item.id),
-        title: item.title ?? item.name ?? "",
-        price: item.price ?? 0,
-        sellerId: String(item.sellerId),
-        categoryId: String(item.categoryId ?? item.category?.id ?? ""),
-        category: {
-          id: String(item.category?.id ?? item.categoryId ?? ""),
-          name: item.category?.name ?? "",
-        },
-        status: item.status ?? "pending",
-        viewCount: Number(item.viewCount ?? 0),
-        isNegotiable: Boolean(item.isNegotiable),
-        images: Array.isArray(item.images)
-          ? item.images
-              .map((img) => (typeof img === "string" ? img : img?.url ?? ""))
-              .filter((image): image is string => Boolean(image))
-          : [],
-        condition: (item.condition?.replace("_", "-") as Product["condition"]) ??
-          "good",
-        createdAt: item.createdAt ?? new Date().toISOString(),
-        updatedAt: item.updatedAt ?? item.createdAt ?? new Date().toISOString(),
-      })),
+      products: products.map(mapRawProduct),
       total: backend.total ?? 0,
       page: backend.page ?? 1,
       totalPages: backend.totalPages ?? 1,
@@ -158,29 +279,7 @@ export const productService = {
     const raw = await api.get<any>(API_ENDPOINTS.PRODUCTS.BY_ID(id));
     const data = raw && typeof raw === "object" && "data" in raw ? (raw as any).data : raw;
     const item: RawProduct = data as RawProduct;
-    return {
-      id: String(item.id ?? id),
-      title: item.title ?? item.name ?? "",
-      price: item.price ?? 0,
-      sellerId: String(item.sellerId ?? ""),
-      categoryId: String(item.categoryId ?? item.category?.id ?? ""),
-      category: {
-        id: String(item.category?.id ?? item.categoryId ?? ""),
-        name: item.category?.name ?? "",
-      },
-      status: item.status ?? "pending",
-      viewCount: Number(item.viewCount ?? 0),
-      isNegotiable: Boolean(item.isNegotiable),
-      images: Array.isArray(item.images)
-        ? item.images
-            .map((img) => (typeof img === "string" ? img : img?.url ?? ""))
-            .filter((image): image is string => Boolean(image))
-        : [],
-      condition: (item.condition?.replace("_", "-") as Product["condition"]) ??
-        "good",
-      createdAt: item.createdAt ?? new Date().toISOString(),
-      updatedAt: item.updatedAt ?? item.createdAt ?? new Date().toISOString(),
-    };
+    return mapRawProduct(item);
   },
 
   // Draft creation (minimal fields, optional images/attributes)

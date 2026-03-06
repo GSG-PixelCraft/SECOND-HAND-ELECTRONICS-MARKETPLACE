@@ -49,6 +49,8 @@ interface BasicDetailsStepProps {
   onNext: () => void;
   isNextDisabled: boolean;
   categoriesList?: Array<{ value: string; label: string }>;
+  onSaveDraft: () => void;
+  isSavingDraft: boolean;
 }
 
 const DEFAULT_CATEGORIES = [
@@ -79,6 +81,8 @@ export const BasicDetailsStep: FC<BasicDetailsStepProps> = ({
   onNext,
   isNextDisabled,
   categoriesList,
+  onSaveDraft,
+  isSavingDraft,
 }): ReactElement => {
   const [categoryOpen, setCategoryOpen] = useState(false);
   const [conditionOpen, setConditionOpen] = useState(false);
@@ -691,25 +695,37 @@ export const BasicDetailsStep: FC<BasicDetailsStepProps> = ({
         </label>
       </div>
 
-      {/* Next Button */}
-      <Button
-        type="button"
-        onClick={onNext}
-        disabled={isNextDisabled}
-        className={`flex h-14 w-[358px] items-center justify-center self-center rounded-xl px-[119px] py-4 ${
-          isNextDisabled ? "cursor-not-allowed bg-[#e4e4e4]" : "bg-[#2563eb]"
-        }`}
-      >
-        <div className="flex flex-col items-center justify-center text-center leading-[0]">
-          <Text
-            className={`font-['Poppins'] text-base font-medium leading-normal ${
-              isNextDisabled ? "text-[#c7c7c7]" : "text-white"
-            }`}
-          >
-            Next
+      {/* Actions */}
+      <div className="flex w-full flex-col items-center justify-center gap-3 sm:flex-row">
+        <Button
+          type="button"
+          onClick={onSaveDraft}
+          disabled={isSavingDraft}
+          className="flex h-14 w-[358px] items-center justify-center rounded-xl border border-[#e4e4e4] bg-white px-10 py-4 text-[#212121] hover:bg-neutral-5 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          <Text className="font-['Poppins'] text-base font-medium leading-normal">
+            {isSavingDraft ? "Saving draft..." : "Save as draft"}
           </Text>
-        </div>
-      </Button>
+        </Button>
+        <Button
+          type="button"
+          onClick={onNext}
+          disabled={isNextDisabled}
+          className={`flex h-14 w-[358px] items-center justify-center rounded-xl px-[119px] py-4 ${
+            isNextDisabled ? "cursor-not-allowed bg-[#e4e4e4]" : "bg-[#2563eb]"
+          }`}
+        >
+          <div className="flex flex-col items-center justify-center text-center leading-[0]">
+            <Text
+              className={`font-['Poppins'] text-base font-medium leading-normal ${
+                isNextDisabled ? "text-[#c7c7c7]" : "text-white"
+              }`}
+            >
+              Next
+            </Text>
+          </div>
+        </Button>
+      </div>
     </div>
   );
 };

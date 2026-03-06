@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { CheckCircle, XCircle, UploadCloud } from "lucide-react";
 import StatusModal from "./StatusModal";
+import { useAuthStore } from "@/stores";
+import type { DocumentType } from "@/types";
 
 // 1. Define types for state management
 type PageStatus = "uploading" | "submitting" | "success" | "failed";
@@ -23,6 +25,12 @@ interface FileUploadItemProps {
   onFileSelect: (index: number, file: File) => void;
   onDelete: (index: number) => void;
 }
+
+const DOCUMENT_OPTIONS: Array<{ label: string; value: DocumentType }> = [
+  { label: "Identity card", value: "id" },
+  { label: "Passport", value: "passport" },
+  { label: "Driver License", value: "driver_license" },
+];
 
 // --- Components ---
 
@@ -139,8 +147,11 @@ const FileUploadItem: React.FC<FileUploadItemProps> = ({
 // --- Main Page Component ---
 
 const IdentityVerificationPage: React.FC = () => {
+  const setVerification = useAuthStore((state) => state.setVerification);
   const [pageStatus, setPageStatus] = useState<PageStatus>("uploading");
-  const [docType, setDocType] = useState<string>("Identity card");
+  const [docType, setDocType] = useState<DocumentType>(
+    DOCUMENT_OPTIONS[0].value,
+  );
   const [fileSlots, setFileSlots] = useState<FileSlot[]>([
     {
       id: "front",
@@ -265,12 +276,20 @@ const IdentityVerificationPage: React.FC = () => {
 
   const handleSubmit = () => {
     setPageStatus("submitting");
-    // Simulate network request
+    const submissionTimestamp = new Date().toISOString();
+
+    // Simulate a short review process before marking identity as verified locally
     setTimeout(() => {
-      // Randomly succeed or fail
-      const isSuccess = Math.random() > 0.5;
-      setPageStatus(isSuccess ? "success" : "failed");
-    }, 3000);
+      setVerification({
+        identity: {
+          status: "approved",
+          type: docType,
+          submittedAt: submissionTimestamp,
+          reviewedAt: submissionTimestamp,
+        },
+      });
+      setPageStatus("success");
+    }, 1500);
   };
 
   const handleTryAgain = () => {
@@ -299,17 +318,24 @@ const IdentityVerificationPage: React.FC = () => {
         <div className="mt-6">
           <p className="font-semibold text-gray-800">Select document type</p>
           <div className="mt-4 flex space-x-8">
-            {["Identity card", "Passport", "Driver License"].map((type) => (
-              <label key={type} className="flex cursor-pointer items-center">
+            {DOCUMENT_OPTIONS.map((option) => (
+              <label
+                key={option.value}
+                className="flex cursor-pointer items-center"
+              >
                 <input
                   type="radio"
                   name="docType"
-                  value={type}
-                  checked={docType === type}
-                  onChange={(e) => setDocType(e.target.value)}
+                  value={option.value}
+                  checked={docType === option.value}
+                  onChange={(e) =>
+                    setDocType(e.target.value as DocumentType)
+                  }
                   className="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500"
                 />
-                <span className="ml-3 text-sm text-gray-700">{type}</span>
+                <span className="ml-3 text-sm text-gray-700">
+                  {option.label}
+                </span>
               </label>
             ))}
           </div>

@@ -49,15 +49,6 @@ type AttributeKey =
 
 type AttributeValueMap = Partial<Record<AttributeKey, string | undefined>>;
 
-const ATTRIBUTE_LABELS: Record<AttributeKey, string> = {
-  brand: "Brand",
-  model: "Model",
-  storage: "Storage",
-  battery: "Battery health",
-  description: "Description",
-  location: "Location",
-};
-
 const ATTRIBUTE_KEYWORDS: Record<AttributeKey, string[]> = {
   brand: [
     "brand",
@@ -115,6 +106,17 @@ const ATTRIBUTE_KEYWORDS: Record<AttributeKey, string[]> = {
   ],
 };
 
+const CATEGORY_SYNONYM_GROUPS: Array<string[]> = [
+  ["phone", "phones", "smartphone", "smartphones", "mobile", "mobiles"],
+  ["laptop", "laptops", "notebook"],
+  ["tablet", "tablets"],
+  ["camera", "cameras"],
+  ["audio", "headphone", "headphones", "earbud", "earbuds"],
+  ["gaming", "console", "playstation", "xbox", "nintendo"],
+  ["accessories", "accessory"],
+  ["pc parts", "pc", "parts", "component", "components"],
+];
+
 const matchesAttributeName = (label: string, keywords: string[]): boolean => {
   const normalized = (label ?? "").toString().trim().toLowerCase();
   return keywords.some((keyword) => normalized.includes(keyword));
@@ -122,13 +124,6 @@ const matchesAttributeName = (label: string, keywords: string[]): boolean => {
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null;
-
-const REQUIRED_ATTRIBUTE_KEYS: AttributeKey[] = [
-  "brand",
-  "model",
-  "storage",
-  "location",
-];
 
 const resolveListingAttributes = async (
   categoryId: string,
@@ -152,10 +147,6 @@ const resolveListingAttributes = async (
     description: findAttribute("description"),
     location: findAttribute("location"),
   };
-
-  const missingRequired = REQUIRED_ATTRIBUTE_KEYS.filter(
-    (key) => !attributeDefs[key],
-  );
 
   const mappedAttrs: { attributeId: string; value: string }[] = [];
   const appendAttribute = (
@@ -181,7 +172,7 @@ const resolveListingAttributes = async (
   appendAttribute("description");
   appendAttribute("location");
 
-  return { attributes: mappedAttrs, missingRequired };
+  return { attributes: mappedAttrs };
 };
 
 const extractApiError = (
@@ -262,19 +253,9 @@ export default function AddListingPage(): ReactElement {
       if (!name) return undefined;
       const categories = categoriesData ?? [];
       const norm = name.trim().toLowerCase();
-      const synonymGroups: Array<string[]> = [
-        ["phone", "phones", "smartphone", "smartphones", "mobile", "mobiles"],
-        ["laptop", "laptops", "notebook"],
-        ["tablet", "tablets"],
-        ["camera", "cameras"],
-        ["audio", "headphone", "headphones", "earbud", "earbuds"],
-        ["gaming", "console", "playstation", "xbox", "nintendo"],
-        ["accessories", "accessory"],
-        ["pc parts", "pc", "parts", "component", "components"],
-      ];
       const includesMatch = (label: string = "") => {
         const lower = label.toLowerCase();
-        return synonymGroups.some((group) =>
+        return CATEGORY_SYNONYM_GROUPS.some((group) =>
           group.some((key) => norm.includes(key) && lower.includes(group[0])),
         );
       };
@@ -304,12 +285,14 @@ export default function AddListingPage(): ReactElement {
   const [leaveOpen, setLeaveOpen] = useState(false);
   const [reviewSuccessOpen, setReviewSuccessOpen] = useState(false);
   const [isSending, setIsSending] = useState(false);
+  const [isSavingDraft, setIsSavingDraft] = useState(false);
 
   const {
     register,
     handleSubmit,
     trigger,
     watch,
+    getValues,
     setValue,
     formState: { errors },
   } = useForm<ListingFormData>({
@@ -348,10 +331,8 @@ export default function AddListingPage(): ReactElement {
     return "good";
   };
 
-  const onSubmit = async (data: ListingFormData) => {
-    setIsSending(true);
-    try {
-      // Ensure categories available (fetch if not yet loaded)
+  const resolveCategoryId = useCallback(
+    async (selectedCategoryName: string): Promise<string> => {
       let localCategories: Category[] | undefined = categoriesData ?? undefined;
       if (!localCategories || !localCategories.length) {
         localCategories = await queryClient.fetchQuery<Category[]>({
@@ -359,38 +340,82 @@ export default function AddListingPage(): ReactElement {
           queryFn: productService.getCategories,
         });
       }
-      // Try to match selected category to backend categories (fallback to heuristic/first)
-      const selectedCategoryName = data.category?.trim() || "";
-      const norm = selectedCategoryName.toLowerCase();
-      const synonymGroups: Array<string[]> = [
-        ["phone", "phones", "smartphone", "smartphones", "mobile", "mobiles"],
-        ["laptop", "laptops", "notebook"],
-        ["tablet", "tablets"],
-        ["camera", "cameras"],
-        ["audio", "headphone", "headphones", "earbud", "earbuds"],
-        ["gaming", "console", "playstation", "xbox", "nintendo"],
-        ["accessories", "accessory"],
-        ["pc parts", "pc", "parts", "component", "components"],
-      ];
+      const norm = selectedCategoryName.trim().toLowerCase();
       const includesMatch = (name: string = "") => {
-        const n = name.toLowerCase();
-        return synonymGroups.some((group) =>
-          group.some((key) => n.includes(key) && norm.includes(group[0])),
+        const lower = name.toLowerCase();
+        return CATEGORY_SYNONYM_GROUPS.some((group) =>
+          group.some(
+            (key) => norm.includes(key) && lower.includes(group[0]),
+          ),
         );
       };
-      let match = (localCategories ?? []).find(
-        (category) => category.name.toLowerCase() === norm,
-      );
+      let match =
+        localCategories.find(
+          (category) => category.name.toLowerCase() === norm,
+        ) ?? null;
       if (!match) {
-        match = (localCategories ?? []).find((category) =>
-          includesMatch(category.name),
-        );
+        match =
+          localCategories.find((category) => includesMatch(category.name)) ??
+          null;
       }
-      // If backend has no categories, fall back to '1' (common default in seeded DBs)
-      const categoryFallbackId = "1";
-      const categoryId = String(
-        match?.id ?? localCategories?.[0]?.id ?? categoryFallbackId,
+      const fallbackId =
+        localCategories?.[0]?.id !== undefined
+          ? String(localCategories[0].id)
+          : "1";
+      return String(match?.id ?? fallbackId);
+    },
+    [categoriesData, queryClient],
+  );
+
+  const handleSaveDraft = async () => {
+    setIsSavingDraft(true);
+    try {
+      const currentValues = getValues();
+      const categoryId = await resolveCategoryId(currentValues.category ?? "");
+      const images = photos.map((p) => p.file);
+      const resolvedLocation =
+        currentValues.location?.trim() ||
+        [locationValue.city, locationValue.country].filter(Boolean).join(", ");
+      const attributeInputs: AttributeValueMap = {
+        brand: currentValues.brand,
+        model: currentValues.model,
+        storage: currentValues.storage,
+        battery: currentValues.batteryHealth,
+        description:
+          typeof currentValues.description === "string"
+            ? currentValues.description
+            : undefined,
+        location: resolvedLocation,
+      };
+      const { attributes: mappedAttrs } = await resolveListingAttributes(
+        categoryId,
+        attributeInputs,
       );
+      const draftPayload: CreateProductPayload = {
+        title: currentValues.title?.trim() || "Untitled listing",
+        categoryId,
+        condition: normalizeCondition(currentValues.condition || "good"),
+        price: Number(currentValues.price) || 0,
+        isNegotiable: Boolean(currentValues.isNegotiable),
+        images: images.length ? images : undefined,
+        attributes: mappedAttrs.length ? mappedAttrs : undefined,
+      };
+      await draftMutation.mutateAsync(draftPayload);
+      toast.success("Draft saved. You can continue editing from My Listings.");
+    } catch (e) {
+      const { message, details } = extractApiError(e);
+      toast.error(
+        details?.length ? `${message}\n${details.join("\n")}` : message,
+      );
+    } finally {
+      setIsSavingDraft(false);
+    }
+  };
+
+  const onSubmit = async (data: ListingFormData) => {
+    setIsSending(true);
+    try {
+      const categoryId = await resolveCategoryId(data.category ?? "");
 
       const images = photos.map((p) => p.file);
       const basePayload: CreateProductPayload = {
@@ -417,36 +442,14 @@ export default function AddListingPage(): ReactElement {
         location: resolvedLocation,
       };
 
-      const { attributes: mappedAttrs, missingRequired } =
-        await resolveListingAttributes(categoryId, attributeInputs);
-
-      if (missingRequired.length) {
-        const missingLabels = missingRequired
-          .map((key) => ATTRIBUTE_LABELS[key])
-          .join(", ");
-        console.error(
-          "Missing attribute definitions for category",
-          categoryId,
-          missingRequired,
-        );
-        toast.error(
-          `The selected category is missing attributes for: ${missingLabels}. Please choose another category or ask an admin to add them.`,
-        );
-        setIsSending(false);
-        return;
-      }
-
-      if (!mappedAttrs.length) {
-        toast.error(
-          "We could not resolve any category attributes for this listing. Please try again later.",
-        );
-        setIsSending(false);
-        return;
-      }
+      const { attributes: mappedAttrs } = await resolveListingAttributes(
+        categoryId,
+        attributeInputs,
+      );
 
       const payloadWithAttributes: CreateProductPayload = {
         ...basePayload,
-        attributes: mappedAttrs,
+        attributes: mappedAttrs.length ? mappedAttrs : undefined,
       };
 
       if (isPendingRoute) {
@@ -536,6 +539,8 @@ export default function AddListingPage(): ReactElement {
                 onNext={handleNextStep}
                 isNextDisabled={!isBasicDetailsValid}
                 categoriesList={categoryOptions}
+                onSaveDraft={handleSaveDraft}
+                isSavingDraft={isSavingDraft}
               />
             )}
 
@@ -549,6 +554,8 @@ export default function AddListingPage(): ReactElement {
                 onReview={handleReview}
                 onLocationClick={() => setLocationOpen(true)}
                 categoryAttributes={selectedCategoryData?.attributes}
+                onSaveDraft={handleSaveDraft}
+                isSavingDraft={isSavingDraft}
               />
             )}
           </form>

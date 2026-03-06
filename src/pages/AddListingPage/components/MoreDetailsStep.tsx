@@ -36,6 +36,8 @@ interface MoreDetailsStepProps {
   onReview: () => void;
   onLocationClick: () => void;
   categoryAttributes?: Category["attributes"];
+  onSaveDraft: () => void;
+  isSavingDraft: boolean;
 }
 
 const BRANDS = [
@@ -62,6 +64,8 @@ export const MoreDetailsStep: FC<MoreDetailsStepProps> = ({
   onReview,
   onLocationClick,
   categoryAttributes: _categoryAttributes,
+  onSaveDraft,
+  isSavingDraft,
 }): ReactElement => {
   const { t } = useTranslation();
   void _categoryAttributes; // reserved for category-specific customizations
@@ -488,11 +492,21 @@ export const MoreDetailsStep: FC<MoreDetailsStepProps> = ({
       </div>
 
       {/* Actions */}
-      <div className="flex flex-wrap items-center justify-center gap-6">
+      <div className="flex flex-wrap items-center justify-center gap-4">
+        <Button
+          type="button"
+          onClick={onSaveDraft}
+          disabled={isSavingDraft}
+          className="flex h-14 w-[320px] items-center justify-center rounded-xl border border-[#e4e4e4] bg-white px-10 py-4 text-[#212121] hover:bg-neutral-5 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          <Text className="font-['Poppins'] text-base font-medium leading-normal">
+            {isSavingDraft ? "Saving draft..." : "Save as draft"}
+          </Text>
+        </Button>
         <Button
           type="button"
           onClick={onReview}
-          className="flex h-14 w-[358px] items-center justify-center rounded-xl border border-[#2563eb] bg-white px-[119px] py-4"
+          className="flex h-14 w-[320px] items-center justify-center rounded-xl border border-[#2563eb] bg-white px-[90px] py-4"
         >
           <Text className="font-['Poppins'] text-base font-medium leading-normal text-[#2563eb]">
             Review
@@ -500,7 +514,7 @@ export const MoreDetailsStep: FC<MoreDetailsStepProps> = ({
         </Button>
         <Button
           type="submit"
-          className="flex h-14 w-[358px] items-center justify-center rounded-xl bg-[#2563eb] px-[119px] py-4"
+          className="flex h-14 w-[320px] items-center justify-center rounded-xl bg-[#2563eb] px-[90px] py-4"
         >
           <Text className="font-['Poppins'] text-base font-medium leading-normal text-white">
             Publish
