@@ -16,8 +16,110 @@ import { ReportSuccessDialog } from "./components/ReportSuccessDialog";
 import { Button } from "@/components/ui/Button/button";
 import { Span } from "@/components/ui/Span/span";
 import { FullScreenLoading } from "@/components/feedback/loading/full-screen-loading";
+import { useProduct } from "@/services/product.service";
+import type { Product } from "@/types";
 
 type OwnerStatus = "pending" | "rejected" | null;
+
+const FALLBACK_IMAGE_URL =
+  "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=1200&auto=format&fit=crop";
+const DEFAULT_COORDINATES = { lat: 31.5017, lng: 34.4668 };
+
+interface ProductDetailViewModel {
+  id: string;
+  title: string;
+  price: number;
+  negotiable: boolean;
+  conditionLabel: string;
+  createdAt: string;
+  views: number;
+  favorites: number;
+  images: string[];
+  description: string;
+  location: string;
+  locationCoordinates: { lat: number; lng: number };
+  features: Array<{ label: string; value: string }>;
+  seller: {
+    name: string;
+    avatarUrl: string;
+    activeListings: number;
+    soldListings: number;
+    lastOnline: string;
+    responseTime: string;
+  };
+}
+
+const formatConditionLabel = (condition: Product["condition"]): string => {
+  if (condition === "like-new") return "Like New";
+  return condition.charAt(0).toUpperCase() + condition.slice(1);
+};
+
+const formatPostedAtLabel = (value: string): string => {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "Recently";
+  const diffMs = Date.now() - date.getTime();
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  if (diffDays <= 0) return "Today";
+  if (diffDays === 1) return "1 day ago";
+  if (diffDays < 7) return `${diffDays} days ago`;
+  if (diffDays < 30) {
+    const diffWeeks = Math.max(1, Math.floor(diffDays / 7));
+    return `${diffWeeks} week${diffWeeks > 1 ? "s" : ""} ago`;
+  }
+  return date.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+  });
+};
+
+const toViewModelFromProduct = (
+  product: Product,
+): ProductDetailViewModel => {
+  const features =
+    product.attributes?.map((attr) => ({
+      label: attr.attributeName ?? `Attribute ${attr.attributeId}`,
+      value: attr.value,
+    })) ?? [];
+  const location =
+    (typeof product.location === "string" && product.location.trim()) ||
+    "Location not specified";
+  const coords = product.locationCoordinates ?? DEFAULT_COORDINATES;
+  const images =
+    product.images && product.images.length > 0
+      ? product.images
+      : [FALLBACK_IMAGE_URL];
+
+  return {
+    id: product.id,
+    title: product.title,
+    price: product.price ?? 0,
+    negotiable: Boolean(product.isNegotiable),
+    conditionLabel: formatConditionLabel(product.condition),
+    createdAt: product.createdAt,
+    views: product.viewCount ?? 0,
+    favorites: 0,
+    images,
+    description:
+      product.description ??
+      "No description has been provided for this listing.",
+    location,
+    locationCoordinates: coords,
+    features,
+    seller: {
+      name:
+        product.seller?.name ??
+        product.seller?.email ??
+        "Marketplace seller",
+      avatarUrl:
+        product.seller?.avatar ??
+        "https://images.unsplash.com/photo-1502685104226-ee32379fefbe?auto=format&fit=crop&w=120&q=80",
+      activeListings: product.seller?.activeListings ?? 0,
+      soldListings: product.seller?.soldListings ?? 0,
+      lastOnline: product.seller?.lastOnline ?? "Recently online",
+      responseTime: product.seller?.responseTime ?? "Responds within a day",
+    },
+  };
+};
 
 const ProductDetailPage = () => {
   const { id } = useParams();
@@ -58,18 +160,28 @@ const ProductDetailPage = () => {
     return () => window.clearTimeout(timer);
   }, [reportStep]);
 
-  const product = useMemo(
+  const demoViewModel = useMemo<ProductDetailViewModel>(
     () => ({
       id: id ?? "p-101",
       title: "iPhone 11 Pro 256GB",
       price: 250,
-      currency: "ILS",
       negotiable: true,
-      condition: "New",
-      postedAt: "2 days ago",
+      conditionLabel: "New",
+      createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
       views: 100,
       favorites: 20,
       images: [phoneImage, phoneImage, phoneImage],
+      description:
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ultricies nisl sit ut varius dapibus et interdum donec accumsan risus erat. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ultricies nisl sit ut varius dapibus et interdum donec accumsan risus erat.",
+      location: "Gaza, Palestine",
+      locationCoordinates: DEFAULT_COORDINATES,
+      features: [
+        { label: "Category", value: "Phones" },
+        { label: "Brand", value: "Apple" },
+        { label: "Model", value: "iPhone 11" },
+        { label: "Storage", value: "256 GB" },
+        { label: "Battery Health", value: "85%" },
+      ],
       seller: {
         name: "Eleanor Vance",
         avatarUrl:
@@ -79,22 +191,44 @@ const ProductDetailPage = () => {
         lastOnline: "1 week ago",
         responseTime: "within 1 hour",
       },
-      features: [
-        { label: "Category", value: "Phones" },
-        { label: "Brand", value: "Apple" },
-        { label: "Model", value: "iPhone 11" },
-        { label: "Storage", value: "256 GB" },
-        { label: "Battery Health", value: "85%" },
-      ],
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ultricies nisl sit ut varius dapibus et interdum donec accumsan risus erat. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ultricies nisl sit ut varius dapibus et interdum donec accumsan risus erat.",
-      location: "Gaza, Palestine",
-      locationCoordinates: { lat: 31.5017, lng: 34.4668 },
     }),
     [id],
   );
 
-  const priceLabel = `${product.price.toLocaleString("en-US")} ${product.currency}`;
+  const productId = id ?? "";
+  const effectiveProductId = isDemo ? "" : productId;
+  const {
+    data: serverProduct,
+    isLoading: isProductLoading,
+    isError: isProductError,
+  } = useProduct(effectiveProductId);
+
+  const serverViewModel = useMemo(
+    () =>
+      !isDemo && serverProduct ? toViewModelFromProduct(serverProduct) : null,
+    [isDemo, serverProduct],
+  );
+
+  if (!isDemo && isProductLoading) {
+    return <FullScreenLoading message="Loading listing..." />;
+  }
+
+  if (!isDemo && (isProductError || !serverViewModel)) {
+    return (
+      <Container className="py-16">
+        <p className="text-center text-sm text-muted-foreground">
+          We couldn't load this listing. Please try again later.
+        </p>
+      </Container>
+    );
+  }
+
+  const viewModel: ProductDetailViewModel = isDemo
+    ? demoViewModel
+    : (serverViewModel as ProductDetailViewModel);
+
+  const priceLabel = `${viewModel.price.toLocaleString("en-US")} ILS`;
+  const postedAtLabel = formatPostedAtLabel(viewModel.createdAt);
 
   const moreFromSeller = [
     {
@@ -263,8 +397,8 @@ const ProductDetailPage = () => {
       <section className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
         <div className="space-y-6">
           <ProductGallery
-            title={product.title}
-            images={product.images}
+            title={viewModel.title}
+            images={viewModel.images}
             ownerActions={
               showOwnerActions
                 ? {
@@ -274,11 +408,11 @@ const ProductDetailPage = () => {
                 : undefined
             }
           />
-          <KeyFeaturesCard features={product.features} />
-          <DescriptionCard description={product.description} />
+          <KeyFeaturesCard features={viewModel.features} />
+          <DescriptionCard description={viewModel.description} />
           <LocationCard
-            location={product.location}
-            coordinates={product.locationCoordinates}
+            location={viewModel.location}
+            coordinates={viewModel.locationCoordinates}
           />
         </div>
 
@@ -298,22 +432,22 @@ const ProductDetailPage = () => {
           )}
 
           <ProductSummaryCard
-            postedAt={product.postedAt}
-            views={product.views}
-            favorites={product.favorites}
-            title={product.title}
+            postedAt={postedAtLabel}
+            views={viewModel.views}
+            favorites={viewModel.favorites}
+            title={viewModel.title}
             priceLabel={priceLabel}
-            negotiable={product.negotiable}
-            conditionLabel={product.condition}
+            negotiable={viewModel.negotiable}
+            conditionLabel={viewModel.conditionLabel}
           />
 
           <SellerCard
-            name={product.seller.name}
-            avatarUrl={product.seller.avatarUrl}
-            activeListings={product.seller.activeListings}
-            soldListings={product.seller.soldListings}
-            lastOnline={product.seller.lastOnline}
-            responseTime={product.seller.responseTime}
+            name={viewModel.seller.name}
+            avatarUrl={viewModel.seller.avatarUrl}
+            activeListings={viewModel.seller.activeListings}
+            soldListings={viewModel.seller.soldListings}
+            lastOnline={viewModel.seller.lastOnline}
+            responseTime={viewModel.seller.responseTime}
             showReportMenu={showReportMenu}
             onReportListing={() => setReportStep("form")}
             onReportUser={() => setReportStep("form")}

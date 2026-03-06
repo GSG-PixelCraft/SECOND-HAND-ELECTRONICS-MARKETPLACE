@@ -1,5 +1,27 @@
 import type { Category } from "./category";
 
+export interface ProductAttributeValue {
+  attributeId: string;
+  value: string;
+  attributeName?: string;
+}
+
+export interface ProductLocationCoordinates {
+  lat: number;
+  lng: number;
+}
+
+export interface ProductSellerSummary {
+  id: string;
+  name?: string;
+  email?: string;
+  avatar?: string;
+  activeListings?: number;
+  soldListings?: number;
+  lastOnline?: string;
+  responseTime?: string;
+}
+
 // Product-related types
 export interface Product {
   id: string;
@@ -15,6 +37,12 @@ export interface Product {
   condition: "new" | "like-new" | "good" | "fair";
   createdAt: string;
   updatedAt: string;
+  description?: string;
+  location?: string;
+  locationCoordinates?: ProductLocationCoordinates | null;
+  attributes?: ProductAttributeValue[];
+  rejectionReason?: string;
+  seller?: ProductSellerSummary;
 }
 
 export interface ProductsParams {

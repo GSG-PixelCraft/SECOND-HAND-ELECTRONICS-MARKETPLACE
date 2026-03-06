@@ -244,7 +244,11 @@ export default function SearchPage() {
                   image={product.images[0] ?? ""}
                   title={product.title}
                   price={`${product.price} ILS`}
-                  location="Gaza"
+                  location={
+                    (typeof product.location === "string" &&
+                      product.location.trim()) ||
+                    "Location not specified"
+                  }
                   category={product.category.name}
                   isFavorite={false}
                 />

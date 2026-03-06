@@ -919,11 +919,8 @@ export default function MyListingsPage() {
     ],
     queryFn: () =>
       productService.getMine({
-        // Only pass status filter when it makes sense; drafts handled separately
-        status:
-          activeTab !== "all" && activeTab !== "draft"
-            ? [activeTab]
-            : undefined,
+        // Query backend by the currently selected tab (skip for "All")
+        status: activeTab !== "all" ? [activeTab] : undefined,
         limit: 200,
         sortBy: "createdAt",
         sortOrder: "desc",
@@ -945,14 +942,25 @@ export default function MyListingsPage() {
 
         const mappedStatus =
           BACKEND_STATUS_MAP[normalizedStatus] ?? "active";
+        const locationLabel =
+          (typeof p.location === "string" && p.location.trim()) ||
+          "Location not specified";
+        const rejectionReason =
+          mappedStatus === "rejected" && p.rejectionReason
+            ? {
+                primaryIssue: "Review feedback",
+                details: [p.rejectionReason],
+              }
+            : undefined;
 
         return {
           id: p.id,
           image: p.images?.[0],
           title: p.title,
           price: p.price,
-          location: "Gaza", // TODO: map real location when available from API
+          location: locationLabel,
           status: mappedStatus,
+          rejectionReason,
         };
       })
       .filter((listing): listing is MyListing => listing !== null);
@@ -1043,14 +1051,24 @@ export default function MyListingsPage() {
   const handleArchiveConfirm = async () => {
     if (!archiveTarget) return;
     setIsArchiving(true);
-    // TODO: call real archive API
-    await new Promise((r) => setTimeout(r, 1500));
-    setIsArchiving(false);
-    setArchiveTarget(null);
-    showSuccessToast(
-      "Listing archived successfully",
-      "This listing is now hidden from search and buyers.",
-    );
+    try {
+      await productService.archive(archiveTarget.id);
+      await refreshListingData();
+      showSuccessToast(
+        "Listing archived successfully",
+        "This listing is now hidden from search and buyers.",
+      );
+    } catch (error) {
+      console.error("Failed to archive listing", error);
+      showSuccessToast(
+        "Failed to archive listing",
+        "Something went wrong. Please try again.",
+        "error",
+      );
+    } finally {
+      setIsArchiving(false);
+      setArchiveTarget(null);
+    }
   };
 
   const handleArchiveCancel = () => {
@@ -1114,14 +1132,24 @@ export default function MyListingsPage() {
   const handleRepublishConfirm = async () => {
     if (!republishTarget) return;
     setIsRepublishing(true);
-    // TODO: call real republish API
-    await new Promise((r) => setTimeout(r, 1500));
-    setIsRepublishing(false);
-    setRepublishTarget(null);
-    showSuccessToast(
-      "Listing republished successfully",
-      "Your listing is now active and visible to buyers.",
-    );
+    try {
+      await productService.republish(republishTarget.id);
+      await refreshListingData();
+      showSuccessToast(
+        "Listing republished successfully",
+        "Your listing is now active and visible to buyers.",
+      );
+    } catch (error) {
+      console.error("Failed to republish listing", error);
+      showSuccessToast(
+        "Failed to republish listing",
+        "Please try again in a moment.",
+        "error",
+      );
+    } finally {
+      setIsRepublishing(false);
+      setRepublishTarget(null);
+    }
   };
 
   const handleRepublishCancel = () => {
