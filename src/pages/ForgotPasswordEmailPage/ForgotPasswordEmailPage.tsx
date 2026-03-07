@@ -54,7 +54,7 @@ export default function ForgotPasswordEmailPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="flex items-center justify-between px-6 py-5">
+      <div className="flex items-center justify-between px-12 py-16">
         <button
           type="button"
           onClick={() => navigate(-1)}
@@ -66,7 +66,11 @@ export default function ForgotPasswordEmailPage() {
           to={ROUTES.HOME}
           className="text-base font-semibold text-blue-600"
         >
-          <img src={logoElectronics} alt="Electronics Marketplace" className="h-10 w-auto" />
+          <img
+            src={logoElectronics}
+            alt="Electronics Marketplace"
+            className="h-10 w-auto"
+          />
         </Link>
         <span className="w-10" aria-hidden="true" />
       </div>

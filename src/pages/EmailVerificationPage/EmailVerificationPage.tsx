@@ -45,7 +45,11 @@ export function EmailVerificationPage() {
       setTimer(60);
     } catch (err: unknown) {
       const typedError = err as ApiLikeError;
-      setError(typedError.response?.data?.message || typedError.message || "Failed to send verification code.");
+      setError(
+        typedError.response?.data?.message ||
+          typedError.message ||
+          "Failed to send verification code.",
+      );
     }
   };
 
@@ -62,14 +66,26 @@ export function EmailVerificationPage() {
     if (!trimmed || code.length !== OTP_LENGTH) return;
     setError(null);
     try {
-      await verifyEmailOtp.mutateAsync({ code, email: trimmed, type: "email_verification" });
+      await verifyEmailOtp.mutateAsync({
+        code,
+        email: trimmed,
+        type: "email_verification",
+      });
       setVerification({
-        email: { email: trimmed, status: "verified", verifiedAt: new Date().toISOString() },
+        email: {
+          email: trimmed,
+          status: "verified",
+          verifiedAt: new Date().toISOString(),
+        },
       });
       navigate(ROUTES.PROFILE);
     } catch (err: unknown) {
       const typedError = err as ApiLikeError;
-      setError(typedError.response?.data?.message || typedError.message || "Verification failed.");
+      setError(
+        typedError.response?.data?.message ||
+          typedError.message ||
+          "Verification failed.",
+      );
     }
   };
 
@@ -86,17 +102,23 @@ export function EmailVerificationPage() {
       setError(null);
     } catch (err: unknown) {
       const typedError = err as ApiLikeError;
-      setError(typedError.response?.data?.message || typedError.message || "Failed to resend code.");
+      setError(
+        typedError.response?.data?.message ||
+          typedError.message ||
+          "Failed to resend code.",
+      );
     }
   };
 
   return (
     <PageLayout title="Verify Email" maxWidth="md">
-      <div className="mx-auto w-full max-w-md rounded-lg bg-white p-6 shadow-sm">
+      <div className="mx-auto w-full max-w-md rounded-lg bg-white p-12 shadow-sm">
         {step === "email" ? (
           <>
             <h1 className="text-xl font-semibold">Verify your email</h1>
-            <p className="mt-2 text-sm text-gray-600">Enter your email address to receive a verification code.</p>
+            <p className="mt-2 text-sm text-gray-600">
+              Enter your email address to receive a verification code.
+            </p>
             <input
               type="email"
               value={email}
@@ -117,7 +139,9 @@ export function EmailVerificationPage() {
         ) : (
           <>
             <h1 className="text-xl font-semibold">Enter verification code</h1>
-            <p className="mt-2 text-sm text-gray-600">We sent a code to {email}.</p>
+            <p className="mt-2 text-sm text-gray-600">
+              We sent a code to {email}.
+            </p>
             <div className="mt-4">
               <OTPInput length={OTP_LENGTH} onComplete={handleComplete} />
             </div>
