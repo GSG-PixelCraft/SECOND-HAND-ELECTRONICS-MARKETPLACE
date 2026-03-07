@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { AdminTopHeader } from "../AdminTopHeader/AdminTopHeader";
 import { AdminSidebar } from "../AdminSidebar/AdminSidebar";
+import { ScrollToTop } from "../ScrollToTop/ScrollToTop";
 
 interface AdminDashboardLayoutProps {
   children: ReactNode;
@@ -9,6 +10,7 @@ interface AdminDashboardLayoutProps {
 export function AdminDashboardLayout({ children }: AdminDashboardLayoutProps) {
   return (
     <div className="flex h-screen overflow-hidden">
+      <ScrollToTop />
       {/* Sidebar */}
       <AdminSidebar />
 

@@ -10,12 +10,14 @@
 import { Outlet } from "react-router-dom";
 import { Header } from "../Header/header";
 import { Footer } from "../Footer/footer";
+import { ScrollToTop } from "../ScrollToTop/ScrollToTop";
 
 export const AppLayout = () => (
   <div className="flex min-h-screen flex-col bg-slate-50">
+    <ScrollToTop />
     <Header />
     <div className="flex flex-1">
-      <main className="flex-1 px-6 py-8">
+      <main className="flex-1">
         <Outlet />
       </main>
     </div>
