@@ -1,5 +1,6 @@
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
+import logoElectronics from "@/assets/LOGO-electronics.svg";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { NotificationMenu } from "@/pages/NotificationsPage/components";
 import { useEffect, useState } from "react";
@@ -155,10 +156,11 @@ export const Header = () => {
   const location = useLocation();
   const { user, token, logout } = useAuthStore();
   const isAuthenticated = Boolean(user && token);
+  const isAdmin = user?.role === "admin";
   const [searchQuery, setSearchQuery] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { data: categoriesData } = useCategories();
-  const navCategories = categoriesData ?? [];
+  const navCategories = (categoriesData ?? []).filter((cat) => cat.isActive !== false);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -185,10 +187,10 @@ export const Header = () => {
             </Button>
             <NavLink
               to={ROUTES.HOME}
-              className="inline-block rounded-lg bg-gray-100 px-3 py-1.5 text-base font-bold text-blue-600 sm:px-6 sm:py-2.5 sm:text-xl"
+              className="inline-block"
               onClick={() => setMobileMenuOpen(false)}
             >
-              Logo
+              <img src={logoElectronics} alt="Electronics Marketplace" className="h-10 w-auto" />
             </NavLink>
 
             <form
@@ -316,6 +318,14 @@ export const Header = () => {
               <Button className="rounded-lg p-1.5 transition hover:bg-gray-100">
                 <ListIcon />
               </Button>
+              {isAuthenticated && isAdmin && (
+                <Button
+                  onClick={() => navigate(ROUTES.ADMIN_DASHBOARD)}
+                  className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-gray-700"
+                >
+                  Admin
+                </Button>
+              )}
               {isAuthenticated ? (
                 <Button
                   className="px-4 py-2 text-sm font-medium text-gray-700 transition hover:text-gray-900"
@@ -377,6 +387,15 @@ export const Header = () => {
               })}
             </div>
             <div className="space-y-2 border-t border-gray-200 pt-2">
+              {isAuthenticated && isAdmin && (
+                <NavLink
+                  to={ROUTES.ADMIN_DASHBOARD}
+                  className="block rounded-lg bg-gray-900 px-3 py-2 text-center text-sm font-medium text-white hover:bg-gray-700"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Admin
+                </NavLink>
+              )}
               {isAuthenticated ? (
                 <Button
                   className="w-full rounded-lg px-3 py-2 text-left text-sm font-medium text-gray-700 hover:bg-gray-100"

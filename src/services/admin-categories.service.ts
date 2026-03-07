@@ -8,6 +8,8 @@ import type {
   PaginatedCategoriesResponse,
   UpdateCategoryPayload,
 } from "@/types/admin";
+import { api } from "./client";
+import { API_ENDPOINTS } from "@/constants/api-endpoints";
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -302,43 +304,166 @@ const getFilteredCategories = (
   };
 };
 
+const toApiAttributeType = (type: CategoryAttribute["type"]): string => {
+  const typeMap: Record<string, string> = {
+    select_dropdown: "select",
+    text_input: "text",
+    number_input: "number",
+    toggle: "toggle",
+    date_picker: "datepicker",
+    textarea: "textarea",
+    checkboxes: "checkboxes",
+  };
+  return typeMap[type] || type;
+};
+
+const toApiAttributeBody = (attribute: CategoryAttribute): Record<string, unknown> => {
+  switch (attribute.type) {
+    case "select_dropdown":
+      return { options: attribute.options || [] };
+    case "checkboxes":
+      return { checkboxes: (attribute.options || []).map((opt) => ({ [opt]: false })) };
+    case "text_input":
+      return { text: null };
+    case "number_input":
+      return { number: null };
+    case "toggle":
+      return { toggle: null };
+    case "date_picker":
+      return { datepicker: new Date().toISOString().split("T")[0] };
+    case "textarea":
+      return { textarea: null };
+    default:
+      return {};
+  }
+};
+
+const fromApiCategory = (cat: any): AdminCategory => ({
+  id: String(cat.id),
+  name: cat.name,
+  iconKey: inferIconKeyFromName(cat.name),
+  attributesCount: cat.attributes?.length ?? 0,
+  isActive: cat.isActive,
+});
+
+const fromApiCategoryDetail = (cat: any): AdminCategoryDetail => ({
+  id: String(cat.id),
+  name: cat.name,
+  iconKey: inferIconKeyFromName(cat.name),
+  iconUrl: cat.icon?.url,
+  categoryStatus: cat.isActive,
+  isActive: cat.isActive,
+  attributes: (cat.attributes || []).map((attr: any): CategoryAttribute => {
+    const frontendType = ({
+      select: "select_dropdown",
+      text: "text_input",
+      number: "number_input",
+      toggle: "toggle",
+      datepicker: "date_picker",
+      textarea: "textarea",
+      checkboxes: "checkboxes",
+    }[attr.type as string] || attr.type) as CategoryAttribute["type"];
+
+    const mapped: CategoryAttribute = {
+      id: String(attr.id),
+      name: attr.name,
+      type: frontendType,
+      isActive: true,
+    };
+
+    if (frontendType === "select_dropdown") {
+      mapped.options = attr.body?.options || [];
+    } else if (frontendType === "checkboxes") {
+      mapped.options = (attr.body?.checkboxes || []).map(
+        (item: Record<string, boolean>) => Object.keys(item)[0],
+      );
+    }
+
+    return mapped;
+  }),
+  attributesCount: cat.attributes?.length ?? 0,
+});
+
+type CategoriesApiResponse = {
+  data?: any[];
+  meta?: { total?: number; page?: number; lastPage?: number };
+};
+
+type ApiSuccessResponse<T> = {
+  success?: boolean;
+  data?: T;
+};
+
 export const adminCategoriesService = {
   getCategories: async (
     filters?: CategoryFilterParams,
   ): Promise<PaginatedCategoriesResponse> => {
-    await delay(180);
-    return getFilteredCategories(filters);
+    const response = await api.get<ApiSuccessResponse<CategoriesApiResponse>>(
+      API_ENDPOINTS.ADMIN.CATEGORIES.LIST,
+      {
+        params: {
+          page: filters?.page,
+          limit: filters?.limit,
+          ...(filters?.search ? {} : {}),
+        },
+      },
+    );
+    const payload = response?.data;
+    const categories = payload?.data ?? [];
+    const meta = payload?.meta;
+    const total = meta?.total ?? categories.length;
+    const page = meta?.page ?? 1;
+    const lastPage = meta?.lastPage ?? 1;
+
+    return {
+      items: categories.map(fromApiCategory),
+      total,
+      page,
+      totalPages: lastPage,
+      limit: filters?.limit ?? 10,
+    };
   },
 
   getCategoryById: async (id: string): Promise<AdminCategoryDetail> => {
-    await delay(120);
-    const category = mockCategoriesStore.find((item) => item.id === id);
-    if (!category) {
+    const response = await api.get<ApiSuccessResponse<any>>(
+      API_ENDPOINTS.ADMIN.CATEGORIES.BY_ID(id),
+    );
+    const cat = response?.data;
+    if (!cat) {
       throw new Error("Category not found");
     }
-    return clone(category);
+    return fromApiCategoryDetail(cat);
   },
 
   createCategory: async (
     payload: CreateCategoryPayload,
   ): Promise<AdminCategoryDetail> => {
-    await delay(180);
-    const normalizedName = payload.name.trim();
-    const category: AdminCategoryDetail = {
-      id: nextCategoryId(),
-      name: normalizedName,
-      iconKey: inferIconKeyFromName(normalizedName),
-      iconUrl: payload.iconUrl,
-      categoryStatus: payload.categoryStatus,
-      isActive: payload.categoryStatus,
-      attributes: [],
-      attributesCount: 0,
-    };
-    category.attributes = normalizeAttributes(payload.attributes);
-    category.attributesCount = category.attributes.length;
+    const formData = new FormData();
 
-    mockCategoriesStore = [category, ...mockCategoriesStore];
-    return clone(category);
+    if (payload.iconFile) {
+      formData.append("file", payload.iconFile);
+    }
+
+    const body: Record<string, unknown> = { name: payload.name.trim() };
+    const apiAttributes = payload.attributes
+      .filter((attr) => attr.name && attr.type)
+      .map((attr) => ({
+        name: attr.name.trim(),
+        type: toApiAttributeType(attr.type),
+        body: toApiAttributeBody(attr),
+      }));
+    if (apiAttributes.length > 0) {
+      body.attributes = apiAttributes;
+    }
+    formData.append("body", JSON.stringify(body));
+
+    const response = await api.post<ApiSuccessResponse<any>>(
+      API_ENDPOINTS.ADMIN.CATEGORIES.CREATE,
+      formData,
+      { headers: { "Content-Type": "multipart/form-data" } },
+    );
+    const cat = response?.data;
+    return fromApiCategoryDetail(cat ?? {});
   },
 
   updateCategory: async (
@@ -398,14 +523,11 @@ export const adminCategoriesService = {
     id: string,
     isActive: boolean,
   ): Promise<AdminCategory> => {
-    await delay(120);
-    const category = mockCategoriesStore.find((item) => item.id === id);
-    if (!category) {
-      throw new Error("Category not found");
-    }
-    category.isActive = isActive;
-    category.categoryStatus = isActive;
-    return toCategorySummary(category);
+    const endpoint = isActive
+      ? API_ENDPOINTS.ADMIN.CATEGORIES.ACTIVATE(id)
+      : API_ENDPOINTS.ADMIN.CATEGORIES.DEACTIVATE(id);
+    await api.patch(endpoint);
+    return { id, name: "", iconKey: "phone", attributesCount: 0, isActive } as AdminCategory;
   },
 
   deleteCategory: async (id: string): Promise<{ id: string }> => {

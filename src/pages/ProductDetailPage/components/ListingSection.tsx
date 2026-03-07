@@ -2,6 +2,7 @@ import { AdCard } from "@/components/ui/AdCard";
 import { Button } from "@/components/ui/Button/button";
 
 interface ListingItem {
+  id: string;
   image: string;
   title: string;
   price: string;
@@ -39,7 +40,7 @@ export const ListingSection = ({
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {items.map((item) => (
           <AdCard
-            key={item.title}
+            key={item.id}
             image={item.image}
             title={item.title}
             price={item.price}

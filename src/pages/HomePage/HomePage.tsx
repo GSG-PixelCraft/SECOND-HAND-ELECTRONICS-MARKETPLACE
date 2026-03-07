@@ -1,5 +1,6 @@
 // Landing page
-import { Link } from "react-router-dom";
+import { useMemo } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
 import { Button } from "@/components/ui/Button/button";
 import { Image } from "@/components/ui/Image/image";
@@ -10,7 +11,10 @@ import {
   type ListingItem,
   type ListingSectionData,
 } from "../../components/homePage/ListingSection";
+import toast from "react-hot-toast";
 import { useProducts } from "@/services/product.service";
+import { useWishlist, useAddToWishlist, useRemoveFromWishlist } from "@/services/wishlist.service";
+import { useAuthStore } from "@/stores/useAuthStore";
 import type { Product } from "@/types";
 // import type { AxiosError } from "axios";
 
@@ -47,6 +51,33 @@ const HomePage = () => {
     sortBy: "createdAt",
     sortOrder: "desc",
   });
+
+  const { user, token } = useAuthStore();
+  const isAuthenticated = Boolean(user && token);
+  const { data: wishlist = [] } = useWishlist();
+  const add = useAddToWishlist();
+  const remove = useRemoveFromWishlist();
+
+  const wishlistedIds = useMemo(
+    () => new Set(wishlist.map((item) => item.id)),
+    [wishlist],
+  );
+
+  const navigate = useNavigate();
+
+  const handleToggleFavorite = (productId: string) => {
+    if (!isAuthenticated) {
+      toast.error("Please sign in to save items to your wishlist");
+      return;
+    }
+    if (wishlistedIds.has(productId)) {
+      navigate(ROUTES.FAVORITES);
+    } else {
+      add.mutate(productId, {
+        onSuccess: () => navigate(ROUTES.FAVORITES),
+      });
+    }
+  };
 
   // Transform products to listing items (no mock fallback)
   const products: Product[] = productsData?.products ?? [];
@@ -131,6 +162,8 @@ const HomePage = () => {
                   title={section.title}
                   link={section.link}
                   items={section.items}
+                  wishlistedIds={wishlistedIds}
+                  onToggleFavorite={handleToggleFavorite}
                 />
               ),
           )}

@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/Button/button";
 import { Span } from "@/components/ui/Span/span";
 import { FullScreenLoading } from "@/components/feedback/loading/full-screen-loading";
 import { useProduct } from "@/services/product.service";
+import { useToggleWishlist } from "@/services/wishlist.service";
 import type { Product } from "@/types";
 
 type OwnerStatus = "pending" | "rejected" | null;
@@ -197,6 +198,7 @@ const ProductDetailPage = () => {
 
   const productId = id ?? "";
   const effectiveProductId = isDemo ? "" : productId;
+  const { isFavorite, toggle: toggleFavorite } = useToggleWishlist(effectiveProductId);
   const {
     data: serverProduct,
     isLoading: isProductLoading,
@@ -232,6 +234,7 @@ const ProductDetailPage = () => {
 
   const moreFromSeller = [
     {
+      id: "demo-seller-1",
       image: phoneImage,
       title: "iPhone 14 Pro Max",
       price: "2000 ILS",
@@ -239,6 +242,7 @@ const ProductDetailPage = () => {
       category: "Phones",
     },
     {
+      id: "demo-seller-2",
       image: phoneImage,
       title: "Dell XPS 15",
       price: "680 ILS",
@@ -246,6 +250,7 @@ const ProductDetailPage = () => {
       category: "Laptops",
     },
     {
+      id: "demo-seller-3",
       image: phoneImage,
       title: "Headphones",
       price: "150 ILS",
@@ -253,6 +258,7 @@ const ProductDetailPage = () => {
       category: "Audio",
     },
     {
+      id: "demo-seller-4",
       image: phoneImage,
       title: "Nintendo Switch",
       price: "150 ILS",
@@ -263,6 +269,7 @@ const ProductDetailPage = () => {
 
   const similarListings = [
     {
+      id: "demo-similar-1",
       image: phoneImage,
       title: "Samsung Galaxy S21",
       price: "450 ILS",
@@ -270,6 +277,7 @@ const ProductDetailPage = () => {
       category: "Phones",
     },
     {
+      id: "demo-similar-2",
       image: phoneImage,
       title: "iPhone 13 Pro",
       price: "750 ILS",
@@ -277,6 +285,7 @@ const ProductDetailPage = () => {
       category: "Phones",
     },
     {
+      id: "demo-similar-3",
       image: phoneImage,
       title: "Huawei P50 Pro",
       price: "1300 ILS",
@@ -284,6 +293,7 @@ const ProductDetailPage = () => {
       category: "Phones",
     },
     {
+      id: "demo-similar-4",
       image: phoneImage,
       title: "Samsung Galaxy S21",
       price: "450 ILS",
@@ -399,6 +409,8 @@ const ProductDetailPage = () => {
           <ProductGallery
             title={viewModel.title}
             images={viewModel.images}
+            isFavorite={isFavorite}
+            onToggleFavorite={toggleFavorite}
             ownerActions={
               showOwnerActions
                 ? {

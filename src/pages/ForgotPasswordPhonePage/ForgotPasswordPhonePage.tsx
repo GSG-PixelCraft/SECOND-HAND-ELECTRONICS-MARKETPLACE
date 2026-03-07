@@ -6,6 +6,7 @@ import { z } from "zod";
 import { ROUTES } from "@/constants/routes";
 import { authService } from "@/services/auth.service";
 import type { AxiosError } from "axios";
+import logoElectronics from "@/assets/LOGO-electronics.svg";
 
 interface Country {
   name: string;
@@ -143,7 +144,7 @@ export default function ForgotPasswordPhonePage() {
           to={ROUTES.HOME}
           className="text-base font-semibold text-blue-600"
         >
-          Logo
+          <img src={logoElectronics} alt="Electronics Marketplace" className="h-10 w-auto" />
         </Link>
         <span className="w-10" aria-hidden="true" />
       </div>

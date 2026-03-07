@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { ReactElement } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -18,6 +18,7 @@ import {
   useCreateProduct,
   useCreatePendingProduct,
   useCategories,
+  useCategoryDetail,
   productService,
   PRODUCTS_KEYS,
 } from "@/services/product.service";
@@ -249,10 +250,14 @@ export default function AddListingPage(): ReactElement {
     [categoriesData],
   );
   const findCategory = useCallback(
-    (name: string | undefined): Category | undefined => {
-      if (!name) return undefined;
+    (idOrName: string | undefined): Category | undefined => {
+      if (!idOrName) return undefined;
       const categories = categoriesData ?? [];
-      const norm = name.trim().toLowerCase();
+      // First try direct ID match (category value stored in form)
+      const idMatch = categories.find((cat) => String(cat.id) === idOrName);
+      if (idMatch) return idMatch;
+      // Fallback: name-based matching
+      const norm = idOrName.trim().toLowerCase();
       const includesMatch = (label: string = "") => {
         const lower = label.toLowerCase();
         return CATEGORY_SYNONYM_GROUPS.some((group) =>
@@ -304,6 +309,18 @@ export default function AddListingPage(): ReactElement {
     () => findCategory(values.category),
     [findCategory, values.category],
   );
+  const { data: categoryDetailData, isLoading: isCategoryDetailLoading } = useCategoryDetail(selectedCategoryData?.id);
+  const [dynamicAttrValues, setDynamicAttrValues] = useState<Record<string, string>>({});
+  // Reset dynamic attribute values whenever the selected category changes
+  const prevCategoryIdRef = useRef<string | undefined>(undefined);
+  useEffect(() => {
+    const newId = selectedCategoryData?.id;
+    if (newId !== prevCategoryIdRef.current) {
+      prevCategoryIdRef.current = newId;
+      setDynamicAttrValues({});
+    }
+  }, [selectedCategoryData?.id]);
+
   const isBasicDetailsValid =
     Boolean(values.title?.trim().length) &&
     Boolean(values.category?.trim().length) &&
@@ -332,7 +349,7 @@ export default function AddListingPage(): ReactElement {
   };
 
   const resolveCategoryId = useCallback(
-    async (selectedCategoryName: string): Promise<string> => {
+    async (selectedCategoryIdOrName: string): Promise<string> => {
       let localCategories: Category[] | undefined = categoriesData ?? undefined;
       if (!localCategories || !localCategories.length) {
         localCategories = await queryClient.fetchQuery<Category[]>({
@@ -340,7 +357,13 @@ export default function AddListingPage(): ReactElement {
           queryFn: productService.getCategories,
         });
       }
-      const norm = selectedCategoryName.trim().toLowerCase();
+      // First try direct ID match (category ID stored in form field)
+      const directMatch = localCategories.find(
+        (category) => String(category.id) === selectedCategoryIdOrName,
+      );
+      if (directMatch) return String(directMatch.id);
+      // Fallback: name-based fuzzy matching
+      const norm = selectedCategoryIdOrName.trim().toLowerCase();
       const includesMatch = (name: string = "") => {
         const lower = name.toLowerCase();
         return CATEGORY_SYNONYM_GROUPS.some((group) =>
@@ -373,24 +396,49 @@ export default function AddListingPage(): ReactElement {
       const currentValues = getValues();
       const categoryId = await resolveCategoryId(currentValues.category ?? "");
       const images = photos.map((p) => p.file);
+
+      // Build attributes from the category definition, pulling values from
+      // dynamicAttrValues (user-selected) with direct RHF overrides for
+      // well-known fields (description, location) so submission never falls
+      // back to an empty array due to sync-effect timing.
       const resolvedLocation =
         currentValues.location?.trim() ||
         [locationValue.city, locationValue.country].filter(Boolean).join(", ");
-      const attributeInputs: AttributeValueMap = {
-        brand: currentValues.brand,
-        model: currentValues.model,
-        storage: currentValues.storage,
-        battery: currentValues.batteryHealth,
-        description:
-          typeof currentValues.description === "string"
-            ? currentValues.description
-            : undefined,
-        location: resolvedLocation,
-      };
-      const { attributes: mappedAttrs } = await resolveListingAttributes(
-        categoryId,
-        attributeInputs,
-      );
+      let mappedAttrs: { attributeId: string; value: string }[] = [];
+      if (categoryDetailData?.attributes?.length) {
+        for (const attr of categoryDetailData.attributes) {
+          const nameLower = attr.name.toLowerCase();
+          let value = dynamicAttrValues[attr.id] ?? "";
+          if (["location", "address", "city"].some((k) => nameLower.includes(k))) {
+            value = resolvedLocation || value;
+          } else if (
+            ["description", "details", "notes"].some((k) => nameLower.includes(k)) ||
+            attr.type === "textarea"
+          ) {
+            const desc =
+              typeof currentValues.description === "string"
+                ? currentValues.description
+                : "";
+            value = desc || value;
+          }
+          if (value.trim()) mappedAttrs.push({ attributeId: attr.id, value });
+        }
+      } else {
+        const attributeInputs: AttributeValueMap = {
+          brand: currentValues.brand,
+          model: currentValues.model,
+          storage: currentValues.storage,
+          battery: currentValues.batteryHealth,
+          description:
+            typeof currentValues.description === "string"
+              ? currentValues.description
+              : undefined,
+          location: resolvedLocation,
+        };
+        const resolved = await resolveListingAttributes(categoryId, attributeInputs);
+        mappedAttrs = resolved.attributes;
+      }
+
       const draftPayload: CreateProductPayload = {
         title: currentValues.title?.trim() || "Untitled listing",
         categoryId,
@@ -398,7 +446,7 @@ export default function AddListingPage(): ReactElement {
         price: Number(currentValues.price) || 0,
         isNegotiable: Boolean(currentValues.isNegotiable),
         images: images.length ? images : undefined,
-        attributes: mappedAttrs.length ? mappedAttrs : undefined,
+        attributes: mappedAttrs,
       };
       await draftMutation.mutateAsync(draftPayload);
       toast.success("Draft saved. You can continue editing from My Listings.");
@@ -432,24 +480,44 @@ export default function AddListingPage(): ReactElement {
         values.location?.trim() ||
         [locationValue.city, locationValue.country].filter(Boolean).join(", ");
 
-      const attributeInputs: AttributeValueMap = {
-        brand: data.brand,
-        model: data.model,
-        storage: data.storage,
-        battery: data.batteryHealth,
-        description:
-          typeof data.description === "string" ? data.description : undefined,
-        location: resolvedLocation,
-      };
+      // Build attributes from the category definition, pulling values from
+      // dynamicAttrValues (user-selected) with direct RHF overrides for
+      // well-known fields (description, location).
+      let mappedAttrs: { attributeId: string; value: string }[] = [];
 
-      const { attributes: mappedAttrs } = await resolveListingAttributes(
-        categoryId,
-        attributeInputs,
-      );
+      if (categoryDetailData?.attributes?.length) {
+        for (const attr of categoryDetailData.attributes) {
+          const nameLower = attr.name.toLowerCase();
+          let value = dynamicAttrValues[attr.id] ?? "";
+          if (["location", "address", "city"].some((k) => nameLower.includes(k))) {
+            value = resolvedLocation || value;
+          } else if (
+            ["description", "details", "notes"].some((k) => nameLower.includes(k)) ||
+            attr.type === "textarea"
+          ) {
+            const desc =
+              typeof data.description === "string" ? data.description : "";
+            value = desc || value;
+          }
+          if (value.trim()) mappedAttrs.push({ attributeId: attr.id, value });
+        }
+      } else {
+        const attributeInputs: AttributeValueMap = {
+          brand: data.brand,
+          model: data.model,
+          storage: data.storage,
+          battery: data.batteryHealth,
+          description:
+            typeof data.description === "string" ? data.description : undefined,
+          location: resolvedLocation,
+        };
+        const resolved = await resolveListingAttributes(categoryId, attributeInputs);
+        mappedAttrs = resolved.attributes;
+      }
 
       const payloadWithAttributes: CreateProductPayload = {
         ...basePayload,
-        attributes: mappedAttrs.length ? mappedAttrs : undefined,
+        attributes: mappedAttrs,
       };
 
       if (isPendingRoute) {
@@ -486,6 +554,20 @@ export default function AddListingPage(): ReactElement {
       setPhotoError(t("addListing.photos.errorMissing"));
     }
     if (valid && photos.length) {
+      // Block if the selected category has no attributes configured in the backend.
+      // The API requires at least one attribute, so listing under such a category
+      // would always fail at submission.
+      if (
+        !isCategoryDetailLoading &&
+        categoryDetailData !== undefined &&
+        categoryDetailData !== null &&
+        (categoryDetailData.attributes ?? []).length === 0
+      ) {
+        toast.error(
+          "This category is not available for listing yet. Please choose a different category or contact the administrator.",
+        );
+        return;
+      }
       setCurrentStep(2);
     }
   };
@@ -496,9 +578,14 @@ export default function AddListingPage(): ReactElement {
 
   const handleReview = async () => {
     const valid = await trigger();
-    if (valid) {
-      setReviewOpen(true);
+    if (!valid) return;
+    if ((categoryDetailData?.attributes ?? []).length === 0) {
+      toast.error(
+        "This category is not available for listing yet. Please go back and choose a different category.",
+      );
+      return;
     }
+    setReviewOpen(true);
   };
 
   const handleApplyLocation = (next: LocationValue) => {
@@ -553,7 +640,9 @@ export default function AddListingPage(): ReactElement {
                 onBack={handleBackStep}
                 onReview={handleReview}
                 onLocationClick={() => setLocationOpen(true)}
-                categoryAttributes={selectedCategoryData?.attributes}
+                categoryAttributes={categoryDetailData?.attributes}
+                attributeValues={dynamicAttrValues}
+                onAttributeValuesChange={setDynamicAttrValues}
                 onSaveDraft={handleSaveDraft}
                 isSavingDraft={isSavingDraft}
               />

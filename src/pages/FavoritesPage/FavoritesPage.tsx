@@ -1,77 +1,72 @@
-import { useMemo, useState } from "react";
-import PageLayout from "@/components/layout/PageLayout/PageLayout";
-import { Heart, Filter } from "lucide-react";
+import { Link } from "react-router-dom";
+import Container from "@/components/layout/Container/Container";
 import { FavoritesEmptyState } from "@/components/feedback/emptyState";
-import { useTranslation } from "react-i18next";
-import { Text } from "@/components/ui/Text/text";
+import { HomeProductCard } from "@/components/homePage/HomeProductCard";
+import { useWishlist, useRemoveFromWishlist } from "@/services/wishlist.service";
+import { getProductRoute } from "@/constants/routes";
+
+const FALLBACK_IMAGE =
+  "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=800&auto=format&fit=crop";
 
 export default function FavoritesPage() {
-  const { t } = useTranslation();
-  const [categoryFilter, setCategoryFilter] = useState("all");
-  const favorites: unknown[] = [];
-
-  const filterOptions = useMemo(
-    () => [
-      { value: "all", label: t("favorites.filters.all") },
-      { value: "phones", label: t("favorites.filters.phones") },
-      { value: "laptops", label: t("favorites.filters.laptops") },
-      { value: "tablets", label: t("favorites.filters.tablets") },
-      { value: "accessories", label: t("favorites.filters.accessories") },
-    ],
-    [t],
-  );
-
-  // TODO: Fetch user's favorite products from API
+  const { data: wishlist = [], isLoading } = useWishlist();
+  const remove = useRemoveFromWishlist();
 
   return (
-    <PageLayout title={t("favorites.pageTitle")} maxWidth="6xl">
-      <div className="space-y-6">
-        <div className="flex items-center gap-3">
-          <Heart className="h-6 w-6 text-primary" />
-          <div>
-            <h1 className="text-h2 font-semibold">{t("favorites.heading")}</h1>
-            <Text variant="muted">{t("favorites.subtitle")}</Text>
-          </div>
-        </div>
+    <Container maxWidth="7xl" className="py-8 px-4 sm:px-6 lg:px-10 xl:px-[96px]">
+      <h1 className="mb-6 text-2xl font-semibold text-slate-900">Favorites</h1>
 
-        {/* Category Filter */}
-        <div>
-          <label className="text-bodySmall mb-2 flex items-center gap-2 font-medium">
-            <Filter className="h-4 w-4" />
-            {t("favorites.filterLabel")}
-          </label>
-          <div className="flex gap-2 overflow-x-auto pb-2">
-            {filterOptions.map((option) => (
-              <button
-                key={option.value}
-                onClick={() => setCategoryFilter(option.value)}
-                className={`whitespace-nowrap rounded-md px-4 py-2 ${
-                  categoryFilter === option.value
-                    ? "bg-primary text-primary-foreground"
-                    : "border border-neutral-20 bg-white hover:bg-neutral-5"
-                }`}
-                type="button"
-              >
-                {option.label}
-              </button>
-            ))}
-          </div>
+      {/* Loading skeleton */}
+      {isLoading && (
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="animate-pulse overflow-hidden rounded-xl border bg-white shadow-sm">
+              <div className="h-[200px] bg-slate-200" />
+              <div className="space-y-3 p-4">
+                <div className="h-4 w-3/4 rounded bg-slate-200" />
+                <div className="h-4 w-1/2 rounded bg-slate-200" />
+                <div className="h-3 w-1/3 rounded bg-slate-200" />
+              </div>
+            </div>
+          ))}
         </div>
+      )}
 
-        {/* Favorites Grid */}
-        {favorites.length === 0 ? (
-          <div className="rounded-lg bg-white p-6 shadow-sm">
-            <FavoritesEmptyState
-              title={t("favorites.empty.title")}
-              description={t("favorites.empty.body")}
-            />
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {/* TODO: Add product cards */}
-          </div>
-        )}
-      </div>
-    </PageLayout>
+      {/* Empty state */}
+      {!isLoading && wishlist.length === 0 && (
+        <div className="rounded-xl bg-white p-10 shadow-sm">
+          <FavoritesEmptyState
+            title="No favorites yet"
+            description="Items you save will appear here."
+          />
+        </div>
+      )}
+
+      {/* Grid */}
+      {!isLoading && wishlist.length > 0 && (
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {wishlist.map((item) => (
+            <Link
+              key={item.id}
+              to={getProductRoute(String(item.id))}
+              className="block w-full"
+            >
+              <HomeProductCard
+                image={item.images?.[0] ?? FALLBACK_IMAGE}
+                title={item.title}
+                price={`${item.price} ILS`}
+                location={item.location ?? "Location not specified"}
+                category={item.category?.name ?? ""}
+                status={item.status}
+                isFavorite
+                className="max-w-none"
+                onToggleFavorite={() => remove.mutate(item.id)}
+              />
+            </Link>
+          ))}
+        </div>
+      )}
+    </Container>
   );
 }
+

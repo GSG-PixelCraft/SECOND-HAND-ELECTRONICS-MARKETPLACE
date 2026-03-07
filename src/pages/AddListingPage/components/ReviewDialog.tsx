@@ -22,9 +22,9 @@ interface ListingFormData {
   condition: string;
   price: number;
   isNegotiable?: boolean;
-  brand: string;
-  storage: string;
-  model: string;
+  brand?: string;
+  storage?: string;
+  model?: string;
   batteryHealth?: string;
   description: string | undefined;
   location: string;

@@ -33,6 +33,7 @@ export default function AddCategoryPage() {
   const [categoryName, setCategoryName] = useState("");
   const [categoryStatus, setCategoryStatus] = useState(false);
   const [iconUrl, setIconUrl] = useState<string | undefined>(undefined);
+  const [iconFile, setIconFile] = useState<File | undefined>(undefined);
   const [attributes, setAttributes] = useState<EditableCategoryAttribute[]>([
     createEmptyEditableAttribute(),
   ]);
@@ -83,6 +84,7 @@ export default function AddCategoryPage() {
       iconUrl,
       categoryStatus,
       attributes,
+      iconFile,
     );
 
     void runWithLoader(async () => {
@@ -121,16 +123,18 @@ export default function AddCategoryPage() {
           <label className="text-neutral-80 text-base font-medium">Icon</label>
           <CategoryIconUploader
             iconUrl={iconUrl}
-            onSelect={(_, previewUrl) => {
+            onSelect={(file, previewUrl) => {
               if (iconUrl?.startsWith("blob:")) {
                 URL.revokeObjectURL(iconUrl);
               }
+              setIconFile(file);
               setIconUrl(previewUrl);
             }}
             onRemove={() => {
               if (iconUrl?.startsWith("blob:")) {
                 URL.revokeObjectURL(iconUrl);
               }
+              setIconFile(undefined);
               setIconUrl(undefined);
             }}
           />

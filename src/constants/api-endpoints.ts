@@ -48,6 +48,11 @@ export const API_ENDPOINTS = {
     REMOVE_ITEM: (id: string) => `/cart/items/${id}`,
     CLEAR: "/cart/clear",
   },
+  WISHLIST: {
+    GET: "/wishlist",
+    ADD: "/wishlist",
+    REMOVE: (productId: string) => `/wishlist/${productId}`,
+  },
   VERIFICATION: {
     STATUS: "/verification/status",
     IDENTITY: {
@@ -78,6 +83,20 @@ export const API_ENDPOINTS = {
     RECENT_USERS: "/admin/recent-users",
     RECENT_PRODUCTS: "/admin/recent-products",
     RECENT_ORDERS: "/admin/recent-orders",
+    PRODUCTS: {
+      LIST: "/admin/products",
+      BY_ID: (id: string) => `/admin/products/${id}`,
+      DECISION: (id: string) => `/admin/products/decision/${id}`,
+      HIDE: (id: string) => `/admin/products/hide/${id}`,
+      UNHIDE: (id: string) => `/admin/products/unhide/${id}`,
+    },
+    CATEGORIES: {
+      LIST: "/categories",
+      BY_ID: (id: string) => `/categories/${id}`,
+      CREATE: "/admin/categories",
+      ACTIVATE: (id: string) => `/admin/categories/activate/${id}`,
+      DEACTIVATE: (id: string) => `/admin/categories/deactivate/${id}`,
+    },
     LISTINGS: {
       LIST: "/admin/listings",
       BY_ID: (id: string) => `/admin/listings/${id}`,

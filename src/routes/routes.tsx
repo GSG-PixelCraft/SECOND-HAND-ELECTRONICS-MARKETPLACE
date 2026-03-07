@@ -335,7 +335,7 @@ export const router = createBrowserRouter(
       },
     },
     {
-      path: "/admin/products/:id",
+      path: "/admin/listings/:id",
       errorElement: <UnexpectedErrorPage />,
       hydrateFallbackElement: routeHydrateFallback,
       lazy: async () => {
