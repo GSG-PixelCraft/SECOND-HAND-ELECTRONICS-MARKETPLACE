@@ -1,9 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
 import { api } from "./client";
 import { API_ENDPOINTS } from "@/constants/api-endpoints";
-import { ROUTES } from "@/constants/routes";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { getBackendErrorMessage } from "@/lib/api-error";
 import type { WishlistItem } from "@/dto/wishlist";
@@ -11,7 +9,9 @@ import type { WishlistItem } from "@/dto/wishlist";
 /** Returns true when the AxiosError has the given HTTP status code. */
 const isHttpStatus = (err: unknown, status: number): boolean => {
   if (err && typeof err === "object" && "response" in err) {
-    return (err as { response?: { status?: number } }).response?.status === status;
+    return (
+      (err as { response?: { status?: number } }).response?.status === status
+    );
   }
   return false;
 };
@@ -35,7 +35,9 @@ const parseImages = (imgs: unknown): string[] => {
     .map((img) => {
       if (typeof img === "string") return img;
       if (img && typeof img === "object")
-        return (img as Record<string, unknown>).url as string | undefined ?? "";
+        return (
+          ((img as Record<string, unknown>).url as string | undefined) ?? ""
+        );
       return "";
     })
     .filter(Boolean);
@@ -86,9 +88,7 @@ const normalizeItem = (raw: unknown): WishlistItem | null => {
       condition: String(product.condition ?? "good"),
       status: product.status ? String(product.status) : undefined,
       isNegotiable: Boolean(product.isNegotiable),
-      createdAt: String(
-        product.createdAt ?? new Date().toISOString(),
-      ),
+      createdAt: String(product.createdAt ?? new Date().toISOString()),
       seller: parseSeller(product.seller),
     };
   }
@@ -182,7 +182,7 @@ export const useRemoveFromWishlist = () => {
       wishlistService.removeFromWishlist(productId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: WISHLIST_KEYS.all });
-      toast.success("Removed from wishlist");
+      toast.error("Removed from wishlist");
     },
     onError: (err) => {
       // 404 = item was not in wishlist — removal is effectively already done
@@ -202,7 +202,6 @@ export const useRemoveFromWishlist = () => {
  * will always be false and toggle will be a no-op).
  */
 export const useToggleWishlist = (productId: string) => {
-  const navigate = useNavigate();
   const { user, token } = useAuthStore();
   const isAuthenticated = Boolean(user && token);
   const { data: wishlist } = useWishlist();
@@ -220,11 +219,9 @@ export const useToggleWishlist = (productId: string) => {
     }
     if (isPending) return;
     if (isFavorite) {
-      navigate(ROUTES.FAVORITES);
+      remove.mutate(productId);
     } else {
-      add.mutate(productId, {
-        onSuccess: () => navigate(ROUTES.FAVORITES),
-      });
+      add.mutate(productId);
     }
   };
 

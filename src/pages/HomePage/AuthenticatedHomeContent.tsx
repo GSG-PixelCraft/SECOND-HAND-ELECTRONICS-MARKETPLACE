@@ -4,9 +4,9 @@ import { useMemo } from "react";
 import {
   useWishlist,
   useAddToWishlist,
-  //   useRemoveFromWishlist,
+  useRemoveFromWishlist,
 } from "@/services/wishlist.service";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
 import { Button } from "@/components/ui/Button/button";
 import { Image } from "@/components/ui/Image/image";
@@ -53,26 +53,18 @@ export const AuthenticatedHomeContent = () => {
   });
   const { data: wishlist = [] } = useWishlist();
   const add = useAddToWishlist();
-  //   const remove = useRemoveFromWishlist();
+  const remove = useRemoveFromWishlist();
 
   const wishlistedIds = useMemo(
     () => new Set(wishlist.map((item) => item.id)),
     [wishlist],
   );
 
-  const navigate = useNavigate();
-
   const handleToggleFavorite = (productId: string) => {
-    // if (!isAuthenticated) {
-    //   toast.error("Please sign in to save items to your wishlist");
-    //   return;
-    // }
     if (wishlistedIds.has(productId)) {
-      navigate(ROUTES.FAVORITES);
+      remove.mutate(productId);
     } else {
-      add.mutate(productId, {
-        onSuccess: () => navigate(ROUTES.FAVORITES),
-      });
+      add.mutate(productId);
     }
   };
 
