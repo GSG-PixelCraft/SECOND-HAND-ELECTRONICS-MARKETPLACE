@@ -3,23 +3,49 @@
 ## Table of Contents
 
 1. [Project Overview](#project-overview)
-2. [Technology Stack](#technology-stack)
-3. [Prerequisites](#prerequisites)
-4. [Installation](#installation)
-5. [Environment Variables](#environment-variables)
-6. [Available Scripts](#available-scripts)
-7. [Project Structure](#project-structure)
-8. [Architecture Overview](#architecture-overview)
-9. [Contributing](#contributing)
-10. [License](#license)
+2. [Key Features](#key-features)
+3. [Technology Stack](#technology-stack)
+4. [Prerequisites](#prerequisites)
+5. [Installation](#installation)
+6. [Environment Variables](#environment-variables)
+7. [Available Scripts](#available-scripts)
+8. [Project Structure](#project-structure)
+9. [Architecture Overview](#architecture-overview)
+10. [Development Team](#development-team)
+11. [Contributing](#contributing)
+12. [License](#license)
 
 ---
 
 ## Project Overview
 
-This repository contains the frontend application for the Second-Hand Electronics Marketplace platform. The application allows users to list, browse, buy, and sell pre-owned electronic devices. It supports real-time messaging between buyers and sellers, location-based product discovery, secure authentication with role-based access control, and an administrative dashboard for platform management.
+This repository contains the frontend application for the **Second-Hand Electronics Marketplace** platform — a fully featured, production-grade web application that enables users to list, browse, purchase, and sell pre-owned electronic devices.
 
-The frontend is built with React 19 and TypeScript, bundled with Vite, and deployed as a single-page application.
+The platform is designed around three distinct user roles:
+
+- **Buyers** — Browse listings, save favourites, manage a shopping cart, place orders, and communicate directly with sellers via real-time chat.
+- **Sellers** — Create and manage product listings with images, descriptions, pricing, and location data. Track orders and respond to buyer inquiries.
+- **Administrators** — Access a dedicated dashboard to manage users, product listings, categories, reports, and the identity verification queue.
+
+Additional platform capabilities include location-based product discovery using interactive maps, audio message support in chat, identity verification workflows, push-style toast notifications, and full internationalisation support.
+
+The frontend is built with **React 19** and **TypeScript**, bundled with **Vite**, and deployed as a single-page application (SPA) with client-side routing and lazy-loaded routes for optimal performance.
+
+---
+
+## Key Features
+
+- **User Authentication** — JWT-based registration, login, email and phone OTP verification, password reset via email or SMS, and persistent sessions using secure cookie storage.
+- **Product Listings** — Create, edit, and manage listings with multi-image upload, rich descriptions, category selection, pricing, and geographic location pinning via an interactive Leaflet map.
+- **Search and Discovery** — Full-text search, category and condition filters, location-based sorting, and paginated browsing across all available listings.
+- **Real-Time Chat** — WebSocket-powered messaging between buyers and sellers, with support for text messages, image attachments, and audio messages rendered via waveform visualisation.
+- **Shopping Cart and Checkout** — Persistent cart management, order placement, and order history tracking for buyers.
+- **Wishlist / Favourites** — Save and manage product listings for later review.
+- **Admin Dashboard** — Comprehensive management interface covering users, listings, categories, countries, abuse reports, and identity verification queues. Includes data visualisation charts for platform analytics.
+- **Identity Verification** — Structured workflow for submitting and reviewing identity documents, with approval and rejection flows for administrators.
+- **Notifications** — In-app notification centre for platform events and activity updates.
+- **Internationalisation** — Full i18n support via i18next with English as the default locale, structured for easy addition of further languages.
+- **Role-Based Access Control** — Granular route guards and access control ensuring buyers, sellers, and administrators each access only the functionality appropriate to their role.
 
 ---
 
@@ -100,8 +126,9 @@ The frontend is built with React 19 and TypeScript, bundled with Vite, and deplo
 
 ## Prerequisites
 
-- Node.js >= 20.19.0
-- npm (bundled with Node.js)
+- **Node.js** >= 20.19.0 (LTS recommended)
+- **npm** (bundled with Node.js; no separate installation required)
+- Access to a running instance of the backend REST API
 
 ---
 
@@ -130,17 +157,20 @@ The frontend is built with React 19 and TypeScript, bundled with Vite, and deplo
 
    The application will be available at `http://localhost:5173` by default.
 
+> **Note:** Ensure the backend API is running and the `VITE_API_URL` environment variable points to the correct base URL before starting the application.
+
 ---
 
 ## Environment Variables
 
 Create a `.env` file at the project root. All variables must be prefixed with `VITE_` to be exposed to the client bundle.
 
-| Variable       | Required | Description                      |
-| -------------- | -------- | -------------------------------- |
-| `VITE_API_URL` | Yes      | Base URL of the backend REST API |
+| Variable            | Required | Description                                                  |
+| ------------------- | -------- | ------------------------------------------------------------ |
+| `VITE_API_URL`      | Yes      | Base URL of the backend REST API (e.g. `http://localhost:3000`) |
+| `VITE_SOCKET_URL`   | No       | WebSocket server URL if different from the REST API base URL |
 
-Environment variables are accessed through `src/lib/env.ts`, which centralises validation and exports typed references for use throughout the application.
+Environment variables are accessed through [src/lib/env.ts](src/lib/env.ts), which centralises validation and exports typed references for use throughout the application. Never access `import.meta.env` directly in application code — always import from `src/lib/env.ts`.
 
 ---
 
@@ -168,27 +198,28 @@ Environment variables are accessed through `src/lib/env.ts`, which centralises v
 
 ```
 src/
-├── api/                 # Auto-generated API client code
-├── assets/              # Static assets (images, icons)
+├── api/                 # Auto-generated API client code (OpenAPI / Swagger)
+├── assets/              # Static assets (images, icons, fonts)
 ├── components/          # Reusable UI components
-│   ├── ui/              # Base primitives (Button, Input, Dialog, etc.)
-│   ├── layout/          # Application layout components (header, footer, sidebar)
-│   ├── forms/           # Form components and Zod schemas
-│   └── feedback/        # Loading spinners, empty states, error states
-├── config/              # Application configuration (API base URL, app settings)
-├── constants/           # Shared constants (routes, endpoints, storage keys, messages)
-├── containers/          # Smart components that compose UI with data-fetching logic
+│   ├── ui/              # Base primitives (Button, Input, Dialog, Badge, etc.)
+│   ├── layout/          # Application layout components (header, footer, sidebar, navigation)
+│   ├── forms/           # Shared form components and field-level Zod schemas
+│   ├── feedback/        # Loading spinners, skeleton screens, empty states, error states
+│   ├── admin/           # Admin-specific reusable components
+│   └── profile/         # Profile-specific reusable components
+├── config/              # Application configuration (API base URL, app-level settings)
+├── constants/           # Shared constants (routes, API endpoints, storage keys, status codes, messages)
 ├── dto/                 # Data transfer object types for API request and response shapes
-├── hooks/               # Custom React hooks
-├── lib/                 # Utility functions (formatting, storage, i18n setup, env access)
-├── locales/             # i18n translation files
+├── hooks/               # Custom React hooks shared across features
+├── lib/                 # Utility functions and library setup (formatting, storage, i18n, env access)
+├── locales/             # i18n translation files (en.json and any future locales)
 ├── pages/               # Page-level components, one directory per route
-├── providers/           # React context and query providers
-├── routes/              # Route definitions, authentication guards, and access control
-├── services/            # API service layer (Axios calls and React Query hooks)
-├── stores/              # Zustand global state stores
-├── style/               # Global CSS, design tokens, animations, and custom fonts
-├── test/                # Test setup, utilities, and MSW mock handlers
+├── providers/           # React context providers and TanStack Query client configuration
+├── routes/              # Route definitions, authentication guards, and access control logic
+├── services/            # API service layer — Axios call functions and React Query hooks per domain
+├── stores/              # Zustand global state stores (auth, cart, UI toggles)
+├── style/               # Global CSS, design tokens, animations, and custom font declarations
+├── test/                # Test setup files, shared utilities, and MSW mock handlers
 └── types/               # Shared TypeScript type and interface definitions
 ```
 
@@ -198,28 +229,55 @@ src/
 
 ### Routing and Access Control
 
-Routes are defined in `src/routes/routes.tsx` using React Router DOM with lazy loading applied to all page components to reduce the initial bundle size. Route guards in `src/routes/guards.tsx` protect authenticated and role-restricted routes. Access control logic is centralised in `src/routes/access-control.tsx`.
+Routes are defined in [src/routes/routes.tsx](src/routes/routes.tsx) using React Router DOM with lazy loading applied to all page components to reduce the initial bundle size. Route guards in [src/routes/guards.tsx](src/routes/guards.tsx) protect authenticated and role-restricted routes. Access control logic is centralised in [src/routes/access-control.tsx](src/routes/access-control.tsx), ensuring that buyer, seller, and admin routes are enforced consistently and independently of individual page components.
 
 ### State Management
 
-Client-side state (authenticated user, shopping cart, UI toggles such as modals and sidebars) is managed with Zustand stores located in `src/stores/`. Server-side state, including data fetching, caching, background refetching, and mutations, is handled exclusively by TanStack React Query through service hooks defined in `src/services/`.
+Client-side state — including the authenticated user session, shopping cart contents, and UI toggles such as modals and sidebars — is managed with Zustand stores located in `src/stores/`. Server-side state, including data fetching, caching, background refetching, pagination, and mutations, is handled exclusively by TanStack React Query through service hooks defined in `src/services/`. This separation keeps client and server state concerns cleanly isolated.
 
 ### API Layer
 
-All HTTP communication with the backend is performed through an Axios instance configured in `src/services/client.ts`, which attaches authentication tokens via request interceptors and handles token refresh on 401 responses. Each domain area has a dedicated service file that exports both the raw Axios calls and the corresponding React Query hooks.
+All HTTP communication with the backend is performed through an Axios instance configured in `src/services/client.ts`. This instance attaches authentication tokens to outgoing requests via request interceptors and handles silent token refresh on 401 responses. Each domain area has a dedicated service file that exports both the raw Axios call functions and the corresponding React Query hooks (`useQuery` / `useMutation` wrappers), so components never call Axios directly.
+
+### Real-Time Communication
+
+WebSocket communication is implemented using Socket.io Client. The socket connection is established after successful authentication and is used to deliver real-time chat messages, typing indicators, and notification events without polling.
+
+### Forms and Validation
+
+All forms are built with React Hook Form and validated using Zod schemas. Schemas are co-located with the relevant form component or service domain. The `@hookform/resolvers` package connects Zod schemas to React Hook Form, providing fully typed, declarative validation with minimal boilerplate.
 
 ### Internationalisation
 
-The application uses i18next with English as the default locale. Translation keys are maintained in `src/locales/en.json`. The i18next instance is initialised in `src/lib/i18n.ts`.
+The application uses i18next with English as the default locale. All user-facing strings are externalised to `src/locales/en.json`. The i18next instance is initialised in [src/lib/i18n.ts](src/lib/i18n.ts). Adding a new locale requires adding the corresponding JSON file and registering it in the i18n configuration.
+
+### Testing Strategy
+
+Unit and integration tests are written with Vitest and Testing Library, targeting components, hooks, and utility functions. MSW (Mock Service Worker) is used to intercept and mock API requests during tests, allowing full component trees to be tested against realistic network behaviour without a running backend. Test files are co-located with the code they test, with shared utilities and handlers in `src/test/`.
+
+---
+
+## Development Team
+
+This project was designed and built by the following team members from **GSG-PixelCraft**:
+
+| Name            | Role                         |
+| --------------- | ---------------------------- |
+| Shadi Sbaih     | Frontend Developer           |
+| Raghad Sami     | Frontend Developer           |
+| Riham Katout    | Frontend Developer           |
+| Mahmoud Hamo    | Frontend Developer           |
+| Anas Abuhamed   | Frontend Developer           |
 
 ---
 
 ## Contributing
 
-1. Branch from `dev` for all feature and fix work.
-2. Ensure zero ESLint warnings are present before submitting a pull request.
-3. Run `npm run validate` to confirm that formatting, linting, type checking, tests, and the production build all pass successfully.
-4. Keep pull requests focused on a single concern to simplify review.
+1. Branch from `dev` for all feature and fix work. Use a descriptive branch name that reflects the scope of the change (e.g. `feature/chat-audio-messages`, `fix/cart-quantity-update`).
+2. Ensure zero ESLint warnings are present before submitting a pull request. The CI pipeline enforces this.
+3. Run `npm run validate` to confirm that formatting, linting, type checking, tests, and the production build all pass successfully before opening a pull request.
+4. Keep pull requests focused on a single concern to simplify review and reduce the risk of unintended side effects.
+5. Follow the existing naming conventions, file structure, and code patterns documented in `.github/instructions/copilot-instructions.md`.
 
 ---
 
