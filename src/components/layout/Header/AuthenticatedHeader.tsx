@@ -5,7 +5,6 @@ import { NotificationMenu } from "@/pages/NotificationsPage/components";
 import {
   MenuIcon,
   HeartIcon,
-  ListIcon,
   ChevronDownIcon,
   GlobeIcon,
   SearchIcon,
@@ -175,11 +174,11 @@ export const AuthenticatedHeader = () => {
               >
                 <ChatIcon />
               </Button>
-              <Button className="rounded-lg p-1.5 transition hover:bg-gray-100">
+              <Button
+                className="rounded-lg p-1.5 text-blue-600 transition hover:bg-gray-100"
+                onClick={() => navigate(ROUTES.FAVORITES)}
+              >
                 <HeartIcon />
-              </Button>
-              <Button className="rounded-lg p-1.5 transition hover:bg-gray-100">
-                <ListIcon />
               </Button>
               {isAdmin && (
                 <Button
@@ -190,7 +189,7 @@ export const AuthenticatedHeader = () => {
                 </Button>
               )}
               <Button
-                className="px-4 py-2 text-sm font-medium text-gray-700 transition hover:text-gray-900"
+                className="px-4 py-2 text-sm font-medium text-red-500 transition hover:text-gray-900"
                 onClick={logout}
               >
                 Logout
