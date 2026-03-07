@@ -152,7 +152,7 @@ export const AuthenticatedHeader = () => {
                   activeCategory.toLowerCase() === cat.name.toLowerCase();
                 return (
                   <NavLink
-                    key={cat.id}
+                    key={"cat" + cat.id}
                     to={`${ROUTES.SEARCH}?category=${cat.name.toLowerCase()}`}
                     className={`whitespace-nowrap text-sm font-medium transition ${
                       isActive
