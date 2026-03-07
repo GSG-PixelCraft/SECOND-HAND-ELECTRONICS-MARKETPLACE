@@ -72,24 +72,38 @@ export function useFiltersController({
     return m;
   }, [filters.categories]);
 
-  const update = <K extends keyof FiltersState>(key: K, value: FiltersState[K]) =>
-    setFilters((prev) => ({ ...prev, [key]: value }));
+  const update = <K extends keyof FiltersState>(
+    key: K,
+    value: FiltersState[K],
+  ) => setFilters((prev) => ({ ...prev, [key]: value }));
 
   const toggle = (key: keyof FiltersState, val: string) => {
-    const arr = filters[key] as string[];
-    update(
-      key,
-      arr.includes(val) ? arr.filter((v) => v !== val) : [...arr, val],
-    );
+    setFilters((prev) => {
+      const arr = prev[key] as string[];
+      return {
+        ...prev,
+        [key]: arr.includes(val) ? arr.filter((v) => v !== val) : [...arr, val],
+      };
+    });
   };
 
   const remove = (key: keyof FiltersState, val: string) =>
-    update(
-      key,
-      (filters[key] as string[]).filter((v) => v !== val),
-    );
+    setFilters((prev) => ({
+      ...prev,
+      [key]: (prev[key] as string[]).filter((v) => v !== val),
+    }));
 
-  const reset = () => setFilters(DEFAULT_FILTERS);
+  const reset = () =>
+    setFilters({
+      categories: [],
+      condition: [],
+      priceRange: { min: "", max: "" },
+      brand: [],
+      model: [],
+      storage: [],
+      sellerType: [],
+      location: { country: "", city: "", useCurrentLocation: false },
+    });
 
   const hasFilters = useMemo(() => {
     return Object.values(filters).some((v) =>
@@ -104,7 +118,8 @@ export function useFiltersController({
   const showBrand = filters.categories.length > 0;
   const showModel = modelOptions.length > 0;
   const selectedCountryName =
-    countries.find((country) => country.code === filters.location.country)?.name ?? "";
+    countries.find((country) => country.code === filters.location.country)
+      ?.name ?? "";
 
   return {
     // state
@@ -132,4 +147,3 @@ export function useFiltersController({
     reset,
   } as const;
 }
-

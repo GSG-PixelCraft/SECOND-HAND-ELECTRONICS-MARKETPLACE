@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { SlidersHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/Button/button";
@@ -9,6 +9,11 @@ import { HomeProductCard } from "@/components/homePage/HomeProductCard";
 import type { Product } from "@/types";
 import type { FiltersState } from "@/components/ui/FiltersPart/FiltersPart";
 import { useProducts, useCategories } from "@/services/product.service";
+import {
+  useAddToWishlist,
+  useRemoveFromWishlist,
+  useWishlist,
+} from "@/services/wishlist.service";
 
 export default function SearchPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -32,6 +37,7 @@ export default function SearchPage() {
   });
 
   const searchTimeoutRef = useRef<number | undefined>(undefined);
+  const isUrlSyncRef = useRef(false);
   useCleanupTimers(searchTimeoutRef);
   // Backend data source
   const { data: apiData } = useProducts(
@@ -45,9 +51,27 @@ export default function SearchPage() {
       : { limit: 100, sortBy: "createdAt", sortOrder: "desc" },
   );
   const { data: categoriesData } = useCategories();
+  const { data: wishlist = [] } = useWishlist();
+  const addToWishlist = useAddToWishlist();
+  const removeFromWishlist = useRemoveFromWishlist();
   const effectiveCategories = Array.isArray(categoriesData)
     ? categoriesData
     : [];
+  const wishlistedIds = useMemo(
+    () => new Set(wishlist.map((item) => String(item.id))),
+    [wishlist],
+  );
+
+  const handleToggleFavorite = useCallback(
+    (productId: string) => {
+      if (wishlistedIds.has(productId)) {
+        removeFromWishlist.mutate(productId);
+      } else {
+        addToWishlist.mutate(productId);
+      }
+    },
+    [addToWishlist, removeFromWishlist, wishlistedIds],
+  );
 
   const performSearch = useCallback(
     (query: string, filters: FiltersState) => {
@@ -59,27 +83,100 @@ export default function SearchPage() {
         const base = apiData?.products ?? [];
         let results = base;
 
-        const effectiveCategories =
-          filters.categories.length > 0
-            ? filters.categories.map((c) => c.toLowerCase())
-            : categoryFilter
-              ? [categoryFilter.toLowerCase()]
-              : [];
+        const effectiveCategories = filters.categories.map((c) =>
+          c.toLowerCase(),
+        );
 
         if (effectiveCategories.length > 0) {
           const selected = new Set(effectiveCategories);
-          results = results.filter((p) => selected.has(p.category.name.toLowerCase()));
+          results = results.filter((p) =>
+            selected.has(p.category.name.toLowerCase()),
+          );
         }
 
         if (filters.condition.length > 0) {
-          const mapCond = (c: string) =>
-            c.toLowerCase().replace(/\s+/g, "-"); // Like New -> like-new
+          const mapCond = (c: string) => c.toLowerCase().replace(/\s+/g, "-"); // Like New -> like-new
           const selectedConds = new Set(filters.condition.map(mapCond));
           results = results.filter((p) => selectedConds.has(p.condition));
         }
 
-        const min = filters.priceRange.min ? Number(filters.priceRange.min) : undefined;
-        const max = filters.priceRange.max ? Number(filters.priceRange.max) : undefined;
+        const hasAttributeValue = (p: Product, needle: string): boolean => {
+          const n = needle.trim().toLowerCase();
+          if (!n) return false;
+          return (
+            p.attributes?.some((attr) => {
+              const value = String(attr.value ?? "").toLowerCase();
+              const name = String(attr.attributeName ?? "").toLowerCase();
+              return value.includes(n) || name.includes(n);
+            }) ?? false
+          );
+        };
+
+        if (filters.brand.length > 0) {
+          const selectedBrands = new Set(
+            filters.brand.map((b) => b.toLowerCase()),
+          );
+          results = results.filter((p) => {
+            const title = p.title.toLowerCase();
+            const description = (p.description ?? "").toLowerCase();
+            return [...selectedBrands].some(
+              (brand) =>
+                title.includes(brand) ||
+                description.includes(brand) ||
+                hasAttributeValue(p, brand),
+            );
+          });
+        }
+
+        if (filters.model.length > 0) {
+          const selectedModels = new Set(
+            filters.model.map((m) => m.toLowerCase()),
+          );
+          results = results.filter((p) => {
+            const title = p.title.toLowerCase();
+            const description = (p.description ?? "").toLowerCase();
+            return [...selectedModels].some(
+              (model) =>
+                title.includes(model) ||
+                description.includes(model) ||
+                hasAttributeValue(p, model),
+            );
+          });
+        }
+
+        if (filters.storage.length > 0) {
+          const selectedStorage = new Set(
+            filters.storage.map((s) => s.toLowerCase()),
+          );
+          results = results.filter((p) => {
+            const title = p.title.toLowerCase();
+            const description = (p.description ?? "").toLowerCase();
+            return [...selectedStorage].some(
+              (storage) =>
+                title.includes(storage) ||
+                description.includes(storage) ||
+                hasAttributeValue(p, storage),
+            );
+          });
+        }
+
+        if (filters.sellerType.includes("Verified sellers")) {
+          results = results.filter((p) => Boolean(p.seller));
+        }
+
+        if (filters.location.city) {
+          const city = filters.location.city.toLowerCase();
+          results = results.filter((p) =>
+            (p.location ?? "").toLowerCase().includes(city),
+          );
+        }
+
+        const min = filters.priceRange.min
+          ? Number(filters.priceRange.min)
+          : undefined;
+        const max = filters.priceRange.max
+          ? Number(filters.priceRange.max)
+          : undefined;
         if (min !== undefined) results = results.filter((p) => p.price >= min);
         if (max !== undefined) results = results.filter((p) => p.price <= max);
 
@@ -101,7 +198,9 @@ export default function SearchPage() {
             const score = (p: Product) => {
               const title = p.title.toLowerCase();
               const ci = title.indexOf(q);
-              const catHit = p.category.name.toLowerCase().includes(q) ? -50 : 0;
+              const catHit = p.category.name.toLowerCase().includes(q)
+                ? -50
+                : 0;
               return (ci === -1 ? 10000 : ci) + catHit;
             };
             sorted.sort((a, b) => score(a) - score(b) || byDateDesc(a, b));
@@ -122,35 +221,59 @@ export default function SearchPage() {
         setIsSearching(false);
       }, 250);
     },
-    [categoryFilter, sortBy],
+    [apiData, categoryFilter, sortBy],
   );
 
   useEffect(() => {
     const query = searchParams.get("q");
     const category = searchParams.get("category");
 
-    if (category && category !== categoryFilter) {
-      setCategoryFilter(category);
+    const nextCategory = category ?? "";
+    const nextQuery = query ?? "";
+
+    if (nextCategory !== categoryFilter) {
+      setCategoryFilter(nextCategory);
     }
 
-    if (query && query !== searchQuery) {
-      setSearchQuery(query);
+    if (nextQuery !== searchQuery) {
+      setSearchQuery(nextQuery);
     }
-  }, [searchParams, searchQuery, categoryFilter]);
+  }, [searchParams]);
 
   useEffect(() => {
-    if (!categoryFilter) return;
-    if (filtersState.categories.length === 0) {
-      const match = effectiveCategories.find(
-        (c) => c.name.toLowerCase() === categoryFilter.toLowerCase(),
+    const normalizedCategories = categoryFilter
+      .split(",")
+      .map((c) => c.trim().toLowerCase())
+      .filter(Boolean);
+
+    const currentCategories = filtersState.categories
+      .map((c) => c.trim().toLowerCase())
+      .filter(Boolean);
+
+    const isSameCategories =
+      normalizedCategories.length === currentCategories.length &&
+      normalizedCategories.every(
+        (value, index) => value === currentCategories[index],
       );
-      const displayName =
-        match
-          ? match.name
-          : (categoryFilter[0]?.toUpperCase() || "") + categoryFilter.slice(1);
-      setFiltersState((prev) => ({ ...prev, categories: [displayName] }));
-    }
-  }, [categoryFilter, filtersState.categories.length]);
+
+    if (isSameCategories) return;
+
+    isUrlSyncRef.current = true;
+
+    const displayCategories = normalizedCategories.map((normalized) => {
+      const match = effectiveCategories.find(
+        (c) => c.name.toLowerCase() === normalized,
+      );
+      return match
+        ? match.name
+        : (normalized[0]?.toUpperCase() || "") + normalized.slice(1);
+    });
+
+    setFiltersState((prev) => ({ ...prev, categories: displayCategories }));
+    setTimeout(() => {
+      isUrlSyncRef.current = false;
+    }, 0);
+  }, [categoryFilter, filtersState.categories, effectiveCategories]);
 
   useEffect(() => {
     performSearch(searchQuery, filtersState);
@@ -159,38 +282,50 @@ export default function SearchPage() {
   const handleSearch = (query: string) => {
     setSearchQuery(query);
     const trimmed = query.trim();
+    const selectedCategories = filtersState.categories
+      .map((c) => c.toLowerCase())
+      .filter(Boolean);
+
     if (trimmed) {
       const next: Record<string, string> = { q: trimmed };
-      if (filtersState.categories.length === 1)
-        next.category = filtersState.categories[0].toLowerCase();
-      else if (categoryFilter) next.category = categoryFilter;
+      if (selectedCategories.length > 0) {
+        next.category = selectedCategories.join(",");
+      }
       setSearchParams(next);
     } else {
       const next: Record<string, string> = {};
-      if (filtersState.categories.length === 1)
-        next.category = filtersState.categories[0].toLowerCase();
-      else if (categoryFilter) next.category = categoryFilter;
+      if (selectedCategories.length > 0) {
+        next.category = selectedCategories.join(",");
+      }
       setSearchParams(next);
     }
   };
 
-  useEffect(() => {
-    const q = searchQuery.trim();
-    if (filtersState.categories.length === 1) {
-      const cat = filtersState.categories[0].toLowerCase();
-      const next: Record<string, string> = { category: cat };
-      if (q) next.q = q;
-      setSearchParams(next);
-    } else if (filtersState.categories.length !== 1) {
-      const next: Record<string, string> = {};
-      if (q) next.q = q;
-      setSearchParams(next);
-    }
-  }, [filtersState.categories, searchQuery, setSearchParams]);
+  const handleFiltersChange = useCallback(
+    (next: FiltersState) => {
+      setFiltersState(next);
+      if (isUrlSyncRef.current) return;
 
-  const handleFiltersChange = useCallback((next: FiltersState) => {
-    setFiltersState(next);
-  }, []);
+      const nextParams: Record<string, string> = {};
+      if (next.categories.length > 0) {
+        nextParams.category = next.categories
+          .map((category) => category.toLowerCase())
+          .join(",");
+      }
+
+      const q = searchQuery.trim();
+      if (q) {
+        nextParams.q = q;
+      }
+
+      const currentQuery = searchParams.toString();
+      const nextQuery = new URLSearchParams(nextParams).toString();
+      if (nextQuery !== currentQuery) {
+        setSearchParams(nextParams);
+      }
+    },
+    [searchParams, searchQuery, setSearchParams],
+  );
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -221,9 +356,7 @@ export default function SearchPage() {
 
         <div className="flex-1 p-6">
           <div className="mb-6 flex items-center justify-between">
-            <div>
-
-            </div>
+            <div></div>
             <SearchSort onSortChange={setSortBy} />
           </div>
 
@@ -250,7 +383,10 @@ export default function SearchPage() {
                     "Location not specified"
                   }
                   category={product.category.name}
-                  isFavorite={false}
+                  isFavorite={wishlistedIds.has(String(product.id))}
+                  onToggleFavorite={() =>
+                    handleToggleFavorite(String(product.id))
+                  }
                 />
               ))
             ) : !isSearching ? (
@@ -269,7 +405,6 @@ export default function SearchPage() {
   );
 }
 
-
 function useCleanupTimers(ref: React.MutableRefObject<number | undefined>) {
   useEffect(() => {
     return () => {
@@ -277,4 +412,3 @@ function useCleanupTimers(ref: React.MutableRefObject<number | undefined>) {
     };
   }, [ref]);
 }
-
