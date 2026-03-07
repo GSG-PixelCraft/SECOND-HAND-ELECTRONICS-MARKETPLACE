@@ -139,7 +139,7 @@ export const AuthenticatedHeader = () => {
           <div className="flex items-center justify-between gap-4">
             <nav className="flex items-center gap-6 overflow-x-auto">
               <Button
-                onClick={() => navigate(ROUTES.HOME)}
+                onClick={() => navigate(ROUTES.SEARCH)}
                 className={`flex items-center gap-2 whitespace-nowrap text-sm font-medium ${new URLSearchParams(location.search).get("category") ? "text-gray-600 hover:text-gray-900" : "text-blue-600"}`}
               >
                 <MenuIcon />
@@ -209,7 +209,7 @@ export const AuthenticatedHeader = () => {
               <button
                 type="button"
                 onClick={() => {
-                  navigate(ROUTES.HOME);
+                  navigate(ROUTES.SEARCH);
                   setMobileMenuOpen(false);
                 }}
                 className="block w-full rounded-lg px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"

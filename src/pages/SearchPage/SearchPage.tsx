@@ -83,12 +83,9 @@ export default function SearchPage() {
         const base = apiData?.products ?? [];
         let results = base;
 
-        const effectiveCategories =
-          filters.categories.length > 0
-            ? filters.categories.map((c) => c.toLowerCase())
-            : categoryFilter
-              ? [categoryFilter.toLowerCase()]
-              : [];
+        const effectiveCategories = filters.categories.map((c) =>
+          c.toLowerCase(),
+        );
 
         if (effectiveCategories.length > 0) {
           const selected = new Set(effectiveCategories);
@@ -101,6 +98,77 @@ export default function SearchPage() {
           const mapCond = (c: string) => c.toLowerCase().replace(/\s+/g, "-"); // Like New -> like-new
           const selectedConds = new Set(filters.condition.map(mapCond));
           results = results.filter((p) => selectedConds.has(p.condition));
+        }
+
+        const hasAttributeValue = (p: Product, needle: string): boolean => {
+          const n = needle.trim().toLowerCase();
+          if (!n) return false;
+          return (
+            p.attributes?.some((attr) => {
+              const value = String(attr.value ?? "").toLowerCase();
+              const name = String(attr.attributeName ?? "").toLowerCase();
+              return value.includes(n) || name.includes(n);
+            }) ?? false
+          );
+        };
+
+        if (filters.brand.length > 0) {
+          const selectedBrands = new Set(
+            filters.brand.map((b) => b.toLowerCase()),
+          );
+          results = results.filter((p) => {
+            const title = p.title.toLowerCase();
+            const description = (p.description ?? "").toLowerCase();
+            return [...selectedBrands].some(
+              (brand) =>
+                title.includes(brand) ||
+                description.includes(brand) ||
+                hasAttributeValue(p, brand),
+            );
+          });
+        }
+
+        if (filters.model.length > 0) {
+          const selectedModels = new Set(
+            filters.model.map((m) => m.toLowerCase()),
+          );
+          results = results.filter((p) => {
+            const title = p.title.toLowerCase();
+            const description = (p.description ?? "").toLowerCase();
+            return [...selectedModels].some(
+              (model) =>
+                title.includes(model) ||
+                description.includes(model) ||
+                hasAttributeValue(p, model),
+            );
+          });
+        }
+
+        if (filters.storage.length > 0) {
+          const selectedStorage = new Set(
+            filters.storage.map((s) => s.toLowerCase()),
+          );
+          results = results.filter((p) => {
+            const title = p.title.toLowerCase();
+            const description = (p.description ?? "").toLowerCase();
+            return [...selectedStorage].some(
+              (storage) =>
+                title.includes(storage) ||
+                description.includes(storage) ||
+                hasAttributeValue(p, storage),
+            );
+          });
+        }
+
+        if (filters.sellerType.includes("Verified sellers")) {
+          results = results.filter((p) => Boolean(p.seller));
+        }
+
+        if (filters.location.city) {
+          const city = filters.location.city.toLowerCase();
+          results = results.filter((p) =>
+            (p.location ?? "").toLowerCase().includes(city),
+          );
         }
 
         const min = filters.priceRange.min
@@ -173,35 +241,35 @@ export default function SearchPage() {
   }, [searchParams]);
 
   useEffect(() => {
-    const normalizedCategory = categoryFilter.trim().toLowerCase();
-    const currentCategory =
-      filtersState.categories[0]?.trim().toLowerCase() ?? "";
+    const normalizedCategories = categoryFilter
+      .split(",")
+      .map((c) => c.trim().toLowerCase())
+      .filter(Boolean);
 
-    if (!normalizedCategory) {
-      if (filtersState.categories.length === 0) return;
-      isUrlSyncRef.current = true;
-      setFiltersState((prev) => ({ ...prev, categories: [] }));
-      setTimeout(() => {
-        isUrlSyncRef.current = false;
-      }, 0);
-      return;
-    }
+    const currentCategories = filtersState.categories
+      .map((c) => c.trim().toLowerCase())
+      .filter(Boolean);
 
-    if (
-      filtersState.categories.length === 1 &&
-      currentCategory === normalizedCategory
-    ) {
-      return;
-    }
+    const isSameCategories =
+      normalizedCategories.length === currentCategories.length &&
+      normalizedCategories.every(
+        (value, index) => value === currentCategories[index],
+      );
+
+    if (isSameCategories) return;
 
     isUrlSyncRef.current = true;
-    const match = effectiveCategories.find(
-      (c) => c.name.toLowerCase() === normalizedCategory,
-    );
-    const displayName = match
-      ? match.name
-      : (categoryFilter[0]?.toUpperCase() || "") + categoryFilter.slice(1);
-    setFiltersState((prev) => ({ ...prev, categories: [displayName] }));
+
+    const displayCategories = normalizedCategories.map((normalized) => {
+      const match = effectiveCategories.find(
+        (c) => c.name.toLowerCase() === normalized,
+      );
+      return match
+        ? match.name
+        : (normalized[0]?.toUpperCase() || "") + normalized.slice(1);
+    });
+
+    setFiltersState((prev) => ({ ...prev, categories: displayCategories }));
     setTimeout(() => {
       isUrlSyncRef.current = false;
     }, 0);
@@ -214,17 +282,21 @@ export default function SearchPage() {
   const handleSearch = (query: string) => {
     setSearchQuery(query);
     const trimmed = query.trim();
+    const selectedCategories = filtersState.categories
+      .map((c) => c.toLowerCase())
+      .filter(Boolean);
+
     if (trimmed) {
       const next: Record<string, string> = { q: trimmed };
-      if (filtersState.categories.length === 1)
-        next.category = filtersState.categories[0].toLowerCase();
-      else if (categoryFilter) next.category = categoryFilter;
+      if (selectedCategories.length > 0) {
+        next.category = selectedCategories.join(",");
+      }
       setSearchParams(next);
     } else {
       const next: Record<string, string> = {};
-      if (filtersState.categories.length === 1)
-        next.category = filtersState.categories[0].toLowerCase();
-      else if (categoryFilter) next.category = categoryFilter;
+      if (selectedCategories.length > 0) {
+        next.category = selectedCategories.join(",");
+      }
       setSearchParams(next);
     }
   };
@@ -234,19 +306,11 @@ export default function SearchPage() {
       setFiltersState(next);
       if (isUrlSyncRef.current) return;
 
-      // FiltersPart may emit an initial empty state on mount.
-      // When arriving with ?category=..., do not clear that URL category.
-      if (
-        next.categories.length === 0 &&
-        categoryFilter &&
-        filtersState.categories.length === 0
-      ) {
-        return;
-      }
-
       const nextParams: Record<string, string> = {};
-      if (next.categories.length === 1) {
-        nextParams.category = next.categories[0].toLowerCase();
+      if (next.categories.length > 0) {
+        nextParams.category = next.categories
+          .map((category) => category.toLowerCase())
+          .join(",");
       }
 
       const q = searchQuery.trim();
@@ -254,14 +318,13 @@ export default function SearchPage() {
         nextParams.q = q;
       }
 
-      setSearchParams(nextParams);
+      const currentQuery = searchParams.toString();
+      const nextQuery = new URLSearchParams(nextParams).toString();
+      if (nextQuery !== currentQuery) {
+        setSearchParams(nextParams);
+      }
     },
-    [
-      categoryFilter,
-      filtersState.categories.length,
-      searchQuery,
-      setSearchParams,
-    ],
+    [searchParams, searchQuery, setSearchParams],
   );
 
   return (
