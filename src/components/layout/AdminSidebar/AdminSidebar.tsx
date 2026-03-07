@@ -15,7 +15,6 @@ import {
   Globe,
   CircleDollarSign,
   ShieldAlert,
-  ShieldCheck,
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
@@ -23,6 +22,8 @@ import { Menu } from "@/components/admin";
 import { Text } from "@/components/ui/Text/text";
 import { Span } from "@/components/ui/Span/span";
 import { Image } from "@/components/ui/Image/image";
+import { useAuthStore } from "@/stores";
+import logoElectronics from "@/assets/LOGO-electronics.svg";
 
 const navigationItems = [
   {
@@ -103,6 +104,7 @@ const settingsSubItems = [
 export function AdminSidebar() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user, logout } = useAuthStore();
   const [isSettingsOpen, setIsSettingsOpen] = useState(
     location.pathname.startsWith(ROUTES.ADMIN_SETTINGS),
   );
@@ -119,13 +121,15 @@ export function AdminSidebar() {
 
   return (
     <aside className="flex w-[260px] flex-col border-r border-neutral-10 bg-white">
-      <div className="flex items-center gap-2 border-b border-neutral-10 px-4 py-6">
-        <div className="flex h-10 w-10 items-center justify-center rounded-full border border-primary/30 text-primary">
-          <ShieldCheck className="h-5 w-5" />
-        </div>
-        <span className="font-['Poppins'] text-[18px] font-semibold text-primary">
-          ElectroLink
-        </span>
+      <div className="border-b border-neutral-10 px-4 py-6">
+        <button
+          type="button"
+          onClick={() => navigate(ROUTES.HOME)}
+          className="flex items-center transition-opacity hover:opacity-80"
+          aria-label="Go to home page"
+        >
+          <img src={logoElectronics} alt="ElectroLink" className="h-10" />
+        </button>
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto px-4 py-6">
@@ -205,8 +209,8 @@ export function AdminSidebar() {
         <div className="group flex cursor-pointer items-center gap-3 rounded-xl p-3 transition-colors hover:bg-neutral-5">
           <div className="size-10 flex-shrink-0 overflow-hidden rounded-full border border-neutral-20">
             <Image
-              src="https://i.pravatar.cc/120?img=11"
-              alt="Yousef Yahia"
+              src={user?.avatar ?? "https://i.pravatar.cc/120?img=11"}
+              alt={user?.fullName ?? user?.name ?? "Admin"}
               className="h-full w-full object-cover"
             />
           </div>
@@ -215,14 +219,18 @@ export function AdminSidebar() {
               variant="body"
               className="text-neutral-90 truncate font-semibold"
             >
-              Yousef Yahia
+              {user?.fullName ?? user?.name ?? "Admin"}
             </Text>
             <Span variant="caption" className="text-neutral-50 truncate">
-              Yousef@gmail.com
+              {user?.email ?? ""}
             </Span>
           </div>
           <button
             type="button"
+            onClick={() => {
+              logout();
+              navigate(ROUTES.SIGN_IN);
+            }}
             className="text-neutral-40 hover:text-neutral-70 flex h-8 w-8 items-center justify-center rounded-full transition-colors hover:bg-neutral-10"
             aria-label="Logout"
           >

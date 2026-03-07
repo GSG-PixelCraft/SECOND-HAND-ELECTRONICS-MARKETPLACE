@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
+import logoElectronics from "@/assets/LOGO-electronics.svg";
 
 const AuthHeader = () => {
   return (
@@ -9,9 +10,9 @@ const AuthHeader = () => {
       </Link>
       <Link
         to={ROUTES.HOME}
-        className="bg-blue-100 px-4 py-2 text-base font-bold text-blue-600 hover:bg-blue-200"
+        className="inline-block"
       >
-        Logo
+        <img src={logoElectronics} alt="Electronics Marketplace" className="h-10 w-auto" />
       </Link>
       <Link
         to={ROUTES.HOME}

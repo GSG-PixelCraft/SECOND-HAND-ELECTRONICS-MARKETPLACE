@@ -3,6 +3,7 @@ import { Button } from "../ui/Button/button";
 import { Image } from "../ui/Image/image";
 import Card, { CardHeader, CardContent } from "../ui/Card/Card";
 import { Text } from "../ui/Text/text";
+import { cn } from "@/lib/utils";
 
 type AdCardProps = {
   image: string;
@@ -12,6 +13,8 @@ type AdCardProps = {
   category: string;
   isFavorite?: boolean;
   downBadge?: boolean;
+  status?: string;
+  className?: string;
   onToggleFavorite?: () => void;
 };
 
@@ -23,10 +26,14 @@ export function HomeProductCard({
   category,
   isFavorite = false,
   downBadge = false,
+  status,
+  className,
   onToggleFavorite,
 }: AdCardProps) {
+  const isSold = status === "sold";
+
   return (
-    <Card className="w-full max-w-[294px] gap-0 overflow-visible rounded-xl border p-0 ring-0">
+    <Card className={cn("w-full max-w-[294px] gap-0 overflow-visible rounded-xl border p-0 ring-0", className)}>
       <CardHeader className="relative p-0">
         <Image
           src={image}
@@ -39,6 +46,12 @@ export function HomeProductCard({
           }}
         />
 
+        {isSold && (
+          <span className="absolute left-2 top-2 rounded-full bg-[#00BFA5] px-2.5 py-0.5 text-xs font-medium text-white shadow">
+            Sold
+          </span>
+        )}
+
         {category && !downBadge && (
           <Text className="absolute bottom-2 left-2 rounded-lg bg-[hsl(var(--border))] px-2 py-1 text-xs font-normal text-neutral shadow">
             {category}
@@ -47,7 +60,11 @@ export function HomeProductCard({
 
         <Button
           type="button"
-          onClick={onToggleFavorite}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onToggleFavorite?.();
+          }}
           className="absolute right-3 top-3 h-8 w-8 rounded-full bg-white p-1 shadow transition hover:bg-error"
           aria-label="Toggle Favorite"
         >

@@ -196,6 +196,7 @@ export interface AdminCategoryDetail extends AdminCategory {
 export interface CreateCategoryPayload {
   name: string;
   iconUrl?: string;
+  iconFile?: File;
   categoryStatus: boolean;
   attributes: CategoryAttribute[];
 }

@@ -10,6 +10,7 @@ import type {
   RejectListingData,
 } from "@/types/admin";
 import { api } from "./client";
+import { API_ENDPOINTS } from "@/constants/api-endpoints";
 
 // ============================================================================
 // Section 1: Types (Re-exported from types/admin.ts)
@@ -235,75 +236,77 @@ export const adminListingsService = {
     };
   },
   // Get single listing by ID
+  // NOTE: The backend has no GET /admin/products/:id endpoint.
+  // Workaround: fetch the full list with a large limit and find by ID.
   getListingById: async (id: string): Promise<AdminListing> => {
-    await delay(300);
-    const listing = mockListings.find((l) => l.id === id);
-    if (!listing) {
+    const response = await api.get<any>(API_ENDPOINTS.ADMIN.PRODUCTS.LIST, {
+      params: { limit: 200 },
+    });
+    const products: any[] = response?.data?.data ?? [];
+    const product = products.find((p: any) => String(p.id) === String(id));
+    if (!product) {
       throw new Error("Listing not found");
     }
-    return listing;
+    const attrs: Array<{ value: string; attribute: { name: string } }> =
+      product.productAttributeValues ?? [];
+    const findAttr = (keyword: string) =>
+      attrs.find((a) => a.attribute?.name?.toLowerCase().includes(keyword))?.value ?? "";
+    return {
+      id: String(product.id),
+      name: product.title,
+      price: Number(product.price),
+      category: product.category?.name || "",
+      condition: product.condition,
+      seller: product.seller?.fullName || String(product.sellerId),
+      sellerId: String(product.sellerId),
+      sellerName: product.seller?.fullName || "",
+      sellerEmail: product.seller?.email || "",
+      sellerAvatar: undefined,
+      status: product.status,
+      description: findAttr("description") || findAttr("details") || findAttr("notes"),
+      location: findAttr("location") || findAttr("city") || findAttr("address"),
+      attributes: attrs,
+      createdAt: product.createdAt,
+      updatedAt: product.updatedAt,
+      image: product.images?.[0]?.url || "",
+      images: product.images?.map((img: any) => img.url) || [],
+      views: product.viewCount ?? 0,
+      favorites: 0,
+    };
   },
 
   // Approve listing
   approveListing: async (id: string): Promise<AdminListing> => {
-    await delay(500);
-    const listing = mockListings.find((l) => l.id === id);
-    if (!listing) {
-      throw new Error("Listing not found");
-    }
-    listing.status = "active";
-    listing.approvedAt = new Date().toISOString();
-    listing.approvedBy = "admin-1";
-    listing.updatedAt = new Date().toISOString();
-    return listing;
+    const response = await api.patch<ApiSuccessResponse<any>>(
+      API_ENDPOINTS.ADMIN.PRODUCTS.DECISION(id),
+      { decision: "active" },
+    );
+    return response?.data as unknown as AdminListing;
   },
 
   // Reject listing
   rejectListing: async (data: RejectListingData): Promise<AdminListing> => {
-    await delay(500);
-    const listing = mockListings.find((l) => l.id === data.listingId);
-    if (!listing) {
-      throw new Error("Listing not found");
-    }
-    listing.status = "rejected";
-    listing.rejectionReason = data.reason;
-    listing.rejectionComment = data.comment;
-    listing.rejectedAt = new Date().toISOString();
-    listing.rejectedBy = "admin-1";
-    listing.updatedAt = new Date().toISOString();
-    return listing;
+    const response = await api.patch<ApiSuccessResponse<any>>(
+      API_ENDPOINTS.ADMIN.PRODUCTS.DECISION(data.listingId),
+      { decision: "rejected" },
+    );
+    return response?.data as unknown as AdminListing;
   },
 
   // Hide listing
   hideListing: async (data: HideListingData): Promise<AdminListing> => {
-    await delay(500);
-    const listing = mockListings.find((l) => l.id === data.listingId);
-    if (!listing) {
-      throw new Error("Listing not found");
-    }
-    listing.status = "hidden";
-    listing.hideReason = data.reason;
-    listing.hideComment = data.comment;
-    listing.hiddenAt = new Date().toISOString();
-    listing.hiddenBy = "admin-1";
-    listing.updatedAt = new Date().toISOString();
-    return listing;
+    const response = await api.patch<ApiSuccessResponse<any>>(
+      API_ENDPOINTS.ADMIN.PRODUCTS.HIDE(data.listingId),
+    );
+    return response?.data as unknown as AdminListing;
   },
 
   // Unhide listing
   unhideListing: async (id: string): Promise<AdminListing> => {
-    await delay(500);
-    const listing = mockListings.find((l) => l.id === id);
-    if (!listing) {
-      throw new Error("Listing not found");
-    }
-    listing.status = "active";
-    listing.hideReason = undefined;
-    listing.hideComment = undefined;
-    listing.hiddenAt = undefined;
-    listing.hiddenBy = undefined;
-    listing.updatedAt = new Date().toISOString();
-    return listing;
+    const response = await api.patch<ApiSuccessResponse<any>>(
+      API_ENDPOINTS.ADMIN.PRODUCTS.UNHIDE(id),
+    );
+    return response?.data as unknown as AdminListing;
   },
 
   // Bulk actions

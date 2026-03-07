@@ -1,6 +1,7 @@
 import { Facebook, Instagram, Youtube, Mail, Phone } from "lucide-react";
 import { Text } from "@/components/ui/Text/text";
 import { Span } from "@/components/ui/Span/span";
+import logoElectronics from "@/assets/LOGO-electronics.svg";
 
 export const Footer = () => {
   return (
@@ -8,7 +9,7 @@ export const Footer = () => {
       <div className="mx-auto max-w-[1440px] px-6 py-10 lg:px-24">
         {/* Top Section: Logo and Description */}
         <div className="flex flex-col items-center gap-8 text-center">
-          <Text className="text-4xl font-bold tracking-tight">Logo</Text>
+          <img src={logoElectronics} alt="Electronics Marketplace" className="h-16 w-auto brightness-0 invert" />
           <Text className="max-w-[700px] text-sm leading-relaxed text-white/90">
             We are a trusted marketplace for buying and selling used
             electronics. Our platform connects buyers and sellers in a safe,
@@ -28,7 +29,7 @@ export const Footer = () => {
             </div>
             <div className="flex flex-col items-start">
               <Span className="text-xs text-white/70">Contact us at</Span>
-              <Span className="text-sm font-medium">unreal@outlook.com</Span>
+              <Span className="text-sm font-medium text-white">codecraft@gmail.com</Span>
             </div>
           </div>
 

@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 import { ROUTES } from "@/constants/routes";
 import { authService } from "@/services/auth.service";
 import type { AxiosError } from "axios";
+import logoElectronics from "@/assets/LOGO-electronics.svg";
 
 export default function OtpEmailPage() {
   const navigate = useNavigate();
@@ -114,7 +115,7 @@ export default function OtpEmailPage() {
           to={ROUTES.HOME}
           className="text-base font-semibold text-blue-600"
         >
-          Logo
+          <img src={logoElectronics} alt="Electronics Marketplace" className="h-10 w-auto" />
         </Link>
         <span className="w-10" aria-hidden="true" />
       </div>

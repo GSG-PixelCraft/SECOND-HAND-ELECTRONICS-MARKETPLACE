@@ -74,6 +74,7 @@ export const toCategoryPayload = (
   iconUrl: string | undefined,
   categoryStatus: boolean,
   attributes: EditableCategoryAttribute[],
+  iconFile?: File,
 ): CreateCategoryPayload => {
   const normalizedAttributes: CategoryAttribute[] = attributes
     .filter(hasMeaningfulContent)
@@ -101,6 +102,7 @@ export const toCategoryPayload = (
   return {
     name: name.trim(),
     iconUrl,
+    iconFile,
     categoryStatus,
     attributes: normalizedAttributes,
   };

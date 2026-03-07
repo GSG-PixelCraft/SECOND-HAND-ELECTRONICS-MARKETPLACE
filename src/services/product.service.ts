@@ -509,12 +509,28 @@ export const productService = {
   // Get single category with attributes (raw)
   getCategoryDetail: async (
     id: string | number,
-  ): Promise<{ id: string; name: string; attributes?: Array<{ id: string; name: string }> } | null> => {
+  ): Promise<{
+    id: string;
+    name: string;
+    attributes?: Array<{
+      id: string;
+      name: string;
+      type: string;
+      body?: Record<string, unknown>;
+      isRequired: boolean;
+    }>;
+  } | null> => {
     const raw = await api.get<any>(`${API_ENDPOINTS.PRODUCTS.CATEGORIES}/${id}`);
     const data = raw && typeof raw === "object" && "data" in raw ? (raw as any).data : raw;
     if (!data) return null;
     const attrs = Array.isArray((data as any).attributes)
-      ? (data as any).attributes.map((a: any) => ({ id: String(a?.id ?? ""), name: String(a?.name ?? "") }))
+      ? (data as any).attributes.map((a: any) => ({
+          id: String(a?.id ?? ""),
+          name: String(a?.name ?? ""),
+          type: String(a?.type ?? "text"),
+          body: a?.body ? (a.body as Record<string, unknown>) : undefined,
+          isRequired: Boolean(a?.isRequired ?? false),
+        }))
       : undefined;
     return { id: String((data as any)?.id ?? id), name: String((data as any)?.name ?? ""), attributes: attrs };
   },
@@ -578,6 +594,16 @@ export const useCategories = () => {
     queryKey: PRODUCTS_KEYS.categories,
     queryFn: productService.getCategories,
     staleTime: 10 * 60 * 1000, // 10 minutes
+  });
+};
+
+// Get single category detail with attributes
+export const useCategoryDetail = (categoryId: string | null | undefined) => {
+  return useQuery({
+    queryKey: ["products", "categories", "detail", categoryId] as const,
+    queryFn: () => productService.getCategoryDetail(categoryId!),
+    enabled: !!categoryId,
+    staleTime: 10 * 60 * 1000,
   });
 };
 

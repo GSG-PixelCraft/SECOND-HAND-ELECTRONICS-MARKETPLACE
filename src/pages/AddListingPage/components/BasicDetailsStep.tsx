@@ -28,9 +28,9 @@ interface ListingFormData {
   condition: string;
   price: number;
   isNegotiable?: boolean;
-  brand: string;
-  storage: string;
-  model: string;
+  brand?: string;
+  storage?: string;
+  model?: string;
   batteryHealth?: string;
   description: string | undefined;
   location: string;
@@ -91,17 +91,22 @@ export const BasicDetailsStep: FC<BasicDetailsStepProps> = ({
   const [selectedCategory, setSelectedCategory] = useState(
     categoryOptions[0]?.label ?? "Phones",
   );
+  const [selectedCategoryValue, setSelectedCategoryValue] = useState(
+    categoryOptions[0]?.value ?? "",
+  );
   const [selectedCondition, setSelectedCondition] = useState("Like New");
   useEffect(() => {
     if (!categoryOptions.length) return;
     setSelectedCategory((prev) => {
       const hasPrev = categoryOptions.some((cat) => cat.label === prev);
-      return hasPrev ? prev : categoryOptions[0]?.label ?? "Phones";
+      if (hasPrev) return prev;
+      setSelectedCategoryValue(categoryOptions[0]?.value ?? "");
+      return categoryOptions[0]?.label ?? "Phones";
     });
   }, [categoryOptions]);
   useEffect(() => {
-    setValue("category", selectedCategory, { shouldValidate: true });
-  }, [selectedCategory, setValue]);
+    setValue("category", selectedCategoryValue, { shouldValidate: true });
+  }, [selectedCategoryValue, setValue]);
 
   useEffect(() => {
     setValue("condition", selectedCondition, { shouldValidate: true });
@@ -442,6 +447,7 @@ export const BasicDetailsStep: FC<BasicDetailsStepProps> = ({
                         type="button"
                         onClick={() => {
                           setSelectedCategory(category.label);
+                          setSelectedCategoryValue(category.value);
                           setCategoryOpen(false);
                         }}
                         className={`flex w-full items-center gap-2.5 rounded-xl border border-solid px-4 py-3 ${
